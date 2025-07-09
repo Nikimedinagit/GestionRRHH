@@ -1,0 +1,61 @@
+/* INICIO PANEL DESLIZANTE BASE */
+/* Panel deslizante base*/
+#panelProvincia{
+  position: fixed;
+  top: 50%;
+  right: 0;
+  max-width: 35vw;
+  max-height: 90vh;
+  height: auto;
+  background: #fff;
+  box-shadow: -8px 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px 0 0 10px;
+  border-left: 4px solid #3697E1;
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1100;
+
+  transform: translate(100%, -50%);
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  overflow-y: auto;
+}
+
+/* Estado abierto*/
+#panelProvincia.abierto {
+  transform: translate(0, -50%);
+}
+
+@media (max-width: 1024px) {
+
+  #panelProvincia{
+    max-width: 50vw;
+    max-height: 80vh;
+    padding: 15px 15px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  #panelProvincia{
+    max-width: 70vw;
+    max-height: 70vh;
+    padding: 12px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  #panelProvincia {
+    max-width: 90vw;
+    max-height: 60vh;
+    padding: 10px 10px;
+    border-radius: 15px 0 0 15px;
+  }
+}
+/* FIN PANEL DESLIZANTE BASE */
+
+/* ACA VAS A CAMBAIR EL ID ESE POR EL QUE TRABAJES VOS, ESO SOLO ID Y TODO ANDARIA, ACORATE REVISA EL MIO Y LO QUE AGREGUES DE EXTRA DEL CSS COMENTA COMO TENGO EN EL "styles.css", ACA AGREGAS TODO LO TUYO GRACIAS */
+/* ACORDATE DE LINKEAR EN EL HTML GRACIAS */
+
+/*  GUIATE DEL "styles.css", EL QUE DICE "vistas.css" NO LO BORRES Y NO COPIE NADA DE ESE QUE ES VIEJO Y ES POR LA DUDA AL IGUAL QUE EL  "indexxxxxxxxx.html" NO COPIAR NADA Y MENOS BORRAR */

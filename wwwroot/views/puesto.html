@@ -1,0 +1,70 @@
+
+  <div >
+    <!-- Titulo de la página -->
+    <h1>Listado y Control de Puestos</h1>
+
+    <hr />
+
+    <!-- Botón para abrir el modal -->
+    <button class="btn btn-agregar" onclick="AbrirPanelPuesto()">➕ Agregar Puestos</button>
+
+    <!-- Fondo oscuro -->
+    <div id="fondoOscuro" onclick="CerrarPanelPuesto()"></div>
+
+
+    <!-- Panel deslizante -->
+   
+    <div id="panelPuesto" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+      <div class="panel-header">
+        <h2 id="panelTitulo" class="panel-title">Formulario De Puesto</h2>
+      </div>
+      <div class="panel-body">
+        <form id="formPuesto">
+          <input type="hidden" id="IdPuesto" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <input type="text" id="NombrePuesto" class="form-control" placeholder=" " />
+              <label for="NombrePuesto">Nombre</label>
+              <div class="invalid-feedback" id="errorNombrePuesto"></div>
+            </div>
+
+            <div class="form-group">   
+                <select name="IdSector" id="IdSector" class="form-control" required>
+                  <option value="" disabled selected hidden>Seleccione un sector</option>
+                  
+                </select>
+                <label for="IdSector">Sector</label>
+                <div class="invalid-feedback" id="errorIdSector"></div>
+
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="panel-footer mt-3">
+        <button class="btn btn-cancelar" onclick="CerrarPanelPuesto()">Cancelar</button>
+        <button  type="submit" class="btn btn-guardar" onclick="BuscarPuestosId()">Guardar</button>
+      </div>
+    </div>
+
+
+  
+
+ <div class="table-responsive mt-3" aria-label="Tabla de Puestos">
+  <table class="table custom-table align-middle">
+    <thead class="table-puestos">
+      <tr>
+        <th>Puesto</th>
+        <th class="col-sector">Sector</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPuestosBody"></tbody> 
+  </table>
+</div>
+ 
+</div>
+
+<script src="../js/Vistas/puesto.js"></script>
+<script src="../js/Vistas/common/obtenerSector.js"></script>

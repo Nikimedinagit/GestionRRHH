@@ -1,0 +1,324 @@
+
+
+
+
+
+/* INICIO BOTÓN AGREGAR */
+/* Botón Agregar  */
+.btn-agregar {
+  color: white;
+  padding: 8px 16px !important; /* tamaño base grande */
+  font-weight: 700 !important;
+  border: none;
+  border-radius: 10px !important;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgb(42 116 218 / 0.4);
+  font-size: 0.8rem !important; /* tamaño base grande */
+  display: block;
+  margin: 0 auto 40px auto;
+  max-width: 200px;
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  background-color: #2563eb;
+}
+
+.btn-agregar:hover {
+  background-color: #2564eb;
+  box-shadow: 0 6px 14px rgb(26 82 184 / 0.6);
+  transform: scale(1.02);
+  color: white !important;
+}
+
+@media (max-width: 1199.98px) {
+  .btn-agregar {
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .btn-agregar {
+    font-size: 0.75rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .btn-agregar {
+    font-size: 0.7rem !important;
+  }
+}
+/* FIN BOTÓN AGREGAR */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Colores formales */
+#modalDetallesEmpleado .modal-content {
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+}
+
+/* Título azul oscuro */
+#modalDetallesEmpleado .modal-title {
+  color: #003366;
+  font-size: 1.5rem;
+}
+
+/* Texto modal */
+#modalDetallesEmpleado .modal-body p {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #444;
+  user-select: text;
+}
+
+/* Etiquetas en negrita azul */
+#modalDetallesEmpleado .modal-body strong {
+  color: #003366;
+}
+
+/* Botón cerrar */
+#modalDetallesEmpleado .btn-primary {
+  background-color: #003366;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 26px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+#modalDetallesEmpleado .btn-primary:hover {
+  background-color: #002244;
+}
+
+
+
+
+
+/* Tabla de Localidades */
+.tabla-localidades td:nth-child(1),
+.tabla-localidades th:nth-child(1) {
+  width: 45%;
+}
+
+.tabla-localidades td:nth-child(2),
+.tabla-localidades th:nth-child(2) {
+  width: 45%;
+}
+
+.tabla-localidades td:nth-child(3),
+.tabla-localidades th:nth-child(3) {
+  width: 10%;
+  text-align: center;
+}
+
+/* Tabla de Sectores */
+.tabla-sector td:nth-child(1),
+.tabla-sector th:nth-child(1) {
+  width: 90%;
+}
+
+/* acciones */
+.tabla-sector td:nth-child(2),
+.tabla-sector th:nth-child(2) {
+  width: 10%;
+  text-align: center;
+}
+
+/* Tabla de Puestos */
+.tabla-puestos td:nth-child(1),
+.tabla-puestos th:nth-child(1) {
+  width: 45%;
+}
+
+.tabla-puestos td:nth-child(2),
+.tabla-puestos th:nth-child(2) {
+  width: 45%;
+}
+
+.tabla-puestos td:nth-child(3),
+.tabla-puestos th:nth-child(3) {
+  width: 10%;
+  text-align: center;
+}
+
+/* Tabla de Empleados */
+.tabla-empleados td:nth-child(1),
+.tabla-empleados th:nth-child(1) {
+  width: 30%;
+}
+
+.tabla-empleados td:nth-child(2),
+.tabla-puempleadosestos th:nth-child(2) {
+  width: 25%;
+}
+
+.tabla-empleados td:nth-child(3),
+.tabla-empleados th:nth-child(3) {
+  width: 30%;
+}
+
+.tabla-empleados td:nth-child(4),
+.tabla-empleados th:nth-child(4) {
+  width: 15%;
+  text-align: center;
+}
+
+.icon-toggle-on i {
+  color: red !important;
+  cursor: pointer;
+}
+
+.icon-toggle-off i {
+  color: green !important;
+  cursor: pointer;
+}
+
+/* Panel deslizante */
+.modal-right-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 600px;
+  height: 100vh;
+  background-color: #fff; /* blanco para fondo */
+  box-shadow: -8px 0 30px rgba(37, 99, 235, 0.25); /* sombra azul suave */
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  border-radius: 30px 0 0 30px;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1),
+    visibility 0.4s ease-in-out;
+}
+
+/* Mostrar el panel */
+.modal-right-panel.show {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+/* Header */
+.header-panel {
+  flex-shrink: 0;
+  background-color: #2563eb; /* azul botón principal */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px;
+  font-weight: 700;
+  border-radius: 30px 0 0 0;
+  font-size: 1.3rem;
+  user-select: none;
+}
+
+/* Cuerpo con etiquetas */
+.body-panel {
+  flex-grow: 1;
+  padding: 20px 30px;
+  overflow-y: auto;
+  font-size: 1rem;
+  color: #1e293b; /* texto oscuro */
+}
+
+/* Contenedor con espacio */
+.body-panel .container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Filas */
+.body-panel .row {
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid #e0e7ff; /* línea sutil azul claro */
+}
+
+/* Botón cerrar pequeño abajo a la izquierda */
+.cerrar-btn {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background-color: #2563ebcc; /* azul con transparencia */
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.cerrar-btn:hover {
+  background-color: #1e40af;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); /* fondo negro con opacidad 60% */
+  z-index: 1000; /* debe estar detrás del modal */
+  display: none; /* oculto por defecto */
+}
+
+.modal-detalles {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1100; /* encima del overlay */
+  display: none; /* oculto por defecto */
+}
+
+.modal-detalles.show {
+  display: block;
+}
+
+.overlay.show {
+  display: block;
+}

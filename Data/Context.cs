@@ -1,0 +1,16 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using API_RRHH_TESIS2025.Models.General;
+public class Context : IdentityDbContext<ApplicationUser>
+{
+    public Context(DbContextOptions<Context> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<Provincia> Provincia { get; set; }
+    public DbSet<Localidad> Localidad { get; set; }
+    public DbSet<Puesto> Puesto { get; set; }
+    public DbSet<Sector> Sector { get; set; }
+    public DbSet<Empleado> Empleado { get; set; }
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iniciar Sesión | WorkSync</title>
+  <link rel="shortcut icon" href="assets/images/logofavicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" />
+
+  <link rel="stylesheet" href="./css/Vistas/login.css" />
+</head>
+
+<body>
+  <div class="auth-wrapper" style="position: relative;">
+    <!-- Contenedor del mensaje deslizable -->
+    <div id="mensajeDeslizable" style="
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4e73df;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      font-weight: 600;
+      font-size: 1rem;
+      z-index: 9999;
+      transition: top 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+      pointer-events: none;
+    "></div>
+
+    <div class="form-section">
+      <!-- Formulario de Inicio de Sesión -->
+      <form id="formLogin" novalidate>
+        <div class="logo-container">
+          <img src="./img/logogris.png" alt="Logo WorkSync" class="logo-img" />
+          <h2 class="bienvenido-title">¡Bienvenido!</h2>
+        </div>
+        <div class="form-group">
+          <label for="emailLogin" class="text-primary font-weight-bold small">Correo Electrónico</label>
+          <input type="email" id="emailLogin" class="form-control" placeholder="correo@ejemplo.com" required />
+        </div>
+        <div class="form-group">
+          <label for="claveLogin" class="text-primary font-weight-bold small">Contraseña</label>
+          <input type="password" id="claveLogin" class="form-control" placeholder="******" required />
+        </div>
+        <button type="submit" id="btnIniciarSesion" class="btn btn-primary btn-block mt-3">Iniciar sesión</button>
+        <p class="text-center mt-2 small">¿No tenés cuenta? <a href="#" onclick="mostrarRegistro()" class="font-weight-bold text-primary">Registrate</a></p>
+      </form>
+
+      <!-- Formulario de Registro -->
+      <form id="formRegistro" class="d-none" novalidate>
+        <h6 class="text-center font-weight-bold text-primary">Crear cuenta</h6>
+        <div class="form-group">
+          <label for="nombreRegistro" class="text-primary font-weight-bold small">Nombre Completo</label>
+          <input type="text" id="nombreRegistro" class="form-control" placeholder="Juan Pérez" required />
+        </div>
+        <div class="form-group">
+          <label for="emailRegistro" class="text-primary font-weight-bold small">Correo Electrónico</label>
+          <input type="email" id="emailRegistro" class="form-control" placeholder="correo@ejemplo.com" required />
+        </div>
+        <div class="form-group">
+          <label for="claveRegistro" class="text-primary font-weight-bold small">Contraseña</label>
+          <input type="password" id="claveRegistro" class="form-control" placeholder="******" required />
+        </div>
+        <button id="btnRegistrar" type="submit" class="btn btn-primary btn-block mt-3">Registrarme</button>
+
+        <p class="text-center mt-2 small">¿Ya tenés cuenta? <a href="#" onclick="mostrarLogin()" class="font-weight-bold text-primary">Iniciar sesión</a></p>
+      </form>
+    </div>
+
+    <!-- Imagen decorativa -->
+    <div class="image-section">
+      <img src="./img/vecteezy_cv-analysis-for-hiring-people-on-online-applications-on_4865864.svg" alt="Ilustración" />
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./js/authentication/authHandlers.js"></script>
+  <script src="./js/authentication/auth.js"></script>
+
+ 
+</body>
+
+</html>

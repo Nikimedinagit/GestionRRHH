@@ -1,0 +1,621 @@
+/* INICIO TITULO */
+.titulo-seccion {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50c9;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* FIN TITULO */
+
+
+
+
+/* INICIO LINEA DE SEPARACION */
+/* Linea de separación */
+hr {
+  border: none;
+  border-bottom: 1px solid #2c2c2cc7 !important;
+  margin-bottom: 30px;
+}
+/* FIN LINEA DE SEPARACION */
+
+
+
+
+/* INICIO BOTONES */
+/* --- Para Todos Los Botones --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-weight: 500;
+  padding: .45rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .5rem;
+  background: #fff;
+  color: #000;
+  transition: all .25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
+}
+
+/* --- Botón Agregar --- */
+.btn-agregar {
+  --c: #3697E1;
+}
+
+.btn-agregar:hover {
+  background: var(--c);
+  border-color: var(--c);
+  color: #fff;
+}
+
+/* --- Botón Filtro --- */
+.btn-filtro {
+  --c: #F0AD4E;
+}
+
+.btn-filtro:hover {
+  background: var(--c);
+  border-color: var(--c);
+  color: #212529;
+}
+
+/* --- Botón Informe --- */
+.btn-informe {
+  --c: #28A745;
+}
+
+.btn-informe:hover {
+  background: var(--c);
+  border-color: var(--c);
+  color: #fff;
+}
+
+.btn i {
+  font-size: 1rem;
+}
+/* FIN BOTONES */
+
+
+
+
+/* INICIO PANEL DE FILTROS */
+.filtros-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #F0AD4E;
+  border-radius: 9px;
+  padding: 0.7rem 0.9rem;
+  box-shadow: 0 2px 8px rgba(54, 151, 225, 0.05);
+  transition: all 0.3s ease;
+  transform: scaleY(0);
+  transform-origin: top;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.filtros-panel.activo {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+.form-label-fija {
+  position: static !important;
+  display: block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #F0AD4E;
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+
+.filtro-select {
+  font-size: 0.83rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 0.32rem 0.5rem;
+  background-color: #f9fafb;
+  color: #374151;
+  box-shadow: 0 1px 2px rgba(54, 151, 225, 0.02) inset;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filtro-select:focus {
+  border-color: #F0AD4E !important;
+  background-color: #fff;
+  box-shadow: 0 0 0 0.12rem rgba(54, 151, 225, 0.10);
+  outline: none;
+  transform: scale(1.01);
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+  .filtros-panel {
+    padding: 0.5rem 0.4rem;
+    border-radius: 7px;
+  }
+  .form-label-fija {
+    font-size: 0.92rem;
+  }
+}
+/* FIN PANEL DE FILTROS */
+
+
+
+
+/* INICIO PANEL GENERAR */
+.generar-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #28A745;
+  border-radius: 9px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(54, 151, 225, 0.07);
+  transition: all 0.3s ease;
+  transform: scaleY(0);
+  transform-origin: top;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.generar-panel.activo {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+.btn-generar-pdf {
+  background: #28A745 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 7px;
+  border: none;
+  padding: 6px 16px;
+  transition: background 0.2s;
+}
+.btn-generar-pdf:hover {
+  background: #e53935 !important;
+}
+
+.btn-generar-excel {
+  background: #28A745 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 7px;
+  border: none;
+  padding: 6px 16px;
+  transition: background 0.2s;
+}
+.btn-generar-excel:hover {
+  background: #38853b !important;
+}
+
+.btn-generar-grafico {
+  background: #28A745 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 7px;
+  border: none;
+  padding: 6px 16px;
+  transition: background 0.2s;
+}
+.btn-generar-grafico:hover {
+  background: #2563eb !important;
+}
+/* FIN PANEL GENERAL*/
+
+
+
+
+/* INICIO TABLA */
+table tbody tr td {
+  padding: 4px 8px !important;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+table thead tr th {
+  background: #f3f4f6 !important;
+  color: #22223b !important;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  letter-spacing: 0.5px;
+}
+
+table tbody tr {
+  background-color: white !important;
+}
+
+.icono-editar {
+  font-size: 1.6rem !important;
+  color: #0d6efd !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+
+}
+
+/* Botón toggle */
+.icon-desactivar {
+  font-size: 1.5rem !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+  vertical-align: middle;
+  transition: color 0.2s;
+}
+
+/* Fila desactivada */
+.fila-desactivada {
+  color: #999;
+  font-style: italic;
+  opacity: 0.4;
+}
+
+/* Responsive tabla */
+.table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+}
+
+/* Tooltips */
+.tippy-box[data-theme~='mi-tema'] {
+  background-color: #1f2937;
+  color: #fff;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+/* FIN TABLA */
+
+
+
+
+/* INICIO FONDO OSCURO AL PULSAR BOTÓN AGREGAR */
+/* Fondo oscuro al pulsar botón agregar */
+#fondoOscuro {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#fondoOscuro.visible {
+  display: block;
+  opacity: 1;
+}
+/* FIN FONDO OSCURO AL PULSAR BOTÓN AGREGAR */
+
+
+
+
+/* INICIO PANEL DESLIZANTE BASE */
+/* Panel deslizante base*/
+#panelProvincia,
+#panelLocalidad,
+#panelSector,
+#panelPuesto,
+#panelEmpleado {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  max-width: 35vw;
+  max-height: 90vh;
+  height: auto;
+  background: #fff;
+  box-shadow: -8px 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px 0 0 10px;
+  border-left: 4px solid #3697E1;
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1100;
+
+  transform: translate(100%, -50%);
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  overflow-y: auto;
+}
+
+/* Estado abierto*/
+#panelProvincia.abierto,
+#panelLocalidad.abierto,
+#panelSector.abierto,
+#panelPuesto.abierto,
+#panelEmpleado.abierto {
+  transform: translate(0, -50%);
+}
+
+/* Header del panel*/
+.panel-header {
+  margin-bottom: 15px;
+}
+
+/* Título del panel*/
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3697E1;
+  user-select: none;
+}
+
+/* Footer del panel*/
+.panel-footer {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+}
+
+/* Botones base*/
+.btn {
+  all: unset;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.12);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 0.875rem;
+  min-width: 90px;
+}
+
+/* Botón cancelar*/
+.btn-cancelar {
+  background-color: #9ca3af;
+  color: white;
+}
+
+/* Botón cancelar hover*/
+.btn-cancelar:hover {
+  background-color: #7f8694;
+  color: white !important;
+}
+
+/* Botón guardar*/
+.btn-guardar {
+  background-color: #3697E1;
+  color: white;
+}
+
+/* Botón guardar hover*/
+.btn-guardar:hover {
+  background-color: #2563eb;
+  color: white !important;
+}
+
+/* Grid del formulario*/
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 12px 12px;
+}
+
+/* Grupo de formulario*/
+.form-group {
+  position: relative;
+}
+
+/* Inputs y selects*/
+input.form-control,
+select.form-control {
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  color: #374151;
+  font-weight: 500;
+  width: 100%;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Placeholder de inputs*/
+input.form-control::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Focus de inputs y selects*/
+input.form-control:focus,
+select.form-control:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+  background-color: white;
+  transform: scale(1.01);
+}
+
+/* Label flotante*/
+label {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  user-select: none;
+  background-color: white;
+  padding: 0 3px;
+}
+
+/* Label flotante activo*/
+input.form-control:focus+label,
+input.form-control:not(:placeholder-shown)+label,
+select.form-control:focus+label,
+select.form-control:not([value=""])+label {
+  top: -10px;
+  left: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2563eb;
+  border-radius: 8px;
+}
+
+
+@media (max-width: 1024px) {
+
+  #panelProvincia,
+  #panelLocalidad,
+  #panelSector,
+  #panelPuesto,
+  #panelEmpleado {
+    max-width: 50vw;
+    max-height: 80vh;
+    padding: 15px 15px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  #panelProvincia,
+  #panelLocalidad,
+  #panelSector,
+  #panelPuesto,
+  #panelEmpleado {
+    max-width: 70vw;
+    max-height: 70vh;
+    padding: 12px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  #panelProvincia,
+  #panelLocalidad,
+  #panelSector,
+  #panelPuesto,
+  #panelEmpleado {
+    max-width: 90vw;
+    max-height: 60vh;
+    padding: 10px 10px;
+    border-radius: 15px 0 0 15px;
+  }
+}
+/* FIN PANEL DESLIZANTE BASE */
+
+
+
+
+/* INICIO VENTANAS EMERGENTES */
+/* Contenedor general del modal */
+.swal2-border-radius {
+  border-radius: 14px !important;
+  box-shadow: 0 6px 20px rgba(54, 151, 225, 0.1) !important;
+  border: none !important;
+  background-color: #ffffff !important;
+}
+
+.swal2-title-custom {
+  font-family: 'Public Sans', 'Segoe UI', sans-serif;
+  font-size: 1rem !important;
+  color: #374151 !important;
+  font-weight: 600;
+  margin-bottom: 8px !important;
+}
+
+.swal2-content-custom {
+  font-size: 0.95rem !important;
+  color: #4b5563 !important;
+  font-family: 'Public Sans', 'Segoe UI', sans-serif;
+}
+
+.swal2-btn-cancelar {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-cancelar:hover {
+  background-color: #e5e7eb !important;
+}
+
+.swal2-btn-desactivar {
+  background-color: #e53935 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-desactivar:hover {
+  background-color: #c62828 !important;
+}
+
+.swal2-btn-reactivar {
+  background-color: #28a745 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-reactivar:hover {
+  background-color: #218838 !important;
+}
+
+
+/* Ventana abajo a la derecha*/
+.swal2-toast {
+  min-width: 250px !important;
+  max-width: 280px !important;
+  padding: 0.4rem 1rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+
+.swal2-toast .swal2-title {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.swal2-toast .swal2-content {
+  font-size: 0.8rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+/* FIN VENTANAS EMERGENTES */
+
+
+
+
+#contenedorGrafico canvas {
+  width: 90% !important;
+  height: auto !important;
+  max-height: 200px;
+  display: block;
+  margin: 0 auto;
+}

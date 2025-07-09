@@ -1,0 +1,59 @@
+
+  <div >
+    <!-- Titulo de la página -->
+    <h1>Listado y Control de Sectores</h1>
+
+    <hr />
+
+    <!-- Botón para abrir el modal -->
+    <button class="btn btn-agregar" onclick="AbrirPanelSector()">➕ Agregar Sectores</button>
+
+    <!-- Fondo oscuro -->
+    <div id="fondoOscuro" onclick="CerrarPanelSector()"></div>
+
+    <!-- Panel deslizante -->
+   
+
+    <div id="panelSector" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+      <div class="panel-header">
+        <h2 id="panelTitulo" class="panel-title">Formulario De Sector</h2>
+      </div>
+      <div class="panel-body">
+        <form id="formSector">
+          <input type="hidden" id="IdSector" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <input type="text" id="NombreSector" class="form-control" placeholder=" " />
+              <label for="NombreSector">Nombre</label>
+              <div class="invalid-feedback" id="errorNombreSector"></div>
+              
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="panel-footer mt-3">
+        <button class="btn btn-cancelar" onclick="CerrarPanelSector()">Cancelar</button>
+        <button  type="submit" class="btn btn-guardar" onclick="BuscarSectorId()">Guardar</button>
+      </div>
+    </div>
+
+
+  
+
+ <div class="table-responsive mt-3" aria-label="Tabla de Sectores">
+  <table class="table custom-table align-middle">
+    <thead class="table-sectores">
+      <tr>
+        <th>Sector</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaSectoresBody"></tbody> 
+  </table>
+</div>
+
+</div>
+
+<script src="../js/Vistas/sector.js"></script>

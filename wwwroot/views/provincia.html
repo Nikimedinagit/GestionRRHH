@@ -1,0 +1,130 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+  <!-- Título -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Listado y Control de Provincias</h3>
+  </div>
+
+  <hr />
+
+  <!-- Contenedor de Botones y Tabla -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <!-- Fondo Oscuro al Abrir Panel -->
+    <div id="fondoOscuro" onclick="cerrarPanelProvincia()"></div>
+
+    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <!-- Botón Agregar -->
+      <button class="btn btn-agregar" onclick="abrirPanelProvincia()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Agregar</span>
+      </button>
+
+      <!-- Botones Filtros y Informe -->
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+          <i class="fa-solid fa-filter me-1"></i>
+          <span>Filtros</span>
+        </button>
+
+        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+          <i class="fa-solid fa-file-lines me-1"></i>
+          <span>Generar</span>
+        </button>
+      </div>
+    </div>
+
+
+
+
+
+
+    <!-- Contenedor Filtros-->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+          <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
+          <select id="EstadoIdBuscar" class="form-control filtro-select">
+            <option value="">[Todos los estados]</option>
+            <option value="0">Activos</option>
+            <option value="1">Inactivos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor Generar-->
+    <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+          <i class="fa-solid fa-file-pdf me-1"></i> PDF
+        </button>
+        <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+          <i class="fa-solid fa-file-excel me-1"></i> Excel
+        </button>
+        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
+          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
+        </button>
+      </div>
+    </div>
+
+
+  <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+  <canvas id="graficoProvincias" width="400" height="150"></canvas>
+</div>
+
+
+    <!-- Tabla de Datos -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <colgroup>
+          <col style="width: 5%" />
+          <col style="width: 90%" />
+          <col style="width: 5%" />
+        </colgroup>
+        <thead class="table-provincias">
+          <tr>
+            <th class="text-center">Activo</th>
+            <th class="text-start">Provincia</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaProvinciasBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Panel Deslizante Formulario -->
+  <div id="panelProvincia" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Provincia</h2>
+    </div>
+    <div class="panel-body">
+      <form id="formProvincia">
+        <input type="hidden" id="IdProvincia" />
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3">
+            <input type="text" id="NombreProvincia" class="form-control" placeholder=" " />
+            <label for="NombreProvincia">Nombre</label>
+            <div class="invalid-feedback" id="errorNombreProvincia"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-cancelar" onclick="cerrarPanelProvincia()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarProvinciaId()">
+        Guardar
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/Vistas/provincia.js"></script>
+
+
+
+</div>
+
+

@@ -1,0 +1,34 @@
+function ObtenerPuestosDropDown() {
+    fetch('https://localhost:7006/Puestos', {
+        method: "GET",
+      })
+        .then(response => response.json()) 
+        .then(data => {
+            MostrarPuestosDropDown(data) 
+        })
+        .catch(error => console.log("No se puede acceder al servicio.", error))  
+}
+
+
+function MostrarPuestosDropDown(data) {
+    $("#IdPuesto").empty();
+
+    // Mostrar solo los activos 
+    data = data.filter(item => item.eliminado == false);
+
+    // mostar una opcion para seleccionar
+    $('#IdPuesto').append(
+        `<option value="0" selected disabled hidden>Seleccione un puesto</option>`
+    );
+        
+    $.each(data, function (index, item) {
+        $('#IdPuesto').append( 
+            `<option value="${item.id}">${item.descripcion}</option>`
+        );
+    });
+}
+
+
+
+ObtenerPuestosDropDown();
+   
