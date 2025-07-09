@@ -328,6 +328,9 @@ async function CrearProvincia() {
 
 // Funcion para editar una provincia
 async function EditarProvincia(id) {
+
+  if (!ValidarFormularioProvincia()) return;
+  
   let provincia = {
     id: document.getElementById("IdProvincia").value,
     nombre: document.getElementById("NombreProvincia").value.trim(),
@@ -437,62 +440,7 @@ async function EliminarSiProvincia(id) {
 
 
 
-//Funcion para generar el archivo excel
-// function GenerarExcel() {
-//   const nombreSistema = "WorkSync - Listado de Provincias";
-//   const fecha = new Date().toLocaleString();
 
-//   // Filtro aplicado
-//   const estadoFiltro = document.getElementById("EstadoIdBuscar").value;
-//   let filtroTexto = "Todos los estados";
-//   if (estadoFiltro === "0") filtroTexto = "Solo activos";
-//   else if (estadoFiltro === "1") filtroTexto = "Solo inactivos";
-
-//   // Crear encabezado personalizado
-//   const encabezado = [
-//     [nombreSistema],
-//     ["Fecha de exportación:", fecha],
-//     ["Filtro aplicado:", filtroTexto],
-//     [],
-//     ["Activo", "Provincia"]
-//   ];
-
-//   // Obtener filas visibles de la tabla
-//   const tabla = document.getElementById("tablaProvinciasBody");
-//   const filas = tabla.querySelectorAll("tr");
-
-//   const datos = [];
-//   filas.forEach(fila => {
-//     if (fila.offsetParent !== null) { // Solo filas visibles
-//       const celdas = fila.querySelectorAll("td");
-//       if (celdas.length >= 2) {
-//         const activo = celdas[0].innerText.trim();
-//         const provincia = celdas[1].innerText.trim();
-//         datos.push([activo, provincia]);
-//       }
-//     }
-//   });
-
-//   // Combinar encabezado y datos
-//   const final = [...encabezado, ...datos];
-
-//   // Crear hoja y libro
-//   const ws = XLSX.utils.aoa_to_sheet(final);
-
-//   // Fusionar título en A1 y B1
-//   ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
-
-//   // Ajustar anchos de columnas (opcional)
-//   ws['!cols'] = [
-//     { wch: 12 },
-//     { wch: 30 }
-//   ];
-
-//   // Crear libro y exportar
-//   const wb = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(wb, ws, "Provincias");
-//   XLSX.writeFile(wb, "Provincias_WorkSync.xlsx");
-// }
 
 
 
