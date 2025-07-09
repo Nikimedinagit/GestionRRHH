@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
+    // [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LocalidadesController : ControllerBase

@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
-{
-    [Route("[controller]")]
+{   
+
+    // [Authorize]
+    [Route("api/[controller]")]
     [ApiController]
     public class SectorController : ControllerBase
     {
@@ -41,6 +44,18 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             return sector;
+        }
+
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<Sector>>> GetSector([FromBody] FiltrarSectores filtro)
+        {   
+            var sectorFiltro = _context.Sector.AsQueryable();
+            if (filtro.Eliminado.HasValue)
+            {
+                sectorFiltro = sectorFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+            }
+            var resultado = await sectorFiltro.OrderBy(c => c.Nombre).ToListAsync();
+            return resultado;
         }
 
         // PUT: api/Sector/5
@@ -119,8 +134,8 @@ namespace API_RRHH_TESIS2025.Controllers
 
                 sector.Eliminado = !sector.Eliminado;
             var mensaje = sector.Eliminado ?
-                "Sector Desactivada" :
-                "Sector Activada";
+                "Sector Desactivado" :
+                "Sector Activado";
 
             _context.Sector.Update(sector);
             await _context.SaveChangesAsync();

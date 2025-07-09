@@ -20,12 +20,103 @@ function AbrirPanelSector() {
 
 }
 
+
+
+
+//PANEL FILTROS//
+//Funcion para abrir panel de filtros
+function AbrilPanelFiltros(idPanel) {
+  const panel = document.getElementById(idPanel);
+  if (!panel) return;
+
+  if (panel.classList.contains("activo")) {
+    panel.classList.remove("activo");
+    setTimeout(() => panel.classList.add("d-none"), 300);
+    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+  } else {
+    panel.classList.remove("d-none");
+    setTimeout(() => panel.classList.add("activo"), 10);
+    // Agrega el listener para cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }, 20);
+  }
+
+  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
+  function DetectarClickFueraDeFiltro(event) {
+    if (
+      !panel.contains(event.target) &&
+      event.target.id !== "btnMostrarFiltros"
+    ) {
+      panel.classList.remove("activo");
+      setTimeout(() => panel.classList.add("d-none"), 300);
+      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }
+  }
+}
+//FIN PANEL FILTROS//
+
+
+
+//INICIO PANEL GENERAR//
+//Funcion para abrir panel de genera
+function AbrilPanelGenerar(idPanel) {
+  const panel = document.getElementById(idPanel);
+  if (!panel) return;
+
+  if (panel.classList.contains("activo")) {
+    panel.classList.remove("activo");
+    setTimeout(() => panel.classList.add("d-none"), 300);
+    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
+  } else {
+    panel.classList.remove("d-none");
+    setTimeout(() => panel.classList.add("activo"), 10);
+    // Agrega el listener para cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
+    }, 20);
+  }
+
+  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
+  function DetectarClickFueraDeGenerar(event) {
+    if (
+      !panel.contains(event.target) &&
+      event.target.id !== "btnMostrarGenerar"
+    ) {
+      panel.classList.remove("activo");
+      setTimeout(() => panel.classList.add("d-none"), 300);
+      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
+    }
+  }
+}
+//FIN PANEL GENERAR//
+
+
+
+// INICIO ONCHANGE DE FILTROS//
+$(document).ready(function () {
+  ObtenerSectores();
+
+  $("#EstadoIdBuscar").on("change", function () {
+    ObtenerSectores();
+  });
+});
+//FIN ONCHANGE DE FILTROS//
+
+
 // Obtener Sectores
-function ObtenerSectores() {
-    fetch('https://localhost:7006/Sector')
+async function ObtenerSectores() {
+    let estadoId = document.getElementById("EstadoIdBuscar").value;
+    let filtro = {
+        eliminado: estadoId !== "" ? parseInt(estadoId) : null,
+    }
+    const res = await authFetch("Sector/Filtrar", {
+        method: "POST",
+        body: JSON.stringify(filtro)
+    })
     .then(response => response.json())
     .then(data => {
-        MostrarSectores(data)
+        MostrarSectores(data);
         LimpiarModalSector();
         CerrarPanelSector();
       })
@@ -35,52 +126,77 @@ function ObtenerSectores() {
 
 // Funcion Para Mostrar Las Sectores
 function MostrarSectores(data) {
-    $('#tablaSectoresBody').empty();
+    window.listaSectores = data;
 
-    data.forEach(element => {
-        const tr = document.createElement('tr');
-        if (element.eliminado) {
-            tr.classList.add('fila-desactivada');
-        }
+  $("#tablaSectoresBody").empty();
 
-        // Celda nombre
-        const tdNombre = document.createElement('td');
-        tdNombre.textContent = element.nombre;
-        tr.appendChild(tdNombre);
+  if (data.length === 0) {
+    $("#tablaSectoresBody").append(
+      "<tr><td colspan='2' class='text-center text-muted'>No hay sectores para mostrar.</td></tr>"
+    );
+    return;
+  }
 
-        // Celda acciones (editar + activar/desactivar)
-        const tdAcciones = document.createElement('td');
-        tdAcciones.className = 'acciones-cell';
+  $.each(data, function (index, item) {
+    let filaClass = item.eliminado ? "fila-desactivada" : "";
+    let visibleBotones = item.eliminado ? "display: none;" : "";
+    let iconColor = item.eliminado ? "text-success" : "text-danger";
 
-        if (!element.eliminado) {
-          
-            const btnEditar = document.createElement('button');
-            btnEditar.className = 'icon-btn icon-editar';
-            btnEditar.title = 'Editar sector';
-            btnEditar.innerHTML = '<i class="bx bx-edit"></i>';
-            btnEditar.onclick = () => MostrarModalEditar(element.id, element.nombre);
-            tdAcciones.appendChild(btnEditar);
-        }           
+    $("#tablaSectoresBody").append(
+      "<tr>" +
+        // Columna Activo (toggle)
+        "<td class='text-center align-middle'>" +
+        "<button class='btn-editar' type='button' class='btn btn-sm " +
+        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+        "' data-tippy-content='" +
+        (item.eliminado ? "Activar" : "Desactivar") +
+        "' onclick='EliminarSectorId(" +
+        item.id +
+        ", " +
+        item.eliminado +
+        ")' style='background: none; border: none;'>" +
+        "<i class='icon-desactivar bi " +
+        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+        " " +
+        iconColor +
+        "'></i>" +
+        "</button>" +
+        "</td>" +
+        // Columna Provincia (nombre)
+        "<td class='align-middle " +
+        filaClass +
+        "'>" +
+        item.nombre +
+        "</td>" +
+        // Columna Acciones (editar)
+        "<td class='d-flex justify-content-center align-items-center'>" +
+        "<button class='btn-editar' data-action='edit' style='" +
+        visibleBotones +
+        " background: none; border: none;' onclick='MostrarModalEditar(" +
+        item.id +  ")' data-tippy-content='Editar'>" +
+        "<i class='bi bi-pencil-square icono-editar'></i>" +
+        "</button>" +
+        "</td>" +
+        "</tr>"
+    );
+  });
 
-        const btnToggle = document.createElement('button');
-        btnToggle.className = 'icon-btn icon-toggle';
-        btnToggle.title = element.eliminado ? 'Activar sector' : 'Desactivar sector';
-        btnToggle.innerHTML = element.eliminado
-            ? '<i class="bx bx-toggle-right" style="color: green;"></i>'
-            : '<i class="bx bx-toggle-left" style="color: red;"></i>';
-        btnToggle.onclick = () => EliminarSectorId(element.id, element.eliminado);
-        tdAcciones.appendChild(btnToggle);
-
-        tr.appendChild(tdAcciones);
-        $('#tablaSectoresBody').append(tr);
-    });
+  // Inicializar tooltips de Tippy
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
 
-
 // Funcion para mostar el modal de edición de la sector
-function MostrarModalEditar(id, nombre) {
-    document.getElementById('IdSector').value = id;
-    document.getElementById('NombreSector').value = nombre;
+async function MostrarModalEditar(id) {
+
+    const res = await authFetch(`Sector/${id}`);
+    const sector = await res.json();
+
+    document.getElementById('IdSector').value = sector.id;
+    document.getElementById('NombreSector').value = sector.nombre;
 
     AbrirPanelSector(); 
 }   
@@ -96,7 +212,7 @@ function BuscarSectorId() {
         CrearSector();
     }
     else {
-        EditarSector(id, nombre); 
+        EditarSector(id); 
     }
 }
 
@@ -185,22 +301,18 @@ function MostrarErrorSectorExistente(mensaje) {
 
 
 // Funcion para crear una sector
-function CrearSector() {
+async function CrearSector() {
 
     if (!ValidarFormularioSector()) return;
 
     const sector = {
         nombre: document.getElementById('NombreSector').value.trim(),
     }
-    fetch('https://localhost:7006/Sector',
-        {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(sector)
-        })
-    .then(response => response.json())
+    const res = await authFetch('Sector', {
+        method: 'POST',
+        body: JSON.stringify(sector)
+    })
+    .then((response) => response.json())
     .then(response => {
 
         if (response.mensaje){
@@ -231,19 +343,19 @@ function CrearSector() {
 
 
 // Funcion para editar una sector
-function EditarSector(id, nombre) {
+function EditarSector(id) {
+
+    if (!ValidarFormularioSector()) return;
+
+    let sectorId = document.getElementById('IdSector').value;
     let sector = {
-        id: id,
-        nombre: nombre
+        id: sectorId,
+        nombre: document.getElementById('NombreSector').value.trim()
     }
-    fetch('https://localhost:7006/Sector/' + id,
-        {
-            method: 'PUT', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(sector)
-        })
+    const res = authFetch(`Sector/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(sector)
+    })
     .then(response => response.json())
     .then(response => {
         if (response.mensaje){
@@ -269,39 +381,49 @@ function EditarSector(id, nombre) {
 
 // Función para eliminar una sector
 function EliminarSectorId(id, eliminado) {
-    Swal.fire({
-        title: '¿Está seguro?',
-        text: eliminado 
-            ? '¿Está seguro de que desea reactivar esta sector?' 
-            : 'Una vez desactivada, no podrá usar esta sector.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        focusCancel: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            EliminarSiSector(id);
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            Swal.fire({
-                title: 'Acción cancelada',
-                text: eliminado 
-                    ? 'El sector sigue desactivada.' 
-                    : 'El sector sigue activa.',
-                icon: 'info',
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'bottom-end'
-            });
-        }
-    });
+  Swal.fire({
+    title: eliminado ? "¿Reactivar sector?" : "¿Desactivar sector?",
+    text: eliminado
+      ? "Se reactivará este sector en el sistema."
+      : "Este sector se desactivará y no estará disponible.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true,
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
+  .then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiSector(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción cancelada",
+        text: eliminado
+          ? "El sector sigue desactivado."
+          : "El sector sigue activo.",
+        icon: "info",
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "bottom-end",
+      });
+    }
+  });
 }
 
 // Función para eliminar una sector
-function EliminarSiSector(id) {
-    fetch('https://localhost:7006/Sector/' + id, {
+async function EliminarSiSector(id) {
+   const res = await authFetch(`Sector/${id}`, {
         method: 'DELETE'
     })
     .then(response => {
