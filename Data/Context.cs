@@ -13,4 +13,5 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<Puesto> Puesto { get; set; }
     public DbSet<Sector> Sector { get; set; }
     public DbSet<Empleado> Empleado { get; set; }
+    public DbSet<API_RRHH_TESIS2025.Models.General.Evaluacion> Evaluacion { get; set; }
 }

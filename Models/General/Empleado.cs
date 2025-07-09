@@ -36,6 +36,8 @@ public class Empleado
     public int PuestoId { get; set; }
     public virtual Puesto Puesto { get; set; }
 
+    public virtual ICollection<Evaluacion> Evaluaciones { get; set; }
+
     
 }
 
