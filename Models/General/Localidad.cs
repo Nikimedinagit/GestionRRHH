@@ -16,9 +16,15 @@ namespace API_RRHH_TESIS2025.Models.General
         public int ProvinciaId { get; set; }
 
         public virtual Provincia Provincia { get; set; }
-        
+
 
         public virtual ICollection<Empleado> Empleados { get; set; }
-       
+
+    }
+    
+    public class FiltrarLocalidades
+    {
+        public int? Eliminado { get; set; }
+        public int? ProvinciaId { get; set; }
     }
 }

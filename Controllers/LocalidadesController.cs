@@ -9,7 +9,7 @@ using API_RRHH_TESIS2025.Models.General;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class LocalidadesController : ControllerBase
     {
@@ -47,20 +47,51 @@ namespace API_RRHH_TESIS2025.Controllers
             return localidad;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidad([FromBody] FiltrarLocalidades filtro)
+        {
+            var localidadesFiltro = _context.Localidad
+                .Include(x => x.Provincia)
+                .AsQueryable();
+
+            if (filtro.Eliminado.HasValue)
+            {
+                localidadesFiltro = localidadesFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+            }
+
+            if (filtro.ProvinciaId > 0)
+            {
+                localidadesFiltro = localidadesFiltro.Where(t => t.ProvinciaId == filtro.ProvinciaId);
+            }
+
+            
+            var resultado = await localidadesFiltro
+                .OrderBy(l => l.Provincia.Nombre)
+                .ThenBy(l => l.Nombre)
+                .ToListAsync(); 
+
+            return resultado;
+        }
+
+
         // PUT: api/Localidades/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLocalidad(int id, Localidad localidad)
-        {      
+        {
 
             // Guardamos en mayúsculas
             localidad.Nombre = localidad.Nombre.ToUpper();
 
             var localidadExistente = await _context.Localidad
-                .AnyAsync(x => x.Nombre.ToLower() == localidad.Nombre.ToLower());
+                .AnyAsync(x =>
+                    x.Nombre.ToLower() == localidad.Nombre.ToLower() &&
+                    x.ProvinciaId == localidad.ProvinciaId
+                );
+
             if (localidadExistente)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
             }
 
 
@@ -96,15 +127,18 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Localidad>> PostLocalidad(Localidad localidad)
         {
-
             // Guardamos en mayúsculas
             localidad.Nombre = localidad.Nombre.ToUpper();
 
             var localidadExistente = await _context.Localidad
-                .AnyAsync(x => x.Nombre.ToLower() == localidad.Nombre.ToLower());
+                .AnyAsync(x =>
+                    x.Nombre.ToLower() == localidad.Nombre.ToLower() &&
+                    x.ProvinciaId == localidad.ProvinciaId
+                );
+
             if (localidadExistente)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
             }
 
             _context.Localidad.Add(localidad);
@@ -112,6 +146,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return CreatedAtAction("GetLocalidad", new { id = localidad.Id }, localidad);
         }
+
 
         // DELETE: api/Localidades/5
         [HttpDelete("{id}")]

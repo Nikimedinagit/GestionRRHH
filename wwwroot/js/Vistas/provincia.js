@@ -88,6 +88,7 @@ function AbrilPanelGenerar(idPanel) {
     }
   }
 }
+//FIN PANEL GENERAR//
 
 // INICIO ONCHANGE DE FILTROS//
 $(document).ready(function () {

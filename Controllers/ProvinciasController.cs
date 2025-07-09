@@ -34,12 +34,13 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<Provincia>>> GetProvincia([FromBody] FiltrarProvincias filtro)
         {
-            var query = _context.Provincia.AsQueryable();
+        
+            var provinciasFiltro = _context.Provincia.AsQueryable();
             if (filtro.Eliminado.HasValue)
             {
-                query = query.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+                provinciasFiltro = provinciasFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
             }
-            var resultado = await query.OrderBy(c => c.Nombre).ToListAsync();
+            var resultado = await provinciasFiltro.OrderBy(c => c.Nombre).ToListAsync();
             return resultado;
         }
 
