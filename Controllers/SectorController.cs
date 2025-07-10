@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API_RRHH_TESIS2025.Controllers
 {   
 
-    // [Authorize]
+    [Authorize (Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class SectorController : ControllerBase

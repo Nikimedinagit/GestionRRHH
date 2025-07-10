@@ -143,5 +143,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function cerrarSesion() {
   localStorage.clear();
-  window.location.href = "../views/login.html";
+  window.location.href = "login.html";
 }

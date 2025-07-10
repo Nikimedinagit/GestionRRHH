@@ -96,7 +96,7 @@ app.UseDefaultFiles(new DefaultFilesOptions
 app.UseStaticFiles();
 
 // Redirección automática de HTTP a HTTPS
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // Habilita CORS con la política que permite todo
 app.UseCors("AllowAll");

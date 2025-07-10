@@ -100,6 +100,9 @@ $(document).ready(function () {
 });
 //FIN ONCHANGE DE FILTROS//
 
+
+
+
 // Funcion Para Obtener las Provincias
 async function ObtenerProvincias() {
 
@@ -107,6 +110,13 @@ async function ObtenerProvincias() {
   let filtro = {
     eliminado: estado !== "" ? parseInt(estado) : null,
   };
+
+
+   // ⬇️ Aca agregá los console.log
+  console.log("Token actual:", getToken());
+  console.log("Refresh token:", getRefreshToken());
+  console.log("Email:", getEmail());
+  console.log("URL:", API_BASE_URL + "Provincias/Filtrar");
 
 const res = await authFetch("Provincias/Filtrar", {
         method: "POST",
@@ -120,10 +130,7 @@ const res = await authFetch("Provincias/Filtrar", {
     })
     .catch((error) => console.log("No se pudo obtener las provincias", error));
 }
-
-  let filtro = {
-    eliminado: eliminado,
-  };      
+    
 // Funcion Para Mostrar Las Provincias
 function MostrarProvincias(data) {
     window.listaProvincias = data;
