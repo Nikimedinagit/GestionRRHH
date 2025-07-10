@@ -89,16 +89,47 @@ function AbrilPanelGenerar(idPanel) {
 }
 //FIN PANEL GENERAR//
 
+// INICIO ONCHANGE DE FILTROS//
+$(document).ready(function () {
+  ObtenerTiposDeCriterios();
 
-function ObtenerTiposDeCriterios() {
-    fetch('http://localhost:5106/api/TiposDeCriterios')
+  $("#EstadoIdBuscar").on("change", function () {
+    ObtenerTiposDeCriterios();
+  });
+});
+//FIN ONCHANGE DE FILTROS//
+
+
+// Funcion para obtener los tipos de criterios
+async function ObtenerTiposDeCriterios() {
+
+  let estado = document.getElementById("EstadoIdBuscar").value;
+  let filtro = {
+    eliminado: estado !== "" ? parseInt(estado) : null,
+  };
+
+  const res = await authFetch("TiposDeCriterios/Filtrar", {
+    method: "POST",
+    body: JSON.stringify(filtro),
+  })
     .then(response => response.json())
-    .then((data => {
+    .then((data) => {
         MostrarTiposDeCriterios(data);
         LimpiarModalTipoDeCriterio();
         CerrarPanelTipoDeCriterio();
-    }))
+    })
+    .catch((error) => console.log("No se pudo obtener los tipos de criterios", error));
 }
+
+// function ObtenerTiposDeCriterios() {
+//     fetch('http://localhost:5106/api/TiposDeCriterios')
+//     .then(response => response.json())
+//     .then((data => {
+//         MostrarTiposDeCriterios(data);
+//         LimpiarModalTipoDeCriterio();
+//         CerrarPanelTipoDeCriterio();
+//     }))
+// }
 
 // Funcion Para Mostrar los tipos de criterios en la tabla
 function MostrarTiposDeCriterios(data) {
@@ -334,10 +365,6 @@ function MostrarErrorTipoDeCriterioExistente(mensaje) {
   errorTipoDeCriterio.style.display = "block";
   inputNombreTipoDeCriterio.classList.add("is-invalid");
 }
-
-
-
-
 
 // Función para eliminar una tipo de criterio
 function EliminarTipoDeCriterioId(id, eliminado) {

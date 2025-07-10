@@ -43,6 +43,20 @@ namespace API_NET_CORE8_RRHH.Controllers
             return tipoDeCriterio;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<TipoDeCriterio>>> FiltrarTipoDeCriterio(TipoDeCriterioFiltrar filtro)
+        {
+            var tipoDeCriteriosFiltro = _context.TipoDeCriterio.AsQueryable();
+
+            if (filtro.Eliminado.HasValue)
+            {
+                tipoDeCriteriosFiltro = tipoDeCriteriosFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+            }
+            var resultado = await tipoDeCriteriosFiltro.OrderBy(c => c.Nombre).ToListAsync();
+            return resultado;
+
+        }
+
         // PUT: api/TiposDeCriterios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
