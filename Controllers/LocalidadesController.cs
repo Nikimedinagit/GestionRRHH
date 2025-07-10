@@ -28,7 +28,7 @@ namespace API_RRHH_TESIS2025.Controllers
         {
             var localidades = await _context.Localidad
             .Include(x => x.Provincia)
-            .Where(l => !l.Provincia.Eliminado)
+            .Where(l => !l.Eliminado && !l.Provincia.Eliminado)
             .OrderBy(l => l.Provincia.Nombre)
             .ThenBy(l => l.Nombre)
             .ToListAsync();
@@ -53,6 +53,7 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidad([FromBody] FiltrarLocalidades filtro)
         {
             var localidadesFiltro = _context.Localidad
+                .Where(x => !x.Provincia.Eliminado)
                 .Include(x => x.Provincia)
                 .AsQueryable();
 

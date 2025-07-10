@@ -1,32 +1,32 @@
 // Función para obtener los sectores
-function ObtenerSectoresDropDown() {
-    fetch('https://localhost:7006/Sector', {
+async function ObtenerSectoresDropDown() {
+    const res = await authFetch("Sector", {
         method: "GET",
       })
-        .then(response => response.json()) // Convierte la respuesta en json.
+        .then(response => response.json())  
         .then(data => {
-            MostrarSectoresDropDown(data) // Muestra los datos en la tabla.
+            MostrarSectoresDropDown(data) 
         })
         .catch(error => console.log("No se puede acceder al servicio.", error))  // En caso que falle, muestra el error por consola.
 }
 
 
 function MostrarSectoresDropDown(data) {
-    $("#IdSector").empty();  
+      const $dropdown = $('#IdSector');
+    $dropdown.empty();  
 
-    // Mostrar solo los activos 
-    data = data.filter(item => item.eliminado == false);
+    // Agrega la opción por defecto
+    $dropdown.append(`<option value="" selected disabled hidden>Seleccione un sector</option>`);
 
-    // mostar una opcion para seleccionar
-    $('#IdSector').append(
-        `<option value="0" selected disabled hidden>Seleccione un sector</option>`
-    );
-        
+    // Filtra solo los no eliminados
+    data = data.filter(item => item.eliminado === false);
+
+    // Agrega los sectores activos
     $.each(data, function (index, item) {
-        $('#IdSector').append( 
-            `<option value="${item.id}">${item.nombre}</option>`
-        );
+        $dropdown.append(`<option value="${item.id}">${item.nombre}</option>`);
     });
+
+
 }
 
 

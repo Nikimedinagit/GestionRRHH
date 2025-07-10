@@ -619,3 +619,15 @@ select.form-control:not([value=""])+label {
   display: block;
   margin: 0 auto;
 }
+
+
+
+/* INICIO RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
+@media (max-width: 768px) {
+  #tablaLocalidades col:nth-child(3),
+  #tablaPuestos col:nth-child(3) {
+    display: none;
+  }
+}
+/* FIN RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
+

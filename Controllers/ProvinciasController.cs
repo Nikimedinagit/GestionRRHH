@@ -27,6 +27,7 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<ActionResult<IEnumerable<Provincia>>> GetProvincia()
         {
             return await _context.Provincia
+            .Where(p => !p.Eliminado) 
             .OrderBy(p => p.Nombre)
             .ToListAsync();
         }

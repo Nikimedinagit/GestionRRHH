@@ -20,9 +20,119 @@ function AbrirPanelPuesto() {
 
 }
 
+
+//PANEL FILTROS//
+//Funcion para abrir panel de filtros
+function AbrilPanelFiltros(idPanel) {
+  const panel = document.getElementById(idPanel);
+  if (!panel) return;
+
+  if (panel.classList.contains("activo")) {
+    panel.classList.remove("activo");
+    setTimeout(() => panel.classList.add("d-none"), 300);
+    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+  } else {
+    panel.classList.remove("d-none");
+    setTimeout(() => panel.classList.add("activo"), 10);
+    // Agrega el listener para cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }, 20);
+  }
+
+  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
+  function DetectarClickFueraDeFiltro(event) {
+    if (
+      !panel.contains(event.target) &&
+      event.target.id !== "btnMostrarFiltros"
+    ) {
+      panel.classList.remove("activo");
+      setTimeout(() => panel.classList.add("d-none"), 300);
+      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }
+  }
+}
+//FIN PANEL FILTROS//
+
+//INICIO PANEL GENERAR//
+//Funcion para abrir panel de genera
+function AbrilPanelGenerar(idPanel) {
+  const panel = document.getElementById(idPanel);
+  if (!panel) return;
+
+  if (panel.classList.contains("activo")) {
+    panel.classList.remove("activo");
+    setTimeout(() => panel.classList.add("d-none"), 300);
+    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
+  } else {
+    panel.classList.remove("d-none");
+    setTimeout(() => panel.classList.add("activo"), 10);
+    // Agrega el listener para cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
+    }, 20);
+  }
+
+  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
+  function DetectarClickFueraDeGenerar(event) {
+    if (
+      !panel.contains(event.target) &&
+      event.target.id !== "btnMostrarGenerar"
+    ) {
+      panel.classList.remove("activo");
+      setTimeout(() => panel.classList.add("d-none"), 300);
+      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
+    }
+  }
+}
+//FIN PANEL GENERAR//
+
+//ONCHANGE DE FILTROS//
+$(document).ready(function () {
+  ObtenerPuestos();
+
+  $("#EstadoIdBuscar, #SectorIdBuscar").on("change", function () {
+    ObtenerPuestos();
+  });
+});
+//FIN ONCHANGE DE FILTROS//
+
+
+
+async function ComboParaFiltrarSectores() {
+    const res = await authFetch("Sector", {
+        method: "GET",
+      })
+
+      const sectores = await res.json();
+
+  const $combo = $("#SectorIdBuscar");
+  $combo.empty();
+
+  let opciones = `<option value="0">[Todos los sectores]</option>`;
+  sectores.forEach((item) => {
+    opciones += `<option value="${item.id}">${item.nombre}</option>`;
+  });
+  $combo.html(opciones);
+
+  ObtenerPuestos();
+}
+
+
 // Obtener Puestos
-function ObtenerPuestos() {
-    fetch('https://localhost:7006/Puestos')
+async function ObtenerPuestos() {
+    let estadoId = document.getElementById("EstadoIdBuscar").value;
+    let sectorId = document.getElementById("SectorIdBuscar").value;
+
+    let filtro = {
+        eliminado: estadoId !== "" ? parseInt(estadoId) : null,
+        sectorId: sectorId !== "" ? parseInt(sectorId) : null,
+    };
+
+    const res = await authFetch("Puestos/Filtrar", {
+        method: 'POST',
+        body: JSON.stringify(filtro)
+    })
     .then(response => response.json())
     .then(data => {
         MostrarPuestos(data)
@@ -35,76 +145,73 @@ function ObtenerPuestos() {
 
 // Funcion Para Mostrar Las Puestos
 function MostrarPuestos(data) {
-    $('#tablaPuestosBody').empty();
+  window.listaPuestos = data;
+  $("#tablaPuestosBody").empty();
 
-    data.forEach(element => {
-        const tr = document.createElement('tr');
-        if (element.eliminado) {
-            tr.classList.add('fila-desactivada');
-        }
+  if (data.length === 0) {
+    $("#tablaPuestosBody").append(
+      "<tr><td colspan='3' class='text-center text-muted'>No hay puestos para mostrar.</td></tr>"
+    );
+    return;
+  }
 
-        // Celda nombre
-        const tdNombre = document.createElement('td');
-        tdNombre.textContent = element.descripcion;
-        tr.appendChild(tdNombre);
+  $.each(data, function (index, item) {
+    let filaClass = item.eliminado ? "fila-desactivada" : "";
+    let visibleBotones = item.eliminado ? "display: none;" : "";
+    let iconColor = item.eliminado ? "text-success" : "text-danger";
 
-        // Celda sector (nombre sector)
-        const tdSector = document.createElement('td');
-        tdSector.classList.add('col-sector');
-        tdSector.textContent = element.sector?.nombre || '';
-        tr.appendChild(tdSector);
+    $("#tablaPuestosBody").append(
+      "<tr>" +
+        // Columna Activo (toggle)
+        "<td class='text-center align-middle'>" +
+        "<button class='btn-editar' type='button' class='btn btn-sm " +
+        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+        "' data-tippy-content='" +
+        (item.eliminado ? "Activar" : "Desactivar") +
+        "' onclick='EliminarPuestoId(" +
+        item.id +
+        ", " +
+        item.eliminado +
+        ")' style='background: none; border: none;'>" +
+        "<i class='icon-desactivar bi " +
+        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+        " " +
+        iconColor +
+        "'></i>" +
+        "</button>" +
+        "</td>" +
+        // columna Puesto (nombre)
+        "<td class='align-middle " +
+        filaClass +
+        "'>" +
+        item.descripcion +
+        "</td>" +
+        // Columna Sector (nombre)
+        "<td class='align-middle d-none d-md-table-cell" +
+        filaClass +
+        "'>" +
+        (item.sector?.nombre || "Sin sector") +
+        "</td>" +
+        // Columna Acciones (editar)
+        "<td class='d-flex justify-content-center align-items-center'>" +
+        "<button class='btn-editar' data-action='edit' style='" +
+        visibleBotones +
+        " background: none; border: none;' onclick='MostrarModalEditarPuesto(" +
+        item.id +
+        ")' data-tippy-content='Editar'>" +
+        "<i class='bi bi-pencil-square icono-editar'></i>" +
+        "</button>" +
+        "</td>" +
+        "</tr>"
+    );
+  });
 
-        // Celda acciones
-        const tdAcciones = document.createElement('td');
-        tdAcciones.className = 'acciones-cell';
-
-        if (!element.eliminado) {
-            const btnEditar = document.createElement('button');
-            btnEditar.className = 'icon-btn icon-editar';
-            btnEditar.title = 'Editar puesto';
-            btnEditar.innerHTML = '<i class="bx bx-edit"></i>';
-            btnEditar.onclick = () => MostrarModalEditar(element.id, element.descripcion, element.sectorId);
-            tdAcciones.appendChild(btnEditar);
-        }
-
-        const btnToggle = document.createElement('button');
-        btnToggle.className = 'icon-btn icon-toggle';
-        btnToggle.title = element.eliminado ? 'Activar puesto' : 'Desactivar puesto';
-        btnToggle.innerHTML = element.eliminado
-            ? '<i class="bx bx-toggle-right" style="color: green;"></i>'
-            : '<i class="bx bx-toggle-left" style="color: red;"></i>';
-        btnToggle.onclick = () => EliminarPuestoId(element.id, element.eliminado);
-        tdAcciones.appendChild(btnToggle);
-
-       if (!element.eliminado) {
-        const btnDetalle = document.createElement('button');
-        btnDetalle.className = 'icon-btn icon-detalle btn-verde';  
-        btnDetalle.title = 'Ver detalle';
-        btnDetalle.innerHTML = '<i class="bx bx-chevron-down"></i>';
-        btnDetalle.onclick = () => toggleDetalle(element.id);
-        tdAcciones.appendChild(btnDetalle);
-        }
-
-
-        tr.appendChild(tdAcciones);
-        $('#tablaPuestosBody').append(tr);
-
-        // Segunda fila: Detalle
-        const trDetalle = document.createElement('tr');
-        trDetalle.id = `detalle-${element.id}`;
-        trDetalle.style.display = 'none';
-
-        const tdDetalle = document.createElement('td');
-        tdDetalle.colSpan = 3;
-        tdDetalle.innerHTML = `
-            <div class="detalle-contenido">
-                <strong>Puesto:</strong> ${element.descripcion} <br>
-                <strong>Sector:</strong> ${element.sector?.nombre || 'Sin sector'}
-            </div>
-        `;
-        trDetalle.appendChild(tdDetalle);
-        $('#tablaPuestosBody').append(trDetalle);
-    });
+  // Inicializar tooltips de Tippy
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
 
 function toggleDetalle(id) {
@@ -115,10 +222,14 @@ function toggleDetalle(id) {
 
 
 // Funcion para mostar el modal de edición de la puesto
-function MostrarModalEditar(id, descripcion, sectorId) {          
-    document.getElementById('IdPuesto').value = id;
-    document.getElementById('NombrePuesto').value = descripcion;
-    document.getElementById('IdSector').value = sectorId;
+async function MostrarModalEditarPuesto(id) {
+
+    const res = await authFetch(`Puestos/${id}`);
+    const puesto = await res.json();
+
+    document.getElementById("IdPuesto").value = puesto.id;
+    document.getElementById("NombrePuesto").value = puesto.descripcion;
+    document.getElementById("IdSector").value = puesto.sectorId;
 
     AbrirPanelPuesto(); 
 }   
@@ -129,16 +240,12 @@ function BuscarPuestosId() {
     
     const id = parseInt(document.getElementById("IdPuesto").value); 
 
-    const nombre = document.getElementById("NombrePuesto").value.trim();
-
-    const sectorId = parseInt(document.getElementById("IdSector").value);
 
     //Si el id no existe o es 0, entonces es una nueva puesto y llamamos a la función para crear
     if (!id || id === 0) {
         CrearPuesto();
-    }
-    else {
-        EditarPuesto(id, nombre, sectorId); 
+    } else {
+        EditarPuesto(id);
     }
 }
 
@@ -260,7 +367,7 @@ function MostrarErrorPuestoExistente(mensaje) {
 
 
 // Función para crear una puesto
-function CrearPuesto() {
+async function CrearPuesto() {
 
     if (!ValidarFormularioPuesto()) return;
 
@@ -268,12 +375,8 @@ function CrearPuesto() {
         descripcion: document.getElementById('NombrePuesto').value.trim(),
         sectorId: document.getElementById('IdSector').value
     }
-    fetch('https://localhost:7006/Puestos',
-        {
+    const res = await authFetch("Puestos", {
             method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(puesto)
         })
     .then(response => response.json())
@@ -307,18 +410,18 @@ function CrearPuesto() {
 
 
 // Funcion para editar una puesto
-function EditarPuesto(id, descripcion, sectorId) {
+async function EditarPuesto(id) {
+    if (!ValidarFormularioPuesto()) return;
+
+    let puestoId = document.getElementById("IdPuesto").value;
+
     let puesto = {
-        id: id,
-        descripcion: descripcion,
-        sectorId: sectorId
+        id: puestoId,
+        descripcion: document.getElementById("NombrePuesto").value.trim(),
+        sectorId: document.getElementById("IdSector").value
     }
-    fetch('https://localhost:7006/Puestos/' + id,
-        {
+        const res = await authFetch(`Puestos/${id}`, {
             method: 'PUT', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(puesto)
         })
     .then(response => response.json())
@@ -346,39 +449,49 @@ function EditarPuesto(id, descripcion, sectorId) {
 
 // Función para eliminar una puesto
 function EliminarPuestoId(id, eliminado) {
-    Swal.fire({
-        title: '¿Está seguro?',
-        text: eliminado 
-            ? '¿Está seguro de que desea reactivar esta puesto?' 
-            : 'Una vez desactivada, no podrá usar esta puesto.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        focusCancel: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            EliminarSiPuesto(id);
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            Swal.fire({
-                title: 'Acción cancelada',
-                text: eliminado 
-                    ? 'La puesto sigue desactivada.' 
-                    : 'La puesto sigue activa.',
-                icon: 'info',
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'bottom-end'
-            });
-        }
-    });
+  Swal.fire({
+    title: eliminado ? "¿Reactivar puesto?" : "¿Desactivar puesto?",
+    text: eliminado
+      ? "Se reactivará este puesto en el sistema."
+      : "Este puesto se desactivará y no estará disponible.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true,
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
+  .then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiPuesto(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción cancelada",
+        text: eliminado
+          ? "La puesto sigue desactivado."
+          : "La puesto sigue activo.",
+        icon: "info",
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "bottom-end",
+      });
+    }
+  });
 }
 
 // Función para eliminar una puesto
-function EliminarSiPuesto(id) {
-    fetch('https://localhost:7006/Puestos/' + id, {
+async function EliminarSiPuesto(id) {
+    const res = await authFetch(`Puestos/${id}`, {
         method: 'DELETE'
     })
     .then(response => {
@@ -411,4 +524,4 @@ function EliminarSiPuesto(id) {
 
 
 
-ObtenerPuestos();
+ComboParaFiltrarSectores();

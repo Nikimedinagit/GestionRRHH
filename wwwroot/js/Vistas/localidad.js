@@ -184,7 +184,7 @@ function MostrarLocalidades(data) {
         item.nombre +
         "</td>" +
         // Columna Provincia (nombre)
-        "<td class='align-middle " +
+        "<td class='align-middle d-none d-md-table-cell" +
         filaClass +
         "'>" +
         (item.provincia?.nombre || "Sin provincia") +

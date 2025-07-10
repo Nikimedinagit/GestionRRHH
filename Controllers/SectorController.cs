@@ -28,6 +28,7 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<ActionResult<IEnumerable<Sector>>> GetSector()
         {
             return await _context.Sector
+            .Where(s => !s.Eliminado)
             .OrderBy(s => s.Nombre)
             .ToListAsync();
         }

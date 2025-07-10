@@ -9,7 +9,7 @@ using API_RRHH_TESIS2025.Models.General;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PuestosController : ControllerBase
     {
@@ -47,6 +47,32 @@ namespace API_RRHH_TESIS2025.Controllers
             return puesto;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuesto([FromBody] PuestoFiltrar filtro)
+        {
+            var puestosFiltro = _context.Puesto
+             .Where(x => !x.Sector.Eliminado)
+                .Include(x => x.Sector)
+                .AsQueryable();
+
+            if (filtro.Eliminado.HasValue)
+            {
+                puestosFiltro = puestosFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+            }
+
+            if (filtro.SectorId > 0)
+            {
+                puestosFiltro = puestosFiltro.Where(t => t.SectorId == filtro.SectorId);
+            }
+
+            var resultado = await puestosFiltro
+                .OrderBy(p => p.Sector.Nombre)
+                .ThenBy(p => p.Descripcion)
+                .ToListAsync();
+
+            return resultado;
+        }
+
         // PUT: api/Puestos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -61,10 +87,11 @@ namespace API_RRHH_TESIS2025.Controllers
             puesto.Descripcion = puesto.Descripcion.ToUpper();
 
             var puestoExistente = await _context.Puesto
-                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower());
+                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower() &&
+                x.SectorId == puesto.SectorId);
             if (puestoExistente)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe en este sector." });
             }
 
             _context.Entry(puesto).State = EntityState.Modified;
@@ -97,12 +124,14 @@ namespace API_RRHH_TESIS2025.Controllers
             puesto.Descripcion = puesto.Descripcion.ToUpper();
 
             // Comprobamos si la puesto ya existe
+
             var puestoExistente = await _context.Puesto
-                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower());
+                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower() &&
+                x.SectorId == puesto.SectorId);
 
             if (puestoExistente)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe en este sector." });
             }
 
 
@@ -124,13 +153,13 @@ namespace API_RRHH_TESIS2025.Controllers
 
             puesto.Eliminado = !puesto.Eliminado;
             var mensaje = puesto.Eliminado ?
-                "Puesto Desactivada" :
-                "Puesto Activada";  
+                "Puesto Desactivado" :
+                "Puesto Activad0";
 
             _context.Puesto.Update(puesto);
             await _context.SaveChangesAsync();
 
-            return Ok( new { mensaje });
+            return Ok(new { mensaje });
         }
 
         private bool PuestoExists(int id)
