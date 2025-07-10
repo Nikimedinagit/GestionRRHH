@@ -307,7 +307,8 @@ table tbody tr {
 #panelLocalidad,
 #panelSector,
 #panelPuesto,
-#panelEmpleado {
+#panelEmpleado,
+#panelTipoDeLicencia {
   position: fixed;
   top: 50%;
   right: 0;
@@ -333,7 +334,8 @@ table tbody tr {
 #panelLocalidad.abierto,
 #panelSector.abierto,
 #panelPuesto.abierto,
-#panelEmpleado.abierto {
+#panelEmpleado.abierto,
+#panelTipoDeLicencia.abierto {
   transform: translate(0, -50%);
 }
 
@@ -472,7 +474,8 @@ select.form-control:not([value=""])+label {
   #panelLocalidad,
   #panelSector,
   #panelPuesto,
-  #panelEmpleado {
+  #panelEmpleado,
+  #panelTipoDeLicencia {
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -485,7 +488,8 @@ select.form-control:not([value=""])+label {
   #panelLocalidad,
   #panelSector,
   #panelPuesto,
-  #panelEmpleado {
+  #panelEmpleado,
+  #panelTipoDeLicencia {
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -498,7 +502,8 @@ select.form-control:not([value=""])+label {
   #panelLocalidad,
   #panelSector,
   #panelPuesto,
-  #panelEmpleado {
+  #panelEmpleado,
+  #panelTipoDeLicencia {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;

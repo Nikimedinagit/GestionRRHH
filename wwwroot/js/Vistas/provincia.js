@@ -121,12 +121,9 @@ const res = await authFetch("Provincias/Filtrar", {
     .catch((error) => console.log("No se pudo obtener las provincias", error));
 }
 
-
-
-
-
-
-
+  let filtro = {
+    eliminado: eliminado,
+  };      
 // Funcion Para Mostrar Las Provincias
 function MostrarProvincias(data) {
     window.listaProvincias = data;
