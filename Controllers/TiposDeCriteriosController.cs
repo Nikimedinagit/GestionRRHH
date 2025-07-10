@@ -24,7 +24,9 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TipoDeCriterio>>> GetTipoDeCriterio()
         {
-            return await _context.TipoDeCriterio.ToListAsync();
+            return await _context.TipoDeCriterio
+            .OrderBy(t => t.Nombre)
+            .ToListAsync();
         }
 
         // GET: api/TiposDeCriterios/5
@@ -49,6 +51,19 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (id != tipoDeCriterio.Id)
             {
                 return BadRequest();
+            }
+
+            // Convertimos a mayuscula
+            tipoDeCriterio.Nombre = tipoDeCriterio.Nombre.ToUpper();
+
+
+            //Se verifica si el tipo de criterio ya existe
+            var existeTipoDeCriterio = await _context.TipoDeCriterio
+            .FirstOrDefaultAsync(tc => tc.Nombre.ToLower() == tipoDeCriterio.Nombre.ToLower() && tc.Id != id);
+
+            if (existeTipoDeCriterio != null)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
             }
 
             _context.Entry(tipoDeCriterio).State = EntityState.Modified;
@@ -77,6 +92,20 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoDeCriterio>> PostTipoDeCriterio(TipoDeCriterio tipoDeCriterio)
         {
+
+            // Convertimos a mayuscula
+            tipoDeCriterio.Nombre = tipoDeCriterio.Nombre.ToUpper();
+
+
+            //Se verifica si el tipo de criterio ya existe
+            var existeTipoDeCriterio = await _context.TipoDeCriterio
+            .AnyAsync(tc => tc.Nombre.ToLower() == tipoDeCriterio.Nombre.ToLower());
+
+            if (existeTipoDeCriterio)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+            }
+
             _context.TipoDeCriterio.Add(tipoDeCriterio);
             await _context.SaveChangesAsync();
 
@@ -93,10 +122,15 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return NotFound();
             }
 
-            _context.TipoDeCriterio.Remove(tipoDeCriterio);
+            tipoDeCriterio.Eliminado = !tipoDeCriterio.Eliminado;
+            var mensaje = tipoDeCriterio.Eliminado ?
+            "Tipo de Criterio Desactivado" :
+            "Tipo de Criterio Activado";
+
+            _context.TipoDeCriterio.Update(tipoDeCriterio);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new {mensaje});
         }
 
         private bool TipoDeCriterioExists(int id)

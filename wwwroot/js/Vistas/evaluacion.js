@@ -187,8 +187,8 @@ function EditarEvaluacion(id) {
 //Funcion para eliminar una evaluacion
 function EliminarEvaluacionId(id) {
     Swal.fire({
-        title: "¿Eliminar evaluación?",
-        text: "Esta acción no se puede deshacer.",
+        title: "Confirmar eliminación",
+        text: "Esta evaluación será eliminada de forma definitiva. ¿Deseás continuar?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Eliminar",
@@ -211,7 +211,7 @@ function EliminarEvaluacionId(id) {
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire({
                 title: "Acción cancelada",
-                text: "La evaluación sigue activa.",
+                text: "La evaluación permanece registrada.",
                 icon: "info",
                 timer: 2000,
                 showConfirmButton: false,
