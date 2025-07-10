@@ -49,17 +49,19 @@ function MostrarEvaluaciones(data) {
 
   data.forEach(element => {
 let tr = "<tr>" +
+      "<td class='text-center align-middle'>" +
+        // Botón Eliminar
+        "<button style='background: none; border: none;' onclick='EliminarEvaluacionId(" + element.id + ")' data-tippy-content='Eliminar'>" +
+          "<i class='bi-x-circle icono-eliminar btn-sm'></i>" +
+        "</button>" +
+      "</td>" +
       "<td>" + element.fecha.split("T")[0] + "</td>" + // Fecha
       "<td>" + element.calificacion + "</td>" +
       "<td>" + element.empleadoId + "</td>" +
       "<td class='d-flex justify-content-center align-items-center'>" +
         // Botón Editar
         "<button style='background: none; border: none;' onclick='MostrarModalEditar(" + element.id + ")' data-tippy-content='Editar'>" +
-          "<i class='bi bi-pencil-square icono-editar fs-3'></i>" +
-        "</button>" +
-        // Botón Eliminar
-        "<button style='background: none; border: none;' onclick='EliminarEvaluacionId(" + element.id + ")' data-tippy-content='Eliminar'>" +
-          "<i class='bi bi-trash icono-eliminar fs-3'></i>" +
+          "<i class='bi bi-pencil-square icono-editar btn-sm'></i>" +
         "</button>" +
       "</td>" +
       "</tr>";

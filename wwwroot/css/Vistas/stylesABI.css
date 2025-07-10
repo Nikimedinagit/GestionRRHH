@@ -58,8 +58,17 @@
 
 
 .icono-eliminar {
-  font-size: 1.6rem !important;
+  font-size: 1.4rem !important;
   color: #fd0d1d !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+
+}
+
+.icono-editar {
+  font-size: 1.6rem !important;
+  color: #0d6efd !important;
   font-weight: bold !important;
   margin: 0px 3px !important;
   padding: 0% !important;
