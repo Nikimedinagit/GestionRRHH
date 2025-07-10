@@ -67,10 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (res.ok) {
         const data = await res.json();
+        localStorage.setItem("usuarioNombre", data.nombreCompleto);
+        localStorage.setItem("usuarioGmail", data.email);
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("usuario", data.nombreCompleto);
-        localStorage.setItem("email", data.email);
         localStorage.setItem("rol", data.rol);
 
         setTimeout(() => {
@@ -140,3 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+function cerrarSesion() {
+  localStorage.clear();
+  window.location.href = "../views/login.html";
+}

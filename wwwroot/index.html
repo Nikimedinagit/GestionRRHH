@@ -283,7 +283,7 @@
                     <img src="dist/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35">
                   </div>
                   <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1" id="usuarioNombre2"></h6>
+                    <h6 class="mb-1" id="usuarioRol"></h6>
                     <span id="usuarioGmail"></span>
                   </div>
                 </div>
@@ -312,7 +312,7 @@
                     <span>Ver Perfil</span>
                   </a>
 
-                  <a href="javascript:void(0);" class="dropdown-item" onclick="mostrarModalCerrarSesion()">
+                  <a href="javascript:void(0);" class="dropdown-item" onclick="cerrarSesion()">
                     <i class="ti ti-power"></i>
                     <span>Cerrar Sesión</span>
                   </a>
@@ -420,9 +420,13 @@
 
   <!-- Selector de pantalla -->
   <script src="./js/SelectorDePantalla/selectorDePantalla.js"></script>
-  <!-- Mis javascripts de autenticación -->
+
+  <!--Autenticación -->
   <script src="./js/authentication/authHandlers.js"></script>
   <script src="./js/authentication/auth.js"></script>
+
+<!-- Mostrar Datos, Opciones de Menú -->
+  <script src="./js/main.js"></script>
 
 
 
