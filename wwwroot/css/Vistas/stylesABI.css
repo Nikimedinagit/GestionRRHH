@@ -1,6 +1,6 @@
 /* INICIO PANEL DESLIZANTE BASE */
 /* Panel deslizante base*/
-#panelProvincia{
+#panelProvincia, #panelEvaluaciones {
   position: fixed;
   top: 50%;
   right: 0;
@@ -22,13 +22,13 @@
 }
 
 /* Estado abierto*/
-#panelProvincia.abierto {
+#panelProvincia.abierto, #panelEvaluaciones.abierto {
   transform: translate(0, -50%);
 }
 
 @media (max-width: 1024px) {
 
-  #panelProvincia{
+  #panelProvincia, #panelEvaluaciones{
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -37,7 +37,7 @@
 
 @media (max-width: 768px) {
 
-  #panelProvincia{
+  #panelProvincia, #panelEvaluaciones{
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -46,7 +46,7 @@
 
 @media (max-width: 480px) {
 
-  #panelProvincia {
+  #panelProvincia, #panelEvaluaciones {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -55,6 +55,35 @@
 }
 /* FIN PANEL DESLIZANTE BASE */
 
+
+
+.icono-eliminar {
+  font-size: 1.6rem !important;
+  color: #fd0d1d !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+
+}
+
+
+
+.swal2-btn-eliminar {
+  background-color: #e53935 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-eliminar:hover {
+  background-color: #c62828 !important;
+}
 /* ACA VAS A CAMBAIR EL ID ESE POR EL QUE TRABAJES VOS, ESO SOLO ID Y TODO ANDARIA, ACORATE REVISA EL MIO Y LO QUE AGREGUES DE EXTRA DEL CSS COMENTA COMO TENGO EN EL "styles.css", ACA AGREGAS TODO LO TUYO GRACIAS */
 /* ACORDATE DE LINKEAR EN EL HTML GRACIAS */
 

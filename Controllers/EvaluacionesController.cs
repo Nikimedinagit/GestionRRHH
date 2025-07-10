@@ -24,7 +24,11 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Evaluacion>>> GetEvaluacion()
         {
-            return await _context.Evaluacion.ToListAsync();
+            return await _context.Evaluacion
+            .OrderBy(e => e.Calificacion)
+            .ThenByDescending(e => e.Fecha)
+            .ToListAsync();
+            ;
         }
 
         // GET: api/Evaluaciones/5
@@ -50,6 +54,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 return BadRequest();
             }
+
+            //Campos que pueden editarse
+            evaluacion.Calificacion = evaluacion.Calificacion;
+            evaluacion.EmpleadoId = evaluacion.EmpleadoId;
 
             _context.Entry(evaluacion).State = EntityState.Modified;
 
@@ -77,6 +85,22 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Evaluacion>> PostEvaluacion(Evaluacion evaluacion)
         {
+
+            //Por empleado se puede evaluar solo una vez al mes
+            var evaluacionExistente = await _context.Evaluacion
+            .Where(e => e.EmpleadoId == evaluacion.EmpleadoId
+            && e.Fecha.Month == DateTime.Now.Month 
+            && e.Fecha.Year == DateTime.Now.Year)
+            .FirstOrDefaultAsync();
+
+            if (evaluacionExistente != null)
+            {
+                return BadRequest(new {codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes"});
+            }
+
+
+            //Fecha de evaluacion valor fijo
+                evaluacion.Fecha = DateTime.Now;
             _context.Evaluacion.Add(evaluacion);
             await _context.SaveChangesAsync();
 
