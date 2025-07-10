@@ -76,6 +76,7 @@ let tr = "<tr>" +
 
 // Funcion para mostrar el modal de edición de la evaluación   
 function MostrarModalEditar(id) {
+    // console.log(id);
   fetch(`http://localhost:5106/api/Evaluaciones/${id}`,
     {
         method: "GET"
