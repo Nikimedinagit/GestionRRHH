@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250710165421_ModeloTipodeCriterios")]
-    partial class ModeloTipodeCriterios
+    [Migration("20250710194848_Inical")]
+    partial class Inical
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -248,6 +248,22 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.ToTable("Sector");
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeCriterio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TipoDeCriterio");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeLicencia", b =>
                 {
                     b.Property<int>("Id")
@@ -255,6 +271,9 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");

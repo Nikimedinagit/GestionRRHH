@@ -245,6 +245,22 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.ToTable("Sector");
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeCriterio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TipoDeCriterio");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeLicencia", b =>
                 {
                     b.Property<int>("Id")

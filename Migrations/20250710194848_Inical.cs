@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimerMigracion : Migration
+    public partial class Inical : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,6 +52,21 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Evaluacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Calificacion = table.Column<int>(type: "int", nullable: false),
+                    EmpleadoId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Evaluacion", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Provincia",
                 columns: table => new
                 {
@@ -77,6 +92,33 @@ namespace API_NET_CORE8_RRHH.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sector", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipoDeCriterio",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoDeCriterio", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipoDeLicencia",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoDeLicencia", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -263,6 +305,64 @@ namespace API_NET_CORE8_RRHH.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Licencia",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TipoDeLicenciaId = table.Column<int>(type: "int", nullable: false),
+                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Estado = table.Column<int>(type: "int", nullable: false),
+                    DocumentoAdjunto = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Licencia", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Licencia_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Licencia_TipoDeLicencia_TipoDeLicenciaId",
+                        column: x => x.TipoDeLicenciaId,
+                        principalTable: "TipoDeLicencia",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AprobacionDeLicencia",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Estado = table.Column<int>(type: "int", nullable: false),
+                    FechDeAprobacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioAprobador = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LicenciaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AprobacionDeLicencia", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AprobacionDeLicencia_Licencia_LicenciaId",
+                        column: x => x.LicenciaId,
+                        principalTable: "Licencia",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AprobacionDeLicencia_LicenciaId",
+                table: "AprobacionDeLicencia",
+                column: "LicenciaId",
+                unique: true);
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -313,6 +413,16 @@ namespace API_NET_CORE8_RRHH.Migrations
                 column: "PuestoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Licencia_EmpleadoId",
+                table: "Licencia",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Licencia_TipoDeLicenciaId",
+                table: "Licencia",
+                column: "TipoDeLicenciaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Localidad_ProvinciaId",
                 table: "Localidad",
                 column: "ProvinciaId");
@@ -326,6 +436,9 @@ namespace API_NET_CORE8_RRHH.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AprobacionDeLicencia");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -342,13 +455,25 @@ namespace API_NET_CORE8_RRHH.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Empleado");
+                name: "Evaluacion");
+
+            migrationBuilder.DropTable(
+                name: "TipoDeCriterio");
+
+            migrationBuilder.DropTable(
+                name: "Licencia");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Empleado");
+
+            migrationBuilder.DropTable(
+                name: "TipoDeLicencia");
 
             migrationBuilder.DropTable(
                 name: "Localidad");
