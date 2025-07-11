@@ -107,7 +107,7 @@ async function ComboParaFiltrarProvincias() {
   const $combo = $("#ProvinciaIdBuscar");
   $combo.empty();
 
-  let opciones = `<option value="0">[Todas las provincias]</option>`;
+  let opciones = `<option value="0">[Todas]</option>`;
   provincias.forEach((item) => {
     opciones += `<option value="${item.id}">${item.nombre}</option>`;
   });

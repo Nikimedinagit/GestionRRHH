@@ -92,10 +92,109 @@ function AbrilPanelGenerar(idPanel) {
 //FIN PANEL GENERAR//
 
 
+// Mostrar/ocultar fechas
+  document.getElementById('filtrarFechaSelect').addEventListener('change', function () {
+    const mostrar = this.value === 'si';
+    document.getElementById('fechasInputs').classList.toggle('d-none', !mostrar);
+    document.getElementById('fechasInputsFin').classList.toggle('d-none', !mostrar);
+
+      // Opcional: limpiar valores al ocultar
+      document.getElementById("FechaInicioBuscar").value = "";
+      document.getElementById("FechaFinBuscar").value = "";
+  });
+
+
+//INICIO ONCHANGE DE FILTROS//
+$(document).ready(function () {
+  ObtenerLicencias();
+
+  $("#EstadoIdBuscar, #TipoDeLicenciaIdBuscar").on("change", function () {
+    ObtenerLicencias();
+  });
+
+  $("#FechaInicioBuscar, #FechaFinBuscar").on("change", function () {
+    let fechaInicioRaw = $("#FechaInicioBuscar").val();
+    let fechaFinRaw = $("#FechaFinBuscar").val();
+
+    if (fechaInicioRaw && fechaFinRaw) {
+      const fechaInicio = new Date(fechaInicioRaw);
+      const fechaFin = new Date(fechaFinRaw);
+
+      if (fechaFin < fechaInicio) {
+        $("#FechaFinBuscar").val(fechaInicioRaw);
+      }
+    }
+
+    if ($("#filtrarFechaSelect").val() === "si") {
+      ObtenerLicencias();
+    }
+  });
+
+  $("#filtrarFechaSelect").on("change", function () {
+    const filtrarFecha = $(this).val() === "si";
+    $("#divFechas").toggle(filtrarFecha);
+    ObtenerLicencias();
+  });
+
+ 
+  $("#EmpleadoIdBuscar").on("input", function () {
+    ObtenerLicencias();
+  });
+});
+
+
+//FIN ONCHANGE DE FILTROS//
+
+
+
+async function ComboParaFiltrarTiposDeLicencia() {
+  const res = await authFetch("TipoDeLicencias", {
+    method: "GET",
+  });
+
+  const tiposDeLicencias = await res.json();
+
+  const $combo = $("#TipoDeLicenciaIdBuscar");
+  $combo.empty();
+
+  let opciones = `<option value="0">[Todas]</option>`;
+  tiposDeLicencias.forEach((item) => {
+    opciones += `<option value="${item.id}">${item.nombre}</option>`;
+  });
+  $combo.html(opciones);
+
+  ObtenerLicencias();
+}
+
 //Funcion para obtener los datos 
 async function ObtenerLicencias() {
-    const res = await authFetch("Licencias", {
-        method: "GET",
+
+    let estadoLicencia = document.getElementById("EstadoIdBuscar").value;
+    let estado = estadoLicencia !== "0" && estadoLicencia !== "" ? parseInt(estadoLicencia) : null;
+
+    let tipoDeLicenciaId = document.getElementById("TipoDeLicenciaIdBuscar").value;
+    let tipoDeLicencia = tipoDeLicenciaId !== "0" && tipoDeLicenciaId !== "" ? parseInt(tipoDeLicenciaId) : null;
+
+    const filtrarFecha = $("#filtrarFechaSelect").val() === "si";
+    const fechaInicioRaw = $("#FechaInicioBuscar").val();
+    const fechaFinRaw = $("#FechaFinBuscar").val();
+
+    const fechaInicio = filtrarFecha && fechaInicioRaw !== "" ? fechaInicioRaw : null;
+    const fechaFin = filtrarFecha && fechaFinRaw !== "" ? fechaFinRaw : null;
+
+    const nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
+
+    let filtro = {
+        estado: estado,
+        tipoDeLicenciaId: tipoDeLicencia,
+        fechaInicio: fechaInicio,
+        fechaFin: fechaFin,
+        empleadoTexto: nombreEmpleado
+    };
+
+    const res = await authFetch("Licencias/Filtrar", {
+        method: "POST",
+        body: JSON.stringify(filtro),
     })
     .then(response => response.json())
     .then(data => {
@@ -661,4 +760,4 @@ async function EliminarSiLicencia(id) {
     })
 }
 
-ObtenerLicencias();
+ComboParaFiltrarTiposDeLicencia();

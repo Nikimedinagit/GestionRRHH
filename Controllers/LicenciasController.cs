@@ -48,6 +48,43 @@ namespace API_NET_CORE8_RRHH.Controllers
             return licencia;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<Licencia>>> GetLicencias([FromBody] LicenciaFiltrar filtro)
+        {
+            var licenciasFiltradas = _context.Licencia.AsQueryable();
+
+            if (filtro.Estado.HasValue)
+                licenciasFiltradas = licenciasFiltradas.Where(t => (int)t.Estado == filtro.Estado);
+
+            if (filtro.TipoDeLicenciaId.HasValue)
+            {
+                licenciasFiltradas = licenciasFiltradas.Where(t => t.TipoDeLicenciaId == filtro.TipoDeLicenciaId);
+            }
+
+            if (filtro.FechaInicio.HasValue && filtro.FechaFin.HasValue)
+            {
+                var fechaInicio = filtro.FechaInicio.Value.Date;
+                var fechaFin = filtro.FechaFin.Value.Date;
+
+                licenciasFiltradas = licenciasFiltradas
+                .Where(t => t.FechaInicio >= fechaInicio && t.FechaFin <= fechaFin);
+                // .Where(t => t.FechaInicio <= fechaFin && t.FechaFin >= fechaInicio);    
+            }
+
+            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+            {
+                licenciasFiltradas = licenciasFiltradas.Where(x =>
+                    x.Empleado.NombreCompleto.Contains(filtro.EmpleadoTexto));
+                
+            }
+
+
+            return await licenciasFiltradas
+                .Include(l => l.TipoDeLicencia)
+                .Include(l => l.Empleado)
+                .ToListAsync();
+        }
+
         // PUT: api/Licencias/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -68,7 +105,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             // Validar solapamiento de fechas (igual que antes)
             var licenciasExistentes = await _context.Licencia
                 .Where(l => l.EmpleadoId == licencia.EmpleadoId &&
-                    l.Id != id && 
+                    l.Id != id &&
                     (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
                     l.FechaInicio <= licencia.FechaFin &&
                     l.FechaFin >= licencia.FechaInicio

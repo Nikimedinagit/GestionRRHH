@@ -109,7 +109,7 @@ async function ComboParaFiltrarSectores() {
   const $combo = $("#SectorIdBuscar");
   $combo.empty();
 
-  let opciones = `<option value="0">[Todos los sectores]</option>`;
+  let opciones = `<option value="0">[Todos]</option>`;
   sectores.forEach((item) => {
     opciones += `<option value="${item.id}">${item.nombre}</option>`;
   });

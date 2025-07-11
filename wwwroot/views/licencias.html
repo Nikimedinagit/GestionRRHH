@@ -42,14 +42,54 @@
         <!-- Contenedor Filtros-->
         <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
             <div class="row g-3 align-items-end">
+                <!-- Empleado -->
                 <div class="col-12 col-md-3">
+                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..."/>
+                 </div>   
+
+                <!-- Estado -->
+                <div class="col-12 col-md-2"> 
                     <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
                     <select id="EstadoIdBuscar" class="form-control filtro-select">
-                        <option value="">[Todos los estados]</option>
-                        <option value="0">Activos</option>
-                        <option value="1">Inactivos</option>
+                        <option value="0">[Todos]</option>
+                        <option value="1">PEDNDIENTES</option>
+                        <option value="2">APROBADAS</option>
+                        <option value="3">RECHAZADAS</option>
+                        <option value="4">EXPIRADAS</option>
                     </select>
                 </div>
+
+                <!-- Tipo de Licencia -->
+                <div class="col-12 col-md-2">
+                    <label for="TipoDeLicenciaIdBuscar" class="form-label-fija">Tipo de Licencia</label>
+                    <select id="TipoDeLicenciaIdBuscar" class="form-control filtro-select">
+                        <option value="0">[Todas]</option>
+                        <!-- Aquí se cargarán dinámicamente los tipos de licencias -->
+                    </select>
+                 </div>  
+                 
+                <!-- Activar Fecha -->
+                 <div class="col-12 col-md-1">
+                    <label class="form-label-fija">Fecha</label>
+                    <select id="filtrarFechaSelect" class="form-control filtro-select">
+                        <option value="no" selected>No</option>
+                        <option value="si">Sí</option>
+                    </select>
+                </div>
+
+                <!-- Fecha desde -->
+                <div id="fechasInputs" class="d-none col-12 col-md-2">
+                    <label for="FechaInicioBuscar" class="form-label-fija">Desde</label>
+                    <input type="date" class="form-control filtro-select" id="FechaInicioBuscar" />
+                </div>
+
+                <!-- Fecha hasta -->
+                <div id="fechasInputsFin" class="d-none col-12 col-md-2">
+                    <label for="FechaFinBuscar" class="form-label-fija">Hasta</label>
+                    <input type="date" class="form-control filtro-select" id="FechaFinBuscar" />
+                </div>
+              
             </div>
         </div>
 
