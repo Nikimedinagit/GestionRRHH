@@ -11,5 +11,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public int Calificacion { get; set; }
         public string EmpleadoId { get; set; }
 
+        public virtual ICollection<CriterioDeEvaluacion> CriterioDeEvaluacion { get; set; }
+
     }
 }
