@@ -77,7 +77,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             if (existeTipoDeCriterio != null)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+                return Ok(new { codigo = 0, mensaje = "Ya existe." });
             }
 
             _context.Entry(tipoDeCriterio).State = EntityState.Modified;
@@ -98,7 +98,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(tipoDeCriterio);
         }
 
         // POST: api/TiposDeCriterios

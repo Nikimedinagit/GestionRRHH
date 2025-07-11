@@ -265,7 +265,7 @@ if (!ValidarFormularioTipoDeCriterio()) return;
     method: "PUT",
     body: JSON.stringify(tipoDeCriterio),
   })
-    .then((response) => response.text())
+    .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
         MostrarErrorTipoDeCriterioExistente(response.mensaje);
