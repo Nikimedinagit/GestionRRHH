@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
+    using System.ComponentModel.DataAnnotations;
+    using System.Security.Cryptography.X509Certificates;
 
-namespace API_RRHH_TESIS2025.Models.General;
+    namespace API_RRHH_TESIS2025.Models.General;
 
 
 public class Empleado
@@ -36,23 +36,28 @@ public class Empleado
     public int PuestoId { get; set; }
     public virtual Puesto Puesto { get; set; }
 
+
+    public virtual ICollection<Evaluacion> Evaluacion { get; set; }
+    public virtual ICollection<Licencia> Licencia { get; set; }
+
     
-}
+
+    }
 
 
-public enum EstadoCivil
-{
-    SOLTERO,
-    CASADO,
-    DIVORCIADO,
-    VIUDO
-}
+    public enum EstadoCivil
+    {
+        SOLTERO,
+        CASADO,
+        DIVORCIADO,
+        VIUDO
+    }
 
 
-public enum TipoSexo
-{
-    MASCULINO,
-    FEMENINO,
-    NO_BINARIO,
-    OTRO
-}
+    public enum TipoSexo
+    {
+        MASCULINO,
+        FEMENINO,
+        NO_BINARIO,
+        OTRO
+    }

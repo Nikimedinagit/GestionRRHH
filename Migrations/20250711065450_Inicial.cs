@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     /// <inheritdoc />
-    public partial class Inical : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,21 +52,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Evaluacion",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Calificacion = table.Column<int>(type: "int", nullable: false),
-                    EmpleadoId = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Evaluacion", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Provincia",
                 columns: table => new
                 {
@@ -100,7 +85,8 @@ namespace API_NET_CORE8_RRHH.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -306,6 +292,27 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Evaluacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Calificacion = table.Column<int>(type: "int", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Evaluacion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Evaluacion_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Licencia",
                 columns: table => new
                 {
@@ -331,6 +338,33 @@ namespace API_NET_CORE8_RRHH.Migrations
                         name: "FK_Licencia_TipoDeLicencia_TipoDeLicenciaId",
                         column: x => x.TipoDeLicenciaId,
                         principalTable: "TipoDeLicencia",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CriterioDeEvaluacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TipoDeCriterioId = table.Column<int>(type: "int", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EvaluacionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CriterioDeEvaluacion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CriterioDeEvaluacion_Evaluacion_EvaluacionId",
+                        column: x => x.EvaluacionId,
+                        principalTable: "Evaluacion",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CriterioDeEvaluacion_TipoDeCriterio_TipoDeCriterioId",
+                        column: x => x.TipoDeCriterioId,
+                        principalTable: "TipoDeCriterio",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -403,6 +437,16 @@ namespace API_NET_CORE8_RRHH.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CriterioDeEvaluacion_EvaluacionId",
+                table: "CriterioDeEvaluacion",
+                column: "EvaluacionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CriterioDeEvaluacion_TipoDeCriterioId",
+                table: "CriterioDeEvaluacion",
+                column: "TipoDeCriterioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Empleado_LocalidadId",
                 table: "Empleado",
                 column: "LocalidadId");
@@ -411,6 +455,11 @@ namespace API_NET_CORE8_RRHH.Migrations
                 name: "IX_Empleado_PuestoId",
                 table: "Empleado",
                 column: "PuestoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Evaluacion_EmpleadoId",
+                table: "Evaluacion",
+                column: "EmpleadoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Licencia_EmpleadoId",
@@ -455,10 +504,7 @@ namespace API_NET_CORE8_RRHH.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Evaluacion");
-
-            migrationBuilder.DropTable(
-                name: "TipoDeCriterio");
+                name: "CriterioDeEvaluacion");
 
             migrationBuilder.DropTable(
                 name: "Licencia");
@@ -470,10 +516,16 @@ namespace API_NET_CORE8_RRHH.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Empleado");
+                name: "Evaluacion");
+
+            migrationBuilder.DropTable(
+                name: "TipoDeCriterio");
 
             migrationBuilder.DropTable(
                 name: "TipoDeLicencia");
+
+            migrationBuilder.DropTable(
+                name: "Empleado");
 
             migrationBuilder.DropTable(
                 name: "Localidad");

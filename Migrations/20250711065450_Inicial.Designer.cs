@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250710194848_Inical")]
-    partial class Inical
+    [Migration("20250711065450_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,32 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .IsUnique();
 
                     b.ToTable("AprobacionDeLicencia");
+                });
+
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.CriterioDeEvaluacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EvaluacionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoDeCriterioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluacionId");
+
+                    b.HasIndex("TipoDeCriterioId");
+
+                    b.ToTable("CriterioDeEvaluacion");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Empleado", b =>
@@ -116,13 +142,15 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("Calificacion")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmpleadoId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpleadoId");
 
                     b.ToTable("Evaluacion");
                 });
@@ -255,6 +283,9 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
@@ -495,6 +526,25 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Navigation("Licencia");
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.CriterioDeEvaluacion", b =>
+                {
+                    b.HasOne("API_RRHH_TESIS2025.Models.General.Evaluacion", "Evaluacion")
+                        .WithMany("CriterioDeEvaluacion")
+                        .HasForeignKey("EvaluacionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API_RRHH_TESIS2025.Models.General.TipoDeCriterio", "TipoDeCriterio")
+                        .WithMany("CriterioDeEvaluacion")
+                        .HasForeignKey("TipoDeCriterioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Evaluacion");
+
+                    b.Navigation("TipoDeCriterio");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Empleado", b =>
                 {
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Localidad", "Localidad")
@@ -514,10 +564,21 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Navigation("Puesto");
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Evaluacion", b =>
+                {
+                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
+                        .WithMany("Evaluacion")
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empleado");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Licencia", b =>
                 {
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
-                        .WithMany()
+                        .WithMany("Licencia")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -606,6 +667,18 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Empleado", b =>
+                {
+                    b.Navigation("Evaluacion");
+
+                    b.Navigation("Licencia");
+                });
+
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Evaluacion", b =>
+                {
+                    b.Navigation("CriterioDeEvaluacion");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Licencia", b =>
                 {
                     b.Navigation("Aprobacion");
@@ -629,6 +702,11 @@ namespace API_NET_CORE8_RRHH.Migrations
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Sector", b =>
                 {
                     b.Navigation("Puestos");
+                });
+
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeCriterio", b =>
+                {
+                    b.Navigation("CriterioDeEvaluacion");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.TipoDeLicencia", b =>

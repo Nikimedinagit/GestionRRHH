@@ -2,7 +2,7 @@
 <div class="px-3 py-3">
   <!-- Título -->
   <div class="mb-3">
-    <h3 class="titulo-seccion">Listado y Control de Evaluaciones</h3>
+    <h3 class="titulo-seccion">Seguimientode Evaluaciones</h3>
   </div>
 
   <hr />
@@ -14,10 +14,10 @@
 
     <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Agregar -->
+      <!-- Botón Nueva Evaluación -->
       <button class="btn btn-agregar" onclick="abrirPanelEvaluaciones()">
         <i class="fa-solid fa-square-plus me-1"></i>
-        <span>Agregar</span>
+        <span>Nueva Evaluación</span>
       </button>
 
       <!-- Botones Filtros y Informe -->
@@ -40,18 +40,18 @@
 
 
     <!-- Contenedor Filtros-->
-    <!-- <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
         <div class="col-12 col-md-3">
           <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
           <select id="EstadoIdBuscar" class="form-control filtro-select">
-            <option value="">[Todos los estados]</option>
+            <option value="">[Todos]</option>
             <option value="0">Activos</option>
             <option value="1">Inactivos</option>
           </select>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- Contenedor Generar-->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
@@ -69,80 +69,117 @@
     </div>
 
 
-  <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-  <canvas id="graficoEvalauciones" width="400" height="150"></canvas>
-</div>
-
-
-    <!-- Tabla de Datos -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
-        <colgroup>
-          <col style="width: 5%" />
-          <col style="width: 25%" />
-          <col style="width: 15%" />
-          <col style="width: 50%" />
-          <col style="width: 5%" />
-        </colgroup>
-        <thead class="table-evaluaciones">
-          <tr>
-            <th class="text-center">Eliminar</th>
-            <th class="text-start">Fecha</th>
-            <th class="text-start">Calificación</th>
-            <th class="text-start">Empleado</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tablaEvaluacionesBody"></tbody>
-      </table>
+    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+      <canvas id="graficoEvalauciones" width="400" height="150"></canvas>
     </div>
-  </div>
 
-  <!-- Panel Deslizante Formulario -->
-  <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
-    <div class="panel-header">
-      <h2 id="panelTitulo" class="panel-title">Formulario De Evaluaciones</h2>
+
+    <!-- Contenedor de tarjetas de resumen de evaluaciones -->
+    <div>
+      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+
+        <!-- Total de evaluaciones -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-tasks text-primary fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total evaluaciones</p>
+              <h5 class="mb-0 fw-bold" id="totalEvaluaciones">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Promedio general -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-info bg-opacity-10 p-3 me-3">
+              <i class="fas fa-chart-line text-info fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Promedio general</p>
+              <h5 class="mb-0 fw-bold" id="promedioEvaluaciones">0.00</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total empleados evaluados -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-success bg-opacity-10 p-3 me-3">
+              <i class="fas fa-users text-success fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Empleados evaluados</p>
+              <h5 class="mb-0 fw-bold" id="empleadosEvaluados">0</h5>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="panel-body">
-      <form id="formEvaluaciones">
-        <input type="hidden" id="IdEvaluacion" />
-        <div class="form-grid">
-<!-- 
+
+    <hr style="margin-bottom: 1rem;" />
+
+    <!-- Contenedor de las evaluaciones -->
+    <div class="container-fluid">
+      <div id="contenedorEvaluaciones" class="row ">
+        <!--Se cargarán dinámicamente-->
+      </div>
+    </div>
+
+
+
+    <!-- Panel Deslizante Formulario -->
+    <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
+      class="w-30">
+      <div class="panel-header">
+        <h2 id="panelTitulo" class="panel-title">Formulario De Evaluaciones</h2>
+      </div>
+      <div class="panel-body">
+        <form id="formEvaluaciones">
+          <input type="hidden" id="IdEvaluacion" />
+          <div class="form-grid">
+            <!-- 
           <div class="form-group position-relative mb-3">
             <input type="date" id="FechaEvaluacion" class="form-control" placeholder=" " />
             <label for="FechaEvaluacion">Fecha</label>
             <div class="invalid-feedback" id="errorFechaEvaluacion"></div>
           </div> -->
 
-        <div class="form-group position-relative mb-3">
-            <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
-            <label for="CalificacionEvaluacion">Calificacion</label>
-            <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
-          </div>
+            <div class="form-group position-relative mb-3">
+              <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
+              <label for="CalificacionEvaluacion">Calificacion</label>
+              <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
+            </div>
 
-        <div class="form-group position-relative mb-3">
-            <input type="text" id="EmpleadoId" class="form-control" placeholder=" " />
-            <label for="EmpleadoId">Empleado</label>
-            <div class="invalid-feedback" id="errorEmpleadoId"></div>
-          </div>
+            <!-- Empleado -->
+            <div class="form-group position-relative mb-3">
+              <select name="IdEmpleado" id="IdEmpleado" class="form-control" required>
+                <option value="" disabled selected>Seleccione</option>
+              </select>
+              <label for="IdEmpleado">Empleado</label>
+              <div class="invalid-feedback" id="errorEmpleadoId"></div>
+            </div>
 
-        </div>
-      </form>
+
+          </div>
+        </form>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-cancelar" onclick="cerrarPanelEvaluaciones()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-guardar" onclick="BuscarEvaluacionId()">
+          Guardar
+        </button>
+      </div>
     </div>
-    <div class="panel-footer">
-      <button class="btn btn-cancelar" onclick="cerrarPanelEvaluaciones()">
-        Cancelar
-      </button>
-      <button type="submit" class="btn btn-guardar" onclick="BuscarEvaluacionId()">
-        Guardar
-      </button>
-    </div>
+
+    <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+    <script src="../js/Vistas/evaluacion.js"></script>
+
+
+
   </div>
-
-  <script src="../js/Vistas/evaluacion.js"></script>
-
-
-
-</div>
-
-

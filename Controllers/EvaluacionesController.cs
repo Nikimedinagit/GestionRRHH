@@ -25,6 +25,8 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<ActionResult<IEnumerable<Evaluacion>>> GetEvaluacion()
         {
             return await _context.Evaluacion
+            .Include(e => e.Empleado)
+            .Include(e => e.Empleado.Puesto)
             .OrderBy(e => e.Calificacion)
             .ThenByDescending(e => e.Fecha)
             .ToListAsync();

@@ -139,13 +139,15 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("Calificacion")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmpleadoId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpleadoId");
 
                     b.ToTable("Evaluacion");
                 });
@@ -559,10 +561,21 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Navigation("Puesto");
                 });
 
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Evaluacion", b =>
+                {
+                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
+                        .WithMany("Evaluacion")
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empleado");
+                });
+
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Licencia", b =>
                 {
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
-                        .WithMany()
+                        .WithMany("Licencia")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -649,6 +662,13 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Empleado", b =>
+                {
+                    b.Navigation("Evaluacion");
+
+                    b.Navigation("Licencia");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Evaluacion", b =>

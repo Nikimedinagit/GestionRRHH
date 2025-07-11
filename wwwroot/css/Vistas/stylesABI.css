@@ -97,3 +97,62 @@
 /* ACORDATE DE LINKEAR EN EL HTML GRACIAS */
 
 /*  GUIATE DEL "styles.css", EL QUE DICE "vistas.css" NO LO BORRES Y NO COPIE NADA DE ESE QUE ES VIEJO Y ES POR LA DUDA AL IGUAL QUE EL  "indexxxxxxxxx.html" NO COPIAR NADA Y MENOS BORRAR */
+
+
+
+
+.evaluacion-card {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.evaluacion-card:hover {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.badge-pill {
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-excelente {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+.badge-muybuena {
+  background-color: #e0f7fa;
+  color: #007b8a;
+}
+
+.badge-buena {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-regular {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.toggle-detalle {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+}
+
+.evaluacion-item {
+  border-radius: 8px; /* bordes redondeados */
+  border: 1px solid #ddd; /* borde suave */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* sombra muy ligera */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  background-color: #fff;
+}
+
+.evaluacion-item:hover {
+  border-color: #4e73df; /* color azul suave al hacer hover */
+  box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3); /* sombra más marcada y azulada */
+}
