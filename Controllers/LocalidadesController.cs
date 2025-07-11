@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize (Roles = "ADMINISTRADOR")]
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class LocalidadesController : ControllerBase
@@ -48,13 +48,14 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return localidad;
         }
-
         [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidad([FromBody] FiltrarLocalidades filtro)
+        public async Task<ActionResult<IEnumerable<LocalidadVista>>> FiltrarLocalidades([FromBody] FiltrarLocalidades filtro)
         {
+            List<LocalidadVista> vista = new List<LocalidadVista>();
+
             var localidadesFiltro = _context.Localidad
-                .Where(x => !x.Provincia.Eliminado)
                 .Include(x => x.Provincia)
+                .Where(x => !x.Provincia.Eliminado)
                 .AsQueryable();
 
             if (filtro.Eliminado.HasValue)
@@ -67,13 +68,25 @@ namespace API_RRHH_TESIS2025.Controllers
                 localidadesFiltro = localidadesFiltro.Where(t => t.ProvinciaId == filtro.ProvinciaId);
             }
 
-            
-            var resultado = await localidadesFiltro
+            var listaFiltrada = await localidadesFiltro
                 .OrderBy(l => l.Provincia.Nombre)
                 .ThenBy(l => l.Nombre)
                 .ToListAsync(); 
 
-            return resultado;
+            foreach (var localidad in listaFiltrada)
+            {
+                var vistaLocalidad = new LocalidadVista
+                {
+                    Id = localidad.Id,
+                    Nombre = localidad.Nombre,
+                    ProvinciaString = localidad.Provincia.Nombre,
+                    ProvinciaId = localidad.ProvinciaId,
+                    Eliminado = localidad.Eliminado
+                };
+                vista.Add(vistaLocalidad);
+            }
+
+            return vista;
         }
 
 

@@ -95,8 +95,6 @@ $(document).ready(function () {
 });
 //FIN ONCHANGE DE FILTROS//
 
-
-
 async function ComboParaFiltrarProvincias() {
   const res = await authFetch("Provincias", {
     method: "GET",
@@ -115,7 +113,6 @@ async function ComboParaFiltrarProvincias() {
 
   ObtenerLocalidades();
 }
-
 
 // Funcion Para Obtener las Localidades
 async function ObtenerLocalidades() {
@@ -184,10 +181,10 @@ function MostrarLocalidades(data) {
         item.nombre +
         "</td>" +
         // Columna Provincia (nombre)
-        "<td class='align-middle d-none d-md-table-cell" +
+        "<td class='align-middle d-none d-md-table-cell " +
         filaClass +
         "'>" +
-        (item.provincia?.nombre || "Sin provincia") +
+        (item.provinciaString || "Sin provincia") +
         "</td>" +
         // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +
@@ -358,7 +355,6 @@ async function CrearLocalidad() {
     method: "POST",
     body: JSON.stringify(localidad),
   })
-
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
@@ -384,9 +380,9 @@ async function CrearLocalidad() {
 
 //Funcion para editar localidad
 async function EditarLocalidad(id) {
-    if (!ValidarFormularioLocalidad()) return;
+  if (!ValidarFormularioLocalidad()) return;
 
-    let localidadId = document.getElementById("IdLocalidad").value;
+  let localidadId = document.getElementById("IdLocalidad").value;
 
   let localidad = {
     id: localidadId,
@@ -441,8 +437,7 @@ function EliminarLocalidadId(id, eliminado) {
     },
     background: "#fff",
     color: "#22223b",
-  })
-  .then((result) => {
+  }).then((result) => {
     if (result.isConfirmed) {
       EliminarSiLocalidad(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
