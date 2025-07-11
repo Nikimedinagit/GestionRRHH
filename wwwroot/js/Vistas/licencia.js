@@ -243,9 +243,9 @@ function MostrarLicencias(data) {
   const baseUrlArchivos = "/uploads/documentos/";
 
   data.forEach(item => {
-    const estado = estados[item.estado] || "PEDIENTE";
-    const fechaInicio = formatearFecha(item.fechaInicio);
-    const fechaFin = formatearFecha(item.fechaFin);
+    const estado = estados[item.estadoString] || "PEDIENTE";
+    const fechaInicio = formatearFecha(item.fechaInicioString);
+    const fechaFin = formatearFecha(item.fechaFinString);
     const claseEstado = estadoColor[estado] || "bg-light text-dark";
     const colorBorde = bordeSuperiorColorHex[estado] || "#ccc";
 
@@ -273,7 +273,7 @@ function MostrarLicencias(data) {
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${colorBorde}; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicencia?.nombre || "-"}</h5>
+              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicenciaString || "-"}</h5>
               <span class="badge ${claseEstado}" style="font-size: 0.75rem; padding: 0.25em 0.5em;">${estado}</span>
             </div>
             <p class="mb-1 text-muted d-flex align-items-start" style="font-size: 0.9rem;">
@@ -282,7 +282,7 @@ function MostrarLicencias(data) {
             </p>
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-person me-2" style="font-size: 1rem;"></i>
-              <span>${item.empleado?.nombreCompleto || "-"}</span>
+              <span>${item.empleadoString || "-"}</span>
             </p>
             ${documentoHtml}
           </div>
@@ -309,14 +309,16 @@ function MostrarLicencias(data) {
 
 
 // Función para convertir ISO a "9 may 2023"
-function formatearFecha(fechaIso) {
-  const fecha = new Date(fechaIso);
+function formatearFecha(fechaStr) {
+  const [dia, mes, anio] = fechaStr.split('/');
+  const fecha = new Date(`${anio}-${mes}-${dia}`); // Formato compatible con JS
   return fecha.toLocaleDateString("es-AR", {
     day: "numeric",
     month: "short",
     year: "numeric"
   });
 }
+
 
 
 //Funcion para mostar el modal de edicion de la licencia

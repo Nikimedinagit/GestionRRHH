@@ -49,8 +49,11 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<Licencia>>> GetLicencias([FromBody] LicenciaFiltrar filtro)
+        public async Task<ActionResult<IEnumerable<VistaLicencia>>> LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
         {
+
+            List<VistaLicencia> vista = new List<VistaLicencia>();
+
             var licenciasFiltradas = _context.Licencia.AsQueryable();
 
             if (filtro.Estado.HasValue)
@@ -75,14 +78,31 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 licenciasFiltradas = licenciasFiltradas.Where(x =>
                     x.Empleado.NombreCompleto.Contains(filtro.EmpleadoTexto));
-                
+
             }
 
-
-            return await licenciasFiltradas
+            var listaFiltrada = await licenciasFiltradas
                 .Include(l => l.TipoDeLicencia)
                 .Include(l => l.Empleado)
                 .ToListAsync();
+            foreach (var licencia in listaFiltrada)
+            {
+                var vistaLicencia = new VistaLicencia
+                {
+                    Id = licencia.Id,
+                    TipoDeLicenciaString = licencia.TipoDeLicenciaString,
+                    TipoDeLicenciaId = licencia.TipoDeLicenciaId,
+                    FechaInicioString = licencia.FechaInicioString,
+                    FechaFinString = licencia.FechaFinString,
+                    EstadoString = licencia.EstadoString,
+                    DocumentoAdjunto = licencia.DocumentoAdjunto,
+                    EmpleadoString = licencia.EmpleadoString,
+                    EmpleadoId = licencia.EmpleadoId
+                };
+                vista.Add(vistaLicencia);
+            }
+            return vista;
+
         }
 
         // PUT: api/Licencias/5
