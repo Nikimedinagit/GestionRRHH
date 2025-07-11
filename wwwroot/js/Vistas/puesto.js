@@ -190,7 +190,7 @@ function MostrarPuestos(data) {
         "<td class='align-middle d-none d-md-table-cell" +
         filaClass +
         "'>" +
-        (item.sector?.nombre || "Sin sector") +
+        (item.sectorString || "Sin sector") +
         "</td>" +
         // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +

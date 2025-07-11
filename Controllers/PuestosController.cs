@@ -50,8 +50,9 @@ namespace API_RRHH_TESIS2025.Controllers
         }
 
         [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuesto([FromBody] PuestoFiltrar filtro)
+        public async Task<ActionResult<IEnumerable<VistaPuesto>>> PuestoFiltrar([FromBody] PuestoFiltrar filtro)
         {
+            List<VistaPuesto> vista = new List<VistaPuesto>();
             var puestosFiltro = _context.Puesto
              .Where(x => !x.Sector.Eliminado)
                 .Include(x => x.Sector)
@@ -67,12 +68,24 @@ namespace API_RRHH_TESIS2025.Controllers
                 puestosFiltro = puestosFiltro.Where(t => t.SectorId == filtro.SectorId);
             }
 
-            var resultado = await puestosFiltro
+
+            var listaFiltrada = await puestosFiltro
                 .OrderBy(p => p.Sector.Nombre)
                 .ThenBy(p => p.Descripcion)
                 .ToListAsync();
-
-            return resultado;
+            foreach (var puesto in listaFiltrada)
+                {
+                    var vistaPuesto = new VistaPuesto
+                    {
+                        Id = puesto.Id,
+                        Descripcion = puesto.Descripcion,
+                        SectorString = puesto.SectorString,
+                        SectorId = puesto.SectorId,
+                        Eliminado = puesto.Eliminado
+                    };
+                    vista.Add(vistaPuesto);
+                }
+            return vista;
         }
 
         // PUT: api/Puestos/5

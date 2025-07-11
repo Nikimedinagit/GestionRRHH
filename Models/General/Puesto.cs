@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API_RRHH_TESIS2025.Models.General
 {
@@ -8,7 +9,8 @@ namespace API_RRHH_TESIS2025.Models.General
         public int Id { get; set; }
         public string Descripcion { get; set; }
 
-
+        [NotMapped]
+        public string SectorString { get { return Sector?.Nombre; } }
         public int SectorId { get; set; }
         public virtual Sector Sector { get; set; }
 
@@ -18,6 +20,15 @@ namespace API_RRHH_TESIS2025.Models.General
         public virtual ICollection<Empleado> Empleados { get; set; }
 
 
+    }
+
+    public class VistaPuesto
+    {
+        public int Id { get; set; }
+        public string Descripcion { get; set; }
+        public string SectorString { get; set; }
+        public int SectorId { get; set; }
+        public bool Eliminado { get; set; }
     }
 
     public class PuestoFiltrar
