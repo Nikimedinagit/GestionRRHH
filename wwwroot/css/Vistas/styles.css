@@ -240,6 +240,15 @@ table tbody tr {
 
 }
 
+.icono-borrar {
+  font-size: 1.6rem !important;
+  color: #dc3545 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+
+}
+
 /* Botón toggle */
 .icon-desactivar {
   font-size: 1.5rem !important;
@@ -308,7 +317,8 @@ table tbody tr {
 #panelSector,
 #panelPuesto,
 #panelEmpleado,
-#panelTipoDeLicencia {
+#panelTipoDeLicencia,
+#panelLicencia {
   position: fixed;
   top: 50%;
   right: 0;
@@ -335,7 +345,8 @@ table tbody tr {
 #panelSector.abierto,
 #panelPuesto.abierto,
 #panelEmpleado.abierto,
-#panelTipoDeLicencia.abierto {
+#panelTipoDeLicencia.abierto,
+#panelLicencia.abierto {
   transform: translate(0, -50%);
 }
 
@@ -475,7 +486,8 @@ select.form-control:not([value=""])+label {
   #panelSector,
   #panelPuesto,
   #panelEmpleado,
-  #panelTipoDeLicencia {
+  #panelTipoDeLicencia,
+  #panelLicencia {
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -489,7 +501,8 @@ select.form-control:not([value=""])+label {
   #panelSector,
   #panelPuesto,
   #panelEmpleado,
-  #panelTipoDeLicencia {
+  #panelTipoDeLicencia,
+  #panelLicencia {
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -503,7 +516,8 @@ select.form-control:not([value=""])+label {
   #panelSector,
   #panelPuesto,
   #panelEmpleado,
-  #panelTipoDeLicencia {
+  #panelTipoDeLicencia,
+  #panelLicencia {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -635,4 +649,63 @@ select.form-control:not([value=""])+label {
   }
 }
 /* FIN RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
+
+
+
+/* INICIO CARD DE LICENCIAS */
+/* Boton editar una licencia */
+.icono-editar-licencia {
+  font-size: 1.2rem !important;
+  color: #0d6efd !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+/* Boton borrar una licencia */
+.icono-borrar-licencia {
+  font-size: 1.2rem !important;
+  color: #dc3545 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+/* FIN CARD DE LICENCIAS */
+
+
+
+
+
+/* INICIO LICENCIAS */
+/* le sacamos el m¿margin de las card de etsadisticas */
+.card {
+  margin-bottom: 0 !important;
+}
+
+#licenciasContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  transform: scale(1); /* valor base */
+}
+
+#licenciasContainer .card:hover {
+  transform: scale(1.03); /* agranda un 3% al pasar el mouse */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* opcional: sombra más fuerte */
+  z-index: 2; /* opcional: para que quede encima si hay varias cards juntas */
+}
+
+
+
+/* Colocamos un hover al documento de la licencia */
+#licenciasContainer .document-link:hover {
+  color: #0d6efd !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* FIN LICENCIAS */
+
+
+
 

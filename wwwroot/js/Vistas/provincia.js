@@ -112,12 +112,6 @@ async function ObtenerProvincias() {
   };
 
 
-   // ⬇️ Aca agregá los console.log
-  console.log("Token actual:", getToken());
-  console.log("Refresh token:", getRefreshToken());
-  console.log("Email:", getEmail());
-  console.log("URL:", API_BASE_URL + "Provincias/Filtrar");
-
 const res = await authFetch("Provincias/Filtrar", {
         method: "POST",
         body: JSON.stringify(filtro),

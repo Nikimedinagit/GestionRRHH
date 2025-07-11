@@ -1,0 +1,238 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+    <!-- Título -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Gestor de Licencias</h3>
+    </div>
+
+    <hr />
+
+    <!-- Contenedor de Botones y Tabla -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+        <!-- Fondo Oscuro al Abrir Panel -->
+        <div id="fondoOscuro" onclick="CerrarPanelLicencia()"></div>
+
+        <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <!-- Botón Agregar -->
+            <button class="btn btn-agregar" onclick="AbrirPanelLicencia()">
+                <i class="fa-solid fa-square-plus me-1"></i>
+                <span>Agregar</span>
+            </button>
+
+            <!-- Botones Filtros y Informe -->
+            <div class="d-flex gap-2 flex-wrap">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar</span>
+                </button>
+            </div>
+        </div>
+
+
+
+
+
+
+        <!-- Contenedor Filtros-->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
+                    <select id="EstadoIdBuscar" class="form-control filtro-select">
+                        <option value="">[Todos los estados]</option>
+                        <option value="0">Activos</option>
+                        <option value="1">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor Generar-->
+        <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                </button>
+                <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+                    <i class="fa-solid fa-file-excel me-1"></i> Excel
+                </button>
+                <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
+                    <i class="fa-solid fa-chart-column me-1"></i> Gráfico
+                </button>
+            </div>
+        </div>
+
+
+        <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+            <canvas id="graficoLicencias" width="400" height="150"></canvas>
+        </div>
+
+
+        <!-- Contenedor de tarjetas -->
+        <div>
+            <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+
+                <!-- Tarjeta genérica -->
+                <div class="card p-3 border-0"
+                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-secondary bg-opacity-10 p-3  me-3">
+                            <i class="fas fa-layer-group text-secondary fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Total licencias</p>
+                            <h5 class="mb-0 fw-bold" id="totalLicenses">12</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aprobadas -->
+                <div class="card p-3 border-0"
+                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-check text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Aprobadas</p>
+                            <h5 class="mb-0 fw-bold" id="activeLicenses">8</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pendientes -->
+                <div class="card p-3 border-0"
+                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-clock text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Pendientes</p>
+                            <h5 class="mb-0 fw-bold" id="pendingLicenses">3</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechazadas -->
+                <div class="card p-3 border-0"
+                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-times text-danger fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Rechazadas</p>
+                            <h5 class="mb-0 fw-bold" id="rejectedLicenses">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expiradas -->
+                <div class="card p-3 border-0"
+                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-dark bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-exclamation-circle text-dark fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Expiradas</p>
+                            <h5 class="mb-0 fw-bold" id="expiredLicenses">1</h5>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <hr style="margin-bottom: 1rem;" />
+
+
+        <!-- Cards de licencias -->
+        <div id="licenciasContainer" class="row g-4"></div>
+
+    </div>
+
+
+
+    <!-- Panel Deslizante Formulario de Licencia -->
+    <div id="panelLicencia" aria-modal="true" role="dialog" aria-labelledby="panelTituloLicencia" tabindex="-1"
+        class="w-30">
+        <div class="panel-header">
+            <h2 id="panelTituloLicencia" class="panel-title">Formulario de Licencia</h2>
+        </div>
+
+        <div class="panel-body">
+            <form id="formLicencia">
+                <input type="hidden" id="IdLicencia" />
+
+                <!-- Fila 1: Tipo de Licencia y Empleado -->
+                <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <!-- Tipo de Licencia -->
+                    <div class="form-group position-relative mb-3">
+                        <select name="IdTipoLicencia" id="IdTipoLicencia" class="form-control" required>
+                            <option value="" disabled selected>Seleccione</option>
+                        </select>
+                        <label for="IdTipoLicencia">Tipo de Licencia</label>
+                        <div class="invalid-feedback" id="errorIdTipoLicencia"></div>
+                    </div>
+
+                    <!-- Empleado -->
+                    <div class="form-group position-relative mb-3">
+                        <select name="IdEmpleado" id="IdEmpleado" class="form-control" required>
+                            <option value="" disabled selected>Seleccione</option>
+                        </select>
+                        <label for="IdEmpleado">Empleado</label>
+                        <div class="invalid-feedback" id="errorIdEmpleado"></div>
+                    </div>
+                </div>
+
+                <!-- Fila 2: Fecha Inicio y Fecha Fin -->
+                <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <!-- Fecha Inicio -->
+                    <div class="form-group position-relative mb-3">
+                        <input type="date" id="FechaInicio" class="form-control" />
+                        <label for="FechaInicio">Fecha de Inicio</label>
+                        <div class="invalid-feedback" id="errorFechaInicio"></div>
+                    </div>
+
+                    <!-- Fecha Fin -->
+                    <div class="form-group position-relative mb-3">
+                        <input type="date" id="FechaFin" class="form-control" />
+                        <label for="FechaFin">Fecha de Fin</label>
+                        <div class="invalid-feedback" id="errorFechaFin"></div>
+                    </div>
+                </div>
+
+                <!-- Fila 3: Documento -->
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                    <!-- Documento Adjunto -->
+                    <div class="form-group position-relative mb-3">
+                        <input type="file" id="DocumentoAdjunto" class="form-control" />
+                        <label for="DocumentoAdjunto">Documento Adjunto (opcional)</label>
+                        <div class="invalid-feedback" id="errorDocumentoAdjunto"></div>
+                        <div id="archivoAdjuntoActual" class="mt-1"></div> <!-- Aquí se muestra el archivo existente -->
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel-footer">
+            <button class="btn btn-cancelar" onclick="CerrarPanelLicencia()">Cancelar</button>
+            <button type="submit" class="btn btn-guardar" onclick="BuscarLicenciaId()">Guardar</button>
+        </div>
+    </div>
+
+    <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+    <script src="../js/Vistas/common/obtenerTiposDeLicencia.js"></script>
+    <script src="../js/Vistas/licencia.js"></script>
+
+
+
+</div>

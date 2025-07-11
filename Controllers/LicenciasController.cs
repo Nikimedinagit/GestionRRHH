@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class LicenciasController : ControllerBase
@@ -20,11 +22,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
+
+
         // GET: api/Licencias
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Licencia>>> GetLicencia()
         {
-            return await _context.Licencia.ToListAsync();
+            return await _context.Licencia
+            .Include(l => l.TipoDeLicencia)
+            .Include(l => l.Empleado)
+            .ToListAsync();
         }
 
         // GET: api/Licencias/5
@@ -51,7 +58,35 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(licencia).State = EntityState.Modified;
+            // Buscar la licencia original
+            var licenciaOriginal = await _context.Licencia.FindAsync(id);
+            if (licenciaOriginal == null)
+            {
+                return NotFound();
+            }
+
+            // Validar solapamiento de fechas (igual que antes)
+            var licenciasExistentes = await _context.Licencia
+                .Where(l => l.EmpleadoId == licencia.EmpleadoId &&
+                    l.Id != id && 
+                    (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                    l.FechaInicio <= licencia.FechaFin &&
+                    l.FechaFin >= licencia.FechaInicio
+                )
+                .ToListAsync();
+
+            if (licenciasExistentes.Count > 0)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
+            }
+
+            // Solo actualizar los campos permitidos
+            licenciaOriginal.TipoDeLicenciaId = licencia.TipoDeLicenciaId;
+            licenciaOriginal.EmpleadoId = licencia.EmpleadoId;
+            licenciaOriginal.FechaInicio = licencia.FechaInicio;
+            licenciaOriginal.FechaFin = licencia.FechaFin;
+            licenciaOriginal.DocumentoAdjunto = licencia.DocumentoAdjunto;
+
 
             try
             {
@@ -69,7 +104,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(licenciaOriginal);
         }
 
         // POST: api/Licencias
@@ -77,6 +112,29 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Licencia>> PostLicencia(Licencia licencia)
         {
+            var licenciasExistentes = await _context.Licencia
+            .Where(l => l.EmpleadoId == licencia.EmpleadoId &&
+                (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+
+                // Validar solapamiento de fechas
+                l.FechaInicio <= licencia.FechaFin &&
+                l.FechaFin >= licencia.FechaInicio
+          )
+            .ToListAsync();
+
+            if (licenciasExistentes.Count > 0)
+            {
+                return BadRequest(new
+                {
+                    codigo = 0,
+                    mensaje =
+                "Ya tiene licencia aplicada."
+                });
+            }
+
+            // Estado de la licencia por defecto
+            licencia.Estado = EstadoLicencia.PENDIENTE;
+
             _context.Licencia.Add(licencia);
             await _context.SaveChangesAsync();
 

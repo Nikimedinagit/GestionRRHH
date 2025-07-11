@@ -21,7 +21,8 @@ public class Licencia
 
 public enum EstadoLicencia
 {
-    Pendiente = 1,
-    Aprobada = 2,
-    Rechazada = 3
+    PENDIENTE = 1,
+    APROBADA= 2,
+    RECHAZADA = 3,
+    EXPIRADA = 4
 }

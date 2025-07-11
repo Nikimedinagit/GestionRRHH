@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API_RRHH_TESIS2025.Controllers
 {   
     [Authorize(Roles = "ADMINISTRADOR")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EmpleadosController : ControllerBase
     {
