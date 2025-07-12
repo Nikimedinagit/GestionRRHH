@@ -652,8 +652,9 @@ select.form-control:not([value=""])+label {
 
 
 
-/* INICIO CARD DE LICENCIAS */
-/* Boton editar una licencia */
+/* INICIO CARD DE LICENCIAS / EMPLEADOS */
+/* Boton editar una licencia/empleado */
+.icono-editar-empleado,
 .icono-editar-licencia {
   font-size: 1.2rem !important;
   color: #0d6efd !important;
@@ -662,7 +663,8 @@ select.form-control:not([value=""])+label {
   padding: 0% !important;
 }
 
-/* Boton borrar una licencia */
+/* Boton borrar una licencia/empleado */
+.icono-desactivar-empleado ,
 .icono-borrar-licencia {
   font-size: 1.2rem !important;
   color: #dc3545 !important;
@@ -670,7 +672,30 @@ select.form-control:not([value=""])+label {
   margin: 0px 3px !important;
   padding: 0% !important;
 }
-/* FIN CARD DE LICENCIAS */
+
+/* Boton ver más un empleado */
+.iocno-ver-empleado{
+  font-size: 1.2rem !important;
+  color: #ffc107 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+} 
+
+/* boton para activar un empleado */
+.icono-activar-empleado{
+  font-size: 1.2rem !important;
+  color: #28a745 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+
+
+
+
+/* FIN CARD DE LICENCIAS/EMPLEADOS */
 
 
 
@@ -696,8 +721,6 @@ select.form-control:not([value=""])+label {
   z-index: 2; /* opcional: para que quede encima si hay varias cards juntas */
 }
 
-
-
 /* Colocamos un hover al documento de la licencia */
 #licenciasContainer .document-link:hover {
   color: #0d6efd !important;
@@ -706,6 +729,98 @@ select.form-control:not([value=""])+label {
 }
 /* FIN LICENCIAS */
 
+/* INICIO DE EMPLEADOS */
+#empleadosContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  transform: scale(1); /* valor base */
+}
+
+#empleadosContainer .card:hover {
+  transform: scale(1.03); /* agranda un 3% al pasar el mouse */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* opcional: sombra más fuerte */
+  z-index: 2; /* opcional: para que quede encima si hay varias cards juntas */
+}
+
+/* FIN DE EMPLEADOS */
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+.employee-detail-container {
+  border-left: 4px solid #ffc107;
+  background-color: #f8f9fa;
+  height: 100%;
+}
+
+.employee-header {
+  background-color: transparent !important;
+  color: #212529;
+  border-bottom: none !important;
+  padding: 0.5rem 1rem;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  font-size: 0.75rem;
+}
+
+.detail-section {
+  padding: 0.75rem 1rem;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  align-items: flex-start;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #495057;
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #212529;
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffc107;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+.btn-close-white:hover {
+  opacity: 1;
+  filter: brightness(0) invert(0.8);
+}

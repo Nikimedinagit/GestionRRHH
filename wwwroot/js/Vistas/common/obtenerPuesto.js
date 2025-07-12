@@ -1,5 +1,5 @@
-function ObtenerPuestosDropDown() {
-    fetch('https://localhost:7006/Puestos', {
+async function ObtenerPuestosDropDown() {
+    const res = await authFetch("Puestos", {
         method: "GET",
       })
         .then(response => response.json()) 

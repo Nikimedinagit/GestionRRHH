@@ -25,81 +25,137 @@ function AbrirPanelEmpleado() {
 
 // Función Para Obtener las Localidades
 async function ObtenerEmpleados() {
-    const res = await authfetch("Empleados")
+    const res = await authFetch("Empleados")
     .then(response => response.json())
     .then(data => {
         MostrarEmpleados(data)
        LimpiarFormularioEmpleado();
+       CerrarPanelEmpleado();
       })
      .catch(error => {
         console.error('No se pudo obtener los empleados', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error al cargar empleados',
-            text: 'No se pudo obtener la lista de empleados.',
-        });
-
      });
 }
 
-// Función para mostrar los empleados en la tabla
+
 function MostrarEmpleados(data) {
-    $('#tablaEmpleadosBody').empty();
+  const contenedor = $("#empleadosContainer");
+  contenedor.empty();
 
-    $.each(data, function(index, item) {
-      let iconClass = item.eliminado ? "bx bx-toggle-left" : "bx bx-toggle-right";
-      let toggleColorClass = item.eliminado ? "icon-toggle-off style= color: red;" : "icon-toggle-on style= color: green;";
-
-      // Fila principal
-      let filaPrincipal = 
-        "<tr data-id='" + item.id + "'>" +
-          "<td>" + item.nombreCompleto + "</td>" +
-          "<td>" + item.dni + "</td>" +
-          "<td>" + (item.puesto?.descripcion || '') + "</td>" +
-          "<td class='td-acciones'>" +
-            "<button class='icon-btn icon-ver' title='Ver más' onclick='MostrarDetalleEmpleado(" + JSON.stringify(item).replace(/'/g, "\\'") + ")'>" +
-              "<i class='bx bx-show'></i>" +
-            "</button>"+
-
-            "<button class='icon-btn icon-editar' title='Editar' onclick='MostrarModalEditarEmpleado(" +
-            item.id + ")'>" +
-              "<i class='bx bx-edit'></i>" +
-            "</button>" +
-            "<button class='icon-btn " + toggleColorClass + "' title='Activar/Desactivar' onclick='EliminarCategoriaId(" + item.id + ", " + item.eliminado + ")'>" +
-              "<i class='" + iconClass + "'></i>" +
-            "</button>" +
-          "</td>" +
-        "</tr>";
-
-      
-      $('#tablaEmpleadosBody').append(filaPrincipal );
-    });
+  if (!data.length) {
+    contenedor.append(`
+      <div class="col-12 text-center text-muted">No hay empleados para mostrar.</div>
+    `);
+    return;
   }
 
- // Funcion para mostrar los detalles del empleado
-function MostrarDetalleEmpleado(item) {
-  document.getElementById("detalleNombre").textContent = item.nombreCompleto || '';
-  document.getElementById("detalleDni").textContent = item.dni || '';
-  document.getElementById("detalleCuil").textContent = item.cuil || '';
-  document.getElementById("detalleTelefono").textContent = item.telefono || '';
-  document.getElementById("detalleEmail").textContent = item.email || '';
-  document.getElementById("detalleFechaNacimiento").textContent = item.fechaNacimiento || '';
-  document.getElementById("detalleDireccion").textContent = item.direccion || '';
-  document.getElementById("detalleEstadoCivil").textContent = item.estadoCiviles || '';
-  document.getElementById("detalleCantidadHijos").textContent = item.cantidadHijos || 0;
-  document.getElementById("detallePuesto").textContent = item.puesto?.descripcion || '';
-  document.getElementById("detalleLocalidad").textContent = item.localidad?.nombre || '';
-  document.getElementById("detalleSexo").textContent = item.tipoSexo || '';
+  window.empleadosData = data;
 
-  document.getElementById('modalDetallesEmpleado').classList.add('show');
-  document.getElementById('overlay').classList.add('show');
+
+  data.forEach(item => {
+    const nombre = item.nombreCompleto || "-";
+    const puesto = item.puesto?.descripcion || "-";
+    const email = item.email || "-";
+    const telefono = item.telefono || "-";
+    const dni = item.dni || "-";
+    const estadoCivil = item.estadoCiviles || "-";
+    const activo = item.eliminado == false;
+
+    const textoEstado = activo ? "ACTIVO" : "DESACTIVADO";
+    const claseEstado = activo ? "bg-success text-white" : "bg-danger text-white";
+    const iconoEstado = activo ? "bi-person-x icono-desactivar-empleado" : "bi-person-check icono-activar-empleado";
+    const tooltipEstado = activo ? "Desactivar" : "Activar";
+
+    contenedor.append(`
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"}; min-height: 260px;">
+          <div class="flex-grow-1 d-flex flex-column">
+
+            <!-- Título y estado -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${nombre}</h5>
+              <span class="badge ${claseEstado}" style="font-size: 0.65rem; padding: 0.2em 0.45em;">${textoEstado}</span>
+            </div>
+
+            <!-- Puesto -->
+            <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
+              <i class="bi bi-briefcase me-2" style="font-size: 1rem;"></i>
+              <span>${puesto}</span>
+            </p>
+
+            <!-- Email -->
+            <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
+              <i class="bi bi-envelope me-2" style="font-size: 1rem;"></i>
+              <span>${email}</span>
+            </p>
+
+            <!-- Teléfono -->
+            <p class="mb-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
+              <i class="bi bi-telephone me-2" style="font-size: 1rem;"></i>
+              <span>${telefono}</span>
+            </p>
+
+            <hr class="m-0 mb-2"/>
+
+            <!-- DNI y Estado Civil -->
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="badge text-dark" style="background-color: #d0e7ff; font-size: 0.75rem;">DNI: ${dni}</span>
+              <span class="badge text-dark" style="background-color: #d4edda; font-size: 0.75rem;">${estadoCivil}</span>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="d-flex justify-content-end mt-2">
+            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
+              <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+            </button>
+            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+            </button>
+            <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="ToggleEstadoEmpleado(${item.id}, ${!activo})" data-tippy-content="${tooltipEstado}">
+              <i class="bi ${iconoEstado} btn-sm text-danger"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `);
+  });
+
+  // Inicializar tooltips
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
 
-// Función para cerrar el modal de detalles
-function cerrarModalDetalles() {
-  document.getElementById('modalDetallesEmpleado').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
+
+
+function MostrarDetalleEmpleado(id) {
+  const empleado = empleadosData.find(e => e.id === id);
+  if (!empleado) return;
+
+  document.getElementById("detalleNombre").textContent = empleado.nombreCompleto || '';
+  document.getElementById("detalleDni").textContent = empleado.dni || '';
+  document.getElementById("detalleCuil").textContent = empleado.cuil || '';
+  document.getElementById("detalleTelefono").textContent = empleado.telefono || '';
+  document.getElementById("detalleEmail").textContent = empleado.email || '';
+  document.getElementById("detalleFechaNacimiento").textContent = empleado.fechaNacimiento || '';
+  document.getElementById("detalleDireccion").textContent = empleado.direccion || '';
+  document.getElementById("detalleEstadoCivil").textContent = empleado.estadoCiviles || '';
+  document.getElementById("detalleCantidadHijos").textContent = empleado.cantidadHijos || 0;
+  document.getElementById("detallePuesto").textContent = empleado.puesto?.descripcion || '';
+  document.getElementById("detalleLocalidad").textContent = empleado.localidad?.nombre || '';
+  document.getElementById("detalleSexo").textContent = empleado.tipoSexo || '';
+
+  // Mostrar el offcanvas
+  const offcanvas = new bootstrap.Offcanvas('#offcanvasDetalleEmpleado');
+  offcanvas.show();
 }
+
+
+
+
 
 
 // Función para mostrar el modal de editar empleado

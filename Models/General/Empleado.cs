@@ -36,6 +36,8 @@ public class Empleado
     public int PuestoId { get; set; }
     public virtual Puesto Puesto { get; set; }
 
+    public bool Eliminado { get; set; }
+
 
     public virtual ICollection<Evaluacion> Evaluacion { get; set; }
     public virtual ICollection<Licencia> Licencia { get; set; }

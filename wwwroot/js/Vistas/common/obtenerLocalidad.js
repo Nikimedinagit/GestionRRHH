@@ -1,5 +1,5 @@
-function ObtenerLocalidadesDropDown() {
-    fetch('https://localhost:7006/Localidades', {
+async function ObtenerLocalidadesDropDown() {
+    const res = await authFetch("Localidades", {
         method: "GET",
       })
         .then(response => response.json()) 
