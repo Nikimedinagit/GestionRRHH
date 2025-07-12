@@ -171,7 +171,6 @@ function MostrarEvaluaciones(data) {
 
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
-    // console.log(id);
   const res = await authFetch(`Evaluaciones/${id}`,
     {
         method: "GET"
@@ -185,7 +184,6 @@ async function MostrarModalEditar(id) {
         abrirPanelEvaluaciones();
     }))
 }
-
 
 //Funcion para buscar el id de la evaluacion y llamar a la función de edición o creación
 function BuscarEvaluacionId() {
@@ -206,10 +204,16 @@ function LimpiarModalEvaluacion() {
     inputCalificacion.value = "";
     const inputEmpleado = document.getElementById("EmpleadoId");
     inputEmpleado.value = "";
+    const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+    selectTipoCriterio.value = "";
+    const inputDescripcion = document.getElementById("Descripcion");
+    inputDescripcion.value = "";
 
     //Limpia las validaciones
     inputCalificacion.classList.remove("is-invalid", "is-valid");
     inputEmpleado.classList.remove("is-invalid", "is-valid");
+    selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+    inputDescripcion.classList.remove("is-invalid", "is-valid");
 
     //Limpiar los mensajes de error
     const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
@@ -218,6 +222,12 @@ function LimpiarModalEvaluacion() {
     const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
     inputErrorEmpleado.textContent = "";
     inputErrorEmpleado.style.display = "none";
+    const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
+    selectErrorIdTipoCriterio.textContent = "";
+    selectErrorIdTipoCriterio.style.display = "none";
+    const inputErrorDescripcion = document.getElementById("errorDescripcion");
+    inputErrorDescripcion.textContent = "";
+    inputErrorDescripcion.style.display = "none";
 }
 
 //Funcion para validar el formulario de evaluacion
@@ -238,7 +248,7 @@ function ValidarFormularioEvaluacion() {
     inputErrorEmpleado.style.display = "none";
     inputErrorEmpleado.textContent = "";
     inputEmpleado.classList.remove("is-invalid", "is-valid");
-
+  
     let esValid = true;
 
     if(isNaN(calificacion)){
@@ -273,6 +283,8 @@ document.getElementById("CalificacionEvaluacion").addEventListener("input", () =
   // Limpiar cualquier estado previo
   inputCalificacion.classList.remove("is-invalid", "is-valid");
 
+      let esValid = true;
+
     if(isNaN(calificacion)){
         inputCalificacion.classList.add("is-invalid");
         errorCalificacion.style.display = "block";
@@ -286,8 +298,10 @@ document.getElementById("CalificacionEvaluacion").addEventListener("input", () =
     } else {
     inputCalificacion.classList.add("is-valid"); // Color verde cuando cumple
     errorCalificacion.style.display = "none";
-  }
-});
+  };
+  return esValid;
+  });
+
 
 //Funcion para evitar que se pueda evaluar el mismo empleado en el mismo mes
 function ValidarEvaluacionExistente(mensaje) {
@@ -299,9 +313,9 @@ function ValidarEvaluacionExistente(mensaje) {
   inputEmpleadoId.classList.add("is-invalid");
 }
 
-
 //Funcion crear evaluacion
 async function CrearEvaluacion() {
+
     if(!ValidarFormularioEvaluacion())
         return;
 
@@ -412,9 +426,9 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
         <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
         <td class='align-middle'>${item.descripcion}</td>
         <td class='d-flex justify-content-center align-items-center'>
-          <button class='btn-editar' style='background: none; border: none;' 
-            onclick='MostrarModalEditarCriterio(${item.id})' data-tippy-content='Editar'>
-            <i class='bi bi-pencil-square icono-editar'></i>
+          <button class='btn-eliminar' style='background: none; border: none;' 
+            onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
+            <i class='bi bi-trash3 icono-eliminar'></i>
           </button>
         </td>
       </tr>
@@ -429,7 +443,6 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
 
 }
 
-
 function BuscarCriterioId() {
   const id = parseInt(document.getElementById("IdCriterio").value);
 
@@ -441,9 +454,82 @@ function BuscarCriterioId() {
 }
 
 
+function ValidarFormularioCriterioDeEvaluacion() {
+    const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+    const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
+
+    const inputDescripcion = document.getElementById("Descripcion");
+    const inputErrorDescripcion = document.getElementById("errorDescripcion");
+
+    const tipoDeCriterioId = selectTipoCriterio.value;
+    const descripcion = inputDescripcion.value.trim();
+
+    //Limpiar errores previos
+    selectErrorIdTipoCriterio.style.display = "none";
+    selectErrorIdTipoCriterio.textContent = "";
+    selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+    inputErrorDescripcion.style.display = "none";
+    inputErrorDescripcion.textContent = "";
+    inputDescripcion.classList.remove("is-invalid", "is-valid");
+
+    let esValid = true;
+
+    if(tipoDeCriterioId === ""){
+        selectTipoCriterio.classList.add("is-invalid");
+        selectErrorIdTipoCriterio.style.display = "block";
+        selectErrorIdTipoCriterio.textContent = "Seleccione un criterio.";
+        esValid = false;
+    }
+
+    // Validar descripcion
+    if (descripcion.length === 0) {
+      inputDescripcion.classList.add("is-invalid");
+      inputErrorDescripcion.style.display = "block";
+      inputErrorDescripcion.textContent = "Campo obligatorio.";
+      esValid = false;
+    } else if (descripcion.length < 3) {
+      inputDescripcion.classList.add("is-invalid");
+      inputErrorDescripcion.style.display = "block";
+      inputErrorDescripcion.textContent = "Mínimo 3 caracteres.";
+      esValid = false;
+    } else {
+      inputDescripcion.classList.add("is-valid");
+    }
+    return esValid;
+}
+document.getElementById("Descripcion").addEventListener("input", () => {
+    const inputDescripcion = document.getElementById("Descripcion");
+    const errorDescripcion = document.getElementById("errorDescripcion");
+    const descripcion = inputDescripcion.value;
+
+    // Limpiar cualquier estado previo
+    inputDescripcion.classList.remove("is-invalid", "is-valid");
+
+    let esValid = true;
+
+    if(descripcion.length === 0){
+      inputDescripcion.classList.add("is-invalid");
+      errorDescripcion.style.display = "block";
+      errorDescripcion.textContent = "Campo obligatorio.";
+      esValid = false;
+    }
+    else if(descripcion.length < 3){
+      inputDescripcion.classList.add("is-invalid");
+      errorDescripcion.style.display = "block";
+      errorDescripcion.textContent = "Mínimo 3 caracteres.";
+      esValid = false;
+    } else {
+      inputDescripcion.classList.add("is-valid");
+      errorDescripcion.style.display = "none";
+      errorDescripcion.textContent = "";
+    }
+    return esValid;
+});
+
+
 async function CrearCriterioDeEvaluacion() {
-    // if(!ValidarFormularioEvaluacion())
-    //     return;
+    if(!ValidarFormularioCriterioDeEvaluacion())
+        return;
 
 const criterioEvaluacion = {
   tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
@@ -475,5 +561,71 @@ const criterioEvaluacion = {
       }
     });
 }
+
+function EliminarCriterioDeEvaluacion(id) {
+    Swal.fire({
+        title: "¿Está seguro que desea eliminar este criterio?",
+        text: "Este criterio sera eliminado de forma definitiva. ¿Deseás continuar?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+          popup: "swal2-border-radius",
+          confirmButton: "swal2-btn-eliminar",
+          cancelButton: "swal2-btn-cancelar",
+          title: "swal2-title-custom",
+          content: "swal2-content-custom",
+        },
+        background: "#fff",
+        color: "#22223b",
+      })
+      .then((result) => {
+      if(result.isConfirmed) {
+            EliminarSiCriterio(id);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire({
+                title: "Acción cancelada",
+                text: "El criterio permanece registrado.",
+                icon: "info",
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: "bottom-end",
+            })
+        }
+      })
+}
+
+function EliminarSiCriterio(id) {
+    fetch(`http://localhost:5106/api/CriteriosDeEvaluacion/${id}`,
+        {
+            method: "DELETE"
+        })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("No se pudo eliminar el criterio");
+      }
+      return response.text();
+    })
+    .then((data) => {
+        ObtenerCriterioDeEvaluacion();
+
+        Swal.fire({
+            toast: true,
+            position: "bottom-end",
+            icon: "success",
+            title: "¡Criterio de Evaluación Eliminado!",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: "#f0f0f0",
+            color: "#000",
+        })
+    })
+}
+ObtenerCriterioDeEvaluacion();
 
 ObtenerEvaluaciones();
