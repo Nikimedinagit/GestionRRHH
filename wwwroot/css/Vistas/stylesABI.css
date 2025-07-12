@@ -1,6 +1,6 @@
 /* INICIO PANEL DESLIZANTE BASE */
 /* Panel deslizante base*/
-#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio {
+#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios {
   position: fixed;
   top: 50%;
   right: 0;
@@ -22,13 +22,13 @@
 }
 
 /* Estado abierto*/
-#panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto {
+#panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto, #panelCriterios.abierto {
   transform: translate(0, -50%);
 }
 
 @media (max-width: 1024px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio{
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios{
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -37,7 +37,7 @@
 
 @media (max-width: 768px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio{
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios{
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -46,7 +46,7 @@
 
 @media (max-width: 480px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio {
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -67,9 +67,9 @@
 }
 
 .icono-editar {
-  font-size: 1.6rem !important;
+  font-size:  1.2rem !important;
   color: #0d6efd !important;
-  font-weight: bold !important;
+  /* font-weight: bold !important; */
   margin: 0px 3px !important;
   padding: 0% !important;
 

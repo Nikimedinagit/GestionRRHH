@@ -24,7 +24,9 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CriterioDeEvaluacion>>> GetCriterioDeEvaluacion()
         {
-            return await _context.CriterioDeEvaluacion.ToListAsync();
+            return await _context.CriterioDeEvaluacion
+            .Include(e => e.TipoDeCriterio)
+            .ToListAsync();
         }
 
         // GET: api/CriteriosDeEvaluacion/5

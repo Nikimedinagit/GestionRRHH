@@ -27,6 +27,8 @@ namespace API_NET_CORE8_RRHH.Controllers
             return await _context.Evaluacion
             .Include(e => e.Empleado)
             .Include(e => e.Empleado.Puesto)
+            .Include(e => e.CriterioDeEvaluacion)
+                .ThenInclude(ce => ce.TipoDeCriterio)
             .OrderBy(e => e.Calificacion)
             .ThenByDescending(e => e.Fecha)
             .ToListAsync();

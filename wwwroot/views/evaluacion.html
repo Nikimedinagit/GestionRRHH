@@ -2,7 +2,7 @@
 <div class="px-3 py-3">
   <!-- Título -->
   <div class="mb-3">
-    <h3 class="titulo-seccion">Seguimientode Evaluaciones</h3>
+    <h3 class="titulo-seccion">Seguimiento de Evaluaciones</h3>
   </div>
 
   <hr />
@@ -129,7 +129,48 @@
       </div>
     </div>
 
+    <!-- Panel Deslizante DETALLE -->
+    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
+      class="w-30">
+      <div class="panel-header">
+        <h2 id="panelTitulo" class="panel-title">Formulario De Criterios de Evaluación</h2>
+      </div>
+      <div class="panel-body">
+        <form id="formCriterios">
+          <input type="hidden" id="IdCriterio" />
+          <div class="form-grid">
 
+            <div class="form-group position-relative mb-3">
+              <select name="IdTipoCriterio" id="IdTipoCriterio" class="form-control" required>
+                <option value="" disabled selected>Seleccione</option>
+              </select>
+              <label for="IdTipoCriterio">Tipo de Criterio</label>
+              <div class="invalid-feedback" id="errorIdTipoCriterio"></div>
+            </div>
+
+            <!-- Descripcion -->
+            <div class="form-group position-relative mb-3">
+              <input type="text" id="Descripcion" class="form-control" placeholder=" " />
+              <label for="Descripcion">Descripcion</label>
+              <div class="invalid-feedback" id="errorDescripcion"></div>
+            </div>
+
+            <div class="form-group position-relative mb-3">
+              <input type="text" id="EvaluacionId" class="form-control" readonly hidden />
+              <div class="invalid-feedback" id="errorDescripcion"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-cancelar" onclick="cerrarPanelCriterios()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-guardar" onclick="BuscarCriterioId()">
+          Guardar
+        </button>
+      </div>
+    </div>
 
     <!-- Panel Deslizante Formulario -->
     <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
@@ -141,30 +182,24 @@
         <form id="formEvaluaciones">
           <input type="hidden" id="IdEvaluacion" />
           <div class="form-grid">
-            <!-- 
-          <div class="form-group position-relative mb-3">
-            <input type="date" id="FechaEvaluacion" class="form-control" placeholder=" " />
-            <label for="FechaEvaluacion">Fecha</label>
-            <div class="invalid-feedback" id="errorFechaEvaluacion"></div>
-          </div> -->
 
+            <!-- Calificacion -->
             <div class="form-group position-relative mb-3">
               <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
-              <label for="CalificacionEvaluacion">Calificacion</label>
+              <label for="CalificacionEvaluacion">Calificación</label>
               <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
             </div>
 
             <!-- Empleado -->
             <div class="form-group position-relative mb-3">
-              <select name="IdEmpleado" id="IdEmpleado" class="form-control" required>
-                <option value="" disabled selected>Seleccione</option>
+              <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
+                <option value="EmpleadoId" disabled selected>Seleccione un empleado</option>
               </select>
-              <label for="IdEmpleado">Empleado</label>
+              <label for="EmpleadoId">Empleado</label>
               <div class="invalid-feedback" id="errorEmpleadoId"></div>
             </div>
 
 
-          </div>
         </form>
       </div>
       <div class="panel-footer">
@@ -177,7 +212,9 @@
       </div>
     </div>
 
+
     <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+    <script src="../js/Vistas/common/obtenetTiposDeCriterios.js"></script>
     <script src="../js/Vistas/evaluacion.js"></script>
 
 
