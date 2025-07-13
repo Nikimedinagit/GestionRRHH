@@ -23,7 +23,7 @@ function AbrirPanelEmpleado() {
 }
 
 
-// Función Para Obtener las Localidades
+// Función Para Obtener los empelados
 async function ObtenerEmpleados() {
     const res = await authFetch("Empleados")
     .then(response => response.json())
@@ -37,7 +37,7 @@ async function ObtenerEmpleados() {
      });
 }
 
-
+// Funcion para mostrar todos los empleados
 function MostrarEmpleados(data) {
   const contenedor = $("#empleadosContainer");
   contenedor.empty();
@@ -58,7 +58,15 @@ function MostrarEmpleados(data) {
     const email = item.email || "-";
     const telefono = item.telefono || "-";
     const dni = item.dni || "-";
-    const estadoCivil = item.estadoCiviles || "-";
+     const estadoCivilEnum = {
+       1: "SOLTERO",
+       2: "CASADO",
+       3: "DIVORCIADO",
+       4: "VIUDO"
+     };
+
+     const estadoCivil = estadoCivilEnum[item.estadoCiviles] || "-";
+
     const activo = item.eliminado == false;
 
     const textoEstado = activo ? "ACTIVO" : "DESACTIVADO";
@@ -109,7 +117,7 @@ function MostrarEmpleados(data) {
             <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
               <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
             </button>
-            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
+            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id})" data-tippy-content="Editar">
               <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
             </button>
             <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="ToggleEstadoEmpleado(${item.id}, ${!activo})" data-tippy-content="${tooltipEstado}">
@@ -130,23 +138,39 @@ function MostrarEmpleados(data) {
 }
 
 
-
+//Funcion para mostrar todo el detalle del empleado
 function MostrarDetalleEmpleado(id) {
   const empleado = empleadosData.find(e => e.id === id);
   if (!empleado) return;
 
+  const EstadoCivilEnum = {
+  1: "SOLTERO",
+  2: "CASADO",
+  3: "DIVORCIADO",
+  4: "VIUDO"
+};
+
+const SexoEnum = {
+  1: "MASCULINO",
+  2: "FEMENINO",
+  3: "NO BINARIO",
+  4: "OTRO"
+};
+
+const fecha = new Date(empleado.fechaNacimiento);
+const fechaFormateada = fecha.toISOString().slice(0, 10); // "YYYY-MM-DD"
   document.getElementById("detalleNombre").textContent = empleado.nombreCompleto || '';
   document.getElementById("detalleDni").textContent = empleado.dni || '';
   document.getElementById("detalleCuil").textContent = empleado.cuil || '';
   document.getElementById("detalleTelefono").textContent = empleado.telefono || '';
   document.getElementById("detalleEmail").textContent = empleado.email || '';
-  document.getElementById("detalleFechaNacimiento").textContent = empleado.fechaNacimiento || '';
+  document.getElementById("detalleFechaNacimiento").textContent =fechaFormateada || '';
   document.getElementById("detalleDireccion").textContent = empleado.direccion || '';
-  document.getElementById("detalleEstadoCivil").textContent = empleado.estadoCiviles || '';
+  document.getElementById("detalleEstadoCivil").textContent = EstadoCivilEnum[empleado.estadoCiviles] || '';
   document.getElementById("detalleCantidadHijos").textContent = empleado.cantidadHijos || 0;
   document.getElementById("detallePuesto").textContent = empleado.puesto?.descripcion || '';
   document.getElementById("detalleLocalidad").textContent = empleado.localidad?.nombre || '';
-  document.getElementById("detalleSexo").textContent = empleado.tipoSexo || '';
+  document.getElementById("detalleSexo").textContent = SexoEnum[empleado.tipoSexo] || '';
 
   // Mostrar el offcanvas
   const offcanvas = new bootstrap.Offcanvas('#offcanvasDetalleEmpleado');
@@ -160,8 +184,11 @@ function MostrarDetalleEmpleado(id) {
 
 // Función para mostrar el modal de editar empleado
 async function MostrarModalEditarEmpleado(id) {
-  const res = await authfetch(`Empleados/${id}`);
+  const res = await authFetch(`Empleados/${id}`);
   const empleado = await res.json();
+
+  const fecha = new Date(empleado.fechaNacimiento);
+  const fechaFormateada = fecha.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
   document.getElementById("IdEmpleado").value = empleado.id;
   document.getElementById("NombreEmpleado").value = empleado.nombreCompleto;
@@ -169,7 +196,7 @@ async function MostrarModalEditarEmpleado(id) {
   document.getElementById("CuilEmpleado").value = empleado.cuil;
   document.getElementById("TelefonoEmpleado").value = empleado.telefono;
   document.getElementById("EmailEmpleado").value = empleado.email;
-  document.getElementById("FechaNacimientoEmpleado").value = empleado.fechaNacimiento;
+  document.getElementById("FechaNacimientoEmpleado").value = fechaFormateada;
   document.getElementById("DireccionEmpleado").value = empleado.direccion;
   document.getElementById("EstadoCivilEmpleado").value = empleado.estadoCiviles;
   document.getElementById("CantidadHijosEmpleado").value = empleado.cantidadHijos;
@@ -185,26 +212,13 @@ async function MostrarModalEditarEmpleado(id) {
 function BuscarEmpleadoId() {
     const id = parseInt(document.getElementById("IdEmpleado").value);    
 
-    const nombreCompleto = document.getElementById("NombreEmpleado").value.trim();
-    const dni = document.getElementById("DniEmpleado").value.trim();
-    const cuil = document.getElementById("CuilEmpleado").value.trim();
-    const telefono = document.getElementById("TelefonoEmpleado").value.trim();
-    const email = document.getElementById("EmailEmpleado").value.trim();
-    const fechaNacimiento = document.getElementById("FechaNacimientoEmpleado").value.trim();
-    const direccion = document.getElementById("DireccionEmpleado").value.trim();
-    const estadoCivil = document.getElementById("EstadoCivilEmpleado").value.trim();
-    const cantidadHijos = document.getElementById("CantidadHijosEmpleado").value.trim();
-    const tipoSexo = document.getElementById("TipoSexoEmpleado").value.trim();
-    const localidadId = document.getElementById("IdLocalidad").value.trim();
-    const puestoId = document.getElementById("IdPuesto").value.trim();
-
     // Si el id no existe o es 0, entonces es una nueva empleado y llamamos a la función para crear
     if (!id || id === 0) {
       CrearEmpleado();
     }
 
     else {
-      EditarEmpleado(id, nombreCompleto, dni, cuil, telefono, email, fechaNacimiento, direccion, estadoCivil, cantidadHijos, tipoSexo, localidadId, puestoId);
+      EditarEmpleado(id);
     }
   }
 
@@ -618,7 +632,7 @@ function LimpiarFormularioEmpleado() {
 }
 
 // Función para crear empleado
-function CrearEmpleado() {
+async function CrearEmpleado() {
     if(!ValidarFormularioEmpleado()) return;
 
   const empleado = {
@@ -641,7 +655,7 @@ function CrearEmpleado() {
     console.log(empleado);
 
     // Enviamos el objeto al backend.
-    fetch("https://localhost:7006/Empleados", {
+    const res = await authFetch("Empleados", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

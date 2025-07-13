@@ -49,7 +49,7 @@ public class Empleado
 
     public enum EstadoCivil
     {
-        SOLTERO,
+        SOLTERO =1,
         CASADO,
         DIVORCIADO,
         VIUDO
@@ -58,7 +58,7 @@ public class Empleado
 
     public enum TipoSexo
     {
-        MASCULINO,
+        MASCULINO = 1,
         FEMENINO,
         NO_BINARIO,
         OTRO

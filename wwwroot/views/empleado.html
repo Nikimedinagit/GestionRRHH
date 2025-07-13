@@ -201,11 +201,11 @@
         <!-- Estado Civil -->
         <div class="form-group position-relative mb-3">
           <select id="EstadoCivilEmpleado" class="form-control" required>
-            <option value="" disabled selected hidden>Seleccionar estado</option>
-            <option value="SOLTERO">SOLTERO</option>
-            <option value="CASADO">CASADO</option>
-            <option value="DIVORCIADO">DIVORCIADO</option>
-            <option value="VIUDO">VIUDO</option>
+            <option value="0" disabled selected hidden>Seleccionar estado</option>
+            <option value="1">SOLTERO</option>
+            <option value="2">CASADO</option>
+            <option value="3">DIVORCIADO</option>
+            <option value="4">VIUDO</option>
           </select>
           <label for="EstadoCivilEmpleado">Estado Civil</label>
         </div>
@@ -219,11 +219,11 @@
         <!-- Sexo -->
         <div class="form-group position-relative mb-3">
           <select id="TipoSexoEmpleado" class="form-control" required>
-            <option value="" disabled selected hidden>Seleccionar sexo</option>
-            <option value="MASCULINO">MASCULINO</option>
-            <option value="FEMENINO">FEMENINO</option>
-            <option value="NO_BINARIO">NO BINARIO</option>
-            <option value="OTRO">OTRO</option>
+            <option value="0" disabled selected hidden>Seleccionar sexo</option>
+            <option value="1">MASCULINO</option>
+            <option value="2">FEMENINO</option>
+            <option value="3">NO BINARIO</option>
+            <option value="4">OTRO</option>
           </select>
           <label for="TipoSexoEmpleado">Tipo de Sexo</label>
           <div class="invalid-feedback" id="errorTipoSexoEmpleado"></div>
@@ -262,79 +262,73 @@
 
 
 <!-- Offcanvas Detalle de Empleado -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado" aria-labelledby="tituloDetalleEmpleado" style="width: 360px;">
-  <div class="employee-detail-container">
-    <div class="employee-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 1rem;">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado" aria-labelledby="tituloDetalleEmpleado" style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;"
+>
+  <div class="detalle-empleado-contenedor">
+    <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-center">
       <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">Detalle del Empleado</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar" style="font-size: 1rem;"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
     </div>
 
     <hr style="margin: 0; border-top: 1px solid #dee2e6;">
 
-    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
-      <div class="detail-section">
+    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto; ">
+      <div class="detalle-empleado-seccion">
         <div class="text-center mb-3">
           <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem;">Nombre del Empleado</h4>
           <span id="detallePuesto" class="text-muted" style="font-size: 0.85rem;">Puesto del Empleado</span>
         </div>
 
-        <div class="detail-card">
-          <div class="detail-section" style="padding: 0.75rem 1rem;">
-            <p class="section-title">Información Personal</p>
-            
-            <div class="detail-row">
-              <span class="detail-label">DNI:</span>
-              <span class="detail-value" id="detalleDni"></span>
+        <div class="detalle-empleado-tarjeta">
+          <div class="detalle-empleado-seccion">
+            <p class="detalle-empleado-titulo-seccion">Información Personal</p>
+
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">DNI:</span>
+              <span class="detalle-empleado-valor" id="detalleDni"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">CUIL:</span>
-              <span class="detail-value" id="detalleCuil"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">CUIL:</span>
+              <span class="detalle-empleado-valor" id="detalleCuil"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Fecha Nacimiento:</span>
-              <span class="detail-value" id="detalleFechaNacimiento"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Fecha Nacimiento:</span>
+              <span class="detalle-empleado-valor" id="detalleFechaNacimiento"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Sexo:</span>
-              <span class="detail-value" id="detalleSexo"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Sexo:</span>
+              <span class="detalle-empleado-valor" id="detalleSexo"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Estado Civil:</span>
-              <span class="detail-value" id="detalleEstadoCivil"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Estado Civil:</span>
+              <span class="detalle-empleado-valor" id="detalleEstadoCivil"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Hijos:</span>
-              <span class="detail-value" id="detalleCantidadHijos"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Hijos:</span>
+              <span class="detalle-empleado-valor" id="detalleCantidadHijos"></span>
             </div>
-            <div class="detail-row">
-              <span class="detail-label">Localidad:</span>
-              <span class="detail-value" id="detalleLocalidad"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Localidad:</span>
+              <span class="detalle-empleado-valor" id="detalleLocalidad"></span>
             </div>
           </div>
         </div>
 
-        <div class="detail-card" style="margin-bottom: 1rem;">
-          <div class="detail-section" style="padding: 0.75rem 1rem;">
-            <p class="section-title">Contacto</p>
-            
-            <div class="detail-row">
-              <span class="detail-label">Teléfono:</span>
-              <span class="detail-value" id="detalleTelefono"></span>
+        <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem;">
+          <div class="detalle-empleado-seccion">
+            <p class="detalle-empleado-titulo-seccion">Contacto</p>
+
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Teléfono:</span>
+              <span class="detalle-empleado-valor" id="detalleTelefono"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Email:</span>
-              <span class="detail-value" id="detalleEmail"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Email:</span>
+              <span class="detalle-empleado-valor" id="detalleEmail"></span>
             </div>
-            
-            <div class="detail-row">
-              <span class="detail-label">Dirección:</span>
-              <span class="detail-value" id="detalleDireccion"></span>
+            <div class="detalle-empleado-fila">
+              <span class="detalle-empleado-etiqueta">Dirección:</span>
+              <span class="detalle-empleado-valor" id="detalleDireccion"></span>
             </div>
           </div>
         </div>
@@ -342,6 +336,7 @@
     </div>
   </div>
 </div>
+
 
 
 

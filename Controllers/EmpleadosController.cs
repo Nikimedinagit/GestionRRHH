@@ -58,6 +58,10 @@ namespace API_RRHH_TESIS2025.Controllers
                 return BadRequest();
             }
 
+            //Guarmamos en mayuscula
+            empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
+            empleado.Direccion = empleado.Direccion.ToUpper();
+
             _context.Entry(empleado).State = EntityState.Modified;
 
             try
@@ -83,7 +87,11 @@ namespace API_RRHH_TESIS2025.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
-        {
+        {   
+            //Guarmamos en mayuscula
+            empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
+            empleado.Direccion = empleado.Direccion.ToUpper();
+    
             _context.Empleado.Add(empleado);
             await _context.SaveChangesAsync();
 

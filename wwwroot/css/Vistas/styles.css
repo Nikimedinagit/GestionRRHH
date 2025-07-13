@@ -758,55 +758,60 @@ select.form-control:not([value=""])+label {
 
 
 
+#offcanvasDetalleEmpleado {
+  border-top-left-radius: 0.3rem !important;
+  border-bottom-left-radius: 0.3rem !important;
+}
 
-
-
-.employee-detail-container {
+.detalle-empleado-contenedor {
   border-left: 4px solid #ffc107;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
+ border-top-left-radius: 0.3rem;
+border-bottom-left-radius: 0.3rem;
+
   height: 100%;
 }
 
-.employee-header {
+.detalle-empleado-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
   padding: 0.5rem 1rem;
 }
 
-.detail-card {
+.detalle-empleado-tarjeta {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
   margin-bottom: 1rem;
   overflow: hidden;
   font-size: 0.75rem;
 }
 
-.detail-section {
+.detalle-empleado-seccion {
   padding: 0.75rem 1rem;
 }
 
-.detail-row {
+.detalle-empleado-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
 }
 
-.detail-label {
+.detalle-empleado-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
   flex-shrink: 0;
 }
 
-.detail-value {
+.detalle-empleado-valor {
   color: #212529;
   flex-grow: 1;
   word-break: break-word;
 }
 
-.section-title {
+.detalle-empleado-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -814,13 +819,12 @@ select.form-control:not([value=""])+label {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
-.btn-close-white {
-  filter: brightness(0) invert(1);
-  opacity: 0.8;
+.detalle-empleado-etiqueta {
+  margin-right: 10px;
+  font-weight: 600;
+}
+.detalle-empleado-valor {
+  color: rgba(108, 117, 125, 0.9); /* Gris Bootstrap con transparencia */
 }
 
-.btn-close-white:hover {
-  opacity: 1;
-  filter: brightness(0) invert(0.8);
-}
+
