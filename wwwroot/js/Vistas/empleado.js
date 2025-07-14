@@ -224,6 +224,165 @@ function BuscarEmpleadoId() {
 
 
     // Funcion para validar el formulario de empleado
+// function ValidarFormularioEmpleado() {
+//   const inputNombre = document.getElementById("NombreEmpleado");
+//   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
+
+//   const inputDni = document.getElementById("DniEmpleado");
+//   const inputErrorDni = document.getElementById("errorDniEmpleado");
+
+//   const inputTelefono = document.getElementById("TelefonoEmpleado");
+//   const inputErrorTelefono = document.getElementById("errorTelefonoEmpleado");
+
+//   const inputFechaNacimiento = document.getElementById("FechaNacimientoEmpleado");
+//   const inputErrorFechaNacimiento = document.getElementById("errorFechaNacimientoEmpleado");
+
+//   const inputDireccion = document.getElementById("DireccionEmpleado");
+//   const inputErrorDireccion = document.getElementById("errorDireccionEmpleado");
+
+//   const inputTipoSexo = document.getElementById("TipoSexoEmpleado");
+//   const inputErrorTipoSexo = document.getElementById("errorTipoSexoEmpleado");
+
+//   const inputIdLocalidad = document.getElementById("IdLocalidad");
+//   const inputErrorIdLocalidad = document.getElementById("errorIdLocalidad");
+
+//   const inputIdPuesto = document.getElementById("IdPuesto");
+//   const inputErrorIdPuesto = document.getElementById("errorIdPuesto");
+
+//   const inputGmail = document.getElementById("EmailEmpleado");
+//   const inputErrorGmail = document.getElementById("errorEmailEmpleado");
+
+//   // Obtener valores
+//   const nombre = inputNombre.value.trim();
+//   const dni = inputDni.value.trim();
+//   const telefono = inputTelefono.value.trim();
+//   const fechaNacimiento = inputFechaNacimiento.value.trim();
+//   const direccion = inputDireccion.value.trim();
+//   const tipoSexo = inputTipoSexo.value.trim();
+//   const localidadId = inputIdLocalidad.value.trim();
+//   const puestoId = inputIdPuesto.value.trim();
+//   const gmail = inputGmail.value.trim();
+
+
+//   // Limpiar estado previo
+//   const inputs = [
+//     inputNombre, inputDni, inputTelefono, inputFechaNacimiento,
+//     inputDireccion, inputTipoSexo, inputIdLocalidad, inputIdPuesto, inputGmail
+//   ];
+//   const errores = [
+//     inputErrorNombre, inputErrorDni, inputErrorTelefono, inputErrorFechaNacimiento,
+//     inputErrorDireccion, inputErrorTipoSexo, inputErrorIdLocalidad, inputErrorIdPuesto, inputErrorGmail
+//   ];
+//   inputs.forEach(input => input.classList.remove("is-invalid", "is-valid"));
+//   errores.forEach(error => error.style.display = "none");
+
+//   // Validaciones
+//   let esValido = true;
+
+//   if (nombre.length === 0) {
+//     inputNombre.classList.add("is-invalid");
+//     inputErrorNombre.textContent = "Campo obligatorio.";
+//     inputErrorNombre.style.display = "block";
+//     esValido = false;
+//   } else if (nombre.length < 3) {
+//     inputNombre.classList.add("is-invalid");
+//     inputErrorNombre.textContent = "Mínimo 3 caracteres.";
+//     inputErrorNombre.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputNombre.classList.add("is-valid");
+//   }
+
+//   if (dni.length === 0) {
+//     inputDni.classList.add("is-invalid");
+//     inputErrorDni.textContent = "Campo obligatorio.";
+//     inputErrorDni.style.display = "block";
+//     esValido = false;
+//   } else if (dni.length < 8) {
+//     inputDni.classList.add("is-invalid");
+//     inputErrorDni.textContent = "DNI inválido.";
+//     inputErrorDni.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputDni.classList.add("is-valid");
+//   }
+
+//   if (telefono.length === 0) {
+//     inputTelefono.classList.add("is-invalid");
+//     inputErrorTelefono.textContent = "Campo obligatorio.";
+//     inputErrorTelefono.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputTelefono.classList.add("is-valid");
+//   }
+
+//   if (direccion.length === 0) {
+//     inputDireccion.classList.add("is-invalid");
+//     inputErrorDireccion.textContent = "Campo obligatorio.";
+//     inputErrorDireccion.style.display = "block";
+//     esValido = false;
+//   } else if (direccion.length < 3) {
+//     inputDireccion.classList.add("is-invalid");
+//     inputErrorDireccion.textContent = "Mínimo 3 caracteres.";
+//     inputErrorDireccion.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputDireccion.classList.add("is-valid");
+//   }
+
+//   if (fechaNacimiento.length === 0) {
+//     inputFechaNacimiento.classList.add("is-invalid");
+//     inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
+//     inputErrorFechaNacimiento.style.display = "block";
+//     esValido = false;
+//   } else if (fechaNacimiento.length < 10) {
+//     inputFechaNacimiento.classList.add("is-invalid");
+//     inputErrorFechaNacimiento.textContent = "Formato inválido.";
+//     inputErrorFechaNacimiento.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputFechaNacimiento.classList.add("is-valid");
+//   }
+
+//   if (tipoSexo.length === 0) {
+//     inputTipoSexo.classList.add("is-invalid");
+//     inputErrorTipoSexo.textContent = "Campo obligatorio.";
+//     inputErrorTipoSexo.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputTipoSexo.classList.add("is-valid");
+//   }
+
+//   if (localidadId.length === 0) {
+//     inputIdLocalidad.classList.add("is-invalid");
+//     inputErrorIdLocalidad.textContent = "Campo obligatorio.";
+//     inputErrorIdLocalidad.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputIdLocalidad.classList.add("is-valid");
+//   }
+
+//   if (puestoId.length === 0) {
+//     inputIdPuesto.classList.add("is-invalid");
+//     inputErrorIdPuesto.textContent = "Campo obligatorio.";
+//     inputErrorIdPuesto.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputIdPuesto.classList.add("is-valid");
+//   }
+
+//   if (gmail.length === 0) {
+//     inputGmail.classList.add("is-invalid");
+//     inputErrorGmail.textContent = "Campo obligatorio.";
+//     inputErrorGmail.style.display = "block";
+//     esValido = false;
+//   } else {
+//     inputGmail.classList.add("is-valid");
+//   }
+
+//   return esValido;
+// }
+
 function ValidarFormularioEmpleado() {
   const inputNombre = document.getElementById("NombreEmpleado");
   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
@@ -249,6 +408,19 @@ function ValidarFormularioEmpleado() {
   const inputIdPuesto = document.getElementById("IdPuesto");
   const inputErrorIdPuesto = document.getElementById("errorIdPuesto");
 
+  const inputGmail = document.getElementById("EmailEmpleado");
+  const inputErrorGmail = document.getElementById("errorEmailEmpleado");
+
+  // Opcionales
+  const inputCantidadHijos = document.getElementById("CantidadHijosEmpleado");
+  const inputErrorCantidadHijos = document.getElementById("errorCantidadHijosEmpleado");
+
+  const inputCuil = document.getElementById("CuilEmpleado");
+  const inputErrorCuil = document.getElementById("errorCuilEmpleado");
+
+  const inputEstadoCivil = document.getElementById("EstadoCivilEmpleado");
+  const inputErrorEstadoCivil = document.getElementById("errorEstadoCivilEmpleado");
+
   // Obtener valores
   const nombre = inputNombre.value.trim();
   const dni = inputDni.value.trim();
@@ -258,21 +430,29 @@ function ValidarFormularioEmpleado() {
   const tipoSexo = inputTipoSexo.value.trim();
   const localidadId = inputIdLocalidad.value.trim();
   const puestoId = inputIdPuesto.value.trim();
+  const gmail = inputGmail.value.trim();
+
+  const cantidadHijos = inputCantidadHijos.value.trim();
+  const cuil = inputCuil.value.trim();
+  const estadoCivil = inputEstadoCivil.value.trim();
 
   // Limpiar estado previo
   const inputs = [
     inputNombre, inputDni, inputTelefono, inputFechaNacimiento,
-    inputDireccion, inputTipoSexo, inputIdLocalidad, inputIdPuesto
+    inputDireccion, inputTipoSexo, inputIdLocalidad, inputIdPuesto, inputGmail,
+    inputCantidadHijos, inputCuil, inputEstadoCivil
   ];
   const errores = [
     inputErrorNombre, inputErrorDni, inputErrorTelefono, inputErrorFechaNacimiento,
-    inputErrorDireccion, inputErrorTipoSexo, inputErrorIdLocalidad, inputErrorIdPuesto
+    inputErrorDireccion, inputErrorTipoSexo, inputErrorIdLocalidad, inputErrorIdPuesto, inputErrorGmail,
+    inputErrorCantidadHijos, inputErrorCuil, inputErrorEstadoCivil
   ];
   inputs.forEach(input => input.classList.remove("is-invalid", "is-valid"));
   errores.forEach(error => error.style.display = "none");
 
-  // Validaciones
   let esValido = true;
+
+  // Validación campos obligatorios
 
   if (nombre.length === 0) {
     inputNombre.classList.add("is-invalid");
@@ -366,8 +546,72 @@ function ValidarFormularioEmpleado() {
     inputIdPuesto.classList.add("is-valid");
   }
 
+  if (gmail.length === 0) {
+    inputGmail.classList.add("is-invalid");
+    inputErrorGmail.textContent = "Campo obligatorio.";
+    inputErrorGmail.style.display = "block";
+    esValido = false;
+  } else {
+    inputGmail.classList.add("is-valid");
+  }
+
+  // Validación opcionales, sólo si tienen valor
+
+  // CantidadHijos (solo valida si tiene algo)
+if (cantidadHijos.length > 0) {
+  if (!/^\d+$/.test(cantidadHijos)) {
+    inputCantidadHijos.classList.add("is-invalid");
+    inputErrorCantidadHijos.textContent = "1 digito.";
+    inputErrorCantidadHijos.style.display = "block";
+    esValido = false;
+  } else {
+    inputCantidadHijos.classList.add("is-valid");
+  }
+} else {
+  // Si está vacío, limpiamos cualquier validación previa
+  inputCantidadHijos.classList.remove("is-invalid", "is-valid");
+  inputErrorCantidadHijos.style.display = "none";
+}
+
+// Cuil (solo valida si tiene algo)
+if (cuil.length > 0) {
+  if (!/^\d{11}$/.test(cuil)) {
+    inputCuil.classList.add("is-invalid");
+    inputErrorCuil.textContent = "Debe tener 11 dígitos.";
+    inputErrorCuil.style.display = "block";
+    esValido = false;
+  } else {
+    inputCuil.classList.add("is-valid");
+  }
+} else {
+  inputCuil.classList.remove("is-invalid", "is-valid");
+  inputErrorCuil.style.display = "none";
+}
+
+/// EstadoCivil (solo valida si tiene algo)
+// EstadoCivilEmpleado (solo valida si tiene algo distinto a "0")
+if (estadoCivil !== "0") {
+  const valoresValidos = ["1", "2", "3", "4"];
+
+  if (!valoresValidos.includes(estadoCivil)) {
+    inputEstadoCivil.classList.add("is-invalid");
+    inputErrorEstadoCivil.textContent = "Seleccione un estado civil válido.";
+    inputErrorEstadoCivil.style.display = "block";
+    esValido = false;
+  } else {
+    inputEstadoCivil.classList.add("is-valid");
+    inputErrorEstadoCivil.style.display = "none";
+  }
+} else {
+  inputEstadoCivil.classList.remove("is-invalid", "is-valid");
+  inputErrorEstadoCivil.style.display = "none";
+}
+
+
+
   return esValido;
 }
+
 
 
 // NombreEmpleado
@@ -414,6 +658,28 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
   }
 });
 
+// EmailEmpleado
+document.getElementById("EmailEmpleado").addEventListener("input", () => {
+  const input = document.getElementById("EmailEmpleado");
+  const error = document.getElementById("errorEmailEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+
+  if (valor.length === 0) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "Campo obligatorio.";
+  } else if (!valor.includes("@")) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "Email inválido.";
+  } else {
+    input.classList.remove("is-invalid");
+    error.style.display = "none";
+  }
+});
+
 // TelefonoEmpleado
 document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
   const input = document.getElementById("TelefonoEmpleado");
@@ -426,6 +692,10 @@ document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
     input.classList.add("is-invalid");
     error.style.display = "block";
     error.textContent = "Campo obligatorio.";
+  } else if (!/^\d{10}$/.test(valor)) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "10 dígitos.";
   } else {
     input.classList.add("is-valid");
     error.style.display = "none";
@@ -476,10 +746,10 @@ document.getElementById("DireccionEmpleado").addEventListener("input", () => {
   }
 });
 
-// TipoSexoEmpleado (select)
-document.getElementById("TipoSexoEmpleado").addEventListener("change", () => {
-  const input = document.getElementById("TipoSexoEmpleado");
-  const error = document.getElementById("errorTipoSexoEmpleado");
+// IdLocalidad (select)
+document.getElementById("IdLocalidad").addEventListener("change", () => {
+  const input = document.getElementById("IdLocalidad");
+  const error = document.getElementById("errorIdLocalidad");
   const valor = input.value.trim();
 
   input.classList.remove("is-invalid", "is-valid");
@@ -494,10 +764,10 @@ document.getElementById("TipoSexoEmpleado").addEventListener("change", () => {
   }
 });
 
-// IdLocalidad (select)
-document.getElementById("IdLocalidad").addEventListener("change", () => {
-  const input = document.getElementById("IdLocalidad");
-  const error = document.getElementById("errorIdLocalidad");
+//TipoSexoEmpleado (select)
+document.getElementById("TipoSexoEmpleado").addEventListener("change", () => {
+  const input = document.getElementById("TipoSexoEmpleado");
+  const error = document.getElementById("errorTipoSexoEmpleado");
   const valor = input.value.trim();
 
   input.classList.remove("is-invalid", "is-valid");
@@ -527,6 +797,96 @@ document.getElementById("IdPuesto").addEventListener("change", () => {
   } else {
     input.classList.add("is-valid");
     error.style.display = "none";
+  }
+});
+
+// CuilEmpleado (input)
+document.getElementById("CuilEmpleado").addEventListener("input", () => {
+  const input = document.getElementById("CuilEmpleado");
+  const error = document.getElementById("errorCuilEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+  error.style.display = "none";
+
+  if (valor.length > 0) {
+    if (!/^\d{11}$/.test(valor)) {
+      input.classList.add("is-invalid");
+      error.textContent = "Debe tener 11 dígitos.";
+      error.style.display = "block";
+    } else {
+      input.classList.add("is-valid");
+      error.style.display = "none";
+    }
+  }
+});
+
+// CantidadHijosEmpleado (input)
+document.getElementById("CantidadHijosEmpleado").addEventListener("input", () => {
+  const input = document.getElementById("CantidadHijosEmpleado");
+  const error = document.getElementById("errorCantidadHijosEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+  error.style.display = "none";
+
+  if (valor.length > 0) {
+    if (!/^\d+$/.test(valor)) {
+      input.classList.add("is-invalid");
+      error.textContent = "Debe ser un número entero positivo.";
+      error.style.display = "block";
+    } else {
+      input.classList.add("is-valid");
+      error.style.display = "none";
+    }
+  }
+});
+
+// EstadoCivilEmpleado (select)
+document.getElementById("EstadoCivilEmpleado").addEventListener("change", () => {
+  const input = document.getElementById("EstadoCivilEmpleado");
+  const error = document.getElementById("errorEstadoCivilEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+
+  if (valor !== "0") {
+    const valoresValidos = ["1", "2", "3", "4"];
+    if (!valoresValidos.includes(valor)) {
+      input.classList.add("is-invalid");
+      error.textContent = "Seleccione un estado civil válido.";
+      error.style.display = "block";
+    } else {
+      input.classList.add("is-valid");
+      error.style.display = "none";
+    }
+  } else {
+    // Si es la opción por defecto, limpiamos validación
+    input.classList.remove("is-invalid", "is-valid");
+    error.style.display = "none";
+  }
+});
+
+
+
+//EmailEmpleado(input)
+document.getElementById("EmailEmpleado").addEventListener("input", () => {
+  const input = document.getElementById("EmailEmpleado");
+  const error = document.getElementById("errorEmailEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+  error.style.display = "none";
+
+  if (valor.length > 0) {
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(valor)) {
+      input.classList.add("is-invalid");
+      error.textContent = "Formato inválido.";
+      error.style.display = "block";
+    } else {
+      input.classList.add("is-valid");
+      error.style.display = "none";
+    }
   }
 });
 
@@ -571,6 +931,10 @@ function LimpiarFormularioEmpleado() {
   const inputIdPuesto = document.getElementById("IdPuesto");
   inputIdPuesto.value = "";
 
+  const inputGmail = document.getElementById("EmailEmpleado");
+  inputGmail.value = "";
+
+  
 
   // Limpia los estilos de validación
   inputNombre.classList.remove("is-invalid");
@@ -596,6 +960,18 @@ function LimpiarFormularioEmpleado() {
 
   inputIdPuesto.classList.remove("is-invalid");
   inputIdPuesto.classList.remove("is-valid");
+
+  inputGmail.classList.remove("is-invalid");
+  inputGmail.classList.remove("is-valid");
+
+  inputCuil.classList.remove("is-invalid");
+  inputCuil.classList.remove("is-valid");
+
+  inputEstadoCivil.classList.remove("is-invalid");
+  inputEstadoCivil.classList.remove("is-valid");
+
+  inputCantidadHijos.classList.remove("is-invalid");  
+  inputCantidadHijos.classList.remove("is-valid");
 
   // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
@@ -628,57 +1004,138 @@ function LimpiarFormularioEmpleado() {
 
   const inputErrorIdPuesto = document.getElementById("errorIdPuesto");
   inputErrorIdPuesto.textContent = "";   
-  inputErrorIdPuesto.style.display = "none";          
+  inputErrorIdPuesto.style.display = "none"; 
+  
+  const inputErrorGmail = document.getElementById("errorEmailEmpleado");
+  inputErrorGmail.textContent = "";
+  inputErrorGmail.style.display = "none";
 }
+
+
+function MostrarErrorEmpleadoExistente(mensajes) {
+  const errorDniEmpleado = document.getElementById("errorDniEmpleado");
+  const inputDniEmpleado = document.getElementById("DniEmpleado");
+
+  const errorCuilEmpleado = document.getElementById("errorCuilEmpleado");
+  const inputCuilEmpleado = document.getElementById("CuilEmpleado");
+
+  const errorTelefonoEmpleado = document.getElementById("errorTelefonoEmpleado");
+  const inputTelefonoEmpleado = document.getElementById("TelefonoEmpleado");
+
+  const errorEmailEmpleado = document.getElementById("errorEmailEmpleado");
+  const inputEmailEmpleado = document.getElementById("EmailEmpleado");
+
+  // Limpiar mensajes y estilos previos
+  errorDniEmpleado.textContent = "";
+  errorDniEmpleado.style.display = "none";
+  errorDniEmpleado.classList.remove("shake");
+  inputDniEmpleado.classList.remove("is-invalid");
+
+  errorCuilEmpleado.textContent = "";
+  errorCuilEmpleado.style.display = "none";
+  errorCuilEmpleado.classList.remove("shake");
+  inputCuilEmpleado.classList.remove("is-invalid");
+
+  errorTelefonoEmpleado.textContent = "";
+  errorTelefonoEmpleado.style.display = "none";
+  errorTelefonoEmpleado.classList.remove("shake");
+  inputTelefonoEmpleado.classList.remove("is-invalid");
+
+  errorEmailEmpleado.textContent = "";
+  errorEmailEmpleado.style.display = "none";
+  errorEmailEmpleado.classList.remove("shake");
+  inputEmailEmpleado.classList.remove("is-invalid");
+
+  // Mostrar errores según el mensaje
+  mensajes.forEach(mensaje => {
+    const msgLower = mensaje.toLowerCase();
+    if (msgLower.includes("dni")) {
+      errorDniEmpleado.textContent = mensaje;
+      errorDniEmpleado.style.display = "block";
+      errorDniEmpleado.classList.remove("fade");
+      errorDniEmpleado.classList.add("shake");
+      inputDniEmpleado.classList.add("is-invalid");
+    }
+
+    if (msgLower.includes("cuil")) {
+      errorCuilEmpleado.textContent = mensaje;
+      errorCuilEmpleado.style.display = "block";
+      errorCuilEmpleado.classList.remove("fade");
+      errorCuilEmpleado.classList.add("shake");
+      inputCuilEmpleado.classList.add("is-invalid");
+    }
+
+    if (msgLower.includes("telefono")) {
+      errorTelefonoEmpleado.textContent = mensaje;
+      errorTelefonoEmpleado.style.display = "block";
+      errorTelefonoEmpleado.classList.remove("fade");
+      errorTelefonoEmpleado.classList.add("shake");
+      inputTelefonoEmpleado.classList.add("is-invalid");
+    }
+
+    if (msgLower.includes("email")) {
+      errorEmailEmpleado.textContent = mensaje;
+      errorEmailEmpleado.style.display = "block";
+      errorEmailEmpleado.classList.remove("fade");
+      errorEmailEmpleado.classList.add("shake");
+      inputEmailEmpleado.classList.add("is-invalid");
+    }
+  });
+}
+
 
 // Función para crear empleado
 async function CrearEmpleado() {
-    if(!ValidarFormularioEmpleado()) return;
+  if (!ValidarFormularioEmpleado()) return;
 
   const empleado = {
     nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
-    dNI: parseInt(document.getElementById("DniEmpleado").value.trim()),
-    cuil: parseInt(document.getElementById("CuilEmpleado").value.trim()),
-    telefono: document.getElementById("TelefonoEmpleado").value.trim() || "",
+    dni: Number(document.getElementById("DniEmpleado").value.trim()),
+    cuil: Number(document.getElementById("CuilEmpleado").value.trim()),
+    telefono: document.getElementById("TelefonoEmpleado").value.trim(),
     email: document.getElementById("EmailEmpleado").value.trim(),
     fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
     direccion: document.getElementById("DireccionEmpleado").value.trim(),
-    estadoCiviles: document.getElementById("EstadoCivilEmpleado").value.trim(), // Si envías string, revisa backend para convertir enum
-    cantidadHijos: parseInt(document.getElementById("CantidadHijosEmpleado").value.trim()) || 0,
-    tipoSexo: document.getElementById("TipoSexoEmpleado").value.trim(),
-    localidadId: parseInt(document.getElementById("IdLocalidad").value.trim()) || 0,
-    puestoId: parseInt(document.getElementById("IdPuesto").value.trim()) || 0,
+    estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
+    cantidadHijos: Number(document.getElementById("CantidadHijosEmpleado").value.trim()),
+    tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
+    localidadId: Number(document.getElementById("IdLocalidad").value),
+    puestoId: Number(document.getElementById("IdPuesto").value),
   };
 
-
-
-    console.log(empleado);
-
-    // Enviamos el objeto al backend.
-    const res = await authFetch("Empleados", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(empleado)
-    })
-    .then(response => {
-      if (response.ok) {
-        
-        ObtenerEmpleados();
-      } else {
-        // Si hubo un error, mostramos un mensaje.
-        alert("Error al crear el empleado.");
+  const res = await authFetch("Empleados", {
+    method: "POST",
+    body: JSON.stringify(empleado)
+  })
+  .then( async response => {
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorEmpleadoExistente(errorData.mensaje);
       }
+      return;
+    }
+
+    // Éxito
+    ObtenerEmpleados();
+    CerrarPanelEmpleado();
+
+    Swal.fire({
+      toast: true,
+      position: "bottom-end",
+      icon: "success",
+      title: "¡Empleado Creado!",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: "#f0f0f0",
+      color: "#000",
     });
-  }
-
-
-  
-
-    
-
-
+  })
+  .catch(error => {
+    console.error("Error al crear empleado:", error);
+  });
+}
 
 
 ObtenerEmpleados();

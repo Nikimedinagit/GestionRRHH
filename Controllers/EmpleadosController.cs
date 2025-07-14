@@ -91,7 +91,33 @@ namespace API_RRHH_TESIS2025.Controllers
             //Guarmamos en mayuscula
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
-    
+
+            // Validamos si existe el dni, cuil, emial y telefono
+            var errroresExistentes = new List<string>();
+
+            var dniExistente = await _context.Empleado
+                .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
+            if (dniExistente != null)
+                errroresExistentes.Add("El DNI ya existe.");
+
+            var cuilExistente = await _context.Empleado
+                .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
+            if (cuilExistente != null)
+                errroresExistentes.Add("El CUIL ya existe.");
+
+            var emailExistente = await _context.Empleado
+                .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
+            if (emailExistente != null)
+                errroresExistentes.Add("El Email ya existe.");
+
+            var telefonoExistente = await _context.Empleado
+                .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
+            if (telefonoExistente != null)
+                errroresExistentes.Add("El Telefono ya existe.");
+
+            if (errroresExistentes.Any())
+                return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
+                
             _context.Empleado.Add(empleado);
             await _context.SaveChangesAsync();
 
