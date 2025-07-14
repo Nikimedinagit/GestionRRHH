@@ -49,6 +49,71 @@ namespace API_NET_CORE8_RRHH.Controllers
             return evaluacion;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<EvaluacionVista>>> EvaluacionFiltro([FromBody] EvaluacionFiltro filtro)
+        {
+
+            List<EvaluacionVista> vista = new List<EvaluacionVista>();
+
+            var evaluacionFiltrar = _context.Evaluacion.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
+            {
+                evaluacionFiltrar = evaluacionFiltrar
+                .Where(e => e.Empleado.NombreCompleto.Contains(filtro.NombreEmpleado));
+            }
+
+            if (filtro.Fecha.HasValue)
+            {
+                var fechaEvaluacion = filtro.Fecha.Value.Date;
+                var fechaLimite = fechaEvaluacion.AddDays(1);
+
+                evaluacionFiltrar = evaluacionFiltrar
+                .Where(t => t.Fecha >= fechaEvaluacion && t.Fecha <fechaLimite);
+                // .Where(t => t.FechaInicio <= fechaFin && t.FechaFin >= fechaInicio);    
+            }
+
+            if (filtro.Calificacion.HasValue)
+            {
+                if (filtro.Calificacion.Value == 1)
+                {
+                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion < 5);
+                }
+                if (filtro.Calificacion.Value == 2)
+                {
+                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 5 && t.Calificacion < 7);
+                }
+                if (filtro.Calificacion.Value == 3)
+                {
+                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 7 && t.Calificacion < 9);
+                }
+                if (filtro.Calificacion.Value == 4)
+                {
+                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 9);
+                }
+
+            }
+
+            var listaFiltrada = await evaluacionFiltrar
+            .Include(e => e.Empleado)
+            .ThenInclude(e => e.Puesto)
+            .ToListAsync();
+
+            foreach (var evaluacion in listaFiltrada)
+            {
+                var vistaEvaluacion = new EvaluacionVista
+                {
+                    Id = evaluacion.Id,
+                    Fecha = evaluacion.Fecha,
+                    Calificacion = evaluacion.Calificacion,
+                    EmpleadoId = evaluacion.EmpleadoId.ToString(),
+                    EmpleadoNombre = evaluacion.Empleado.NombreCompleto,
+                    EmpleadoPuesto = evaluacion.Empleado.Puesto.Descripcion
+                };
+                vista.Add(vistaEvaluacion);
+            }
+            return vista;
+        }
         // PUT: api/Evaluaciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

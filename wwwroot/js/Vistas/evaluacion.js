@@ -52,11 +52,79 @@ function cerrarPanelCriterios() {
 }
 //FIN PANEL CRITERIOS//
 
+//PANEL FILTROS//
+//Funcion para abrir panel de filtros
+function AbrilPanelFiltros(idPanel) {
+  const panel = document.getElementById(idPanel);
+  if (!panel) return;
 
+  if (panel.classList.contains("activo")) {
+    panel.classList.remove("activo");
+    setTimeout(() => panel.classList.add("d-none"), 300);
+    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+  } else {
+    panel.classList.remove("d-none");
+    setTimeout(() => panel.classList.add("activo"), 10);
+    // Agrega el listener para cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }, 20);
+  }
+
+  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
+  function DetectarClickFueraDeFiltro(event) {
+    if (
+      !panel.contains(event.target) &&
+      event.target.id !== "btnMostrarFiltros"
+    ) {
+      panel.classList.remove("activo");
+      setTimeout(() => panel.classList.add("d-none"), 300);
+      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+    }
+  }
+}
+//FIN PANEL FILTROS//
+
+
+  document.getElementById('filtrarFechaSelect').addEventListener('change', function () {
+    const mostrar = this.value === 'si';
+    document.getElementById('fechasInputs').classList.toggle('d-none', !mostrar);
+
+      // Opcional: limpiar valores al ocultar
+      document.getElementById("FechaEvalBuscar").value = "";
+  });
+
+//Onchange de filtro
+document.getElementById("EmpleadoIdBuscar").onchange = function () {
+  ObtenerEvaluaciones();
+}
+
+document.getElementById("FechaEvalBuscar").onchange = function () {
+  ObtenerEvaluaciones();
+}
+
+document.getElementById("CalificacionBuscar").onchange = function () {
+  ObtenerEvaluaciones();
+}
 
 //Funcion para obtener las evaluaciones
 async function ObtenerEvaluaciones() {
-    const res = await authFetch("Evaluaciones")
+  let nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
+  let fechaInput = document.getElementById("FechaEvalBuscar").value;
+  let calificacionEvaluacion = document.getElementById("CalificacionBuscar").value;
+  let calificacion = calificacionEvaluacion !== "0" && calificacionEvaluacion !== "" ? calificacionEvaluacion: null;
+
+
+  let filtro = {
+    nombreEmpleado: nombreEmpleado,
+    fecha: fechaInput ? fechaInput : null,
+    calificacion : calificacion,
+  }
+  console.log(filtro);
+    const res = await authFetch("Evaluaciones/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
+    })
     .then(response => response.json())
     .then((data => {
         MostrarEvaluaciones(data);
@@ -79,6 +147,7 @@ function MostrarEvaluaciones(data) {
     return;
   }
 
+  if(Array.isArray(data)){
   data.forEach(element => {
     const nota = Number(element.calificacion);
     const fecha = element.fecha.split("T")[0];
@@ -104,11 +173,11 @@ function MostrarEvaluaciones(data) {
         </button>
 
         <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <div class="fw-bold" title="${element.empleado?.nombreCompleto || 'Sin nombre'}">
-            ${element.empleado?.nombreCompleto || 'Sin nombre'}
+          <div class="fw-bold" title="${element.empleadoNombre || 'Sin nombre'}">
+            ${element.empleadoNombre || 'Sin nombre'}
           </div>
-          <div class="text-muted" style="opacity: 0.6;" title="${element.empleado?.puesto?.descripcion || 'Sin puesto'}">
-            ${element.empleado?.puesto?.descripcion || 'Sin puesto'}
+          <div class="text-muted" style="opacity: 0.6;" title="${element.empleadoPuesto || 'Sin puesto'}">
+            ${element.empleadoPuesto || 'Sin puesto'}
           </div>
         </div>
         <div class="text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
@@ -156,12 +225,12 @@ function MostrarEvaluaciones(data) {
       const icon = $(this).find("i");
       icon.toggleClass("bi-chevron-down bi-chevron-up");
     });
-
+ 
     contenedor.append(item);
     contenedor.append(detalleHTML);
     ObtenerCriterioDeEvaluacion(element.id);
   });
-
+}
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -391,6 +460,7 @@ async function EditarEvaluacion(id) {
     });
 }
 
+ObtenerEvaluaciones();
 
 
 //FUNCIONES CRITERIOS DE EVALUACION
@@ -546,7 +616,7 @@ const criterioEvaluacion = {
         ValidarEvaluacionExistente(response.mensaje);
       } else {
         cerrarPanelCriterios();
-        ObtenerCriterioDeEvaluacion();        // Mostrar alerta de éxito
+        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);        // Mostrar alerta de éxito
         Swal.fire({
           toast: true,
           position: "bottom-end",
@@ -611,7 +681,7 @@ function EliminarSiCriterio(id) {
       return response.text();
     })
     .then((data) => {
-        ObtenerCriterioDeEvaluacion();
+ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 
         Swal.fire({
             toast: true,
@@ -626,6 +696,7 @@ function EliminarSiCriterio(id) {
         })
     })
 }
-ObtenerCriterioDeEvaluacion();
 
-ObtenerEvaluaciones();
+//Funcion para obtener los criterios de evaluacion de una evaluacion
+// ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+
