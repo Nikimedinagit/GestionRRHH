@@ -41,14 +41,61 @@
     <!-- Contenedor Filtros-->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <div class="col-12 col-md-2">
-          <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
-          <select id="EstadoIdBuscar" class="form-control filtro-select">
-            <option value="">[Todos]</option>
-            <option value="0">Activos</option>
-            <option value="1">Inactivos</option>
-          </select>
-        </div>
+        <!-- Empleado -->
+                <div class="col-12 col-md-3">
+                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..."/>
+                 </div> 
+
+                  <!-- DNI -->
+                <div class="col-12 col-md-2">
+                    <label for="DniEmpleadoFiltro" class="form-label-fija">DNI</label>
+                    <input type="number" class="form-control filtro-select" id="DniEmpleadoFiltro" placeholder="Buscar..."/>
+                </div>
+
+                 <!-- Tipo de Sexo -->
+                <div class="col-12 col-md-2"> 
+                    <label for="TipoSexoEmpleadoFiltro" class="form-label-fija">Tipo de Sexo</label>
+                    <select id="TipoSexoEmpleadoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">MASCULINO</option>
+                        <option value="2">FEMENINO</option>
+                        <option value="3">NO BINARIO</option>
+                        <option value="4">OTRO</option>
+                    </select>
+                </div>
+
+
+                <!-- Estado Civil -->   
+                <div class="col-12 col-md-2">
+                    <label for="EstadoCivilEmpleadoFiltro" class="form-label-fija">Estado Civil</label>
+                    <select id="EstadoCivilEmpleadoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">SOLTERO</option>
+                        <option value="2">CASADO</option>
+                        <option value="3">DIVORCIADO</option>
+                        <option value="4">VIUDO</option>
+                    </select>
+                </div>
+
+                <!-- Localidad -->
+                <div class="col-12 col-md-2">
+                    <label for="IdLocalidadFiltro" class="form-label-fija">Localidad</label>
+                    <select id="IdLocalidadFiltro" class="form-control filtro-select">
+                        <option value="0">[Todas]</option>
+                        <!-- Aquí se cargarán dinámicamente las localidades -->
+                    </select>
+                </div>
+
+                <!-- Puesto -->
+                <div class="col-12 col-md-3">
+                    <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
+                    <select id="IdPuestoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todas]</option>
+                        <!-- Aquí se cargarán dinámicamente los puestos -->
+                    </select>
+                </div>
+
       </div>
     </div>
 

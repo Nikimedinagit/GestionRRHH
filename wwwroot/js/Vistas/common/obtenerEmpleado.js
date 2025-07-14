@@ -6,13 +6,13 @@ async function ObtenerEmpleadosDropDown() {
         .then(data => {
             MostrarEmpleadosDropDown(data) 
         })
-        .catch(error => console.log("No se puede acceder al servicio.", error))  // En caso que falle, muestra el error por consola.
+        .catch(error => console.log("No se puede acceder al servicio.", error))  
 }
 
 
 function MostrarEmpleadosDropDown(data) {
     const $dropdown = $('#EmpleadoId');
-     console.log("Select encontrado:", $dropdown.length); // debería imprimir 1
+     console.log("Select encontrado:", $dropdown.length); 
     $dropdown.empty();  
 
     // Agrega la opción por defecto

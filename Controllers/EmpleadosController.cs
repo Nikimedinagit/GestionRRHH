@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_RRHH_TESIS2025.Controllers
-{   
+{
     [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
@@ -32,6 +32,71 @@ namespace API_RRHH_TESIS2025.Controllers
                 .ToListAsync();
 
             return empleado;
+        }
+
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
+        {
+            List<VistaEmpleado> vista = new List<VistaEmpleado>();
+            var empleadosFiltrados = _context.Empleado.AsQueryable();
+
+            if(!string.IsNullOrEmpty(filtro.NombreCompleto))
+            {
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+            }
+            // var resultado = await empleadosFiltrados.OrderBy(e => e.NombreCompleto).ToListAsync();
+            if (filtro.DNI.HasValue)
+            {
+                string dniFiltro = filtro.DNI.Value.ToString();
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
+            }
+
+            if (filtro.EstadoCiviles.HasValue)
+            {
+                empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+            }
+
+             if (filtro.TipoSexo.HasValue)
+                empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
+
+            if (filtro.LocalidadId.HasValue)
+            {
+                int localidadId = int.Parse(filtro.LocalidadId.Value.ToString());
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
+            }
+
+            if (filtro.PuestoId.HasValue)
+            {
+                int puestoId = int.Parse(filtro.PuestoId.Value.ToString());
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
+            }
+
+            var listaFiltrada = await empleadosFiltrados
+                .Include(e => e.Localidad)
+                .Include(e => e.Puesto)
+                .ToListAsync();
+            foreach (var empleado in listaFiltrada)
+            {
+                var vistaEmpleado = new VistaEmpleado
+                {
+                    Id = empleado.Id,
+                    NombreCompleto = empleado.NombreCompleto,
+                    DNI = empleado.DNI,
+                    Direccion = empleado.Direccion,
+                    FechaNacimientoString = empleado.FechaNacimientoString,
+                    EstadoCivilesString = empleado.EstadoCivilesString,
+                    Email = empleado.Email,
+                    Telefono = empleado.Telefono,
+                    Cuil = empleado.Cuil,
+                    CantidadHijos = empleado.CantidadHijos,
+                    TipoSexoString = empleado.TipoSexoString,
+                    LocalidadIdString = empleado.LocalidadIdString,
+                    PuestoIdString = empleado.PuestoIdString,
+                    Eliminado = empleado.Eliminado
+                };
+                vista.Add(vistaEmpleado);
+            }
+            return vista;
         }
 
         // GET: api/Empleados/5
@@ -62,6 +127,52 @@ namespace API_RRHH_TESIS2025.Controllers
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
 
+            //Guardamos el email en minúsculas
+            empleado.Email = empleado.Email.ToLower();
+
+            // Validamos si existe el dni, cuil, email y telefono
+            var erroresExistentes = new List<string>();
+
+            // DNI (obligatorio)
+            if (!string.IsNullOrWhiteSpace(empleado.DNI.ToString()))
+            {
+                var dniExistente = await _context.Empleado
+                    .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
+                if (dniExistente != null)
+                    erroresExistentes.Add("El DNI ya existe.");
+            }
+
+            // CUIL (opcional)
+            if (empleado.Cuil != null && empleado.Cuil != 0)
+            {
+                var cuilExistente = await _context.Empleado
+                    .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
+                if (cuilExistente != null)
+                    erroresExistentes.Add("El CUIL ya existe.");
+            }
+
+            // Email (solo si está presente)
+            if (!string.IsNullOrWhiteSpace(empleado.Email))
+            {
+                var emailExistente = await _context.Empleado
+                    .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
+                if (emailExistente != null)
+                    erroresExistentes.Add("El Email ya existe.");
+            }
+
+            // Teléfono (solo si está presente)
+            if (!string.IsNullOrWhiteSpace(empleado.Telefono))
+            {
+                var telefonoExistente = await _context.Empleado
+                    .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
+                if (telefonoExistente != null)
+                    erroresExistentes.Add("El Teléfono ya existe.");
+            }
+
+            // Devolver errores si existen
+            if (erroresExistentes.Any())
+                return BadRequest(new { codigo = 0, mensaje = erroresExistentes });
+
             _context.Entry(empleado).State = EntityState.Modified;
 
             try
@@ -80,17 +191,20 @@ namespace API_RRHH_TESIS2025.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(empleado);
         }
 
         // POST: api/Empleados
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
-        {   
+        {
             //Guarmamos en mayuscula
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
+
+            //Guardamos el email en minúsculas
+            empleado.Email = empleado.Email.ToLower();
 
             // Validamos si existe el dni, cuil, emial y telefono
             var errroresExistentes = new List<string>();
@@ -117,7 +231,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
             if (errroresExistentes.Any())
                 return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
-                
+
             _context.Empleado.Add(empleado);
             await _context.SaveChangesAsync();
 
@@ -134,10 +248,16 @@ namespace API_RRHH_TESIS2025.Controllers
                 return NotFound();
             }
 
-            _context.Empleado.Remove(empleado);
+
+            empleado.Eliminado = !empleado.Eliminado;
+            var mensaje = empleado.Eliminado ?
+                "Empleado Desactivado" :
+                "Empleado Activado";
+
+            _context.Empleado.Update(empleado);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { mensaje });
         }
 
         private bool EmpleadoExists(int id)

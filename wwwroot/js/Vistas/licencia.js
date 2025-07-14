@@ -330,7 +330,7 @@ async function MostrarModalEditar(id) {
   document.getElementById("IdTipoLicencia").value = licencia.tipoDeLicenciaId;
   document.getElementById("FechaInicio").value = licencia.fechaInicio.split("T")[0];
   document.getElementById("FechaFin").value = licencia.fechaFin.split("T")[0];
-  document.getElementById("IdEmpleado").value = licencia.empleadoId;
+  document.getElementById("EmpleadoId").value = licencia.empleadoId;
 
   // No asignar valor al input file
   const archivoAdjuntoDiv = document.getElementById("archivoAdjuntoActual");
@@ -369,7 +369,7 @@ function LimpiarModalLicencia() {
   // Limpia el formulario
   document.getElementById("IdLicencia").value = "";
   const inputTipoLicencia = document.getElementById("IdTipoLicencia");
-  const inputEmpleado = document.getElementById("IdEmpleado");
+  const inputEmpleado = document.getElementById("EmpleadoId");
   const inputFechaInicio = document.getElementById("FechaInicio");
   const inputFechaFin = document.getElementById("FechaFin");
   const inputDocumentoAdjunto = document.getElementById("DocumentoAdjunto");
@@ -421,7 +421,7 @@ function LimpiarModalLicencia() {
 function ValidarFormularioLicencia() {
   const inputTipoLicencia = document.getElementById("IdTipoLicencia");
   const inputErrorTipoLicencia = document.getElementById("errorIdTipoLicencia");
-  const inputEmpleado = document.getElementById("IdEmpleado");
+  const inputEmpleado = document.getElementById("EmpleadoId");
   const inputErrorEmpleado = document.getElementById("errorIdEmpleado");
   const inputFechaInicio = document.getElementById("FechaInicio");
   const inputErrorFechaInicio = document.getElementById("errorFechaInicio");
@@ -526,8 +526,8 @@ document.getElementById("IdTipoLicencia").addEventListener("input", () => {
 });
 
 // Validación en vivo para Empleado
-document.getElementById("IdEmpleado").addEventListener("input", () => {
-  const input = document.getElementById("IdEmpleado");
+document.getElementById("EmpleadoId").addEventListener("input", () => {
+  const input = document.getElementById("EmpleadoId");
   const error = document.getElementById("errorIdEmpleado");
   if (!input.value) {
     input.classList.add("is-invalid");
@@ -621,7 +621,7 @@ async function CrearLicencia() {
         fechaInicio: document.getElementById("FechaInicio").value,
         fechaFin: document.getElementById("FechaFin").value,
         documentoAdjunto: document.getElementById("DocumentoAdjunto").value || "",
-        empleadoId: document.getElementById("IdEmpleado").value,
+        empleadoId: document.getElementById("EmpleadoId").value,
     };
 
     const res = await authFetch("Licencias", {
@@ -666,7 +666,7 @@ let licencia = {
         fechaInicio: document.getElementById("FechaInicio").value,
         fechaFin: document.getElementById("FechaFin").value,
         documentoAdjunto: document.getElementById("DocumentoAdjunto").value || "",
-        empleadoId: parseInt(document.getElementById("IdEmpleado").value) || 0, 
+        empleadoId: parseInt(document.getElementById("EmpleadoId").value) || 0, 
     };
     const res = await authFetch(`Licencias/${id}`, {
         method: "PUT",
