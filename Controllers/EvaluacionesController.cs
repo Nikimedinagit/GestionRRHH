@@ -128,6 +128,9 @@ namespace API_NET_CORE8_RRHH.Controllers
             evaluacion.Calificacion = evaluacion.Calificacion;
             evaluacion.EmpleadoId = evaluacion.EmpleadoId;
 
+            //Fecha de evaluacion valor fijo
+            evaluacion.Fecha = DateTime.Now;
+
             _context.Entry(evaluacion).State = EntityState.Modified;
 
             try

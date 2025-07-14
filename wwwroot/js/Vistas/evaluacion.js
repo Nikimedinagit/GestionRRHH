@@ -37,8 +37,6 @@ function abrirPanelCriterios() {
 $(document).on("click", ".crearCriterio", function () {
   const idEvaluacion = $(this).data("evaluacion-id");
   evaluacionIdSeleccionada = idEvaluacion; 
-    console.log("ID de evaluación seleccionada:", idEvaluacion);
-
   abrirPanelCriterios();
 });
 
@@ -167,9 +165,10 @@ function MostrarEvaluaciones(data) {
     }
 
     const item = $(`
-      <div class="evaluacion-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" style="gap: 10px;">
-        <button class="btn-editar me-3" style="background: none; border: none;  data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-          <i class="bi bi-pencil icono-editar"></i>
+      <div class="evaluacion-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center" style="gap: 20px;">
+        <button class="btn-editar me-1" style="background: none; border: none;  data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+          <i class="bi bi-pencil-square icono-editar"></i>
         </button>
 
         <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -180,7 +179,8 @@ function MostrarEvaluaciones(data) {
             ${element.empleadoPuesto || 'Sin puesto'}
           </div>
         </div>
-        <div class="text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
+        </div>
+        <div class=" d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
           <span style="margin-right: 5px;">&bull;</span>
           Fue evaluado el ${fecha}
         </div>
@@ -198,17 +198,27 @@ function MostrarEvaluaciones(data) {
 
     const detalleHTML = $(`
       <div class="panelCriterios collapse px-3 pb-2" style="display: none;">
+        <div class="mb-3">
+          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+        </div>
+        <hr />
         <div class="criterios-panel mt-3">
           <button class="btn btn-agregar mb-2 crearCriterio" data-evaluacion-id="${element.id}">
-            <i class="fa-solid fa-plus me-1"></i> Crear Criterio
+            <i class="fa-solid fa-plus me-1"></i> 
+            <span>Agregar Criterio</span>
           </button>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
+            <colgroup>
+              <col style="width: 25%" />
+              <col style="width: 65%" />
+              <col  style="width: 10%" />
+            </colgroup>
               <thead>
                 <tr>
-                  <th class="text-start">Tipo</th>
-                  <th class="text-start">Descripción</th>
-                  <th class="text-center">Acciones</th>
+                  <th class="text-start header-table">Tipo</th>
+                  <th class="text-start header-table">Descripción</th>
+                  <th class="text-center header-table">Acciones</th>
                   </tr>
               </thead>
               <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
@@ -220,11 +230,17 @@ function MostrarEvaluaciones(data) {
       </div>
     `);
 
-    item.find(".toggle-detalle").on("click", function () {
-      detalleHTML.slideToggle(200);
-      const icon = $(this).find("i");
-      icon.toggleClass("bi-chevron-down bi-chevron-up");
-    });
+  item.find(".toggle-detalle").on("click", function () {
+    const iconoChevron = $(this).find("i"); // Icono de la flecha
+    const panel = detalleHTML; // Contenedor del panel
+  // Alternar visibilidad
+    panel.slideToggle(200, function () {
+    panel.toggleClass("mostrar", panel.is(":visible"));
+  });
+
+  iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
+});
+
  
     contenedor.append(item);
     contenedor.append(detalleHTML);
@@ -498,7 +514,7 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
         <td class='d-flex justify-content-center align-items-center'>
           <button class='btn-eliminar' style='background: none; border: none;' 
             onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
-            <i class='bi bi-trash3 icono-eliminar'></i>
+            <i class='bi bi-trash3 icono-elimina-detalle'></i>
           </button>
         </td>
       </tr>
@@ -681,7 +697,7 @@ function EliminarSiCriterio(id) {
       return response.text();
     })
     .then((data) => {
-ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+    ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 
         Swal.fire({
             toast: true,
@@ -698,5 +714,5 @@ ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 }
 
 //Funcion para obtener los criterios de evaluacion de una evaluacion
-// ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 
