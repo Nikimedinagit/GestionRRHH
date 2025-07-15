@@ -19,4 +19,5 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<API_RRHH_TESIS2025.Models.General.TipoDeLicencia> TipoDeLicencia { get; set; }
     public DbSet<API_RRHH_TESIS2025.Models.General.TipoDeCriterio> TipoDeCriterio { get; set; }
     public DbSet<CriterioDeEvaluacion> CriterioDeEvaluacion { get; set; }
+    public DbSet<API_RRHH_TESIS2025.Models.General.Curso> Curso { get; set; }
 }
