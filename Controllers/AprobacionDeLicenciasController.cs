@@ -24,7 +24,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AprobacionDeLicencia>>> GetAprobacionDeLicencia()
         {
-            return await _context.AprobacionDeLicencia.ToListAsync();
+            return await _context.AprobacionDeLicencia
+            .Include(a => a.Licencia)
+            .ThenInclude(l => l.TipoDeLicencia)
+            .ToListAsync();
         }
 
         // GET: api/AprobacionDeLicencias/5
@@ -41,63 +44,45 @@ namespace API_NET_CORE8_RRHH.Controllers
             return aprobacionDeLicencia;
         }
 
-        // PUT: api/AprobacionDeLicencias/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAprobacionDeLicencia(int id, AprobacionDeLicencia aprobacionDeLicencia)
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaAprobacionDeLicencia>>> FiltrarAprobacionDeLicencia([FromBody] FiltrarAprobacionDeLicencia filtro)
         {
-            if (id != aprobacionDeLicencia.Id)
+            var aprobacionDeLicenciasFiltradas = _context.AprobacionDeLicencia
+                .Include(a => a.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
+                .AsQueryable();
+
+            if (filtro.FechaAprobacion.HasValue)
             {
-                return BadRequest();
+                var fechaInicio = filtro.FechaAprobacion.Value.Date;
+                var fechaFin = fechaInicio.AddDays(1);
+
+                aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
             }
 
-            _context.Entry(aprobacionDeLicencia).State = EntityState.Modified;
+           if (filtro.TipoDeLicenciaId.HasValue)
+{
+    aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas
+        .Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AprobacionDeLicenciaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+            var listaFiltrada = await aprobacionDeLicenciasFiltradas.ToListAsync();
+
+            var vista = listaFiltrada.Select(a => new VistaAprobacionDeLicencia
+            {
+                Id = a.Id,
+                LicenciaString = a.Licencia?.TipoDeLicencia?.Nombre,
+                LicenciaId = a.LicenciaId,
+                FechaDeAprobacion = a.FechDeAprobacion.ToString("dd/MM/yyyy"),
+                EstadoString = a.Estado.ToString(),
+                Estado = a.Estado
+            }).ToList();
+
+            return vista;
         }
 
-        // POST: api/AprobacionDeLicencias
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<AprobacionDeLicencia>> PostAprobacionDeLicencia(AprobacionDeLicencia aprobacionDeLicencia)
-        {
-            _context.AprobacionDeLicencia.Add(aprobacionDeLicencia);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAprobacionDeLicencia", new { id = aprobacionDeLicencia.Id }, aprobacionDeLicencia);
-        }
-
-        // DELETE: api/AprobacionDeLicencias/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAprobacionDeLicencia(int id)
-        {
-            var aprobacionDeLicencia = await _context.AprobacionDeLicencia.FindAsync(id);
-            if (aprobacionDeLicencia == null)
-            {
-                return NotFound();
-            }
-
-            _context.AprobacionDeLicencia.Remove(aprobacionDeLicencia);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool AprobacionDeLicenciaExists(int id)
         {
