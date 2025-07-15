@@ -121,15 +121,6 @@ async function ObtenerTiposDeCriterios() {
     .catch((error) => console.log("No se pudo obtener los tipos de criterios", error));
 }
 
-// function ObtenerTiposDeCriterios() {
-//     fetch('http://localhost:5106/api/TiposDeCriterios')
-//     .then(response => response.json())
-//     .then((data => {
-//         MostrarTiposDeCriterios(data);
-//         LimpiarModalTipoDeCriterio();
-//         CerrarPanelTipoDeCriterio();
-//     }))
-// }
 
 // Funcion Para Mostrar los tipos de criterios en la tabla
 function MostrarTiposDeCriterios(data) {
