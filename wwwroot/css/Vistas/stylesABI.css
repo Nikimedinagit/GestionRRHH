@@ -235,3 +235,59 @@ td {
   color: #856404;
   font-size: 0.70rem;
 }
+
+/* Textarea base */
+textarea.form-control {
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  color: #374151;
+  font-weight: 500;
+  width: 100%;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Placeholder en textarea */
+textarea.form-control::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Focus en textarea */
+textarea.form-control:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+  background-color: white;
+  transform: scale(1.01);
+}
+
+/* Label flotante para textarea */
+textarea.form-control:focus + label,
+textarea.form-control:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2563eb;
+  border-radius: 8px;
+}
+textarea.form-control {
+  font-size: 0.875rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  color: #374151;
+  font-weight: 500;
+  width: 100%;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  min-height: unset;
+  height: auto;
+  line-height: 1.5;
+}

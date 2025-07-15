@@ -71,37 +71,81 @@ function MostrarCursos(data) {
       const hora = horaCompleta.substring(0, 5);
 
       const item = $(`
-          <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center" style="gap: 20px;">
+      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center" style="gap: 20px;">
 
-            <!-- Botón Editar -->
-              <button class="btn-editar me-1" style="background: none; border: none;" data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square icono-editar"></i>
-              </button>
+        <!-- Botón Editar -->
+          <button class="btn-editar me-1" style="background: none; border: none;" data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+            <i class="bi bi-pencil-square icono-editar"></i>
+          </button>
 
-            <!-- Nombre del curso -->
-                <div class="fw-bold text-truncate" title="${element.nombre || 'Sin nombre'}">
-                  ${element.nombre || 'Sin nombre'}
-                </div>
-              </div>
-            <div class=" d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
+        <!-- Nombre del curso -->
+          <div class="fw-bold text-truncate" title="${element.nombre || 'Sin nombre'}">
+            ${element.nombre || 'Sin nombre'}
+          </div>
+        </div>
+            
+        <!-- Fecha Inicio -->
+        <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
           <span style="margin-right: 5px;">&bull;</span>
           El curso comienza el ${fecha} a las ${hora}
         </div>
 
-            <!-- Modalidad del curso -->
-            <div class="d-flex align-items-center" style="gap: 20px;">
-                <div class="badge ${claseModalidad}" title="${modalidadNombre}" >
-                  ${modalidadNombre}
-                </div>
-            <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+        <!-- Modalidad del curso -->
+          <div class="d-flex align-items-center" style="gap: 20px;">
+            <div class="badge ${claseModalidad}" title="${modalidadNombre}" >
+              ${modalidadNombre}
+            </div>
+
+                
+        <!-- Boton ver asistencia -->
+        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" data-tippy-content="Ver Asistencias">
+          <i class="bi-calendar-check"></i>
+        </button>
+
+        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;"  data-tippy-content="Ver Ceritificados">
+          <i class="bi-award"></i>
+        </button>
+
+        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+        </div>
+    </div>
+      `);
+
+      const descripcionDetalle = $(`
+        <div class="panelCriterios px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Descripción</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td id="DescripcionCurso_${element.id}">
+                    <!-- Aquí va el texto dinámico de la descripción -->
+                    ${element.descripcion ?? "Sin descripción"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       `);
+  item.find(".toggle-detalle").on("click", function () {
+    const iconoChevron = $(this).find("i"); // Icono de la flecha
+    const panel = descripcionDetalle ; // Contenedor del panel
+  // Alternar visibilidad
+    panel.slideToggle(200, function () {
+    panel.toggleClass("mostrar", panel.is(":visible"));
+  });
 
+  iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
+});
       contenedor.append(item);
+      contenedor.append(descripcionDetalle );
     });
   }
 
