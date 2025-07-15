@@ -16,7 +16,7 @@ function cerrarPanelCursos() {
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.remove("visible");
 
-    // LimpiarModalCursos();
+  LimpiarModalCursos();
 }
 //FIN PANEL FORMULARIO//
 
@@ -30,7 +30,7 @@ async function ObtenerCursos() {
     .then(response => response.json())
     .then(data => {
         MostrarCursos(data)
-        // LimpiarModalCursos();
+        LimpiarModalCursos();
         cerrarPanelCursos();
       })
     .catch(error => console.log('No se pudo obtener los cursos', error)); 
@@ -66,6 +66,9 @@ function MostrarCursos(data) {
     data.forEach(element => {
       const modalidadNombre = modalidades[element.modalidad];
       const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
+      const fecha = element.fechaInicio.split("T")[0];
+      const horaCompleta = element.fechaInicio.split("T")[1];
+      const hora = horaCompleta.substring(0, 5);
 
       const item = $(`
           <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
@@ -81,6 +84,10 @@ function MostrarCursos(data) {
                   ${element.nombre || 'Sin nombre'}
                 </div>
               </div>
+            <div class=" d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
+          <span style="margin-right: 5px;">&bull;</span>
+          El curso comienza el ${fecha} a las ${hora}
+        </div>
 
             <!-- Modalidad del curso -->
             <div class="d-flex align-items-center" style="gap: 20px;">
@@ -117,7 +124,8 @@ async function MostrarModalEditar(id) {
         document.getElementById("IdCurso").value = data.id;
         document.getElementById("NombreCurso").value = data.nombre;
         document.getElementById("ModalidadCurso").value = data.modalidad;
-        document.getElementById("DescripcionCurso").value = data.descripcion
+        document.getElementById("DescripcionCurso").value = data.descripcion;
+        document.getElementById("FechaInicioCurso").value = data.fechaInicio;
 
         abrirPanelCursos();
     }))
@@ -134,14 +142,172 @@ function BuscarCursoId() {
   }
 }
 
+
+function LimpiarModalCursos() {
+    //Limpiar el formulario
+    document.getElementById("IdCurso").value = "";
+    const inputNombre = document.getElementById("NombreCurso");
+    inputNombre.value = "";
+    const selectModalidad = document.getElementById("ModalidadCurso");
+    selectModalidad.value = "";
+    const inputDescripcion = document.getElementById("DescripcionCurso");
+    inputDescripcion.value = "";
+    const inputFechaInicio = document.getElementById("FechaInicioCurso");
+    inputFechaInicio.value = "";
+
+    //Limpia las validaciones
+    inputNombre.classList.remove("is-invalid", "is-valid");
+    selectModalidad.classList.remove("is-invalid", "is-valid");
+    inputDescripcion.classList.remove("is-invalid", "is-valid");
+    inputFechaInicio.classList.remove("is-invalid", "is-valid");
+
+    //Limpiar los mensajes de error
+    const inputErrorNombre = document.getElementById("errorNombreCurso");
+    inputErrorNombre.textContent = "";
+    inputErrorNombre.style.display = "none";
+    const selectErrorModalidad = document.getElementById("errorModalidadCurso");
+    selectErrorModalidad.textContent = "";
+    selectErrorModalidad.style.display = "none";
+    const inputErrorDescripcion = document.getElementById("errorDescripcionCurso");
+    inputErrorDescripcion.textContent = "";
+    inputErrorDescripcion.style.display = "none";
+    const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
+    inputErrorFechaInicio.textContent = "";
+    inputErrorFechaInicio.style.display = "none";
+}
+
+//Funcion para validar el formulario de cursos
+function ValidarFormularioCursos() {
+    const inputNombre = document.getElementById("NombreCurso");
+    const inputErrorNombre = document.getElementById("errorNombreCurso");
+
+    const selectModalidad = document.getElementById("ModalidadCurso");
+    const selectErrorModalidad = document.getElementById("errorModalidadCurso");
+
+    const inputDescripcion = document.getElementById("DescripcionCurso");
+    const inputErrorDescripcion = document.getElementById("errorDescripcionCurso");
+
+    const inputFechaInicio = document.getElementById("FechaInicioCurso");
+    const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
+
+    const nombre = inputNombre.value.trim();
+    const modalidadSeleccionada = selectModalidad.value;
+    const descripcion = inputDescripcion.value.trim();
+    const fechaInicio = inputFechaInicio.value;
+
+    //Limpiar errores previos
+    inputErrorNombre.style.display = "none";
+    inputErrorNombre.textContent = "";
+    inputNombre.classList.remove("is-invalid", "is-valid");
+    selectErrorModalidad.style.display = "none";
+    selectErrorModalidad.textContent = "";
+    selectModalidad.classList.remove("is-invalid", "is-valid");
+    inputErrorDescripcion.style.display = "none";
+    inputErrorDescripcion.textContent = "";
+    inputDescripcion.classList.remove("is-invalid", "is-valid");
+    inputErrorFechaInicio.style.display = "none";
+    inputErrorFechaInicio.textContent = "";
+    inputFechaInicio.classList.remove("is-invalid", "is-valid");
+  
+    let esValid = true;
+
+    // Validar nombre
+    if (nombre.length === 0) {
+      inputNombre.classList.add("is-invalid");
+      inputErrorNombre.style.display = "block";
+      inputErrorNombre.textContent = "Campo obligatorio.";
+      esValid = false;
+    } else if (nombre.length < 3) {
+      inputNombre.classList.add("is-invalid");
+      inputErrorNombre.style.display = "block";
+      inputErrorNombre.textContent = "Mínimo 3 caracteres.";
+      esValid = false;
+    } else {
+      inputNombre.classList.add("is-valid");
+    }
+
+    // Validar modalidad
+    if (!modalidadSeleccionada) {
+      selectModalidad.classList.add("is-invalid");
+      selectErrorModalidad.style.display = "block";
+      selectErrorModalidad.textContent = "Seleccione una modalidad.";
+      esValid = false;
+    } else {
+      selectModalidad.classList.add("is-valid");
+    }
+
+    // Validar descripcion
+    if (descripcion.length === 0) {
+      inputDescripcion.classList.add("is-invalid");
+      inputErrorDescripcion.style.display = "block";
+      inputErrorDescripcion.textContent = "Campo obligatorio.";
+      esValid = false;
+    } else if (descripcion.length < 3) {
+      inputDescripcion.classList.add("is-invalid");
+      inputErrorDescripcion.style.display = "block";
+      inputErrorDescripcion.textContent = "Mínimo 3 caracteres.";
+      esValid = false;
+    } else {
+      inputDescripcion.classList.add("is-valid");
+    }
+
+    // Validar Fecha Inicio
+    if (fechaInicio.length === 0) {
+      inputFechaInicio.classList.add("is-invalid");
+      inputErrorFechaInicio.style.display = "block";
+      inputErrorFechaInicio.textContent = "Seleccione una fecha.";
+      esValid = false;
+    }else {
+      inputNombre.classList.add("is-valid");
+    }
+    return esValid;
+}
+
+// 🎨 Validación en vivo: cambia el color mientras el usuario escribe
+document.getElementById("NombreCurso").addEventListener("input", () => {
+  const inputNombre = document.getElementById("NombreCurso");
+  const errorNombre = document.getElementById("errorNombreCurso");
+  const nombre = inputNombre.value.trim();
+
+  // Limpiar cualquier estado previo
+  inputNombre.classList.remove("is-invalid", "is-valid");
+
+  if (nombre.length === 0) {
+    inputNombre.classList.add("is-invalid");
+    errorNombre.style.display = "block";
+    errorNombre.textContent = "Campo obligatorio.";
+  } else if (nombre.length < 3) {
+    inputNombre.classList.add("is-invalid");
+    errorNombre.style.display = "block";
+    errorNombre.textContent = "Mínimo 3 caracteres.";
+  } else {
+    inputNombre.classList.add("is-valid");
+    errorNombre.style.display = "none";
+    errorNombre.textContent = "";
+  }
+});
+
+//Funcion para evitar que se pueda evaluar el mismo empleado en el mismo mes
+function ValidarCursoExistente(mensaje) {
+  const errorNombre = document.getElementById("errorNombreCurso");
+  const inputNombre = document.getElementById("NombreCurso");
+
+  errorNombre.textContent = mensaje;
+  errorNombre.style.display = "block";
+  inputNombre.classList.add("is-invalid");
+}
 //Funcion crear curso
 async function CrearCurso() {
+  if(!ValidarFormularioCursos()){
+    return
+  }
 
-const curso = {
-  nombre: document.getElementById("NombreCurso").value,
-  modalidad: parseInt(document.getElementById("ModalidadCurso").value),
-  descripcion: document.getElementById("DescripcionCurso").value,
-};
+  const curso = {
+    nombre: document.getElementById("NombreCurso").value,
+    modalidad: parseInt(document.getElementById("ModalidadCurso").value),
+    descripcion: document.getElementById("DescripcionCurso").value,
+    fechaInicio: document.getElementById("FechaInicioCurso").value,
+  };
 console.log(curso);
     const res = await authFetch("Cursos", {
       method: 'POST',
@@ -150,7 +316,7 @@ console.log(curso);
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
-        ValidarEvaluacionExistente(response.mensaje);
+        ValidarCursoExistente(response.mensaje);
       } else {
         cerrarPanelCursos();
         ObtenerCursos();
@@ -170,4 +336,46 @@ console.log(curso);
     });
 }
 
+//Funcion para editar un curso
+async function EditarCurso(id) {
+
+    if(!ValidarFormularioCursos())
+        return;
+
+    const curso = {
+    id: document.getElementById("IdCurso").value,
+    nombre: document.getElementById("NombreCurso").value,
+    modalidad: parseInt(document.getElementById("ModalidadCurso").value),
+    descripcion: document.getElementById("DescripcionCurso").value,
+    fechaInicio : document.getElementById("FechaInicioCurso").value,
+    };
+    const res =  await authFetch(`Cursos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(curso),
+    })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.mensaje) {
+        ValidarCursoExistente(response.mensaje);
+      } else {
+        cerrarPanelCursos();
+        ObtenerCursos();
+        // Mostrar alerta de éxito
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
+          icon: "success",
+          title: "¡Curso Modificado!",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#f0f0f0",
+          color: "#000",
+        });
+      }
+    });
+}
 ObtenerCursos();

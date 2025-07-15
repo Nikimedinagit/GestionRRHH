@@ -148,7 +148,7 @@
             <!-- Modalidad -->
             <div class="form-group position-relative mb-3">
               <select name="ModalidadCurso" id="ModalidadCurso" class="form-control" required>
-                <option value="ModalidadCurso" disabled selected>Seleccione una Modalidad</option>
+                <option value="" disabled selected >Seleccione una Modalidad</option>
                 <option value="1">PRESENCIAL</option>
                 <option value="2">VIRTUAL</option>
                 <option value="3">MIXTO</option>
@@ -161,6 +161,12 @@
               <input type="text" id="DescripcionCurso" class="form-control" placeholder=" " />
               <label for="DescripcionCurso">Descripcion</label>
               <div class="invalid-feedback" id="errorDescripcionCurso"></div>
+            </div>
+
+            <div class="form-group position-relative mb-3">
+              <input type="datetime-local" id="FechaInicioCurso" class="form-control" placeholder=" " />
+              <label for="FechaInicioCurso">Fecha Inicio</label>
+              <div class="invalid-feedback" id="errorFechaInicioCurso"></div>
             </div>
 
 

@@ -50,6 +50,18 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 return BadRequest();
             }
+            //Convertir a mayusculas las letras
+            curso.Nombre = curso.Nombre.ToUpper();
+
+            //Veificar si el curso ya existe
+            var cursoExistente = await _context.Curso
+            .FirstOrDefaultAsync(c => c.Nombre.ToLower() == curso.Nombre.ToLower() && c.Id != id);
+
+            if (cursoExistente != null)
+            {
+                return Ok(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo mes" });
+            }
+
 
             _context.Entry(curso).State = EntityState.Modified;
 
@@ -69,7 +81,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(curso);
         }
 
         // POST: api/Cursos
@@ -77,6 +89,32 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Curso>> PostCurso(Curso curso)
         {
+            //Convertir a mayusculas las letras
+            curso.Nombre = curso.Nombre.ToUpper();
+
+            //Veificar si el curso ya existe
+            var cursoExistente = await _context.Curso
+            .Where(C => C.Nombre.ToLower() == curso.Nombre.ToLower()
+            && C.FechaCreacion.Month == DateTime.Now.Month
+            && C.FechaCreacion.Year == DateTime.Now.Year)
+            .FirstOrDefaultAsync();
+
+            if (cursoExistente != null)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo mes" });
+            }
+
+            
+            curso.FechaInicio = new DateTime(
+                curso.FechaInicio.Year,
+                curso.FechaInicio.Month,
+                curso.FechaInicio.Day,
+                curso.FechaInicio.Hour,
+                curso.FechaInicio.Minute,
+                0
+            );
+
+            curso.FechaCreacion = DateTime.Now;
             _context.Curso.Add(curso);
             await _context.SaveChangesAsync();
 

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using NuGet.Common;
 
 namespace API_RRHH_TESIS2025.Models.General
 {
@@ -12,6 +13,8 @@ namespace API_RRHH_TESIS2025.Models.General
         public string Nombre { get; set; }
         public Modalidades Modalidad { get; set; }
         public string Descripcion { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaInicio { get; set; }
     }
 
     public enum Modalidades

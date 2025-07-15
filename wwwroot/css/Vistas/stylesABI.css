@@ -1,6 +1,7 @@
 /* INICIO PANEL DESLIZANTE BASE */
 /* Panel deslizante base*/
-#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios {
+#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+#panelCriterios, #panelCursos {
   position: fixed;
   top: 50%;
   right: 0;
@@ -22,13 +23,15 @@
 }
 
 /* Estado abierto*/
-#panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto, #panelCriterios.abierto {
+#panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto, 
+#panelCriterios.abierto, #panelCursos.abierto {
   transform: translate(0, -50%);
 }
 
 @media (max-width: 1024px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios{
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos{
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -37,7 +40,8 @@
 
 @media (max-width: 768px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios{
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos{
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -46,7 +50,8 @@
 
 @media (max-width: 480px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, #panelCriterios {
+  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -209,4 +214,24 @@ td {
 .btn-agregar-criterio:hover{
   background-color: #7b59b3 !important;
   color: #fff !important;
+}
+
+/*Bagde de Modalidades*/
+
+.badge-presencial {
+  background-color: #F8D7DA;
+  color: #C82333;
+  font-size: 0.70rem;
+}
+
+.badge-virtual {
+  background-color: #D1F3F8;
+  color: #00BCD4;
+  font-size: 0.70rem;
+}
+
+.badge-mixto {
+  background-color: #FFF3CD;
+  color: #856404;
+  font-size: 0.70rem;
 }
