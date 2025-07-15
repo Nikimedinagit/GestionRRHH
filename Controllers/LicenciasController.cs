@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -17,10 +18,12 @@ namespace API_NET_CORE8_RRHH.Controllers
     public class LicenciasController : ControllerBase
     {
         private readonly Context _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public LicenciasController(Context context)
+        public LicenciasController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
 
@@ -287,6 +290,117 @@ namespace API_NET_CORE8_RRHH.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+
+
+
+
+        //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
+        //Total de licencias
+        [HttpGet("Total")]
+        public async Task<ActionResult<int>> GetTotalLicencias()
+        {
+            // Obtener el rol del usuario autenticado
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _context.Users.FindAsync(userId);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var rol = roles.FirstOrDefault();
+
+            // Permitir solo si es ADMINISTRADOR
+            if (rol != "ADMINISTRADOR")
+            {
+                return Forbid(); // O return Unauthorized();
+            }
+
+            // Consultar todas las licencias de empleados no eliminados
+            var total = await _context.Licencia
+                .Include(l => l.Empleado)
+                .Where(l => !l.Empleado.Eliminado)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Licencias aprobadas
+        [HttpGet("Aprobadas")]
+        public async Task<ActionResult<int>> GetAprobadasLicencias()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de licencias aprobadas
+            var total = await _context.Licencia
+                .Include(l => l.TipoDeLicencia)
+                .Where(l => l.Estado == EstadoLicencia.APROBADA)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Licencias rechazadas
+        [HttpGet("Rechazadas")]
+        public async Task<ActionResult<int>> GetRechazadasLicencias()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de licencias rechazadas
+            var total = await _context.Licencia
+                .Include(l => l.TipoDeLicencia)
+                .Where(l => l.Estado == EstadoLicencia.RECHAZADA)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Licencias expiradas
+        [HttpGet("Expiradas")]
+        public async Task<ActionResult<int>> GetExpiradasLicencias()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de licencias expiradas
+            var total = await _context.Licencia
+                .Include(l => l.TipoDeLicencia)
+                .Where(l => l.Estado == EstadoLicencia.EXPIRADA)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Licencias pendientes
+        [HttpGet("Pendientes")]
+        public async Task<ActionResult<int>> GetPendientesLicencias()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de licencias pendientes
+            var total = await _context.Licencia
+                .Include(l => l.TipoDeLicencia)
+                .Where(l => l.Estado == EstadoLicencia.PENDIENTE)
+                .CountAsync();
+
+            return Ok(new { total });
         }
 
         private bool LicenciaExists(int id)

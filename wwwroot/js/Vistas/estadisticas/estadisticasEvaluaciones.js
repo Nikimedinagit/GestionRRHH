@@ -4,6 +4,7 @@ async function ObtenerTotalEvaluaciones() {
     .then(response => response.json())
     .then(data => {
       document.getElementById("totalEvaluaciones").textContent = data.total;
+      ObtenerTotalEvaluaciones();
     })
     .catch(error => console.log("No se pudo obtener el total de evaluaciones", error));
 }
@@ -15,6 +16,7 @@ async function ObtenerPromedioGeneral() {
     .then(response => response.json())
     .then(data => {
       document.getElementById("promedioEvaluaciones").textContent = data.promedio;
+      ObtenerPromedioGeneral();
     })
     .catch(error => console.log("No se pudo obtener el promedio general", error));
 }
@@ -26,6 +28,7 @@ async function ObtenerEmpleadosEvaluados() {
     .then(response => response.json())
     .then(data => {
       document.getElementById("totalEmpleadosEvaluados").textContent = data.totalEmpleadosEvaluados;
+      ObtenerEmpleadosEvaluados();
     })
     .catch(error => console.log("No se pudo obtener los empleados evaluados", error));
 }
