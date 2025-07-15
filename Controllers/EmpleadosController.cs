@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +18,12 @@ namespace API_RRHH_TESIS2025.Controllers
     public class EmpleadosController : ControllerBase
     {
         private readonly Context _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EmpleadosController(Context context)
+        public EmpleadosController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Empleados
@@ -68,79 +71,79 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
         [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
+public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
+{
+    List<VistaEmpleado> vista = new List<VistaEmpleado>();
+    var empleadosFiltrados = _context.Empleado.AsQueryable();
+
+    if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+    {
+        empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+    }
+    if (filtro.DNI.HasValue)
+    {
+        string dniFiltro = filtro.DNI.Value.ToString();
+        empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
+    }
+
+    if (filtro.EstadoCiviles.HasValue)
+    {
+        empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+    }
+
+    if (filtro.TipoSexo.HasValue)
+        empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
+
+    if (filtro.LocalidadId.HasValue)
+    {
+        int localidadId = filtro.LocalidadId.Value;
+        empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
+    }
+
+    if (filtro.PuestoId.HasValue)
+    {
+        int puestoId = filtro.PuestoId.Value;
+        empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
+    }
+
+    var listaFiltrada = await empleadosFiltrados
+        .Include(e => e.Localidad)
+        .Include(e => e.Puesto)
+        .ToListAsync();
+
+    var usuarios = await _context.Users
+        .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
+        .ToDictionaryAsync(u => u.Id);
+
+    foreach (var empleado in listaFiltrada)
+    {
+        var usuarioId = empleado.UsuarioId;
+
+        var vistaEmpleado = new VistaEmpleado
         {
-            List<VistaEmpleado> vista = new List<VistaEmpleado>();
-            var empleadosFiltrados = _context.Empleado.AsQueryable();
+            Id = empleado.Id,
+            NombreCompleto = empleado.NombreCompleto,
+            DNI = empleado.DNI,
+            Direccion = empleado.Direccion,
+            FechaNacimientoString = empleado.FechaNacimientoString,
+            EstadoCivilesString = empleado.EstadoCivilesString,
+            Email = empleado.Email,
+            Telefono = empleado.Telefono,
+            Cuil = empleado.Cuil,
+            CantidadHijos = empleado.CantidadHijos,
+            TipoSexoString = empleado.TipoSexoString,
+            LocalidadIdString = empleado.LocalidadIdString,
+            PuestoIdString = empleado.PuestoIdString,
+            UsuarioId = usuarioId,
+            UsuarioNombreCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].NombreCompleto : null,
+            UsuarioEmailCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].Email : null,
+            Eliminado = empleado.Eliminado
+        };
+        vista.Add(vistaEmpleado);
+    }
+    return vista;
+}
 
-            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-            {
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
-            }
-            // var resultado = await empleadosFiltrados.OrderBy(e => e.NombreCompleto).ToListAsync();
-            if (filtro.DNI.HasValue)
-            {
-                string dniFiltro = filtro.DNI.Value.ToString();
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
-            }
-
-            if (filtro.EstadoCiviles.HasValue)
-            {
-                empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
-            }
-
-            if (filtro.TipoSexo.HasValue)
-                empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
-
-            if (filtro.LocalidadId.HasValue)
-            {
-                int localidadId = int.Parse(filtro.LocalidadId.Value.ToString());
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
-            }
-
-            if (filtro.PuestoId.HasValue)
-            {
-                int puestoId = int.Parse(filtro.PuestoId.Value.ToString());
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
-            }
-
-            var listaFiltrada = await empleadosFiltrados
-                .Include(e => e.Localidad)
-                .Include(e => e.Puesto)
-                .ToListAsync();
-
-
-            var usuarios = await _context.Users
-                .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id);
-
-
-            foreach (var empleado in listaFiltrada)
-            {
-                var vistaEmpleado = new VistaEmpleado
-                {
-                    Id = empleado.Id,
-                    NombreCompleto = empleado.NombreCompleto,
-                    DNI = empleado.DNI,
-                    Direccion = empleado.Direccion,
-                    FechaNacimientoString = empleado.FechaNacimientoString,
-                    EstadoCivilesString = empleado.EstadoCivilesString,
-                    Email = empleado.Email,
-                    Telefono = empleado.Telefono,
-                    Cuil = empleado.Cuil,
-                    CantidadHijos = empleado.CantidadHijos,
-                    TipoSexoString = empleado.TipoSexoString,
-                    LocalidadIdString = empleado.LocalidadIdString,
-                    PuestoIdString = empleado.PuestoIdString,
-                    UsuarioId = empleado.UsuarioId,
-                    UsuarioNombreCreador = usuarios.ContainsKey(empleado.UsuarioId) ? usuarios[empleado.UsuarioId].NombreCompleto : null,
-                    UsuarioEmailCreador = usuarios.ContainsKey(empleado.UsuarioId) ? usuarios[empleado.UsuarioId].Email : null,
-                    Eliminado = empleado.Eliminado
-                };
-                vista.Add(vistaEmpleado);
-            }
-            return vista;
-        }
 
         // GET: api/Empleados/5
         [HttpGet("{id}")]
@@ -309,6 +312,90 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return Ok(new { mensaje });
         }
+
+
+        //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
+        //Total de empleados
+        [HttpGet("Total")]
+        public async Task<ActionResult<int>> GetTotalEmpleados()
+        {
+            // Obtener el rol del usuario autenticado
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _context.Users.FindAsync(userId);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var rol = roles.FirstOrDefault();
+
+            // Permitir solo si es ADMINISTRADOR
+            if (rol != "ADMINISTRADOR")
+            {
+                return Forbid(); // O return Unauthorized();
+            }
+
+            // Consultar todas las licencias de empleados no eliminados
+            var total = await _context.Empleado
+                .Where(e => !e.Eliminado)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Empleados Masculinos
+        [HttpGet("Masculinos")]
+        public async Task<ActionResult<int>> GetMasculinosEmpleados()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de empleados masculinos
+            var total = await _context.Empleado
+                .Where(e => !e.Eliminado && e.TipoSexo == TipoSexo.MASCULINO)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Empleados Femeninos
+        [HttpGet("Femeninos")]
+        public async Task<ActionResult<int>> GetFemeninosEmpleados()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de empleados femeninos
+            var total = await _context.Empleado
+                .Where(e => !e.Eliminado && e.TipoSexo == TipoSexo.FEMENINO)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        //Empleados Otros/No binarios
+        [HttpGet("Otros")]
+        public async Task<ActionResult<int>> GetOtrosEmpleados()
+        {
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            var total = await _context.Empleado
+                .Where(e => !e.Eliminado &&
+                       (e.TipoSexo == TipoSexo.OTRO || e.TipoSexo == TipoSexo.NO_BINARIO))
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
 
         private bool EmpleadoExists(int id)
         {

@@ -1195,6 +1195,7 @@ async function EditarEmpleado(id) {
       }
       return;
     }
+    CerrarPanelEmpleado();
     ObtenerEmpleados();
     // Mostrar alerta de éxito
     Swal.fire({
