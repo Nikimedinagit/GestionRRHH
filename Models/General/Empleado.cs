@@ -57,6 +57,7 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
         public virtual ICollection<Licencia> Licencia { get; set; }
+        public virtual ICollection<AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
 
 
 
