@@ -569,6 +569,40 @@ select.form-control:not([value=""])+label {
   background-color: #e5e7eb !important;
 }
 
+.swal2-btn-confirmar {
+  background-color: #28a745 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-confirmar:hover {
+  background-color: #218838 !important;
+}
+
+.swal2-btn-denegar {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 8px 24px !important;
+  font-size: 0.95rem !important;
+  transition: background-color 0.25s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.swal2-btn-denegar:hover {
+  background-color: #c62828 !important;
+}
+
 .swal2-btn-desactivar {
   background-color: #e53935 !important;
   color: #fff !important;
@@ -691,6 +725,13 @@ select.form-control:not([value=""])+label {
   padding: 0% !important;
 }
 
+.icono-accion-licencia{
+  font-size: 1.2rem !important;
+  color: #6f42c1  !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
 /* FIN CARD DE LICENCIAS/EMPLEADOS */
 
 

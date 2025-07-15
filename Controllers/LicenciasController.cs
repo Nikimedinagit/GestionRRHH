@@ -51,7 +51,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaLicencia>>> LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
         {
-
             List<VistaLicencia> vista = new List<VistaLicencia>();
 
             var licenciasFiltradas = _context.Licencia.AsQueryable();
@@ -70,21 +69,33 @@ namespace API_NET_CORE8_RRHH.Controllers
                 var fechaFin = filtro.FechaFin.Value.Date;
 
                 licenciasFiltradas = licenciasFiltradas
-                .Where(t => t.FechaInicio >= fechaInicio && t.FechaFin <= fechaFin);
-                // .Where(t => t.FechaInicio <= fechaFin && t.FechaFin >= fechaInicio);    
+                    .Where(t => t.FechaInicio >= fechaInicio && t.FechaFin <= fechaFin);
             }
 
             if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
             {
                 licenciasFiltradas = licenciasFiltradas.Where(x =>
                     x.Empleado.NombreCompleto.Contains(filtro.EmpleadoTexto));
-
             }
 
             var listaFiltrada = await licenciasFiltradas
                 .Include(l => l.TipoDeLicencia)
                 .Include(l => l.Empleado)
                 .ToListAsync();
+
+            // Actualizar licencias expiradas
+            var hoy = DateTime.Today;
+            foreach (var lic in listaFiltrada)
+            {
+                if (lic.Estado == EstadoLicencia.APROBADA && lic.FechaFin < hoy)
+                {
+                    lic.Estado = EstadoLicencia.EXPIRADA;
+                    _context.Licencia.Update(lic);
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            // Armar lista de respuesta
             foreach (var licencia in listaFiltrada)
             {
                 var vistaLicencia = new VistaLicencia
@@ -94,16 +105,17 @@ namespace API_NET_CORE8_RRHH.Controllers
                     TipoDeLicenciaId = licencia.TipoDeLicenciaId,
                     FechaInicioString = licencia.FechaInicioString,
                     FechaFinString = licencia.FechaFinString,
-                    EstadoString = licencia.EstadoString,
+                    EstadoString = licencia.Estado.ToString(),
                     DocumentoAdjunto = licencia.DocumentoAdjunto,
                     EmpleadoString = licencia.EmpleadoString,
                     EmpleadoId = licencia.EmpleadoId
                 };
                 vista.Add(vistaLicencia);
             }
-            return vista;
 
+            return vista;
         }
+
 
         // PUT: api/Licencias/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -164,32 +176,90 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(licenciaOriginal);
         }
 
+        [HttpPost("{id}/Aprobar")]
+        public async Task<IActionResult> AprobarLicencia(int id)
+        {
+            var licencia = await _context.Licencia.FindAsync(id);
+            if (licencia == null)
+                return NotFound();
+
+            if (licencia.Estado != EstadoLicencia.PENDIENTE)
+                return BadRequest("Solo se pueden aprobar licencias pendientes.");
+
+            // Validar solapamiento de fechas para la aprobación (igual que en PutLicencia)
+            var licenciasExistentes = await _context.Licencia
+                .Where(l => l.EmpleadoId == licencia.EmpleadoId &&
+                            l.Id != id &&
+                            (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                            l.FechaInicio <= licencia.FechaFin &&
+                            l.FechaFin >= licencia.FechaInicio
+                )
+                .ToListAsync();
+
+            if (licenciasExistentes.Count > 0)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada que solapa fechas." });
+            }
+
+            licencia.Estado = EstadoLicencia.APROBADA;
+            _context.Licencia.Update(licencia);
+
+            // Crear historial en LicenciasAprobadas
+            var licenciaAprobada = new AprobacionDeLicencia
+            {
+                Estado = EstadoLicencia.APROBADA,
+                LicenciaId = licencia.Id,
+                FechDeAprobacion = DateTime.UtcNow,
+
+            };
+            _context.AprobacionDeLicencia.Add(licenciaAprobada);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(licencia);
+        }
+
+        [HttpPost("{id}/Rechazar")]
+        public async Task<IActionResult> RechazarLicencia(int id)
+        {
+            var licencia = await _context.Licencia.FindAsync(id);
+            if (licencia == null)
+                return NotFound();
+
+            if (licencia.Estado != EstadoLicencia.PENDIENTE)
+                return BadRequest("Solo se pueden rechazar licencias pendientes.");
+
+            licencia.Estado = EstadoLicencia.RECHAZADA;
+            _context.Licencia.Update(licencia);
+            await _context.SaveChangesAsync();
+
+            return Ok(licencia);
+        }
+
+
         // POST: api/Licencias
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Licencia>> PostLicencia(Licencia licencia)
         {
             var licenciasExistentes = await _context.Licencia
-            .Where(l => l.EmpleadoId == licencia.EmpleadoId &&
-                (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                .Where(l =>
+                    l.EmpleadoId == licencia.EmpleadoId &&
+                    (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                    l.FechaInicio <= licencia.FechaFin &&
+                    l.FechaFin >= licencia.FechaInicio
+                )
+                .ToListAsync();
 
-                // Validar solapamiento de fechas
-                l.FechaInicio <= licencia.FechaFin &&
-                l.FechaFin >= licencia.FechaInicio
-          )
-            .ToListAsync();
-
-            if (licenciasExistentes.Count > 0)
+            if (licenciasExistentes.Any())
             {
                 return BadRequest(new
                 {
                     codigo = 0,
-                    mensaje =
-                "Ya tiene licencia aplicada."
+                    mensaje = "Ya tiene licencia aplicada."
                 });
             }
 
-            // Estado de la licencia por defecto
             licencia.Estado = EstadoLicencia.PENDIENTE;
 
             _context.Licencia.Add(licencia);
@@ -197,6 +267,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return CreatedAtAction("GetLicencia", new { id = licencia.Id }, licencia);
         }
+
 
         // DELETE: api/Licencias/5
         [HttpDelete("{id}")]

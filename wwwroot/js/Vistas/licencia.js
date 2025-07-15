@@ -207,6 +207,7 @@ async function ObtenerLicencias() {
 
 
 // Funcion para mostrar las licencias en forma de cards
+
 function MostrarLicencias(data) {
   const contenedor = $("#licenciasContainer");
   contenedor.empty();
@@ -218,38 +219,30 @@ function MostrarLicencias(data) {
     return;
   }
 
-  const estados = {
-    1: "PEDIENTE",
-    2: "APROBADA",
-    3: "RECHAZADA",
-    4: "EXPIRADA"
-  };
-
   const estadoColor = {
-    PEDIENTE: "bg-warning text-dark",
+    PENDIENTE: "bg-warning text-dark",
     APROBADA: "bg-success text-white",
     RECHAZADA: "bg-danger text-white",
     EXPIRADA: "bg-dark text-white"
   };
 
   const bordeSuperiorColorHex = {
-    PEDIENTE: "#FFC107",
+    PENDIENTE: "#FFC107",
     APROBADA: "#198754",
     RECHAZADA: "#DC3545",
     EXPIRADA: "#212529"
   };
 
-  // Cambia esta ruta según donde guardes los archivos en tu servidor
   const baseUrlArchivos = "/uploads/documentos/";
 
   data.forEach(item => {
-    const estado = estados[item.estadoString] || "PEDIENTE";
-    const fechaInicio = formatearFecha(item.fechaInicioString);
-    const fechaFin = formatearFecha(item.fechaFinString);
+    const estado = (item.estadoString || "PENDIENTE").toUpperCase();
     const claseEstado = estadoColor[estado] || "bg-light text-dark";
     const colorBorde = bordeSuperiorColorHex[estado] || "#ccc";
 
-    // Si documentoAdjunto es solo el nombre, arma la URL completa
+    const fechaInicio = formatearFecha(item.fechaInicioString);
+    const fechaFin = formatearFecha(item.fechaFinString);
+
     let documentoUrl = "";
     if (item.documentoAdjunto) {
       documentoUrl = item.documentoAdjunto.startsWith("http")
@@ -268,8 +261,29 @@ function MostrarLicencias(data) {
       `
       : "";
 
-    contenedor.append(`
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+    // Mostrar todos los botones solo si es PENDIENTE
+    const botonesHtml = estado === "PENDIENTE"
+      ? `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div>
+            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
+              <i class="bi bi-sliders icono-accion-licencia"></i>
+            </button>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
+            </button>
+            <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
+              <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
+            </button>
+          </div>
+        </div>
+      `
+      : "";
+
+    const cardHtml = `
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${item.id}">
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${colorBorde}; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -277,7 +291,7 @@ function MostrarLicencias(data) {
               <span class="badge ${claseEstado}" style="font-size: 0.75rem; padding: 0.25em 0.5em;">${estado}</span>
             </div>
             <p class="mb-1 text-muted d-flex align-items-start" style="font-size: 0.9rem;">
-              <i class="bi bi-calendar3 me-2" style="flex-shrink: 0; line-height: 1.2; font-size: 1rem;"></i>
+              <i class="bi bi-calendar3 me-2" style="font-size: 1rem;"></i>
               <span>${fechaInicio}<br>${fechaFin}</span>
             </p>
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
@@ -286,26 +300,31 @@ function MostrarLicencias(data) {
             </p>
             ${documentoHtml}
           </div>
-          <div class="d-flex justify-content-end mt-2 gap-1">
-            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
-            </button>
-            <button class="btn-eliminar" style="background: none; border: none; cursor: pointer;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
-              <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
-            </button>
-          </div>
+          ${botonesHtml}
         </div>
       </div>
-    `);
+    `;
+
+    contenedor.append(cardHtml);
   });
 
-  // Inicializar tooltips
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
     delay: [100, 0],
   });
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Función para convertir ISO a "9 may 2023"
@@ -761,5 +780,95 @@ async function EliminarSiLicencia(id) {
         })
     })
 }
+
+// Función para abrir el modal de acción sobre la licencia
+function AbrirModalAccionLicencia(id) {
+  Swal.fire({
+    title: "¿Acción sobre la licencia?",
+    text: "¿Desea aprobar o rechazar esta licencia?",
+    icon: "question",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Aprobar",
+    denyButtonText: "Rechazar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true,
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-confirmar", // clase para botón verde (aprobar)
+      denyButton: "swal2-btn-denegar",     // clase para botón rojo (rechazar)
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      AprobarLicencia(id);
+    } else if (result.isDenied) {
+      RechazarLicencia(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción cancelada",
+        text: "No se ha modificado el estado de la licencia.",
+        icon: "info",
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "bottom-end",
+      });
+    }
+  });
+}
+
+async function RechazarLicencia(id) {
+  const res = await authFetch(`Licencias/${id}/Rechazar`, {
+    method: "POST",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      Swal.fire({
+      title: "Licencia rechazada",
+      text: "La licencia fue rechazada correctamente.",
+      icon: "info",
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: "bottom-end"
+    });
+
+    ObtenerLicencias();
+    })
+    .catch((error) => {
+      console.log("Error al rechazar la licencia:", error);
+    });
+}
+
+
+async function AprobarLicencia(id) {
+  const res = await authFetch(`Licencias/${id}/Aprobar`, {
+    method: "POST",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      Swal.fire({
+      title: "Licencia aprobada",
+      text: "La licencia fue aprobada correctamente.",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: "bottom-end"
+    });
+    ObtenerLicencias();
+    })
+    .catch((error) => {
+      console.log("Error al aprobar la licencia:", error);
+    });
+}
+
+
 
 ComboParaFiltrarTiposDeLicencia();
