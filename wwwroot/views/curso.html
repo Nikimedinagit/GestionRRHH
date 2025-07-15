@@ -1,0 +1,185 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+  <!-- Título -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Seguimiento de Cursos</h3>
+  </div>
+
+  <hr />
+
+  <!-- Contenedor de Botones y Tabla -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <!-- Fondo Oscuro al Abrir Panel -->
+    <div id="fondoOscuro" onclick="cerrarPanelCursos()"></div>
+
+    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <!-- Botón Nueva Evaluación -->
+      <button class="btn btn-agregar" onclick="abrirPanelCursos()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Nuevo Curso</span>
+      </button>
+
+      <!-- Botones Filtros y Informe -->
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+          <i class="fa-solid fa-filter me-1"></i>
+          <span>Filtros</span>
+        </button>
+
+        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+          <i class="fa-solid fa-file-lines me-1"></i>
+          <span>Generar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor Generar-->
+    <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+          <i class="fa-solid fa-file-pdf me-1"></i> PDF
+        </button>
+        <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+          <i class="fa-solid fa-file-excel me-1"></i> Excel
+        </button>
+        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
+          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
+        </button>
+      </div>
+    </div>
+
+
+    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+      <canvas id="graficoCursos" width="400" height="150"></canvas>
+    </div>
+
+
+    <!-- Contenedor de tarjetas de resumen de cursos-->
+    <div>
+      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+
+        <!-- Total de cursos -->
+        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-tasks text-primary fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total Cursos</p>
+              <h5 class="mb-0 fw-bold" id="totalCursos">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participaciones -->
+        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-info bg-opacity-10 p-3 me-3">
+              <i class="ti ti-chart-bar text-info fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Participaciones</p>
+              <h5 class="mb-0 fw-bold" id="participantesCurso">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total certificados emitidos -->
+        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-success bg-opacity-10 p-3 me-3">
+              <i class="ti ti-certificate text-success fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Certificados emitidos</p>
+              <h5 class="mb-0 fw-bold" id="certificadosEmitidos">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total certificados pendientes -->
+        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 me-3">
+              <i class="bi bi-hourglass-split text-warning fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Certificados pendientes</p>
+              <h5 class="mb-0 fw-bold" id="certificadosPendientes">0</h5>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr style="margin-bottom: 1rem;" />
+
+
+
+
+    <!-- Contenedor de los cursos -->
+    <div class="container-fluid">
+      <div id="contenedorCursos" class="row ">
+        <!--Se cargarán dinámicamente-->
+      </div>
+    </div>
+
+
+    <!-- Panel Deslizante Formulario -->
+    <div id="panelCursos" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
+      class="w-30">
+      <div class="panel-header">
+        <h2 id="panelTitulo" class="panel-title">Formulario De Cursos</h2>
+      </div>
+      <div class="panel-body">
+        <form id="formCursos">
+          <input type="hidden" id="IdCurso" />
+          <div class="form-grid">
+
+            <!-- Nombre -->
+            <div class="form-group position-relative mb-3">
+              <input type="text" id="NombreCurso" class="form-control" placeholder=" " />
+              <label for="NombreCurso">Nombre</label>
+              <div class="invalid-feedback" id="errorNombreCurso"></div>
+            </div>
+
+            <!-- Modalidad -->
+            <div class="form-group position-relative mb-3">
+              <select name="ModalidadCurso" id="ModalidadCurso" class="form-control" required>
+                <option value="ModalidadCurso" disabled selected>Seleccione una Modalidad</option>
+                <option value="1">PRESENCIAL</option>
+                <option value="2">VIRTUAL</option>
+                <option value="3">MIXTO</option>
+              </select>
+              <label for="ModalidadCurso">Modalidad</label>
+              <div class="invalid-feedback" id="errorModalidadCurso"></div>
+            </div>
+
+            <div class="form-group position-relative mb-3">
+              <input type="text" id="DescripcionCurso" class="form-control" placeholder=" " />
+              <label for="DescripcionCurso">Descripcion</label>
+              <div class="invalid-feedback" id="errorDescripcionCurso"></div>
+            </div>
+
+
+        </form>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-cancelar" onclick="cerrarPanelCursos()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-guardar" onclick="BuscarCursoId()">
+          Guardar
+        </button>
+      </div>
+    </div>
+
+
+
+    <script src="../js/Vistas/curso.js"></script>
+
+
+
+  </div>
