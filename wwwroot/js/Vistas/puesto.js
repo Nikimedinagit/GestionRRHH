@@ -181,11 +181,8 @@ function MostrarPuestos(data) {
         "</button>" +
         "</td>" +
         // columna Puesto (nombre)
-        "<td class='align-middle " +
-        filaClass +
-        "'>" +
-        item.descripcion +
-        "</td>" +
+       "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
+
         // Columna Sector (nombre)
         "<td class='align-middle d-none d-md-table-cell" +
         filaClass +

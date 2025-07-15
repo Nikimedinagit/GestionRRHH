@@ -60,14 +60,17 @@ namespace API_NET_CORE8_RRHH.Controllers
                 aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
             }
 
-           if (filtro.TipoDeLicenciaId.HasValue)
-{
-    aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas
-        .Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
-}
+            if (filtro.TipoDeLicenciaId.HasValue)
+            {
+                aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas
+                    .Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+            }
 
 
             var listaFiltrada = await aprobacionDeLicenciasFiltradas.ToListAsync();
+            var usuarios = await _context.Users
+                .Where(u => listaFiltrada.Select(t => t.UsuarioAprobador).Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id);
 
             var vista = listaFiltrada.Select(a => new VistaAprobacionDeLicencia
             {
@@ -76,7 +79,10 @@ namespace API_NET_CORE8_RRHH.Controllers
                 LicenciaId = a.LicenciaId,
                 FechaDeAprobacion = a.FechDeAprobacion.ToString("dd/MM/yyyy"),
                 EstadoString = a.Estado.ToString(),
-                Estado = a.Estado
+                Estado = a.Estado,
+                UsuarioAprobador = a.UsuarioAprobador,
+                NombreUsuarioAprobador = usuarios.ContainsKey(a.UsuarioAprobador) ? usuarios[a.UsuarioAprobador].NombreCompleto : "",
+                EmailUsuarioAprobador = usuarios.ContainsKey(a.UsuarioAprobador) ? usuarios[a.UsuarioAprobador].Email : ""
             }).ToList();
 
             return vista;

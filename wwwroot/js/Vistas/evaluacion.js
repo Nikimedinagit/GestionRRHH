@@ -215,7 +215,7 @@ function MostrarEvaluaciones(data) {
             </colgroup>
               <thead>
                 <tr>
-                  <th class="text-start header-table">Tipo</th>
+                  <th class="text-start header-table">Criterio</th>
                   <th class="text-start header-table">Descripción</th>
                   <th class="text-center header-table">Acciones</th>
                   </tr>
@@ -612,6 +612,16 @@ document.getElementById("Descripcion").addEventListener("input", () => {
 });
 
 
+//Funcion para validar criterios de evaluacion existente 
+function ValidarCriterioDeEvaluacionExistente(mensaje) {
+    const errorCriterio = document.getElementById("errorIdTipoCriterio");
+    const inputCriterio = document.getElementById("IdTipoCriterio");
+
+    errorCriterio.textContent = mensaje;
+    errorCriterio.style.display = "block";
+    inputCriterio.classList.add("is-invalid");
+}
+
 async function CrearCriterioDeEvaluacion() {
     if(!ValidarFormularioCriterioDeEvaluacion())
         return;
@@ -628,10 +638,10 @@ const criterioEvaluacion = {
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
-        ValidarEvaluacionExistente(response.mensaje);
+        ValidarCriterioDeEvaluacionExistente(response.mensaje);
       } else {
         cerrarPanelCriterios();
-        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);        // Mostrar alerta de éxito
+        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);        
         Swal.fire({
           toast: true,
           position: "bottom-end",

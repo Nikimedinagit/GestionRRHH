@@ -29,6 +29,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public string FechaDeAprobacion { get; set; }
         public string EstadoString { get; set; }
         public EstadoLicencia Estado { get; set; }
+        public string UsuarioAprobador { get; set; }
+        public string NombreUsuarioAprobador { get; set; }
+        public string EmailUsuarioAprobador { get; set; }
 
     }
 

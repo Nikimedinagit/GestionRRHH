@@ -33,6 +33,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public Empleado Empleado { get; set; }
 
         public AprobacionDeLicencia Aprobacion { get; set; }
+
     }
 
     public class VistaLicencia

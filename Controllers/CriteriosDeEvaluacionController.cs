@@ -43,47 +43,29 @@ namespace API_NET_CORE8_RRHH.Controllers
             return criterioDeEvaluacion;
         }
 
-        // PUT: api/CriteriosDeEvaluacion/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCriterioDeEvaluacion(int id, CriterioDeEvaluacion criterioDeEvaluacion)
-        {
-            if (id != criterioDeEvaluacion.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(criterioDeEvaluacion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CriterioDeEvaluacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/CriteriosDeEvaluacion
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<CriterioDeEvaluacion>> PostCriterioDeEvaluacion(CriterioDeEvaluacion criterioDeEvaluacion)
         {
+            criterioDeEvaluacion.Descripcion = criterioDeEvaluacion.Descripcion.ToUpper();
+
+            // Validar si ya existe un criterio con el mismo TipoDeCriterioId
+            var existeCriterio = await _context.CriterioDeEvaluacion
+                .AnyAsync(c => c.TipoDeCriterioId == criterioDeEvaluacion.TipoDeCriterioId);
+
+            if (existeCriterio)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+            }
+
             _context.CriterioDeEvaluacion.Add(criterioDeEvaluacion);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCriterioDeEvaluacion", new { id = criterioDeEvaluacion.Id }, criterioDeEvaluacion);
         }
+
 
         // DELETE: api/CriteriosDeEvaluacion/5
         [HttpDelete("{id}")]

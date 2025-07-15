@@ -138,25 +138,31 @@ function MostrarLicenciasAprobadas(data) {
 
   if (data.length === 0) {
     $("#tablaLicenciasAprobadasBody").append(
-      "<tr><td colspan='3' class='text-center text-muted'>No hay licencias aprobadas para mostrar.</td></tr>"
+      "<tr><td colspan='4' class='text-center text-muted'>No hay licencias aprobadas para mostrar.</td></tr>"
     );
     return;
   }
 
-$.each(data, function (index, item) {
-  $("#tablaLicenciasAprobadasBody").append(
-    "<tr>" +
-    "<td>" + item.fechaDeAprobacion + "</td>" +
-    "<td class='text-center'>" + item.estadoString + "</td>" +
-    "<td class='text-center'>" + item.licenciaString + "</td>" +
-    "</tr>"
-  );
-});
-
-
+  $.each(data, function (index, item) {
+    $("#tablaLicenciasAprobadasBody").append(
+      "<tr>" +
+        "<td class='text-center'>" + item.fechaDeAprobacion + "</td>" +
+        "<td class='text-center'>" +
+          "<span class='badge badge-success'>" + item.estadoString + "</span>" +
+        "</td>" +
+        "<td class='text-center'>" + item.licenciaString + "</td>" +
+        "<td class='text-center'>" +
+          "<strong>" + item.nombreUsuarioAprobador + "</strong><br>" +
+          "<small class='text-muted'>" + item.emailUsuarioAprobador + "</small>" +
+        "</td>" +
+      "</tr>"
+    );
+  });
 
   $('[data-toggle="tooltip"]').tooltip();
 }
+
+
 
 
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -204,12 +205,15 @@ namespace API_NET_CORE8_RRHH.Controllers
             licencia.Estado = EstadoLicencia.APROBADA;
             _context.Licencia.Update(licencia);
 
+            var usuarioId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             // Crear historial en LicenciasAprobadas
             var licenciaAprobada = new AprobacionDeLicencia
             {
                 Estado = EstadoLicencia.APROBADA,
                 LicenciaId = licencia.Id,
                 FechDeAprobacion = DateTime.UtcNow,
+                UsuarioAprobador = usuarioId
 
             };
             _context.AprobacionDeLicencia.Add(licenciaAprobada);
