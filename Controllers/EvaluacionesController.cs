@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -14,10 +16,12 @@ namespace API_NET_CORE8_RRHH.Controllers
     public class EvaluacionesController : ControllerBase
     {
         private readonly Context _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EvaluacionesController(Context context)
+        public EvaluacionesController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Evaluaciones
@@ -69,7 +73,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 var fechaLimite = fechaEvaluacion.AddDays(1);
 
                 evaluacionFiltrar = evaluacionFiltrar
-                .Where(t => t.Fecha >= fechaEvaluacion && t.Fecha <fechaLimite);
+                .Where(t => t.Fecha >= fechaEvaluacion && t.Fecha < fechaLimite);
                 // .Where(t => t.FechaInicio <= fechaFin && t.FechaFin >= fechaInicio);    
             }
 
@@ -161,18 +165,18 @@ namespace API_NET_CORE8_RRHH.Controllers
             //Por empleado se puede evaluar solo una vez al mes
             var evaluacionExistente = await _context.Evaluacion
             .Where(e => e.EmpleadoId == evaluacion.EmpleadoId
-            && e.Fecha.Month == DateTime.Now.Month 
+            && e.Fecha.Month == DateTime.Now.Month
             && e.Fecha.Year == DateTime.Now.Year)
             .FirstOrDefaultAsync();
 
             if (evaluacionExistente != null)
             {
-                return BadRequest(new {codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes"});
+                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
             }
 
 
             //Fecha de evaluacion valor fijo
-                evaluacion.Fecha = DateTime.Now;
+            evaluacion.Fecha = DateTime.Now;
             _context.Evaluacion.Add(evaluacion);
             await _context.SaveChangesAsync();
 
@@ -194,6 +198,92 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return NoContent();
         }
+
+
+
+
+
+
+        //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
+        //Total de evaluaciones
+        [HttpGet("Total")]
+        public async Task<ActionResult<int>> GetTotalEvaluaciones()
+        {
+            // Obtener el rol del usuario autenticado
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _context.Users.FindAsync(userId);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var rol = roles.FirstOrDefault();
+
+            // Permitir solo si es ADMINISTRADOR
+            if (rol != "ADMINISTRADOR")
+            {
+                return Forbid(); // O return Unauthorized();
+            }
+
+            // Consultar todas las evaluaciones de empleados no eliminados
+            var total = await _context.Evaluacion
+                .Include(e => e.Empleado)
+                .Where(e => !e.Empleado.Eliminado)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+
+        //Evaluacion promedio general
+        [HttpGet("PromedioGeneral")]
+        public async Task<ActionResult<double>> GetPromedioGeneral()
+        {
+            // Obtener el rol del usuario autenticado
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _context.Users.FindAsync(userId);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var rol = roles.FirstOrDefault();
+
+            // Permitir solo si es ADMINISTRADOR
+            if (rol != "ADMINISTRADOR")
+            {
+                return Forbid(); // O return Unauthorized();
+            }
+
+            // Consultar todas las evaluaciones de empleados no eliminados
+            var promedio = await _context.Evaluacion
+                .Include(e => e.Empleado)
+                .Where(e => !e.Empleado.Eliminado)
+                .Select(e => e.Calificacion)
+                .AverageAsync();
+
+            return Ok(new { promedio });
+        }
+
+
+        //Empleados evaluados
+        [HttpGet("Empleados")]
+        public async Task<ActionResult<int>> GetEmpleadosEvaluados()
+        {
+            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
+            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+            if (!roles.Contains("ADMINISTRADOR"))
+            {
+                return Forbid();
+            }
+
+            // Obtener el total de empleados distintos evaluados que no están eliminados
+            var totalEmpleadosEvaluados = await _context.Evaluacion
+                .Where(e => !e.Empleado.Eliminado)
+                .Select(e => e.EmpleadoId)
+                .Distinct()
+                .CountAsync();
+
+            return Ok(new { totalEmpleadosEvaluados });
+        }
+
+
+
+
 
         private bool EvaluacionExists(int id)
         {
