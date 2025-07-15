@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
@@ -24,15 +25,47 @@ namespace API_RRHH_TESIS2025.Controllers
 
         // GET: api/Empleados
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleado()
+        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> GetEmpleado()
         {
-            var empleado = await _context.Empleado
+            var empleados = await _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
                 .ToListAsync();
 
-            return empleado;
+            var usuarioIds = empleados
+                .Where(e => e.UsuarioId != null)
+                .Select(e => e.UsuarioId)
+                .Distinct()
+                .ToList();
+
+            var usuarios = await _context.Users
+                .Where(u => usuarioIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id);
+
+            var vista = empleados.Select(e => new VistaEmpleado
+            {
+                Id = e.Id,
+                NombreCompleto = e.NombreCompleto,
+                DNI = e.DNI,
+                Direccion = e.Direccion,
+                FechaNacimientoString = e.FechaNacimientoString,
+                EstadoCivilesString = e.EstadoCivilesString,
+                Email = e.Email,
+                Telefono = e.Telefono,
+                Cuil = e.Cuil,
+                CantidadHijos = e.CantidadHijos,
+                TipoSexoString = e.TipoSexoString,
+                LocalidadIdString = e.LocalidadIdString,
+                PuestoIdString = e.PuestoIdString,
+                UsuarioId = e.UsuarioId,
+                UsuarioNombreCreador = usuarios.ContainsKey(e.UsuarioId) ? usuarios[e.UsuarioId].NombreCompleto : null,
+                UsuarioEmailCreador = usuarios.ContainsKey(e.UsuarioId) ? usuarios[e.UsuarioId].Email : null,
+                Eliminado = e.Eliminado
+            }).ToList();
+
+            return vista;
         }
+
 
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
@@ -40,7 +73,7 @@ namespace API_RRHH_TESIS2025.Controllers
             List<VistaEmpleado> vista = new List<VistaEmpleado>();
             var empleadosFiltrados = _context.Empleado.AsQueryable();
 
-            if(!string.IsNullOrEmpty(filtro.NombreCompleto))
+            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
             {
                 empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
             }
@@ -56,7 +89,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
             }
 
-             if (filtro.TipoSexo.HasValue)
+            if (filtro.TipoSexo.HasValue)
                 empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
 
             if (filtro.LocalidadId.HasValue)
@@ -75,6 +108,13 @@ namespace API_RRHH_TESIS2025.Controllers
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
                 .ToListAsync();
+
+
+            var usuarios = await _context.Users
+                .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id);
+
+
             foreach (var empleado in listaFiltrada)
             {
                 var vistaEmpleado = new VistaEmpleado
@@ -92,6 +132,9 @@ namespace API_RRHH_TESIS2025.Controllers
                     TipoSexoString = empleado.TipoSexoString,
                     LocalidadIdString = empleado.LocalidadIdString,
                     PuestoIdString = empleado.PuestoIdString,
+                    UsuarioId = empleado.UsuarioId,
+                    UsuarioNombreCreador = usuarios.ContainsKey(empleado.UsuarioId) ? usuarios[empleado.UsuarioId].NombreCompleto : null,
+                    UsuarioEmailCreador = usuarios.ContainsKey(empleado.UsuarioId) ? usuarios[empleado.UsuarioId].Email : null,
                     Eliminado = empleado.Eliminado
                 };
                 vista.Add(vistaEmpleado);
@@ -143,13 +186,15 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             // CUIL (opcional)
-            if (empleado.Cuil != null && empleado.Cuil != 0)
+            if (empleado.Cuil != 0)
             {
                 var cuilExistente = await _context.Empleado
                     .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
+
                 if (cuilExistente != null)
                     erroresExistentes.Add("El CUIL ya existe.");
             }
+
 
             // Email (solo si está presente)
             if (!string.IsNullOrWhiteSpace(empleado.Email))
@@ -199,12 +244,17 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
         {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             //Guarmamos en mayuscula
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
 
             //Guardamos el email en minúsculas
             empleado.Email = empleado.Email.ToLower();
+
+            // Asignar valores predeterminados a los campos
+            empleado.UsuarioId = userId;
 
             // Validamos si existe el dni, cuil, emial y telefono
             var errroresExistentes = new List<string>();

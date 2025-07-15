@@ -327,6 +327,10 @@ function MostrarDetalleEmpleado(id) {
     empleado.localidadIdString || "";
   document.getElementById("detalleSexo").textContent =
     empleado.tipoSexoString || "";
+  document.getElementById("detalleNombreCreador").textContent =
+    empleado.usuarioNombreCreador || "";
+  document.getElementById("detalleEmailCreador").textContent =
+    empleado.usuarioEmailCreador || "";
 
   // Mostrar el offcanvas
   const offcanvas = new bootstrap.Offcanvas("#offcanvasDetalleEmpleado");
