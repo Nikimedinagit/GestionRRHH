@@ -186,7 +186,7 @@ td {
 }
 
 .titulo-sub-seccion {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #2c3e50c9;
   margin: 10px;
@@ -200,3 +200,13 @@ td {
   margin-bottom: 8px;
 }
 
+.btn-agregar-criterio{
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.5rem !important;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.btn-agregar-criterio:hover{
+  background-color: #7b59b3 !important;
+  color: #fff !important;
+}

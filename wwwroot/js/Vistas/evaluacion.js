@@ -201,10 +201,9 @@ function MostrarEvaluaciones(data) {
         <div class="mb-3">
           <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
         </div>
-        <hr />
+        <hr style="margin-bottom: 1rem;"/>
         <div class="criterios-panel mt-3">
-          <button class="btn btn-agregar mb-2 crearCriterio" data-evaluacion-id="${element.id}">
-            <i class="fa-solid fa-plus me-1"></i> 
+          <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
             <span>Agregar Criterio</span>
           </button>
           <div class="table-responsive">
