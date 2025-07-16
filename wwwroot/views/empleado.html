@@ -2,7 +2,9 @@
   <!-- Título -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Administración de Personal</h3>
-    <p class="text-muted fs-6 mb-0">Gestioná la información y seguimiento de cada empleado en el sistema.</p>
+    <p class="text-muted fs-6 mb-0">
+      Gestioná la información y seguimiento de cada empleado en el sistema.
+    </p>
   </div>
 
   <hr />
@@ -34,69 +36,62 @@
       </div>
     </div>
 
-
-
-
-
-
     <!-- Contenedor Filtros-->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
         <!-- Empleado -->
-                <div class="col-12 col-md-3">
-                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
-                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..."/>
-                 </div> 
+        <div class="col-12 col-md-3">
+          <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+          <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
+        </div>
 
-                  <!-- DNI -->
-                <div class="col-12 col-md-2">
-                    <label for="DniEmpleadoFiltro" class="form-label-fija">DNI</label>
-                    <input type="number" class="form-control filtro-select" id="DniEmpleadoFiltro" placeholder="Buscar..."/>
-                </div>
+        <!-- DNI -->
+        <div class="col-12 col-md-2">
+          <label for="DniEmpleadoFiltro" class="form-label-fija">DNI</label>
+          <input type="number" class="form-control filtro-select" id="DniEmpleadoFiltro" placeholder="Buscar..." />
+        </div>
 
-                 <!-- Tipo de Sexo -->
-                <div class="col-12 col-md-2"> 
-                    <label for="TipoSexoEmpleadoFiltro" class="form-label-fija">Tipo de Sexo</label>
-                    <select id="TipoSexoEmpleadoFiltro" class="form-control filtro-select">
-                        <option value="0">[Todos]</option>
-                        <option value="1">MASCULINO</option>
-                        <option value="2">FEMENINO</option>
-                        <option value="3">NO BINARIO</option>
-                        <option value="4">OTRO</option>
-                    </select>
-                </div>
+        <!-- Tipo de Sexo -->
+        <div class="col-12 col-md-2">
+          <label for="TipoSexoEmpleadoFiltro" class="form-label-fija">Tipo de Sexo</label>
+          <select id="TipoSexoEmpleadoFiltro" class="form-control filtro-select">
+            <option value="0">[Todos]</option>
+            <option value="1">MASCULINO</option>
+            <option value="2">FEMENINO</option>
+            <option value="3">NO BINARIO</option>
+            <option value="4">OTRO</option>
+          </select>
+        </div>
 
+        <!-- Estado Civil -->
+        <div class="col-12 col-md-2">
+          <label for="EstadoCivilEmpleadoFiltro" class="form-label-fija">Estado Civil</label>
+          <select id="EstadoCivilEmpleadoFiltro" class="form-control filtro-select">
+            <option value="0">[Todos]</option>
+            <option value="1">SOLTERO</option>
+            <option value="2">CASADO</option>
+            <option value="3">DIVORCIADO</option>
+            <option value="4">VIUDO</option>
+          </select>
+        </div>
 
-                <!-- Estado Civil -->   
-                <div class="col-12 col-md-2">
-                    <label for="EstadoCivilEmpleadoFiltro" class="form-label-fija">Estado Civil</label>
-                    <select id="EstadoCivilEmpleadoFiltro" class="form-control filtro-select">
-                        <option value="0">[Todos]</option>
-                        <option value="1">SOLTERO</option>
-                        <option value="2">CASADO</option>
-                        <option value="3">DIVORCIADO</option>
-                        <option value="4">VIUDO</option>
-                    </select>
-                </div>
+        <!-- Localidad -->
+        <div class="col-12 col-md-2">
+          <label for="IdLocalidadFiltro" class="form-label-fija">Localidad</label>
+          <select id="IdLocalidadFiltro" class="form-control filtro-select">
+            <option value="0">[Todas]</option>
+            <!-- Aquí se cargarán dinámicamente las localidades -->
+          </select>
+        </div>
 
-                <!-- Localidad -->
-                <div class="col-12 col-md-2">
-                    <label for="IdLocalidadFiltro" class="form-label-fija">Localidad</label>
-                    <select id="IdLocalidadFiltro" class="form-control filtro-select">
-                        <option value="0">[Todas]</option>
-                        <!-- Aquí se cargarán dinámicamente las localidades -->
-                    </select>
-                </div>
-
-                <!-- Puesto -->
-                <div class="col-12 col-md-3">
-                    <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
-                    <select id="IdPuestoFiltro" class="form-control filtro-select">
-                        <option value="0">[Todas]</option>
-                        <!-- Aquí se cargarán dinámicamente los puestos -->
-                    </select>
-                </div>
-
+        <!-- Puesto -->
+        <div class="col-12 col-md-3">
+          <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
+          <select id="IdPuestoFiltro" class="form-control filtro-select">
+            <option value="0">[Todas]</option>
+            <!-- Aquí se cargarán dinámicamente los puestos -->
+          </select>
+        </div>
       </div>
     </div>
 
@@ -115,17 +110,19 @@
       </div>
     </div>
 
-
     <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
       <canvas id="graficoEmpleados" width="400" height="150"></canvas>
     </div>
 
     <!-- Contenedor de tarjetas de empleados -->
     <div>
-      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
-
+      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
         <!-- Total de empleados -->
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(25% - 1rem);">
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 180px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
           <div class="d-flex align-items-center">
             <div class="bg-primary bg-opacity-10 p-3 me-3">
               <i class="fas fa-users text-primary fs-4"></i>
@@ -138,7 +135,11 @@
         </div>
 
         <!-- Hombres -->
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(25% - 1rem);">
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 180px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
           <div class="d-flex align-items-center">
             <div class="bg-info bg-opacity-10 p-3 me-3">
               <i class="fas fa-male text-info fs-4"></i>
@@ -151,7 +152,11 @@
         </div>
 
         <!-- Mujeres -->
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(25% - 1rem);">
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 180px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
           <div class="d-flex align-items-center">
             <div class="bg-pink bg-opacity-10 p-3 me-3">
               <i class="fas fa-female text-pink fs-4"></i>
@@ -164,7 +169,11 @@
         </div>
 
         <!-- Otros -->
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(25% - 1rem);">
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 180px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
           <div class="d-flex align-items-center">
             <div class="bg-secondary bg-opacity-10 p-3 me-3">
               <i class="fas fa-user text-secondary fs-4"></i>
@@ -175,242 +184,312 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <hr style="margin-bottom: 1rem;" />
+    <hr style="margin-bottom: 1rem" />
 
     <!-- Cards de Empleados -->
     <div id="empleadosContainer" class="row g-4"></div>
-
-
   </div>
 
- <!-- Panel Deslizante Formulario de Empleado -->
-<div id="panelEmpleado" aria-modal="true" role="dialog" aria-labelledby="panelTituloEmpleado" tabindex="-1" class="w-30">
-  <div class="panel-header">
-    <h2 id="panelTituloEmpleado" class="panel-title">Formulario de Empleado</h2>
-  </div>
-
-  <div class="panel-body">
-    <form id="formEmpleado">
-      <input type="hidden" id="IdEmpleado" />
-
-      <div class="form-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-
-        <!-- Nombre -->
-        <div class="form-group position-relative mb-3">
-          <input type="text" id="NombreEmpleado" class="form-control" placeholder=" " />
-          <label for="NombreEmpleado">Nombre</label>
-          <div class="invalid-feedback" id="errorNombreEmpleado"></div>
-        </div>
-
-        <!-- DNI -->
-        <div class="form-group position-relative mb-3">
-          <input type="number" id="DniEmpleado" class="form-control" placeholder=" " />
-          <label for="DniEmpleado">DNI</label>
-          <div class="invalid-feedback" id="errorDniEmpleado"></div>
-        </div>
-
-        <!-- CUIL -->
-        <div class="form-group position-relative mb-3">
-          <input type="number" id="CuilEmpleado" class="form-control" placeholder=" " />
-          <label for="CuilEmpleado">CUIL</label>
-          <div class="invalid-feedback" id="errorCuilEmpleado"></div>
-        </div>
-
-        <!-- Teléfono -->
-        <div class="form-group position-relative mb-3">
-          <input type="number" id="TelefonoEmpleado" class="form-control" placeholder=" " />
-          <label for="TelefonoEmpleado">Teléfono</label>
-          <div class="invalid-feedback" id="errorTelefonoEmpleado"></div>
-        </div>
-
-        <!-- Email -->
-        <div class="form-group position-relative mb-3">
-          <input type="email" id="EmailEmpleado" class="form-control" placeholder=" " />
-          <label for="EmailEmpleado">Email</label>
-          <div class="invalid-feedback" id="errorEmailEmpleado"></div>
-        </div>
-
-        <!-- Fecha Nacimiento -->
-        <div class="form-group position-relative mb-3">
-          <input type="date" id="FechaNacimientoEmpleado" class="form-control" placeholder=" " />
-          <label for="FechaNacimientoEmpleado">Fecha Nacimiento</label>
-          <div class="invalid-feedback" id="errorFechaNacimientoEmpleado"></div>
-        </div>
-
-        <!-- Dirección -->
-        <div class="form-group position-relative mb-3">
-          <input type="text" id="DireccionEmpleado" class="form-control" placeholder=" " />
-          <label for="DireccionEmpleado">Dirección</label>
-          <div class="invalid-feedback" id="errorDireccionEmpleado"></div>
-        </div>
-
-        <!-- Estado Civil -->
-        <div class="form-group position-relative mb-3">
-          <select id="EstadoCivilEmpleado" class="form-control" required>
-            <option value="0" disabled selected hidden>Seleccionar estado</option>
-            <option value="1">SOLTERO</option>
-            <option value="2">CASADO</option>
-            <option value="3">DIVORCIADO</option>
-            <option value="4">VIUDO</option>
-          </select>
-          <label for="EstadoCivilEmpleado">Estado Civil</label>
-          <div class="invalid-feedback" id="errorEstadoCivilEmpleado"></div>
-        </div>
-
-        <!-- Hijos -->
-        <div class="form-group position-relative mb-3">
-          <input type="number" id="CantidadHijosEmpleado" class="form-control" placeholder=" " />
-          <label for="CantidadHijosEmpleado">Cantidad Hijos</label>
-          <div class="invalid-feedback" id="errorCantidadHijosEmpleado"></div>
-        </div>
-
-        <!-- Sexo -->
-        <div class="form-group position-relative mb-3">
-          <select id="TipoSexoEmpleado" class="form-control" required>
-            <option value="0" disabled selected hidden>Seleccionar sexo</option>
-            <option value="1">MASCULINO</option>
-            <option value="2">FEMENINO</option>
-            <option value="3">NO BINARIO</option>
-            <option value="4">OTRO</option>
-          </select>
-          <label for="TipoSexoEmpleado">Tipo de Sexo</label>
-          <div class="invalid-feedback" id="errorTipoSexoEmpleado"></div>
-        </div>
-
-        <!-- Localidad -->
-        <div class="form-group position-relative mb-3">
-          <select id="IdLocalidad" class="form-control" required>
-            <option value="" disabled selected hidden>Seleccionar localidad</option>
-            <!-- opciones dinámicas -->
-          </select>
-          <label for="IdLocalidad">Localidad</label>
-          <div class="invalid-feedback" id="errorIdLocalidad"></div>
-        </div>
-
-        <!-- Puesto -->
-        <div class="form-group position-relative mb-3">
-          <select id="IdPuesto" class="form-control" required>
-            <option value="" disabled selected hidden>Seleccionar puesto</option>
-            <!-- opciones dinámicas -->
-          </select>
-          <label for="IdPuesto">Puesto</label>
-          <div class="invalid-feedback" id="errorIdPuesto"></div>
-        </div>
-
-      </div>
-    </form>
-  </div>
-
-  <div class="panel-footer">
-    <button class="btn btn-cancelar" onclick="CerrarPanelEmpleado()">Cancelar</button>
-    <button type="submit" class="btn btn-guardar" onclick="BuscarEmpleadoId()">Guardar</button>
-  </div>
-</div>
-
-
-
-<!-- Offcanvas Detalle de Empleado -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado" aria-labelledby="tituloDetalleEmpleado" style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;"
->
-  <div class="detalle-empleado-contenedor">
-    <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-center">
-      <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">Detalle del Empleado</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  <!-- Panel Deslizante Formulario de Empleado -->
+  <div id="panelEmpleado" aria-modal="true" role="dialog" aria-labelledby="panelTituloEmpleado" tabindex="-1"
+    class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTituloEmpleado" class="panel-title">
+        Formulario de Empleado
+      </h2>
     </div>
 
-    <hr style="margin: 0; border-top: 1px solid #dee2e6;">
+    <div class="panel-body">
+      <form id="formEmpleado">
+        <input type="hidden" id="IdEmpleado" />
 
-    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto; ">
-      <div class="detalle-empleado-seccion">
-        <div class="text-center mb-3">
-          <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem;">Nombre del Empleado</h4>
-          <span id="detallePuesto" class="text-muted" style="font-size: 0.85rem;">Puesto del Empleado</span>
+        <div class="form-grid" style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+          ">
+          <!-- Nombre -->
+          <div class="form-group position-relative mb-3">
+            <input type="text" id="NombreEmpleado" class="form-control" placeholder=" " />
+            <label for="NombreEmpleado">Nombre</label>
+            <div class="invalid-feedback" id="errorNombreEmpleado"></div>
+          </div>
+
+          <!-- DNI -->
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="DniEmpleado" class="form-control" placeholder=" " />
+            <label for="DniEmpleado">DNI</label>
+            <div class="invalid-feedback" id="errorDniEmpleado"></div>
+          </div>
+
+          <!-- CUIL -->
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="CuilEmpleado" class="form-control" placeholder=" " />
+            <label for="CuilEmpleado">CUIL</label>
+            <div class="invalid-feedback" id="errorCuilEmpleado"></div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="TelefonoEmpleado" class="form-control" placeholder=" " />
+            <label for="TelefonoEmpleado">Teléfono</label>
+            <div class="invalid-feedback" id="errorTelefonoEmpleado"></div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group position-relative mb-3">
+            <input type="email" id="EmailEmpleado" class="form-control" placeholder=" " />
+            <label for="EmailEmpleado">Email</label>
+            <div class="invalid-feedback" id="errorEmailEmpleado"></div>
+          </div>
+
+          <!-- Fecha Nacimiento -->
+          <div class="form-group position-relative mb-3">
+            <input type="date" id="FechaNacimientoEmpleado" class="form-control" placeholder=" " />
+            <label for="FechaNacimientoEmpleado">Fecha Nacimiento</label>
+            <div class="invalid-feedback" id="errorFechaNacimientoEmpleado"></div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-group position-relative mb-3">
+            <input type="text" id="DireccionEmpleado" class="form-control" placeholder=" " />
+            <label for="DireccionEmpleado">Dirección</label>
+            <div class="invalid-feedback" id="errorDireccionEmpleado"></div>
+          </div>
+
+          <!-- Estado Civil -->
+          <div class="form-group position-relative mb-3">
+            <select id="EstadoCivilEmpleado" class="form-control" required>
+              <option value="0" disabled selected hidden>
+                Seleccionar estado
+              </option>
+              <option value="1">SOLTERO</option>
+              <option value="2">CASADO</option>
+              <option value="3">DIVORCIADO</option>
+              <option value="4">VIUDO</option>
+            </select>
+            <label for="EstadoCivilEmpleado">Estado Civil</label>
+            <div class="invalid-feedback" id="errorEstadoCivilEmpleado"></div>
+          </div>
+
+          <!-- Hijos -->
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="CantidadHijosEmpleado" class="form-control" placeholder=" " />
+            <label for="CantidadHijosEmpleado">Cantidad Hijos</label>
+            <div class="invalid-feedback" id="errorCantidadHijosEmpleado"></div>
+          </div>
+
+          <!-- Sexo -->
+          <div class="form-group position-relative mb-3">
+            <select id="TipoSexoEmpleado" class="form-control" required>
+              <option value="0" disabled selected hidden>
+                Seleccionar sexo
+              </option>
+              <option value="1">MASCULINO</option>
+              <option value="2">FEMENINO</option>
+              <option value="3">NO BINARIO</option>
+              <option value="4">OTRO</option>
+            </select>
+            <label for="TipoSexoEmpleado">Tipo de Sexo</label>
+            <div class="invalid-feedback" id="errorTipoSexoEmpleado"></div>
+          </div>
+
+          <!-- Localidad -->
+          <div class="form-group position-relative mb-3">
+            <select id="IdLocalidad" class="form-control" required>
+              <option value="" disabled selected hidden>
+                Seleccionar localidad
+              </option>
+              <!-- opciones dinámicas -->
+            </select>
+            <label for="IdLocalidad">Localidad</label>
+            <div class="invalid-feedback" id="errorIdLocalidad"></div>
+          </div>
+
+          <!-- Puesto -->
+          <div class="form-group position-relative mb-3">
+            <select id="IdPuesto" class="form-control" required>
+              <option value="" disabled selected hidden>
+                Seleccionar puesto
+              </option>
+              <!-- opciones dinámicas -->
+            </select>
+            <label for="IdPuesto">Puesto</label>
+            <div class="invalid-feedback" id="errorIdPuesto"></div>
+          </div>
         </div>
+      </form>
+    </div>
 
-        <div class="detalle-empleado-tarjeta">
-          <div class="detalle-empleado-seccion">
-            <p class="detalle-empleado-titulo-seccion">Información Personal</p>
+    <div class="panel-footer">
+      <button class="btn btn-cancelar" onclick="CerrarPanelEmpleado()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarEmpleadoId()">
+        Guardar
+      </button>
+    </div>
+  </div>
 
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">DNI:</span>
-              <span class="detalle-empleado-valor" id="detalleDni"></span>
+  <!-- Offcanvas Detalle de Empleado -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado"
+    aria-labelledby="tituloDetalleEmpleado" style="
+      width: 360px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    ">
+    <div class="detalle-empleado-contenedor">
+      <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+            Detalle del Empleado
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Información personal y de contacto del empleado seleccionado.
+          </p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
+
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+      <div class="offcanvas-body p-2" style="
+          font-size: 0.75rem;
+          line-height: 1.1;
+          max-height: calc(100vh - 70px);
+          overflow-y: auto;
+        ">
+        <div class="detalle-empleado-seccion">
+          <div class="text-center mb-3">
+            <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+              Nombre del Empleado
+            </h4>
+            <span id="detallePuesto" class="text-muted" style="font-size: 0.85rem">Puesto del Empleado</span>
+          </div>
+
+          <div class="detalle-empleado-tarjeta">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">
+                Información Personal
+              </p>
+
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">DNI:</span>
+                <span class="detalle-empleado-valor" id="detalleDni"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">CUIL:</span>
+                <span class="detalle-empleado-valor" id="detalleCuil"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Fecha Nacimiento:</span>
+                <span class="detalle-empleado-valor" id="detalleFechaNacimiento"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Sexo:</span>
+                <span class="detalle-empleado-valor" id="detalleSexo"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Estado Civil:</span>
+                <span class="detalle-empleado-valor" id="detalleEstadoCivil"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Hijos:</span>
+                <span class="detalle-empleado-valor" id="detalleCantidadHijos"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Localidad:</span>
+                <span class="detalle-empleado-valor" id="detalleLocalidad"></span>
+              </div>
             </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">CUIL:</span>
-              <span class="detalle-empleado-valor" id="detalleCuil"></span>
+          </div>
+
+          <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">Contacto</p>
+
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Teléfono:</span>
+                <span class="detalle-empleado-valor" id="detalleTelefono"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Email:</span>
+                <span class="detalle-empleado-valor" id="detalleEmail"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Dirección:</span>
+                <span class="detalle-empleado-valor" id="detalleDireccion"></span>
+              </div>
             </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Fecha Nacimiento:</span>
-              <span class="detalle-empleado-valor" id="detalleFechaNacimiento"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Sexo:</span>
-              <span class="detalle-empleado-valor" id="detalleSexo"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Estado Civil:</span>
-              <span class="detalle-empleado-valor" id="detalleEstadoCivil"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Hijos:</span>
-              <span class="detalle-empleado-valor" id="detalleCantidadHijos"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Localidad:</span>
-              <span class="detalle-empleado-valor" id="detalleLocalidad"></span>
+          </div>
+
+          <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">Responsable de Alta</p>
+
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Nombre:</span>
+                <span class="detalle-empleado-valor" id="detalleNombreCreador"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Email:</span>
+                <span class="detalle-empleado-valor" id="detalleEmailCreador"></span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem;">
-          <div class="detalle-empleado-seccion">
-            <p class="detalle-empleado-titulo-seccion">Contacto</p>
+  <!-- Offcanvas Historial de Empleado -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasHistorialEmpleado"
+    aria-labelledby="tituloHistorialEmpleado">
+    <div class="historial-empleado-contenedor">
 
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Teléfono:</span>
-              <span class="detalle-empleado-valor" id="detalleTelefono"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Email:</span>
-              <span class="detalle-empleado-valor" id="detalleEmail"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Dirección:</span>
-              <span class="detalle-empleado-valor" id="detalleDireccion"></span>
-            </div>
-          </div>
+
+      <div class="historial-empleado-encabezado d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+            Historial del Empleado
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Visualizá los cambios de puesto y sector de este empleado a lo largo del tiempo.
+          </p>
         </div>
-
-        <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem;">
-          <div class="detalle-empleado-seccion">
-            <p class="detalle-empleado-titulo-seccion">Responsable de Alta</p>
-
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Nombre:</span>
-              <span class="detalle-empleado-valor" id="detalleNombreCreador"></span>
-            </div>
-            <div class="detalle-empleado-fila">
-              <span class="detalle-empleado-etiqueta">Email:</span>
-              <span class="detalle-empleado-valor" id="detalleEmailCreador"></span>
-            </div>
-          </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
 
 
+      <hr style="margin: 0 0 1rem 0; border-top: 1px solid #dee2e6" />
+
+      <!-- Tabla simple igual que tenías -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle w-100" id="tablaHistorialEmpleado"
+          style="background: #fff">
+          <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 30%" />
+            <col style="width: 30%" />
+            <col style="width: 30%" />
+          </colgroup>
+          <thead class="table-historial-empleado" style="background: #f8f9fa">
+            <tr>
+              <th class="text-center">Fecha</th>
+              <th class="text-center">Puesto Anterior</th>
+              <th class="text-center">Puesto Actual</th>
+              <th class="text-center">Responsable</th>
+            </tr>
+          </thead>
+          <tbody id="tablaHistorialEmpleadoBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-<!-- Offcanvas para ver más detalles del empleado -->
-</div>
-
 <script src="../js/Vistas/empleado.js"></script>
 <script src="../js/Vistas/common/obtenerLocalidad.js"></script>
 <script src="../js/Vistas/common/obtenerPuesto.js"></script>

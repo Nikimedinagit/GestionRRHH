@@ -274,7 +274,7 @@ function MostrarEmpleados(data) {
           <div class="d-flex justify-content-between mt-2 align-items-center">
             <!-- Botón Historial a la izquierda -->
             <div>
-              <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="MostrarHistorialEmpleado(${item.id})" data-tippy-content="Historial">
+              <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id})" data-tippy-content="Historial">
                 <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
               </button>
             </div>
@@ -1290,5 +1290,67 @@ async function EliminarSiEmpleado(id) {
       Swal.fire("Error", "No se pudo actualizar el empleado.", "error");
     });
 }
+
+
+// Función para mostra el offcanvas de historial
+function VerHistorialEmpleado(empleadoId) {
+  ObtenerHistorialEmpleados(empleadoId);
+
+  const offcanvasElement = document.getElementById("offcanvasHistorialEmpleado");
+  console.log("Elemento encontrado:", offcanvasElement);
+
+  const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+  offcanvas.show();
+}
+
+
+
+// Función para obtener el historial de empleados
+async function ObtenerHistorialEmpleados(empleadoId) {
+  const res = await authFetch(`HistorialLaboral/empleado/${empleadoId}`,{
+    method: "GET",
+  })
+    .then(response => response.json())
+    .then((data) => {
+      MostrarHistorialEmpleado(data);
+    })
+    .catch((error) => {
+      console.log("No se puede acceder al servicio.", error);
+    });
+}
+
+// Función para mostrar el historial de empleados
+function MostrarHistorialEmpleado(data) {
+  $("#tablaHistorialEmpleadoBody").empty();
+
+  if (!data || data.length === 0) {
+    $("#tablaHistorialEmpleadoBody").append(
+      "<tr><td colspan='4' class='text-center text-muted'>No hay historial disponible</td></tr>"
+    );
+    return;
+  }
+
+  $.each(data, function (index, item) {
+    $("#tablaHistorialEmpleadoBody").append(
+      "<tr>" +
+        "<td class='text-center'>" + item.fechaModificacionString + "</td>" +
+        "<td class='text-center'>" +
+          "<strong>" + item.puestoAnterior + "</strong><br>" +
+          "<small class='text-muted'>" + item.sectorAnterior + "</small>" +
+        "</td>" +
+        "<td class='text-center'>" +
+          "<strong>" + item.puestoActual + "</strong><br>" +
+          "<small class='text-muted'>" + item.sectorActual + "</small>" +
+        "</td>" +
+        "<td class='text-center'>" +
+          "<strong>" + item.usuarioModificadorNombre + "</strong><br>" +
+          "<small class='text-muted'>" + item.usuarioModificadorEmail + "</small>" +
+        "</td>" +
+      "</tr>"
+    );
+  });
+}
+
+
 
 ComboParaFiltrarLocalidadPuesto();

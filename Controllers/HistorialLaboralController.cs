@@ -20,28 +20,60 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/HistorialLaboral
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<HistorialLaboral>>> GetHistorialLaboral()
-        {
-            return await _context.HistorialLaboral.ToListAsync();
-        }
-
         // GET: api/HistorialLaboral/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<HistorialLaboral>> GetHistorialLaboral(int id)
+        [HttpGet("empleado/{empleadoId}")]
+        public async Task<ActionResult<IEnumerable<VistaHistorialLaboral>>> GetHistorialPorEmpleado(int empleadoId)
         {
-            var historialLaboral = await _context.HistorialLaboral.FindAsync(id);
+            var historial = await _context.HistorialLaboral
+                .Where(h => h.EmpleadoId == empleadoId)
+                .OrderByDescending(h => h.FechaModificacion)
+                .Select(h => new
+                {
+                    h.Id,
+                    h.FechaModificacion,
+                    h.EmpleadoId,
+                    EmpleadoNombre = h.Empleado.NombreCompleto,
+                    h.PuestoAnterior,
+                    h.PuestoActual,
+                    h.UsuarioModificador
+                })
+                .ToListAsync();
 
-            if (historialLaboral == null)
+            var usuarioIds = historial
+                .Select(h => h.UsuarioModificador)
+                .Distinct()
+                .ToList();
+
+            var usuarios = await _context.Users
+                .Where(u => usuarioIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => new { u.NombreCompleto, u.Email });
+
+            // Buscar todos los nombres de puestos actuales
+            var puestos = await _context.Puesto
+                .Include(p => p.Sector)
+                .ToListAsync();
+
+            var lista = historial.Select(h => new VistaHistorialLaboral
             {
-                return NotFound();
-            }
+                Id = h.Id,
+                FechaModificacionString = h.FechaModificacion.ToString("dd/MM/yyyy"),
+                EmpleadoId = h.EmpleadoId,
+                EmpleadoIdString = h.EmpleadoNombre,
+                PuestoAnterior = h.PuestoAnterior,
+                PuestoActual = h.PuestoActual,
+                UsuarioModificador = h.UsuarioModificador,
+                UsuarioModificadorNombre = usuarios.ContainsKey(h.UsuarioModificador) ? usuarios[h.UsuarioModificador].NombreCompleto : "N/D",
+                UsuarioModificadorEmail = usuarios.ContainsKey(h.UsuarioModificador) ? usuarios[h.UsuarioModificador].Email : "N/D",
+                SectorActual = puestos.FirstOrDefault(p => p.Descripcion == h.PuestoActual)?.Sector?.Nombre ?? "N/D",
+                SectorAnterior = puestos.FirstOrDefault(p => p.Descripcion == h.PuestoAnterior)?.Sector?.Nombre ?? "N/D"
+            }).ToList();
 
-            return historialLaboral;
+            return lista;
         }
 
-        
+
+
+
 
         private bool HistorialLaboralExists(int id)
         {

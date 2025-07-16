@@ -914,4 +914,28 @@ select.form-control:not([value=""])+label {
 
 
 
+/* INICIO ESTILO OFFCANVAS HISTORIAL EMPLEADO */
+#offcanvasHistorialEmpleado {
+  width: 900px !important; 
+  border-top-left-radius: 0.3rem !important;
+  border-bottom-left-radius: 0.3rem !important;
+  box-sizing: border-box; 
+}
 
+.historial-empleado-contenedor {
+  border-left: 4px solid #FF6600;
+  background-color: #ffffff;
+  border-top-left-radius: 0.3rem;
+  border-bottom-left-radius: 0.3rem;
+  height: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.historial-empleado-encabezado {
+  background-color: transparent !important;
+  color: #212529;
+  border-bottom: none !important;
+  padding: 0.5rem 1rem;
+}
+/* FIN ESTILO OFFCANVAS HISTORIAL EMPLEADO */

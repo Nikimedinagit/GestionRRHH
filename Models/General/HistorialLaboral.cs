@@ -26,23 +26,16 @@ namespace WorkSync.Models.General
     public class VistaHistorialLaboral
     {
         public int Id { get; set; }
-        public string FechaFinString { get; set; }
+        public string FechaModificacionString { get; set; }
         public string EmpleadoIdString { get; set; }
         public int EmpleadoId { get; set; }
         public string PuestoActual { get; set; }
         public string PuestoAnterior { get; set; }
         public string SectorActual { get; set; }
+        public string SectorAnterior { get; set; }
         public string UsuarioModificador { get; set; }
         public string UsuarioModificadorNombre { get; set; }
         public string UsuarioModificadorEmail { get; set; }
     }
-
-    public class HistorialLaboralFiltrar
-    {
-        public DateTime? FechaInicio { get; set; }
-        public DateTime? FechaFin { get; set; }
-        public int? EmpleadoId { get; set; }
-    }
-    
 
 }

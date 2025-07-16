@@ -3,7 +3,11 @@
   <!-- Título -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Seguimiento de Evaluaciones</h3>
+    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+      Visualizá el progreso, resultados y responsables de las evaluaciones realizadas.
+    </p>
   </div>
+
 
   <hr />
 
@@ -36,46 +40,46 @@
 
 
 
-        <!-- Contenedor Filtros-->
-        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
-            <div class="row g-3 align-items-end">
-                <!-- Empleado -->
-                <div class="col-12 col-md-3">
-                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
-                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..."/>
-                 </div>   
-
-                 <!-- Calificacion -->
-                <div class="col-12 col-md-2">
-                    <label for="CalificacionBuscar" class="form-label-fija">Calificacion</label>
-                    <select id="CalificacionBuscar" class="form-control filtro-select">
-                        <option value="0">[Todas]</option>
-                        <option value="1">REGULAR</option>
-                        <option value="2">BUENA</option>
-                        <option value="3">MUY BUENA</option>
-                        <option value="4">EXCELENTE</option>
-                    </select>
-                </div>
-              
-                
-                <!-- Activar Fecha -->
-                 <div class="col-12 col-md-1">
-                    <label class="form-label-fija">Fecha</label>
-                    <select id="filtrarFechaSelect" class="form-control filtro-select">
-                        <option value="no" selected>No</option>
-                        <option value="si">Sí</option>
-                    </select>
-                </div>
-
-                <!-- Fecha de Evaluacion -->
-                <div id="fechasInputs" class="d-none col-12 col-md-2">
-                    <label for="FechaEvalBuscar" class="form-label-fija">Fecha de Evaluación</label>
-                    <input type="date" class="form-control filtro-select" id="FechaEvalBuscar" />
-                </div>
-
-                
-            </div>
+    <!-- Contenedor Filtros-->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+        <!-- Empleado -->
+        <div class="col-12 col-md-3">
+          <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+          <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
+
+        <!-- Calificacion -->
+        <div class="col-12 col-md-2">
+          <label for="CalificacionBuscar" class="form-label-fija">Calificacion</label>
+          <select id="CalificacionBuscar" class="form-control filtro-select">
+            <option value="0">[Todas]</option>
+            <option value="1">REGULAR</option>
+            <option value="2">BUENA</option>
+            <option value="3">MUY BUENA</option>
+            <option value="4">EXCELENTE</option>
+          </select>
+        </div>
+
+
+        <!-- Activar Fecha -->
+        <div class="col-12 col-md-1">
+          <label class="form-label-fija">Fecha</label>
+          <select id="filtrarFechaSelect" class="form-control filtro-select">
+            <option value="no" selected>No</option>
+            <option value="si">Sí</option>
+          </select>
+        </div>
+
+        <!-- Fecha de Evaluacion -->
+        <div id="fechasInputs" class="d-none col-12 col-md-2">
+          <label for="FechaEvalBuscar" class="form-label-fija">Fecha de Evaluación</label>
+          <input type="date" class="form-control filtro-select" id="FechaEvalBuscar" />
+        </div>
+
+
+      </div>
+    </div>
 
 
     <!-- Contenedor Generar-->
@@ -155,8 +159,7 @@
     </div>
 
     <!-- Panel Deslizante DETALLE -->
-    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
-      class="w-30">
+    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
       <div class="panel-header">
         <h2 id="panelTitulo" class="panel-title">Formulario De Criterios de Evaluación</h2>
       </div>
