@@ -271,27 +271,39 @@ function MostrarEmpleados(data) {
           </div>
 
           <!-- Botones de acción -->
-          <div class="d-flex justify-content-between mt-2 align-items-center">
-            <!-- Botón Historial a la izquierda -->
-            <div>
-              <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id})" data-tippy-content="Historial">
-                <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
-              </button>
-            </div>
+<div class="d-flex justify-content-between mt-2 align-items-center">
+  ${
+    activo
+      ? `
+        <!-- Si está activo: mostrar historial + editar + ver + desactivar -->
+        <div>
+          <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id})" data-tippy-content="Historial">
+            <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
+          </button>
+        </div>
+        <div>
+          <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
+            <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+          </button>
+          <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id})" data-tippy-content="Editar">
+            <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+          </button>
+          <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, false)" data-tippy-content="Desactivar">
+            <i class="bi bi-person-x btn-sm text-danger"></i>
+          </button>
+        </div>
+      `
+      : `
+        <!-- Si está desactivado: solo mostrar botón de activar centrado -->
+        <div class="mx-auto">
+          <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, true)" data-tippy-content="Activar">
+            <i class="bi bi-person-check btn-sm text-success"></i>
+          </button>
+        </div>
+      `
+  }
+</div>
 
-            <!-- Botones restantes a la derecha -->
-            <div>
-              <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
-                <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
-              </button>
-              <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
-              </button>
-              <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, ${!activo})" data-tippy-content="${tooltipEstado}">
-                <i class="bi ${iconoEstado} btn-sm text-danger"></i>
-              </button>
-            </div>
-          </div>
 
         </div>
       </div>
@@ -1321,6 +1333,7 @@ async function ObtenerHistorialEmpleados(empleadoId) {
 
 // Función para mostrar el historial de empleados
 function MostrarHistorialEmpleado(data) {
+  historialGlobal = data; // Guardar para acceder luego
   $("#tablaHistorialEmpleadoBody").empty();
 
   if (!data || data.length === 0) {
@@ -1333,23 +1346,54 @@ function MostrarHistorialEmpleado(data) {
   $.each(data, function (index, item) {
     $("#tablaHistorialEmpleadoBody").append(
       "<tr>" +
-        "<td class='text-center'>" + item.fechaModificacionString + "</td>" +
+        "<td class='text-center columna-fecha'>" + item.fechaModificacionString + "</td>" +
         "<td class='text-center'>" +
           "<strong>" + item.puestoAnterior + "</strong><br>" +
           "<small class='text-muted'>" + item.sectorAnterior + "</small>" +
         "</td>" +
-        "<td class='text-center'>" +
+        "<td class='text-center columna-puesto-actual'>" +
           "<strong>" + item.puestoActual + "</strong><br>" +
           "<small class='text-muted'>" + item.sectorActual + "</small>" +
         "</td>" +
-        "<td class='text-center'>" +
+        "<td class='text-center columna-responsable'>" +
           "<strong>" + item.usuarioModificadorNombre + "</strong><br>" +
           "<small class='text-muted'>" + item.usuarioModificadorEmail + "</small>" +
+        "</td>" +
+        "<td class='text-center columna-accion d-none d-md-table-cell'>" +
+          `<button class="btn-editar icono-ver-detalle-historial-empleado" style="background: none; border: none;" onclick="MostrarDetalleHistorial(${index})" data-tippy-content="Ver más"><i class="bi bi-info-circle"></i></button>` +
         "</td>" +
       "</tr>"
     );
   });
+
+  // Inicializar tooltips
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+
 }
+
+function MostrarDetalleHistorial(index) {
+  const item = historialGlobal[index];
+
+  // Setear valores en el offcanvas
+  document.getElementById("detalleFechaModificacion").textContent = item.fechaModificacionString || 'N/D';
+  document.getElementById("detallePuestoAnterior").textContent = item.puestoAnterior || 'N/D';
+  document.getElementById("detalleSectorAnterior").textContent = item.sectorAnterior || 'N/D';
+  document.getElementById("detallePuestoActual").textContent = item.puestoActual || 'N/D';
+  document.getElementById("detalleSectorActual").textContent = item.sectorActual || 'N/D';
+  document.getElementById("detalleResponsableNombre").textContent = item.usuarioModificadorNombre || 'N/D';
+  document.getElementById("detalleResponsableEmail").textContent = item.usuarioModificadorEmail || 'N/D';
+
+  // Mostrar offcanvas
+  const offcanvasElement = document.getElementById("offcanvasDetalleHistorial");
+  const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+  offcanvas.show();
+}
+
+
 
 
 

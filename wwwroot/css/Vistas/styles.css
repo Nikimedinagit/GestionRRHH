@@ -806,13 +806,15 @@ select.form-control:not([value=""])+label {
 
 
 
-/* INICIO PANEL DETALLE EMPLEADO */
-#offcanvasDetalleEmpleado {
+/* INICIO PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS */
+#offcanvasDetalleEmpleado,
+#offcanvasDetalleLicenciaAprobadas {
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
 }
 
-.detalle-empleado-contenedor {
+.detalle-empleado-contenedor,
+.detalle-licencia-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
  border-top-left-radius: 0.3rem;
@@ -820,14 +822,16 @@ select.form-control:not([value=""])+label {
   height: 100%;
 }
 
-.detalle-empleado-encabezado {
+.detalle-empleado-encabezado,
+.detalle-licencia-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
   padding: 0.5rem 1rem;
 }
 
-.detalle-empleado-tarjeta {
+.detalle-empleado-tarjeta,
+.detalle-licencia-tarjeta {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
@@ -836,30 +840,35 @@ select.form-control:not([value=""])+label {
   font-size: 0.75rem;
 }
 
-.detalle-empleado-seccion {
+.detalle-empleado-seccion,
+.detalle-licencia-seccion {
   padding: 0.75rem 1rem;
 }
 
-.detalle-empleado-fila {
+.detalle-empleado-fila,
+.detalle-licencia-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
 }
 
-.detalle-empleado-etiqueta {
+.detalle-empleado-etiqueta,
+.detalle-licencia-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
   flex-shrink: 0;
 }
 
-.detalle-empleado-valor {
+.detalle-empleado-valor,
+.detalle-licencia-valor {
   color: #212529;
   flex-grow: 1;
   word-break: break-word;
 }
 
-.detalle-empleado-titulo-seccion {
+.detalle-empleado-titulo-seccion,
+.detalle-licencia-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -867,14 +876,18 @@ select.form-control:not([value=""])+label {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.detalle-empleado-etiqueta {
-  margin-right: 10px;
-  font-weight: 600;
+
+.detalle-empleado-etiqueta,
+.detalle-licencia-etiqueta{
+   margin-right: 10px !important;
+  font-weight: 600 !important;
 }
-.detalle-empleado-valor {
-  color: rgba(108, 117, 125, 0.9); /* Gris Bootstrap con transparencia */
+
+.detalle-empleado-valor,
+.detalle-licencia-valor {
+  color: rgba(108, 117, 125, 0.9); 
 }
-/* FIN PANEL DETALLE EMPLEADO */
+/* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS */
 
 
 /* INICIO ESTILO TABALA LICENCIAS APROBADAS */
@@ -938,4 +951,86 @@ select.form-control:not([value=""])+label {
   border-bottom: none !important;
   padding: 0.5rem 1rem;
 }
+
+.icono-ver-detalle-historial-empleado{
+  font-size: 1.6rem !important;
+  color: #ffc107 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.columna-accion {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .columna-accion {
+    display: table-cell !important;
+  }
+  
+  .columna-fecha,
+  .columna-responsable {
+    display: none !important;
+  }
+  
+  .columna-puesto-actual {
+    display: table-cell !important;
+  }
+  
+  .columna-puesto-anterior {
+    display: table-cell !important;
+  }
+}
+
+/* Celular (<576px): ocultar puesto actual */
+@media (max-width: 575.98px) {
+  .columna-puesto-actual {
+    display: none !important;
+  }
+}
 /* FIN ESTILO OFFCANVAS HISTORIAL EMPLEADO */
+
+
+
+
+/* INICIO ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS */
+.icono-ver-detalle-licencia-aprobada{
+  font-size: 1.6rem !important;
+  color: #ffc107 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.columna-accion {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .columna-estado,
+  .columna-responsable {
+    display: none;
+  }
+
+  .columna-fecha,
+  .columna-licencia,
+  .columna-accion {
+    display: table-cell !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .columna-fecha,
+  .columna-estado,
+  .columna-responsable {
+    display: none !important;
+  }
+
+  .columna-licencia,
+  .columna-accion {
+    display: table-cell !important;
+  }
+}
+/* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS */
+

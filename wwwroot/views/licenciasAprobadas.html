@@ -81,7 +81,7 @@
 
 
     <!-- Tabla de Datos -->
-    <div class="table-responsive">
+    <!-- <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle">
         <colgroup>
           <col style="width: 20%" />
@@ -99,7 +99,80 @@
         </thead>
         <tbody id="tablaLicenciasAprobadasBody"></tbody>
       </table>
+    </div> -->
+
+
+    <!-- Tabla de Datos -->
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle w-100">
+    <thead class="table-licencias-aprobadas">
+      <tr>
+        <th class="text-center columna-fecha" style="width: 20%">Fecha Aprobación</th>
+        <th class="text-center columna-estado" style="width: 25%">Estado</th>
+        <th class="text-center columna-licencia" style="width: 25%">Licencia</th>
+        <th class="text-center columna-responsable" style="width: 25%">Responsable</th>
+        <th class="text-center columna-accion d-md-none" style="width: 5%">Acción</th> <!-- d-md-none = solo en móvil y tablet -->
+      </tr>
+    </thead>
+    <tbody id="tablaLicenciasAprobadasBody"></tbody>
+  </table>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleLicenciaAprobadas" aria-labelledby="tituloLicenciaAprobadas" style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+  <div class="detalle-licencia-contenedor">
+    <div class="detalle-licencia-encabezado d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+          Detalle de Licencia Aprobada
+        </h5>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+          Información detallada de la licencias aprobadas.
+        </p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
     </div>
+
+    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+      <div class="detalle-licencia-tarjeta">
+        <div class="detalle-licencia-seccion">
+          <p class="detalle-licencia-titulo-seccion">Datos del Cambio</p>
+
+          <div class="detalle-licencia-fila">
+            <span class="detalle-licencia-etiqueta">Fecha:</span>
+            <span class="detalle-licencia-valor" id="detalleFechaAprobacion"></span>
+          </div>
+          <div class="detalle-licencia-fila">
+            <span class="detalle-licencia-etiqueta">Estado:</span>
+            <span class="detalle-licencia-valor" id="detalleEstadoAprobacion"></span>
+          </div>
+          <div class="detalle-licencia-fila">
+            <span class="detalle-licencia-etiqueta">Licencia:</span>
+            <span class="detalle-licencia-valor" id="detalleLicenciaAprobacion"></span>
+          </div>
+        </div>
+        </div>
+        <div class="detalle-licencia-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-licencia-seccion">
+              <p class="detalle-licencia-titulo-seccion">Responsable de la Aprobacion</p>
+
+              <div class="detalle-licencia-fila">
+                <span class="detalle-licencia-etiqueta">Nombre:</span>
+                <span class="detalle-licencia-valor" id="detalleResponsableNombre"></span>
+              </div>
+              <div class="detalle-licencia-fila">
+                <span class="detalle-licencia-etiqueta">Email:</span>
+                <span class="detalle-licencia-valor" id="detalleResponsableEmail"></span>
+              </div>
+            </div>
+          </div>
+      
+    </div>
+  </div>
+</div>
+
+
   </div>
 
 

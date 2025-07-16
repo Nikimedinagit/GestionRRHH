@@ -134,33 +134,61 @@ async function ObtenerLicenciasAprobadas() {
 
 
 function MostrarLicenciasAprobadas(data) {
+  licenciaAprobadasGlobal = data;
   $("#tablaLicenciasAprobadasBody").empty();
 
   if (data.length === 0) {
     $("#tablaLicenciasAprobadasBody").append(
-      "<tr><td colspan='4' class='text-center text-muted'>No hay licencias aprobadas para mostrar.</td></tr>"
+      "<tr><td colspan='5' class='text-center text-muted'>No hay licencias aprobadas para mostrar.</td></tr>"
     );
     return;
   }
 
   $.each(data, function (index, item) {
     $("#tablaLicenciasAprobadasBody").append(
-      "<tr>" +
-        "<td class='text-center'>" + item.fechaDeAprobacion + "</td>" +
-        "<td class='text-center'>" +
-          "<span class='badge badge-success'>" + item.estadoString + "</span>" +
-        "</td>" +
-        "<td class='text-center'>" + item.licenciaString + "</td>" +
-        "<td class='text-center'>" +
-          "<strong>" + item.nombreUsuarioAprobador + "</strong><br>" +
-          "<small class='text-muted'>" + item.emailUsuarioAprobador + "</small>" +
-        "</td>" +
-      "</tr>"
+      `<tr>
+        <td class="text-center columna-fecha">${item.fechaDeAprobacion}</td>
+        <td class="text-center columna-estado">
+          <span class="badge badge-success">${item.estadoString}</span>
+        </td>
+        <td class="text-center columna-licencia">${item.licenciaString}</td>
+        <td class="text-center columna-responsable">
+          <strong>${item.nombreUsuarioAprobador}</strong><br>
+          <small class="text-muted">${item.emailUsuarioAprobador}</small>
+        </td>
+        <td class="text-center columna-accion d-md-none">
+          <button class="btn-editar icono-ver-detalle-licencia-aprobada" style="background: none; border: none;" onclick="MostrarDetalleLicenciaAprobada(${index})" data-tippy-content="Ver más">
+            <i class="bi bi-info-circle"></i>
+          </button>
+        </td>
+      </tr>`
     );
   });
 
-  $('[data-toggle="tooltip"]').tooltip();
+  // Inicializar tooltips
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
+
+function MostrarDetalleLicenciaAprobada(index) {
+  const item = licenciaAprobadasGlobal[index];
+
+  // Setear valores en el offcanvas
+  document.getElementById("detalleFechaAprobacion").textContent = item.fechaDeAprobacion || 'N/D';
+  document.getElementById("detalleEstadoAprobacion").textContent = item.estadoString || 'N/D';
+  document.getElementById("detalleLicenciaAprobacion").textContent = item.licenciaString || 'N/D';
+  document.getElementById("detalleResponsableNombre").textContent = item.nombreUsuarioAprobador || 'N/D';
+  document.getElementById("detalleResponsableEmail").textContent = item.emailUsuarioAprobador || 'N/D';
+
+  // Mostrar offcanvas
+  const offcanvasElement = document.getElementById("offcanvasDetalleLicenciaAprobadas");
+  const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+  offcanvas.show();
+}
+
 
 
 

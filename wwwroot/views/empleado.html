@@ -470,25 +470,92 @@
       <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle w-100" id="tablaHistorialEmpleado"
           style="background: #fff">
-          <colgroup>
-            <col style="width: 10%" />
-            <col style="width: 30%" />
-            <col style="width: 30%" />
-            <col style="width: 30%" />
-          </colgroup>
+
           <thead class="table-historial-empleado" style="background: #f8f9fa">
             <tr>
-              <th class="text-center">Fecha</th>
-              <th class="text-center">Puesto Anterior</th>
-              <th class="text-center">Puesto Actual</th>
-              <th class="text-center">Responsable</th>
+              <th class="text-center columna-fecha" style="width: 10%">Fecha</th>
+              <th class="text-center" style="width: 27%">Puesto Anterior</th>
+              <th class="text-center columna-puesto-actual" style="width: 27%">Puesto Actual</th>
+              <th class="text-center columna-responsable" style="width: 30%">Responsable</th>
+              <th class="text-center columna-accion d-none d-md-table-cell" style="width: 5%">Acción</th>
+
             </tr>
           </thead>
           <tbody id="tablaHistorialEmpleadoBody"></tbody>
         </table>
       </div>
+
     </div>
   </div>
+
+
+
+<!-- Offcanvas Detalle Historial Laboral -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHistorial" aria-labelledby="tituloDetalleHistorial" style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+  <div class="detalle-empleado-contenedor">
+    <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+          Detalle del Cambio Laboral
+        </h5>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+          Información detallada del cambio seleccionado en el historial laboral.
+        </p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+      <div class="detalle-empleado-tarjeta">
+        <div class="detalle-empleado-seccion">
+          <p class="detalle-empleado-titulo-seccion">Datos del Cambio</p>
+
+          <div class="detalle-empleado-fila">
+            <span class="detalle-empleado-etiqueta">Fecha:</span>
+            <span class="detalle-empleado-valor" id="detalleFechaModificacion"></span>
+          </div>
+          <div class="detalle-empleado-fila">
+            <span class="detalle-empleado-etiqueta">Puesto Anterior:</span>
+            <span class="detalle-empleado-valor" id="detallePuestoAnterior"></span>
+          </div>
+          <div class="detalle-empleado-fila">
+            <span class="detalle-empleado-etiqueta">Sector Anterior:</span>
+            <span class="detalle-empleado-valor" id="detalleSectorAnterior"></span>
+          </div>
+          <div class="detalle-empleado-fila">
+            <span class="detalle-empleado-etiqueta">Puesto Actual:</span>
+            <span class="detalle-empleado-valor" id="detallePuestoActual"></span>
+          </div>
+          <div class="detalle-empleado-fila">
+            <span class="detalle-empleado-etiqueta">Sector Actual:</span>
+            <span class="detalle-empleado-valor" id="detalleSectorActual"></span>
+          </div>
+          
+        </div>
+        </div>
+        <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">Responsable del Cambio</p>
+
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Nombre:</span>
+                <span class="detalle-empleado-valor" id="detalleResponsableNombre"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Email:</span>
+                <span class="detalle-empleado-valor" id="detalleResponsableEmail"></span>
+              </div>
+            </div>
+          </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
 </div>
 <script src="../js/Vistas/empleado.js"></script>
 <script src="../js/Vistas/common/obtenerLocalidad.js"></script>
