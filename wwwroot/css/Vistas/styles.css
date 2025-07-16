@@ -732,6 +732,18 @@ select.form-control:not([value=""])+label {
   margin: 0px 3px !important;
   padding: 0% !important;
 }
+
+.icono-historial-empleado{
+  font-size: 1.2rem !important;
+  color: #FF6600  !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icono-historial-empleado:hover{
+  color: #FF944D !important;
+}
 /* FIN CARD DE LICENCIAS/EMPLEADOS */
 
 

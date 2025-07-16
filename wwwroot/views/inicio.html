@@ -1,3 +1,5 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
 <div class="container-fluid grid grid-cols-12 gap-4 p-4">
 
   <!-- Fila 1: Bienvenida y Próximo Festivo -->
@@ -228,16 +230,4 @@
 
 </div>
 
-<!-- Tailwind + Script -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  function actualizarHora() {
-    const ahora = new Date();
-    const horas = ahora.getHours().toString().padStart(2, '0');
-    const minutos = ahora.getMinutes().toString().padStart(2, '0');
-    const segundos = ahora.getSeconds().toString().padStart(2, '0');
-    document.getElementById("currentTime").textContent = `${horas}:${minutos}:${segundos}`;
-  }
-  actualizarHora();
-  setInterval(actualizarHora, 1000);
-</script>
+

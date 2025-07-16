@@ -1,6 +1,7 @@
     using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
+using WorkSync.Models.General;
 
 namespace API_RRHH_TESIS2025.Models.General
 {
@@ -58,6 +59,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
         public virtual ICollection<Licencia> Licencia { get; set; }
         public virtual ICollection<AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
+        public virtual ICollection<HistorialLaboral> HistorialLaboral { get; set; }
 
 
 

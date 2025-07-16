@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using WorkSync.Models.General;
 public class Context : IdentityDbContext<ApplicationUser>
 {
     public Context(DbContextOptions<Context> options)
@@ -21,4 +22,5 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<CriterioDeEvaluacion> CriterioDeEvaluacion { get; set; }
     public DbSet<API_RRHH_TESIS2025.Models.General.Curso> Curso { get; set; }
     public DbSet<API_RRHH_TESIS2025.Models.General.AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
+    public DbSet<WorkSync.Models.General.HistorialLaboral> HistorialLaboral { get; set; }
 }

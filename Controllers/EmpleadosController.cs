@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorkSync.Models.General;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -71,78 +72,78 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
         [HttpPost("Filtrar")]
-public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
-{
-    List<VistaEmpleado> vista = new List<VistaEmpleado>();
-    var empleadosFiltrados = _context.Empleado.AsQueryable();
-
-    if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-    {
-        empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
-    }
-    if (filtro.DNI.HasValue)
-    {
-        string dniFiltro = filtro.DNI.Value.ToString();
-        empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
-    }
-
-    if (filtro.EstadoCiviles.HasValue)
-    {
-        empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
-    }
-
-    if (filtro.TipoSexo.HasValue)
-        empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
-
-    if (filtro.LocalidadId.HasValue)
-    {
-        int localidadId = filtro.LocalidadId.Value;
-        empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
-    }
-
-    if (filtro.PuestoId.HasValue)
-    {
-        int puestoId = filtro.PuestoId.Value;
-        empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
-    }
-
-    var listaFiltrada = await empleadosFiltrados
-        .Include(e => e.Localidad)
-        .Include(e => e.Puesto)
-        .ToListAsync();
-
-    var usuarios = await _context.Users
-        .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
-        .ToDictionaryAsync(u => u.Id);
-
-    foreach (var empleado in listaFiltrada)
-    {
-        var usuarioId = empleado.UsuarioId;
-
-        var vistaEmpleado = new VistaEmpleado
+        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
         {
-            Id = empleado.Id,
-            NombreCompleto = empleado.NombreCompleto,
-            DNI = empleado.DNI,
-            Direccion = empleado.Direccion,
-            FechaNacimientoString = empleado.FechaNacimientoString,
-            EstadoCivilesString = empleado.EstadoCivilesString,
-            Email = empleado.Email,
-            Telefono = empleado.Telefono,
-            Cuil = empleado.Cuil,
-            CantidadHijos = empleado.CantidadHijos,
-            TipoSexoString = empleado.TipoSexoString,
-            LocalidadIdString = empleado.LocalidadIdString,
-            PuestoIdString = empleado.PuestoIdString,
-            UsuarioId = usuarioId,
-            UsuarioNombreCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].NombreCompleto : null,
-            UsuarioEmailCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].Email : null,
-            Eliminado = empleado.Eliminado
-        };
-        vista.Add(vistaEmpleado);
-    }
-    return vista;
-}
+            List<VistaEmpleado> vista = new List<VistaEmpleado>();
+            var empleadosFiltrados = _context.Empleado.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+            {
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+            }
+            if (filtro.DNI.HasValue)
+            {
+                string dniFiltro = filtro.DNI.Value.ToString();
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
+            }
+
+            if (filtro.EstadoCiviles.HasValue)
+            {
+                empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+            }
+
+            if (filtro.TipoSexo.HasValue)
+                empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
+
+            if (filtro.LocalidadId.HasValue)
+            {
+                int localidadId = filtro.LocalidadId.Value;
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
+            }
+
+            if (filtro.PuestoId.HasValue)
+            {
+                int puestoId = filtro.PuestoId.Value;
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
+            }
+
+            var listaFiltrada = await empleadosFiltrados
+                .Include(e => e.Localidad)
+                .Include(e => e.Puesto)
+                .ToListAsync();
+
+            var usuarios = await _context.Users
+                .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id);
+
+            foreach (var empleado in listaFiltrada)
+            {
+                var usuarioId = empleado.UsuarioId;
+
+                var vistaEmpleado = new VistaEmpleado
+                {
+                    Id = empleado.Id,
+                    NombreCompleto = empleado.NombreCompleto,
+                    DNI = empleado.DNI,
+                    Direccion = empleado.Direccion,
+                    FechaNacimientoString = empleado.FechaNacimientoString,
+                    EstadoCivilesString = empleado.EstadoCivilesString,
+                    Email = empleado.Email,
+                    Telefono = empleado.Telefono,
+                    Cuil = empleado.Cuil,
+                    CantidadHijos = empleado.CantidadHijos,
+                    TipoSexoString = empleado.TipoSexoString,
+                    LocalidadIdString = empleado.LocalidadIdString,
+                    PuestoIdString = empleado.PuestoIdString,
+                    UsuarioId = usuarioId,
+                    UsuarioNombreCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].NombreCompleto : null,
+                    UsuarioEmailCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].Email : null,
+                    Eliminado = empleado.Eliminado
+                };
+                vista.Add(vistaEmpleado);
+            }
+            return vista;
+        }
 
 
         // GET: api/Empleados/5
@@ -165,21 +166,28 @@ public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([Fro
         public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
         {
             if (id != empleado.Id)
-            {
                 return BadRequest();
-            }
 
-            //Guarmamos en mayuscula
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Sistema";
+
+            // Obtener empleado original con puesto incluido para comparar
+            var empleadoOriginal = await _context.Empleado
+                .Include(e => e.Puesto)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (empleadoOriginal == null)
+                return NotFound();
+
+            // Pasar a mayúsculas/minúsculas según necesidad
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
-
-            //Guardamos el email en minúsculas
             empleado.Email = empleado.Email.ToLower();
+            empleado.UsuarioId = userId;
 
-            // Validamos si existe el dni, cuil, email y telefono
+            // Validaciones (DNI, CUIL, Email, Teléfono)
             var erroresExistentes = new List<string>();
 
-            // DNI (obligatorio)
             if (!string.IsNullOrWhiteSpace(empleado.DNI.ToString()))
             {
                 var dniExistente = await _context.Empleado
@@ -188,18 +196,14 @@ public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([Fro
                     erroresExistentes.Add("El DNI ya existe.");
             }
 
-            // CUIL (opcional)
             if (empleado.Cuil != 0)
             {
                 var cuilExistente = await _context.Empleado
                     .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
-
                 if (cuilExistente != null)
                     erroresExistentes.Add("El CUIL ya existe.");
             }
 
-
-            // Email (solo si está presente)
             if (!string.IsNullOrWhiteSpace(empleado.Email))
             {
                 var emailExistente = await _context.Empleado
@@ -208,7 +212,6 @@ public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([Fro
                     erroresExistentes.Add("El Email ya existe.");
             }
 
-            // Teléfono (solo si está presente)
             if (!string.IsNullOrWhiteSpace(empleado.Telefono))
             {
                 var telefonoExistente = await _context.Empleado
@@ -217,9 +220,27 @@ public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([Fro
                     erroresExistentes.Add("El Teléfono ya existe.");
             }
 
-            // Devolver errores si existen
             if (erroresExistentes.Any())
                 return BadRequest(new { codigo = 0, mensaje = erroresExistentes });
+
+            // Obtener descripción del nuevo puesto
+            var puestoNuevo = await _context.Puesto.FindAsync(empleado.PuestoId);
+
+            var puestoAnterior = empleadoOriginal.Puesto?.Descripcion ?? "Desconocido";
+            var puestoActual = puestoNuevo?.Descripcion ?? "Desconocido";
+
+            if (puestoAnterior != puestoActual)
+            {
+                var historial = new HistorialLaboral
+                {
+                    FechaModificacion = DateTime.Now,
+                    EmpleadoId = empleado.Id,
+                    PuestoAnterior = puestoAnterior,
+                    PuestoActual = puestoActual,
+                    UsuarioModificador = userId
+                };
+                _context.HistorialLaboral.Add(historial);
+            }
 
             _context.Entry(empleado).State = EntityState.Modified;
 
@@ -230,17 +251,16 @@ public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([Fro
             catch (DbUpdateConcurrencyException)
             {
                 if (!EmpleadoExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return Ok(empleado);
         }
+
+
+
 
         // POST: api/Empleados
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -271,23 +271,28 @@ function MostrarEmpleados(data) {
           </div>
 
           <!-- Botones de acción -->
-          <div class="d-flex justify-content-end mt-2">
-            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${
-              item.id
-            })" data-tippy-content="Ver más">
-              <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
-            </button>
-            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${
-              item.id
-            })" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
-            </button>
-            <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${
-              item.id
-            }, ${!activo})" data-tippy-content="${tooltipEstado}">
-              <i class="bi ${iconoEstado} btn-sm text-danger"></i>
-            </button>
+          <div class="d-flex justify-content-between mt-2 align-items-center">
+            <!-- Botón Historial a la izquierda -->
+            <div>
+              <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="MostrarHistorialEmpleado(${item.id})" data-tippy-content="Historial">
+                <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
+              </button>
+            </div>
+
+            <!-- Botones restantes a la derecha -->
+            <div>
+              <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
+                <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+              </button>
+              <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id})" data-tippy-content="Editar">
+                <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+              </button>
+              <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, ${!activo})" data-tippy-content="${tooltipEstado}">
+                <i class="bi ${iconoEstado} btn-sm text-danger"></i>
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     `);
