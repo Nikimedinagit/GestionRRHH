@@ -1,5 +1,6 @@
 //INICIO PANEL FORMUALRIO//
 function abrirPanelCursos() {
+  document.getElementById("panelAsistencias").classList.remove("abierto");
   document.getElementById("panelCursos").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.add("visible");
@@ -20,6 +21,35 @@ function cerrarPanelCursos() {
 }
 //FIN PANEL FORMULARIO//
 
+//Inicio Panel Asistencias//
+function abrirPanelAsistencias() {
+  document.getElementById("panelAsistencias").classList.add("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.add("visible");
+
+  setTimeout(() => {
+    const inputEmpleadoId = document.getElementById("EmpleadoId");
+    if (inputEmpleadoId) inputEmpleadoId.focus();
+  }, 400);
+}
+
+$(document).on("click", ".crearAsistencias", function () {
+  const idCurso = $(this).data("curso-id");
+  cursoIdSeleccionado = idCurso; 
+  abrirPanelAsistencias();
+});
+
+function cerrarPanelAsistencias() {
+  document.getElementById("panelAsistencias").classList.remove("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.remove("visible");
+
+  // LimpiarModalAsistencias();
+}
+
+
+
+
 
 //Funcion para obtener los cursos
 async function ObtenerCursos() {
@@ -36,7 +66,6 @@ async function ObtenerCursos() {
 }
 
 
-// Funcion para mostrar los cursos
 function MostrarCursos(data) {
   const contenedor = $("#contenedorCursos");
   contenedor.empty();
@@ -60,7 +89,6 @@ function MostrarCursos(data) {
     MIXTO: "badge-mixto",
   };
 
-
   if (Array.isArray(data)) {
     data.forEach(element => {
       const modalidadNombre = modalidades[element.modalidad];
@@ -70,47 +98,41 @@ function MostrarCursos(data) {
       const hora = horaCompleta.substring(0, 5);
 
       const item = $(`
-      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center" style="gap: 20px;">
-
-        <!-- Botón Editar -->
-          <button class="btn-editar me-1" style="background: none; border: none;" data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-            <i class="bi bi-pencil-square icono-editar"></i>
-          </button>
-
-        <!-- Nombre del curso -->
-          <div class="fw-bold text-truncate" title="${element.nombre || 'Sin nombre'}">
-            ${element.nombre || 'Sin nombre'}
-          </div>
-        </div>
-            
-        <!-- Fecha Inicio -->
-        <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
-          <span style="margin-right: 5px;">&bull;</span>
-          El curso comienza el ${fecha} a las ${hora}
-        </div>
-
-        <!-- Modalidad del curso -->
+        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center" style="gap: 20px;">
-            <div class="badge ${claseModalidad}" title="${modalidadNombre}" >
+
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+
+            <div class="fw-bold text-truncate" title="${element.nombre || 'Sin nombre'}">
+              ${element.nombre || 'Sin nombre'}
+            </div>
+          </div>
+
+          <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
+            <span style="margin-right: 5px;">&bull;</span>
+            El curso comienza el ${fecha} a las ${hora}
+          </div>
+
+          <div class="d-flex align-items-center" style="gap: 20px;">
+            <div class="badge ${claseModalidad}" title="${modalidadNombre}">
               ${modalidadNombre}
             </div>
 
-                
-        <!-- Boton ver asistencia -->
-        <button class="toggle-detalle icono-asistencia" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Ver Asistencias">
-          <i class="bi-calendar-check"></i>
-        </button>
+            <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
+              <i class="bi-calendar-check"></i>
+            </button>
 
-        <button class="toggle-detalle icono-certificado" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles"  data-tippy-content="Ver Ceritificados">
-          <i class="bi-award"></i>
-        </button>
+            <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
+              <i class="bi-award"></i>
+            </button>
 
-        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-          <i class="bi bi-chevron-down"></i>
-        </button>
+            <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
         </div>
-    </div>
       `);
 
       const descripcionDetalle = $(`
@@ -124,7 +146,6 @@ function MostrarCursos(data) {
               <tbody>
                 <tr>
                   <td id="DescripcionCurso_${element.id}">
-                    <!-- Aquí va el texto dinámico de la descripción -->
                     ${element.descripcion ?? "Sin descripción"}
                   </td>
                 </tr>
@@ -135,67 +156,81 @@ function MostrarCursos(data) {
       `);
 
       const asistenciaDetalle = $(`
-      <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;"/>
-        <div class="asistencias-panel mt-3">
-          <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}"> 
-            <span>Agregar Asistencia</span>
-          </button>
-          <div class="table-responsive">
-            <table class="table table-bordered">
-            <colgroup>
-              <col style="width: 10%" />
-              <col style="width: 35%" />
-              <col  style="width: 20%" />
-              <col style="width: 20%" />
-              <col style="width: 15%" />
-            </colgroup>
-              <thead>
-                <tr>
-                  <th>Asistió</th>
-                  <th>Empleado</th>
-                  <th>Fecha</th>
-                  <th>Resultado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tabla-asistencias-body" data-curso-id="${element.id}">
-                <!-- Se insertan dinámicamente -->
-              </tbody>
-            </table>
+        <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="asistencias-panel mt-3">
+            <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}">
+              <span>Agregar Asistencia</span>
+            </button>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <colgroup>
+                  <col style="width: 10%" />
+                  <col style="width: 35%" />
+                  <col style="width: 20%" />
+                  <col style="width: 20%" />
+                  <col style="width: 15%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Asistió</th>
+                    <th>Empleado</th>
+                    <th>Fecha</th>
+                    <th>Resultado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="tabla-asistencias-body" data-curso-id="${element.id}">
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>        
-      `)
-  item.find(".toggle-detalle").on("click", function () {
-    const iconoChevron = $(this).find("i"); // Icono de la flecha
-    const panel = descripcionDetalle ; // Contenedor del panel
-    const panelAsistencia = asistenciaDetalle; // Contenedor del panel
-  // Alternar visibilidad
-    panel.slideToggle(200, function () {
-    panel.toggleClass("mostrar", panel.is(":visible"));
-    panelAsistencia.slideToggle(200, function () {
-      panelAsistencia.toggleClass("mostrar", panelAsistencia.is(":visible"));
-    });
-  });
+      `);
 
-  iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
-});
+      // Mostrar descripción
+      item.find(".btn-ver-descripcion").on("click", function () {
+        descripcionDetalle.slideToggle(200, function () {
+          descripcionDetalle.toggleClass("mostrar", descripcionDetalle.is(":visible"));
+        });
+
+        if (asistenciaDetalle.is(":visible")) {
+          asistenciaDetalle.slideUp(200).removeClass("mostrar");
+        }
+
+        const icono = $(this).find("i");
+        icono.toggleClass("bi-chevron-down bi-chevron-up");
+      });
+
+      // Mostrar asistencias
+      item.find(".btn-ver-asistencias").on("click", function () {
+        asistenciaDetalle.slideToggle(200, function () {
+          asistenciaDetalle.toggleClass("mostrar", asistenciaDetalle.is(":visible"));
+        });
+
+        if (descripcionDetalle.is(":visible")) {
+          descripcionDetalle.slideUp(200).removeClass("mostrar");
+        }
+      });
+
       contenedor.append(item);
-      contenedor.append(descripcionDetalle );
+      contenedor.append(descripcionDetalle);
       contenedor.append(asistenciaDetalle);
     });
   }
 
+  // Tooltip
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
     delay: [100, 0],
   });
 }
+
+
 
 
 // Funcion para mostrar el modal de edición de la evaluación   

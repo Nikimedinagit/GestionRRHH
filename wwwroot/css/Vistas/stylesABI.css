@@ -1,7 +1,11 @@
+html, body {
+  overflow-x: hidden !important;
+}
+
 /* INICIO PANEL DESLIZANTE BASE */
 /* Panel deslizante base*/
 #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
-#panelCriterios, #panelCursos{
+#panelCriterios, #panelCursos, #panelAsistencias{
   position: fixed;
   top: 50%;
   right: 0;
@@ -25,14 +29,14 @@
 
 /* Estado abierto*/
 #panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto, 
-#panelCriterios.abierto, #panelCursos.abierto{
+#panelCriterios.abierto, #panelCursos.abierto, #panelAsistencias.abierto{
   transform: translate(0, -50%);
 }
 
 @media (max-width: 1024px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
-  #panelCriterios, #panelCursos{
+#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos, #panelAsistencias{
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -41,8 +45,8 @@
 
 @media (max-width: 768px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
-  #panelCriterios, #panelCursos{
+#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos, #panelAsistencias{
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -51,8 +55,8 @@
 
 @media (max-width: 480px) {
 
-  #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
-  #panelCriterios, #panelCursos {
+#panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
+  #panelCriterios, #panelCursos, #panelAsistencias {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -309,3 +313,4 @@ textarea.form-control {
   margin: 0px 3px !important;
   padding: 0% !important;
 }
+

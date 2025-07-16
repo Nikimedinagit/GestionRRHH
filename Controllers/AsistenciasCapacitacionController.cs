@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class AsistenciasCapacitacionController : ControllerBase
@@ -24,7 +26,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AsistenciaCapacitacion>>> GetAsistenciaCapacitacion()
         {
-            return await _context.AsistenciaCapacitacion.ToListAsync();
+            return await _context.AsistenciaCapacitacion
+            .Include(a => a.Curso)
+            .Include(a => a.Empleado)
+            .ToListAsync();
         }
 
         // GET: api/AsistenciasCapacitacion/5

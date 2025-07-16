@@ -253,9 +253,6 @@ function MostrarEvaluaciones(data) {
   });
 }
 
-
-
-
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
   const res = await authFetch(`Evaluaciones/${id}`,
