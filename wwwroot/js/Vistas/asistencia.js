@@ -185,71 +185,71 @@ const asistencia = {
     });
 }
 
-function EliminarCriterioDeEvaluacion(id) {
-    Swal.fire({
-        title: "¿Está seguro que desea eliminar este criterio?",
-        text: "Este criterio sera eliminado de forma definitiva. ¿Deseás continuar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        focusCancel: true,
-        customClass: {
-          popup: "swal2-border-radius",
-          confirmButton: "swal2-btn-eliminar",
-          cancelButton: "swal2-btn-cancelar",
-          title: "swal2-title-custom",
-          content: "swal2-content-custom",
-        },
-        background: "#fff",
-        color: "#22223b",
-      })
-      .then((result) => {
-      if(result.isConfirmed) {
-            EliminarSiCriterio(id);
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            Swal.fire({
-                title: "Acción cancelada",
-                text: "El criterio permanece registrado.",
-                icon: "info",
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: "bottom-end",
-            })
-        }
-      })
-}
+// function EliminarCriterioDeEvaluacion(id) {
+//     Swal.fire({
+//         title: "¿Está seguro que desea eliminar este criterio?",
+//         text: "Este criterio sera eliminado de forma definitiva. ¿Deseás continuar?",
+//         icon: "warning",
+//         showCancelButton: true,
+//         confirmButtonText: "Eliminar",
+//         cancelButtonText: "Cancelar",
+//         reverseButtons: true,
+//         focusCancel: true,
+//         customClass: {
+//           popup: "swal2-border-radius",
+//           confirmButton: "swal2-btn-eliminar",
+//           cancelButton: "swal2-btn-cancelar",
+//           title: "swal2-title-custom",
+//           content: "swal2-content-custom",
+//         },
+//         background: "#fff",
+//         color: "#22223b",
+//       })
+//       .then((result) => {
+//       if(result.isConfirmed) {
+//             EliminarSiCriterio(id);
+//         } else if (result.dismiss === Swal.DismissReason.cancel) {
+//             Swal.fire({
+//                 title: "Acción cancelada",
+//                 text: "El criterio permanece registrado.",
+//                 icon: "info",
+//                 timer: 2000,
+//                 showConfirmButton: false,
+//                 toast: true,
+//                 position: "bottom-end",
+//             })
+//         }
+//       })
+// }
 
-function EliminarSiCriterio(id) {
-    fetch(`http://localhost:5106/api/CriteriosDeEvaluacion/${id}`,
-        {
-            method: "DELETE"
-        })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("No se pudo eliminar el criterio");
-      }
-      return response.text();
-    })
-    .then((data) => {
-    ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+// function EliminarSiCriterio(id) {
+//     fetch(`http://localhost:5106/api/CriteriosDeEvaluacion/${id}`,
+//         {
+//             method: "DELETE"
+//         })
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("No se pudo eliminar el criterio");
+//       }
+//       return response.text();
+//     })
+//     .then((data) => {
+//     ObtenerAsistencia(evaluacionIdSeleccionada);
 
-        Swal.fire({
-            toast: true,
-            position: "bottom-end",
-            icon: "success",
-            title: "¡Criterio de Evaluación Eliminado!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#f0f0f0",
-            color: "#000",
-        })
-    })
-}
+//         Swal.fire({
+//             toast: true,
+//             position: "bottom-end",
+//             icon: "success",
+//             title: "¡Criterio de Evaluación Eliminado!",
+//             showConfirmButton: false,
+//             timer: 2000,
+//             timerProgressBar: true,
+//             background: "#f0f0f0",
+//             color: "#000",
+//         })
+//     })
+// }
 
 //Funcion para obtener los criterios de evaluacion de una evaluacion
-ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+ObtenerAsistencia(cursoIdSeleccionado);
 
