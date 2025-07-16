@@ -21,7 +21,6 @@ function cerrarPanelCursos() {
 //FIN PANEL FORMULARIO//
 
 
-
 //Funcion para obtener los cursos
 async function ObtenerCursos() {
     const res = await authFetch("Cursos", {
@@ -99,11 +98,11 @@ function MostrarCursos(data) {
 
                 
         <!-- Boton ver asistencia -->
-        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" data-tippy-content="Ver Asistencias">
+        <button class="toggle-detalle icono-asistencia" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Ver Asistencias">
           <i class="bi-calendar-check"></i>
         </button>
 
-        <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;"  data-tippy-content="Ver Ceritificados">
+        <button class="toggle-detalle icono-certificado" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles"  data-tippy-content="Ver Ceritificados">
           <i class="bi-award"></i>
         </button>
 
@@ -134,18 +133,60 @@ function MostrarCursos(data) {
           </div>
         </div>
       `);
+
+      const asistenciaDetalle = $(`
+      <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
+        <div class="mb-3">
+          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+        </div>
+        <hr style="margin-bottom: 1rem;"/>
+        <div class="asistencias-panel mt-3">
+          <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}"> 
+            <span>Agregar Asistencia</span>
+          </button>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+            <colgroup>
+              <col style="width: 10%" />
+              <col style="width: 35%" />
+              <col  style="width: 20%" />
+              <col style="width: 20%" />
+              <col style="width: 15%" />
+            </colgroup>
+              <thead>
+                <tr>
+                  <th>Asistió</th>
+                  <th>Empleado</th>
+                  <th>Fecha</th>
+                  <th>Resultado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="tabla-asistencias-body" data-curso-id="${element.id}">
+                <!-- Se insertan dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>        
+      `)
   item.find(".toggle-detalle").on("click", function () {
     const iconoChevron = $(this).find("i"); // Icono de la flecha
     const panel = descripcionDetalle ; // Contenedor del panel
+    const panelAsistencia = asistenciaDetalle; // Contenedor del panel
   // Alternar visibilidad
     panel.slideToggle(200, function () {
     panel.toggleClass("mostrar", panel.is(":visible"));
+    panelAsistencia.slideToggle(200, function () {
+      panelAsistencia.toggleClass("mostrar", panelAsistencia.is(":visible"));
+    });
   });
 
   iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
 });
       contenedor.append(item);
       contenedor.append(descripcionDetalle );
+      contenedor.append(asistenciaDetalle);
     });
   }
 

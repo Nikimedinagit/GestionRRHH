@@ -1,7 +1,7 @@
 /* INICIO PANEL DESLIZANTE BASE */
 /* Panel deslizante base*/
 #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
-#panelCriterios, #panelCursos {
+#panelCriterios, #panelCursos{
   position: fixed;
   top: 50%;
   right: 0;
@@ -22,9 +22,10 @@
   overflow-y: auto;
 }
 
+
 /* Estado abierto*/
 #panelProvincia.abierto, #panelEvaluaciones.abierto, #panelTipoDeCriterio.abierto, 
-#panelCriterios.abierto, #panelCursos.abierto {
+#panelCriterios.abierto, #panelCursos.abierto{
   transform: translate(0, -50%);
 }
 
@@ -219,20 +220,20 @@ td {
 /*Bagde de Modalidades*/
 
 .badge-presencial {
-  background-color: #F8D7DA;
-  color: #C82333;
+  background-color: #a3dc9a72;
+  color: #06923E;
   font-size: 0.70rem;
 }
 
 .badge-virtual {
-  background-color: #D1F3F8;
-  color: #00BCD4;
+  background-color: #fdf5aa9d;
+  color: #f9bc06;
   font-size: 0.70rem;
 }
 
 .badge-mixto {
-  background-color: #FFF3CD;
-  color: #856404;
+  background-color: rgba(255, 127, 41, 0.29);
+  color: #fa7319;
   font-size: 0.70rem;
 }
 
@@ -290,4 +291,21 @@ textarea.form-control {
   min-height: unset;
   height: auto;
   line-height: 1.5;
+}
+
+.icono-asistencia {
+  font-size: 0.80rem !important;
+  color: #dc5260 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+  border-radius: 12px;
+}
+
+.icono-certificado {
+  font-size: 0.90rem !important;
+  color: #77BEF0 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
 }
