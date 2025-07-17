@@ -16,6 +16,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaInicio { get; set; }
         public virtual ICollection<AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
+        public virtual ICollection<Certificado> Certificado { get; set; }
     }
 
     public enum Modalidades
