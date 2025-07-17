@@ -166,27 +166,28 @@ html, body {
 }
 
 
+
 /* Cabecera pequeña y ajustada */
 .header-table {
   padding: 2px 6px !important;
   font-size: 14px !important;
   max-width: 100px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Celdas compactas */
 td {
   padding: 2px 6px !important;
   font-size: 12px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Cuerpo de tabla con estilo compacto */
-.tabla-criterios-body {
+.tabla-criterios-body, .tabla-asistencias-body {
   font-size: 11px !important;
 }
 
@@ -203,6 +204,7 @@ td {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/*Acordeones*/
 .panelCriterios.mostrar {
   border: 1px solid rgba(0, 0, 0, 0.152); 
   border-radius: 5px;
@@ -217,6 +219,24 @@ td {
 }
 
 .btn-agregar-criterio:hover{
+  background-color: #7b59b3 !important;
+  color: #fff !important;
+}
+
+.panelAsistencias.mostrar {
+  border: 1px solid rgba(0, 0, 0, 0.152); 
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+}
+
+.btn-agregar-asistencia{
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.5rem !important;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.btn-agregar-asistencia:hover{
   background-color: #7b59b3 !important;
   color: #fff !important;
 }
@@ -314,3 +334,16 @@ textarea.form-control {
   padding: 0% !important;
 }
 
+.badge-aprobado {
+  background-color: #28a7462c !important;
+  color: #28a745  !important;
+  font-size: 0.80rem !important;
+  border-radius: 5px !important;
+}
+
+.badge-desaprobado {
+  background-color: #dc35463b;
+  color: #dc3545;
+  font-size: 0.80rem !important;
+  border-radius: 5px !important;
+}

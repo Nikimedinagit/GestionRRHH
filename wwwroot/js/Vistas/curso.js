@@ -1,3 +1,4 @@
+var cursoIdSeleccionado;
 //INICIO PANEL FORMUALRIO//
 function abrirPanelCursos() {
   document.getElementById("panelAsistencias").classList.remove("abierto");
@@ -31,11 +32,13 @@ function abrirPanelAsistencias() {
     const inputEmpleadoId = document.getElementById("EmpleadoId");
     if (inputEmpleadoId) inputEmpleadoId.focus();
   }, 400);
+  
 }
 
 $(document).on("click", ".crearAsistencias", function () {
-  const idCurso = $(this).data("curso-id");
-  cursoIdSeleccionado = idCurso; 
+  const cursoId = $(this).data("curso-id");
+  cursoIdSeleccionado = cursoId; 
+  console.log(cursoIdSeleccionado);
   abrirPanelAsistencias();
 });
 
@@ -105,9 +108,9 @@ function MostrarCursos(data) {
               <i class="bi bi-pencil-square icono-editar"></i>
             </button>
 
-            <div class="fw-bold text-truncate" title="${element.nombre || 'Sin nombre'}">
-              ${element.nombre || 'Sin nombre'}
-            </div>
+          <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.nombre || 'Sin nombre'}">
+            ${element.nombre || 'Sin nombre'}
+          </div>
           </div>
 
           <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
@@ -158,7 +161,7 @@ function MostrarCursos(data) {
       const asistenciaDetalle = $(`
         <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
           <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+            <h3 class="titulo-sub-seccion">Asistencias</h3>
           </div>
           <hr style="margin-bottom: 1rem;" />
           <div class="asistencias-panel mt-3">
@@ -171,16 +174,16 @@ function MostrarCursos(data) {
                   <col style="width: 10%" />
                   <col style="width: 35%" />
                   <col style="width: 20%" />
-                  <col style="width: 20%" />
                   <col style="width: 15%" />
+                  <col style="width: 10%" />
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Asistió</th>
-                    <th>Empleado</th>
-                    <th>Fecha</th>
-                    <th>Resultado</th>
-                    <th>Acciones</th>
+                    <th class="text-start header-table">Asistió</th>
+                    <th class="text-start header-table">Empleado</th>
+                    <th class="text-start header-table">Fecha</th>
+                    <th class="text-start header-table">Resultado</th>
+                    <th class="text-start header-table">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="tabla-asistencias-body" data-curso-id="${element.id}">
@@ -219,6 +222,8 @@ function MostrarCursos(data) {
       contenedor.append(item);
       contenedor.append(descripcionDetalle);
       contenedor.append(asistenciaDetalle);
+
+      ObtenerAsistencia(element.id);
     });
   }
 
@@ -229,9 +234,6 @@ function MostrarCursos(data) {
     delay: [100, 0],
   });
 }
-
-
-
 
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
@@ -499,3 +501,297 @@ async function EditarCurso(id) {
     });
 }
 ObtenerCursos();
+
+
+
+
+
+
+
+
+
+//FUNCIONES PARA LAS ASISTENCIAS
+
+//Funcion para obtener las asistencias
+async function ObtenerAsistencia(cursoId) {
+  const res = await authFetch("AsistenciasCapacitacion", {
+    method: "GET",
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Filtrar cursos por asistencia
+      const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
+      MostrarAsistencias(cursoId, cursosFiltrados);
+    })
+    .catch(error => console.log("Error al obtener asistencias", error));
+}
+
+function MostrarAsistencias(cursoId, data) {
+  const tablaBody = $(`.tabla-asistencias-body[data-curso-id="${cursoId}"]`);
+  if (!tablaBody.length) return;
+
+  tablaBody.empty();
+
+  if (data.length === 0) {
+    tablaBody.append(
+      "<tr><td colspan='5' class='text-center text-muted'>No hay asistencias para mostrar.</td></tr>"
+    );
+    return;
+  }
+
+  $.each(data, function (index, item) {
+    const resultado = Number(item.resultado);
+    let etiqueta = "Aprobado";
+    let badgeClass = "badge-aprobado";
+
+    if (resultado >= 6) {
+      etiqueta = "Aprobado";
+      badgeClass = "badge-aprobado";
+    } else {
+      etiqueta = "Desaprobado";
+      badgeClass = "badge-desaprobado";
+    } 
+    tablaBody.append(`
+      <tr>
+        <td class='text-center align-middle'>
+          <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia? "checked" : ""} />
+        </td>
+        <td class='align-middle'>${item.empleado.nombreCompleto}</td>
+        <td class='align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
+        <td class='align-middle'>
+        <span class="badge-pill ${badgeClass}" style="padding: 4px 12px; text-aling: center;">${etiqueta}</span>
+        </td>
+        <td class='d-flex justify-content-center align-items-center'>
+          <button class='btn-eliminar' style='background: none; border: none;' 
+            onclick='EliminarAsistencia(${item.id})' data-tippy-content='Eliminar'>
+            <i class='bi bi-trash3 icono-elimina-detalle'></i>
+          </button>
+        </td>
+      </tr>
+    `);
+  });
+
+  $(".checkbox-asistio").off("change").on("change", function () {
+  const asistenciaId = $(this).data("id");
+  const nuevoEstado = $(this).is(":checked");
+  MarcarAsistencia(asistenciaId, nuevoEstado);
+});
+
+
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+function BuscarAsistenciaId() {
+  const id = parseInt(document.getElementById("IdAsistencia").value);
+
+  if (!id || id === 0) {
+    CrearAsistencia();
+  } else {
+    EditarAsistencia(id);
+  }
+}
+
+
+function ValidarFormularioAsistencia() {
+    const selectEmpleadoId = document.getElementById("EmpleadoId");
+    const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
+
+    const inputFecha = document.getElementById("FechaAsistencia");
+    const inputErrorFecha = document.getElementById("errorFechaAsistencia");
+
+    const inputResultado = document.getElementById("ResultadoAsistencia");
+    const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+
+    const empleadoId = selectEmpleadoId.value;
+    const fecha = inputFecha.value;;
+    const resultado = inputResultado.value;
+
+    //Limpiar errores previos
+    selectErrorEmpleadoId.style.display = "none";
+    selectErrorEmpleadoId.textContent = "";
+    selectEmpleadoId.classList.remove("is-invalid", "is-valid");
+    inputErrorFecha.style.display = "none";
+    inputErrorFecha.textContent = "";
+    inputFecha.classList.remove("is-invalid", "is-valid");
+    inputErrorResultado.style.display = "none";
+    inputErrorResultado.textContent = "";
+    inputResultado.classList.remove("is-invalid", "is-valid");
+
+    let esValid = true;
+
+    if(empleadoId === ""){
+        selectEmpleadoId.classList.add("is-invalid");
+        selectErrorEmpleadoId.style.display = "block";
+        selectErrorEmpleadoId.textContent = "Seleccione un empleado.";
+        esValid = false;
+    }
+
+    //Validar fecha
+    if (fecha.length === 0) {
+      inputFecha.classList.add("is-invalid");
+      inputErrorFecha.style.display = "block";
+      inputErrorFecha.textContent = "Seleccione una fecha.";
+      esValid = false;
+    }
+    // Validar resultado 
+    if (resultado.length === 0) {
+      inputResultado.classList.add("is-invalid");
+      inputErrorResultado.style.display = "block";
+      inputErrorResultado.textContent = "Ingrese un resultado.";
+      esValid = false;
+    }
+    return esValid;
+}
+document.getElementById("EmpleadoId").addEventListener("input", () => {
+    const inputEmpleado = document.getElementById("EmpleadoId");
+    const errorEmpleadoId = document.getElementById("errorEmpleadoId");
+    const empleadoId = inputEmpleado.value;
+
+    // Limpiar cualquier estado previo
+    inputEmpleado.classList.remove("is-invalid", "is-valid");
+
+    let esValid = true;
+
+    if(empleadoId === ""){
+      inputEmpleado.classList.add("is-invalid");
+      errorEmpleadoId.style.display = "block";
+      errorEmpleadoId.textContent = "Seleccione un empleado.";
+      esValid = false;
+    } else {
+      inputEmpleado.classList.add("is-valid");
+      errorEmpleadoId.style.display = "none";
+      errorEmpleadoId.textContent = "";
+    }
+    return esValid;
+});
+
+async function CrearAsistencia() {
+  if(!ValidarFormularioAsistencia()){
+    return;
+  }
+
+const asistencia = {
+  asistencia: false,
+  empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+  fecha: document.getElementById("FechaAsistencia").value,
+  resultado: document.getElementById("ResultadoAsistencia").value,
+  cursoId: cursoIdSeleccionado,
+};
+    const res = await authFetch("AsistenciasCapacitacion", {
+      method: 'POST',
+      body: JSON.stringify(asistencia),
+    })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.mensaje) {
+        ValidarCriterioDeEvaluacionExistente(response.mensaje);
+      } else {
+        ObtenerAsistencia(cursoIdSeleccionado); 
+                cerrarPanelAsistencias();
+       
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
+          icon: "success",
+          title: "¡Asistencia Creada!",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#f0f0f0",
+          color: "#000",
+        });
+      }
+    });
+}
+
+function EliminarAsistencia(id) {
+    Swal.fire({
+        title: "¿Confirmás que querés eliminar esta asistencia?",
+        text: "Esta acción es irreversible y eliminará definitivamente el registro. ¿Querés continuar?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+          popup: "swal2-border-radius",
+          confirmButton: "swal2-btn-eliminar",
+          cancelButton: "swal2-btn-cancelar",
+          title: "swal2-title-custom",
+          content: "swal2-content-custom",
+        },
+        background: "#fff",
+        color: "#22223b",
+      })
+      .then((result) => {
+      if(result.isConfirmed) {
+            EliminarSiAsistencia(id);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire({
+                title: "Acción cancelada",
+                text: "La asistencia permanece registrada.",
+                icon: "info",
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: "bottom-end",
+            })
+        }
+      })
+}
+
+async function EliminarSiAsistencia(id) {
+    const res = await authFetch(`AsistenciasCapacitacion/${id}`, {
+      method: 'DELETE',
+    })
+      if (!res.ok) {
+        throw new Error("No se pudo eliminar la asistencia");
+      }
+    await ObtenerAsistencia(cursoIdSeleccionado);
+
+        Swal.fire({
+            toast: true,
+            position: "bottom-end",
+            icon: "success",
+            title: "¡Asistencia Eliminada!",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: "#f0f0f0",
+            color: "#000",
+        })
+
+}
+
+
+async function MarcarAsistencia(id, nuevoEstado)  {
+    const res = await authFetch(`AsistenciasCapacitacion/CambiarEstado/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(nuevoEstado)
+    })
+    .then(() => {
+      ObtenerAsistencia(cursoIdSeleccionado);
+      Swal.fire({
+        toast: true,
+        position: "bottom-end",
+        icon: "success",
+        title: "¡Asistencia Marcada!",
+        showConfirmButton: false,
+        timer: 1500,
+        background: "#f0f0f0",
+        color: "#000",
+      });
+    })
+    .catch(error => console.log('No se puede acceder al servicio', error))
+}
+
+
+ObtenerAsistencia(cursoIdSeleccionado);

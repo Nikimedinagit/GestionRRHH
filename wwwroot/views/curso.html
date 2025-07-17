@@ -195,23 +195,17 @@
           <input type="hidden" id="IdAsistencia" />
           <div class="form-grid">
 
-            <!-- Asistencia -->
-          <div class="form-group form-check mb-3">
-            <input type="checkbox" class="form-check-input" id="Asistencia" />
-            <label class="form-check-label" for="Asistencia">Asistió</label>
-          </div>
-
             <!-- Empleado -->
             <div class="form-group position-relative mb-3">
               <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
                 <option value="" disabled selected>Seleccione</option>
               </select>
               <label for="EmpleadoId">Empleado</label>
-              <div class="invalid-feedback" id="errorIdEmpleado"></div>
+              <div class="invalid-feedback" id="errorEmpleadoId"></div>
             </div>
 
             <div class="form-group position-relative mb-3">
-              <input type="datetime-local" id="FechaAsistencia" class="form-control" placeholder=" " />
+              <input type="date" id="FechaAsistencia" class="form-control" placeholder=" " />
               <label for="FechaAsistencia">Fecha </label>
               <div class="invalid-feedback" id="errorFechaAsistencia"></div>
             </div>
@@ -236,10 +230,9 @@
       </div>
     </div>
 
-    <script src="../js/Vistas/curso.js"></script>
+    
     <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
-
-    <script src="../js/Vistas/asistencia.js"></script>
+    <script src="../js/Vistas/curso.js"></script>
 
 
 

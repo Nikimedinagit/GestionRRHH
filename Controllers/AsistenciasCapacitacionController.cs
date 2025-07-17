@@ -104,6 +104,32 @@ namespace API_NET_CORE8_RRHH.Controllers
             return NoContent();
         }
 
+        //PATCH: Vehiculos/Alquilar/{id}
+        [HttpPatch("CambiarEstado/{id}")]
+        public async Task<IActionResult> CambiarEstado (int id, [FromBody] bool nuevoEstado)
+        {
+            var asistencia = await _context.AsistenciaCapacitacion.FindAsync(id);
+            if(asistencia == null)
+            {
+                return NotFound();
+            }
+
+            //CAMBIAR EL ESTADO DELL VEHICULO
+            asistencia.Asistencia = nuevoEstado;
+            
+            try 
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,"Hubo un error al actualizar el estado de la asistencia");
+            }
+
+            return Ok(asistencia);
+        }
+
+
         private bool AsistenciaCapacitacionExists(int id)
         {
             return _context.AsistenciaCapacitacion.Any(e => e.Id == id);
