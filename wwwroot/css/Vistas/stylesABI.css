@@ -180,7 +180,17 @@ td {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  text-align: left !important;
 }
+td.td-empleado {
+  text-align: left !important; /* Empleado a la izquierda */
+}
+
+td:nth-child(3),
+td:nth-child(4) {
+  text-align: center !important; /* Fecha centrado */
+}
+
 
 /* Cuerpo de tabla con estilo compacto */
 .tabla-criterios-body, .tabla-asistencias-body, .tabla-certificados-body {

@@ -187,29 +187,29 @@ function MostrarCursos(data) {
       const asistenciaDetalle = $(`
         <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
           <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Asistencias</h3>
+            <h3 class="titulo-sub-seccion">Asistencia de curso</h3>
           </div>
           <hr style="margin-bottom: 1rem;" />
           <div class="asistencias-panel mt-3">
             <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}">
-              <span>Agregar Asistencia</span>
+              <span>Registrar Asistencia</span>
             </button>
             <div class="table-responsive">
               <table class="table table-bordered">
                 <colgroup>
-                  <col style="width: 10%" />
-                  <col style="width: 35%" />
-                  <col style="width: 20%" />
+                  <col style="width: 5%" />
+                  <col style="width: 38%" />
                   <col style="width: 15%" />
+                  <col style="width: 22%" />
                   <col style="width: 10%" />
                 </colgroup>
                 <thead>
                   <tr>
                     <th class="text-start header-table">Asistió</th>
                     <th class="text-start header-table">Empleado</th>
-                    <th class="text-start header-table">Fecha</th>
-                    <th class="text-start header-table">Resultado</th>
-                    <th class="text-start header-table">Acciones</th>
+                    <th class="text-center header-table">Fecha</th>
+                    <th class="text-center header-table">Resultado</th>
+                    <th class="text-center header-table">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="tabla-asistencias-body" data-curso-id="${element.id}">
@@ -228,7 +228,7 @@ function MostrarCursos(data) {
           <hr style="margin-bottom: 1rem;" />
           <div class="certificados-panel mt-3">
             <button class="btn btn-agregar-certificado mb-2 crearCertificado" data-curso-id="${element.id}">
-              <span>Agregar Certificado</span>
+              <span>Carga de Certificados</span>
             </button>
             <div class="table-responsive">
               <table class="table table-bordered">
@@ -633,7 +633,7 @@ function MostrarAsistencias(cursoId, data) {
         <td class='text-center align-middle'>
           <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia? "checked" : ""} />
         </td>
-        <td class='align-middle'>${item.empleado.nombreCompleto}</td>
+        <td class='align-middle td-empleado'>${item.empleado.nombreCompleto}</td>
         <td class='align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
         <td class='align-middle'>
         <span class="badge-pill ${badgeClass}" style="padding: 4px 12px; text-aling: center;">${etiqueta}</span>
