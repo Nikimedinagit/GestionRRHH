@@ -12,15 +12,15 @@
     <!-- Fondo Oscuro al Abrir Panel -->
     <div id="fondoOscuro" onclick="cerrarPanelCursos()"></div>
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+    <!-- Contenedor de Acciones (Agregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Nueva Evaluación -->
+      <!-- Botón Nuevo Curso -->
       <button class="btn btn-agregar" onclick="abrirPanelCursos()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Nuevo Curso</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
+      <!-- Botones Filtros e Informe -->
       <div class="d-flex gap-2 flex-wrap">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- Contenedor Generar-->
+    <!-- Contenedor Generar -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -49,190 +49,205 @@
       </div>
     </div>
 
-
+    <!-- Gráfico -->
     <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
       <canvas id="graficoCursos" width="400" height="150"></canvas>
     </div>
 
-
-    <!-- Contenedor de tarjetas de resumen de cursos-->
-    <div>
-      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
-
-        <!-- Total de cursos -->
-        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-primary bg-opacity-10 p-3 me-3">
-              <i class="fas fa-tasks text-primary fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Total Cursos</p>
-              <h5 class="mb-0 fw-bold" id="totalCursos">0</h5>
-            </div>
+    <!-- Tarjetas resumen -->
+    <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+      <!-- Total Cursos -->
+      <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+        <div class="d-flex align-items-center">
+          <div class="bg-primary bg-opacity-10 p-3 me-3">
+            <i class="fas fa-tasks text-primary fs-4"></i>
+          </div>
+          <div>
+            <p class="mb-0 text-muted small">Total Cursos</p>
+            <h5 class="mb-0 fw-bold" id="totalCursos">0</h5>
           </div>
         </div>
+      </div>
 
-        <!-- Participaciones -->
-        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-info bg-opacity-10 p-3 me-3">
-              <i class="ti ti-chart-bar text-info fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Participaciones</p>
-              <h5 class="mb-0 fw-bold" id="participantesCurso">0</h5>
-            </div>
+      <!-- Participaciones -->
+      <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+        <div class="d-flex align-items-center">
+          <div class="bg-info bg-opacity-10 p-3 me-3">
+            <i class="ti ti-chart-bar text-info fs-4"></i>
+          </div>
+          <div>
+            <p class="mb-0 text-muted small">Participaciones</p>
+            <h5 class="mb-0 fw-bold" id="participantesCurso">0</h5>
           </div>
         </div>
+      </div>
 
-        <!-- Total certificados emitidos -->
-        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-success bg-opacity-10 p-3 me-3">
-              <i class="ti ti-certificate text-success fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Certificados emitidos</p>
-              <h5 class="mb-0 fw-bold" id="certificadosEmitidos">0</h5>
-            </div>
+      <!-- Certificados emitidos -->
+      <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+        <div class="d-flex align-items-center">
+          <div class="bg-success bg-opacity-10 p-3 me-3">
+            <i class="ti ti-certificate text-success fs-4"></i>
+          </div>
+          <div>
+            <p class="mb-0 text-muted small">Certificados emitidos</p>
+            <h5 class="mb-0 fw-bold" id="certificadosEmitidos">0</h5>
           </div>
         </div>
+      </div>
 
-        <!-- Total certificados pendientes -->
-        <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-warning bg-opacity-10 p-3 me-3">
-              <i class="bi bi-hourglass-split text-warning fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Certificados pendientes</p>
-              <h5 class="mb-0 fw-bold" id="certificadosPendientes">0</h5>
-            </div>
+      <!-- Certificados pendientes -->
+      <div class="card p-3 border-0 flex-grow-1" style="background-color: #f3f4f6; min-width: 220px; flex: 1 1 calc(25% - 1rem);">
+        <div class="d-flex align-items-center">
+          <div class="bg-warning bg-opacity-10 p-3 me-3">
+            <i class="bi bi-hourglass-split text-warning fs-4"></i>
+          </div>
+          <div>
+            <p class="mb-0 text-muted small">Certificados pendientes</p>
+            <h5 class="mb-0 fw-bold" id="certificadosPendientes">0</h5>
           </div>
         </div>
-
       </div>
     </div>
 
     <hr style="margin-bottom: 1rem;" />
 
-
-
-
-    <!-- Contenedor de los cursos -->
+    <!-- Contenedor de cursos -->
     <div class="container-fluid">
-      <div id="contenedorCursos" class="row ">
-        <!--Se cargarán dinámicamente-->
+      <div id="contenedorCursos" class="row">
+        <!-- Se cargan dinámicamente -->
       </div>
     </div>
+  </div> <!-- ← cierre correcto del contenedor blanco -->
 
-    <!-- Panel Deslizante Formulario -->
-    <div id="panelCursos" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
-      class="w-30">
-      <div class="panel-header">
-        <h2 id="panelTitulo" class="panel-title">Formulario De Cursos</h2>
-      </div>
-      <div class="panel-body">
-        <form id="formCursos">
-          <input type="hidden" id="IdCurso" />
-          <div class="form-grid">
-
-            <!-- Nombre -->
-            <div class="form-group position-relative mb-3">
-              <input type="text" id="NombreCurso" class="form-control" placeholder=" " />
-              <label for="NombreCurso">Nombre</label>
-              <div class="invalid-feedback" id="errorNombreCurso"></div>
-            </div>
-
-            <!-- Modalidad -->
-            <div class="form-group position-relative mb-3">
-              <select name="ModalidadCurso" id="ModalidadCurso" class="form-control" required>
-                <option value="" disabled selected >Seleccione una Modalidad</option>
-                <option value="1">PRESENCIAL</option>
-                <option value="2">VIRTUAL</option>
-                <option value="3">MIXTO</option>
-              </select>
-              <label for="ModalidadCurso">Modalidad</label>
-              <div class="invalid-feedback" id="errorModalidadCurso"></div>
-            </div>
-
-            <div class="form-group position-relative mb-3">
-              <textarea id="DescripcionCurso" class="form-control" rows="1" placeholder=" "></textarea>
-              <label for="DescripcionCurso">Descripción</label>
-              <div class="invalid-feedback" id="errorDescripcionCurso"></div>
-            </div>
-
-            <div class="form-group position-relative mb-3">
-              <input type="datetime-local" id="FechaInicioCurso" class="form-control" placeholder=" " />
-              <label for="FechaInicioCurso">Fecha Inicio</label>
-              <div class="invalid-feedback" id="errorFechaInicioCurso"></div>
-            </div>
-
-
-        </form>
-      </div>
-      <div class="panel-footer">
-        <button class="btn btn-cancelar" onclick="cerrarPanelCursos()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-guardar" onclick="BuscarCursoId()">
-          Guardar
-        </button>
-      </div>
+  <!-- Panel Curso -->
+  <div id="panelCursos" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Cursos</h2>
     </div>
-<!-- ESTE ES EL DIV -->
+    <div class="panel-body">
+      <form id="formCursos">
+        <input type="hidden" id="IdCurso" />
+        <div class="form-grid">
+          <!-- Nombre -->
+          <div class="form-group position-relative mb-3">
+            <input type="text" id="NombreCurso" class="form-control" placeholder=" " />
+            <label for="NombreCurso">Nombre</label>
+            <div class="invalid-feedback" id="errorNombreCurso"></div>
+          </div>
+
+          <!-- Modalidad -->
+          <div class="form-group position-relative mb-3">
+            <select name="ModalidadCurso" id="ModalidadCurso" class="form-control" required>
+              <option value="" disabled selected>Seleccione una Modalidad</option>
+              <option value="1">PRESENCIAL</option>
+              <option value="2">VIRTUAL</option>
+              <option value="3">MIXTO</option>
+            </select>
+            <label for="ModalidadCurso">Modalidad</label>
+            <div class="invalid-feedback" id="errorModalidadCurso"></div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group position-relative mb-3">
+            <textarea id="DescripcionCurso" class="form-control" rows="1" placeholder=" "></textarea>
+            <label for="DescripcionCurso">Descripción</label>
+            <div class="invalid-feedback" id="errorDescripcionCurso"></div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="form-group position-relative mb-3">
+            <input type="datetime-local" id="FechaInicioCurso" class="form-control" placeholder=" " />
+            <label for="FechaInicioCurso">Fecha Inicio</label>
+            <div class="invalid-feedback" id="errorFechaInicioCurso"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-cancelar" onclick="cerrarPanelCursos()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarCursoId()">Guardar</button>
+    </div>
   </div>
 
-
-    <!-- Panel Deslizante Formulario -->
-    <div id="panelAsistencias" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
-      class="w-30">
-      <div class="panel-header">
-        <h2 id="panelTitulo" class="panel-title">Formulario De Asistencia</h2>
-      </div>
-      <div class="panel-body">
-        <form id="formAsistencia">
-          <input type="hidden" id="IdAsistencia" />
-          <div class="form-grid">
-
-            <!-- Empleado -->
-            <div class="form-group position-relative mb-3">
-              <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
-                <option value="" disabled selected>Seleccione</option>
-              </select>
-              <label for="EmpleadoId">Empleado</label>
-              <div class="invalid-feedback" id="errorEmpleadoId"></div>
-            </div>
-
-            <div class="form-group position-relative mb-3">
-              <input type="date" id="FechaAsistencia" class="form-control" placeholder=" " />
-              <label for="FechaAsistencia">Fecha </label>
-              <div class="invalid-feedback" id="errorFechaAsistencia"></div>
-            </div>
-
-            <!-- RESULTADO -->
-            <div class="form-group position-relative mb-3">
-              <input type="number" id="ResultadoAsistencia" class="form-control" placeholder=" " />
-              <label for="ResultadoAsistencia">Resultado</label>
-              <div class="invalid-feedback" id="errorResultadoAsistencia"></div>
-            </div>
-
-
-        </form>
-      </div>
-      <div class="panel-footer">
-        <button class="btn btn-cancelar" onclick="cerrarPanelAsistencias()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-guardar" onclick="BuscarAsistenciaId()">
-          Guardar
-        </button>
-      </div>
+  <!-- Panel Asistencia -->
+  <div id="panelAsistencias" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Asistencia</h2>
     </div>
+    <div class="panel-body">
+      <form id="formAsistencia">
+        <input type="hidden" id="IdAsistencia" />
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3">
+            <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
+              <option value="" disabled selected>Seleccione</option>
+            </select>
+            <label for="EmpleadoId">Empleado</label>
+            <div class="invalid-feedback" id="errorEmpleadoId"></div>
+          </div>
 
-    
-    <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
-    <script src="../js/Vistas/curso.js"></script>
+          <div class="form-group position-relative mb-3">
+            <input type="date" id="FechaAsistencia" class="form-control" placeholder=" " />
+            <label for="FechaAsistencia">Fecha</label>
+            <div class="invalid-feedback" id="errorFechaAsistencia"></div>
+          </div>
 
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="ResultadoAsistencia" class="form-control" placeholder=" " />
+            <label for="ResultadoAsistencia">Resultado</label>
+            <div class="invalid-feedback" id="errorResultadoAsistencia"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-cancelar" onclick="cerrarPanelAsistencias()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarAsistenciaId()">Guardar</button>
+    </div>
+  </div>
 
+  <!-- Panel Certificados -->
+  <div id="panelCertificados" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Certificados</h2>
+    </div>
+    <div class="panel-body">
+      <form id="formCertificado">
+        <input type="hidden" id="IdCertificado" />
+        <div class="form-grid">
+          
+          <div class="form-group position-relative mb-3">
+            <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
+              <option value="" disabled selected>Seleccione</option>
+            </select>
+            <label for="EmpleadoId">Empleado</label>
+            <div class="invalid-feedback" id="errorEmpleadoId"></div>
+          </div>
 
+          <div class="form-group position-relative mb-3">
+            <input type="date" id="FechaCertificado" class="form-control" placeholder=" " />
+            <label for="FechaCertificado">Fecha de Emisión</label>
+            <div class="invalid-feedback" id="errorFechaCertificado"></div>
+          </div>
+
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="form-group position-relative mb-3">
+              <input type="file" id="DocumentoDescargable" class="form-control" />
+              <label for="DocumentoDescargable">Documento Descargable</label>
+              <div class="invalid-feedback" id="errorDocumentoDescargable"></div>
+              <div id="archivoAdjuntoActual" class="mt-1"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-cancelar" onclick="cerrarPanelCertificados()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarCertificadoId()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+  <script src="../js/Vistas/curso.js"></script>
+</div>

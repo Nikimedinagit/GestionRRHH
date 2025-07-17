@@ -47,9 +47,36 @@ function cerrarPanelAsistencias() {
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.remove("visible");
 
-  // LimpiarModalAsistencias();
+  LimpiarModalAsistencias();
 }
 
+//Inicio Panel Certificado//
+function abrirPanelCertificados() {
+  document.getElementById("panelCertificados").classList.add("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.add("visible");
+
+  setTimeout(() => {
+    const inputEmpleadoId = document.getElementById("EmpleadoId");
+    if (inputEmpleadoId) inputEmpleadoId.focus();
+  }, 400);
+  
+}
+
+$(document).on("click", ".crearCertificado", function () {
+  const cursoId = $(this).data("curso-id");
+  cursoIdSeleccionado = cursoId; 
+  console.log(cursoIdSeleccionado);
+  abrirPanelCertificados();
+});
+
+function cerrarPanelCertificados() {
+  document.getElementById("panelCertificados").classList.remove("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.remove("visible");
+
+  // LimpiarModalAsistencias();
+}
 
 
 
@@ -67,7 +94,6 @@ async function ObtenerCursos() {
       })
     .catch(error => console.log('No se pudo obtener los cursos', error)); 
 }
-
 
 function MostrarCursos(data) {
   const contenedor = $("#contenedorCursos");
@@ -194,6 +220,38 @@ function MostrarCursos(data) {
         </div>
       `);
 
+      const certificadoetalle = $(`
+        <div class="panelCertificados collapse px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Certificados</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="certificados-panel mt-3">
+            <button class="btn btn-agregar-certificado mb-2 crearCertificado" data-curso-id="${element.id}">
+              <span>Agregar Certificado</span>
+            </button>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <colgroup>
+                  <col style="width: 40%" />
+                  <col style="width: 30%" />
+                  <col style="width: 30%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="text-start header-table">Empleado</th>
+                    <th class="text-start header-table">Fecha</th>
+                    <th class="text-start header-table">Documento Descargable</th>
+                  </tr>
+                </thead>
+                <tbody class="tabla-certificados-body" data-curso-id="${element.id}">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `);
+
       // Mostrar descripción
       item.find(".btn-ver-descripcion").on("click", function () {
         descripcionDetalle.slideToggle(200, function () {
@@ -202,6 +260,8 @@ function MostrarCursos(data) {
 
         if (asistenciaDetalle.is(":visible")) {
           asistenciaDetalle.slideUp(200).removeClass("mostrar");
+        }else if (certificadoetalle.is(":visible")) {
+          certificadoetalle.slideUp(200).removeClass("mostrar");
         }
 
         const icono = $(this).find("i");
@@ -216,14 +276,31 @@ function MostrarCursos(data) {
 
         if (descripcionDetalle.is(":visible")) {
           descripcionDetalle.slideUp(200).removeClass("mostrar");
+        }else if (certificadoetalle.is(":visible")) {
+          certificadoetalle.slideUp(200).removeClass("mostrar");
+        }
+      });
+
+      // Mostrar cerificados
+      item.find(".btn-ver-certificados").on("click", function () {
+        certificadoetalle.slideToggle(200, function () {
+          certificadoetalle.toggleClass("mostrar", certificadoetalle.is(":visible"));
+        });
+
+        if (asistenciaDetalle.is(":visible")) {
+          asistenciaDetalle.slideUp(200).removeClass("mostrar");
+        }else if (descripcionDetalle.is(":visible")) {
+          descripcionDetalle.slideUp(200).removeClass("mostrar");
         }
       });
 
       contenedor.append(item);
       contenedor.append(descripcionDetalle);
       contenedor.append(asistenciaDetalle);
+      contenedor.append(certificadoetalle);
 
       ObtenerAsistencia(element.id);
+      ObtenerCertificados(element.id);
     });
   }
 
@@ -409,6 +486,7 @@ document.getElementById("NombreCurso").addEventListener("input", () => {
   }
 });
 
+
 //Funcion para evitar que se pueda evaluar el mismo empleado en el mismo mes
 function ValidarCursoExistente(mensaje) {
   const errorNombre = document.getElementById("errorNombreCurso");
@@ -511,7 +589,6 @@ ObtenerCursos();
 
 
 //FUNCIONES PARA LAS ASISTENCIAS
-
 //Funcion para obtener las asistencias
 async function ObtenerAsistencia(cursoId) {
   const res = await authFetch("AsistenciasCapacitacion", {
@@ -595,7 +672,6 @@ function BuscarAsistenciaId() {
   }
 }
 
-
 function ValidarFormularioAsistencia() {
     const selectEmpleadoId = document.getElementById("EmpleadoId");
     const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
@@ -669,6 +745,32 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
     return esValid;
 });
 
+function LimpiarModalAsistencias() {
+    //Limpiar el formulario
+    document.getElementById("IdAsistencia").value = "";
+    const inputEmpleado = document.getElementById("EmpleadoId");
+    inputEmpleado.value = "";
+    const inputFechaAsistencia = document.getElementById("FechaAsistencia");
+    inputFechaAsistencia.value = "";
+    const inputResultadoAsistencia = document.getElementById("ResultadoAsistencia");
+    inputResultadoAsistencia.value = "";
+
+    //Limpia las validaciones
+    inputEmpleado.classList.remove("is-invalid", "is-valid");
+    inputFechaAsistencia.classList.remove("is-invalid", "is-valid");
+    inputResultadoAsistencia.classList.remove("is-invalid", "is-valid");
+
+    //Limpiar los mensajes de error
+    const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
+    inputErrorEmpleado.textContent = "";
+    inputErrorEmpleado.style.display = "none";
+    const inputErrorFecha = document.getElementById("errorFechaAsistencia");
+    inputErrorFecha.textContent = "";
+    inputErrorFecha.style.display = "none";
+    const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+    inputErrorResultado.textContent = "";
+    inputErrorResultado.style.display = "none";
+}
 async function CrearAsistencia() {
   if(!ValidarFormularioAsistencia()){
     return;
@@ -707,7 +809,6 @@ const asistencia = {
       }
     });
 }
-
 function EliminarAsistencia(id) {
     Swal.fire({
         title: "¿Confirmás que querés eliminar esta asistencia?",
@@ -768,7 +869,6 @@ async function EliminarSiAsistencia(id) {
 
 }
 
-
 async function MarcarAsistencia(id, nuevoEstado)  {
     const res = await authFetch(`AsistenciasCapacitacion/CambiarEstado/${id}`, {
       method: 'PATCH',
@@ -793,5 +893,216 @@ async function MarcarAsistencia(id, nuevoEstado)  {
     .catch(error => console.log('No se puede acceder al servicio', error))
 }
 
-
 ObtenerAsistencia(cursoIdSeleccionado);
+
+
+
+//FUNCIONES PARA LOS CERTIFICADOS
+//Funcion para obtener los certificados
+async function ObtenerCertificados(cursoId) {
+  const res = await authFetch("Certificados", {
+    method: "GET",
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Filtrar cursos por certificados
+      const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
+      MostrarAsistencias(cursoId, cursosFiltrados);
+    })
+    .catch(error => console.log("Error al obtener certificados", error));
+}
+
+function MostrarCertificados(cursoId, data) {
+  const tablaBody = $(`.tabla-certificados-body[data-curso-id="${cursoId}"]`);
+  if (!tablaBody.length) return;
+
+  tablaBody.empty();
+
+  if (data.length === 0) {
+    tablaBody.append(
+      "<tr><td colspan='5' class='text-center text-muted'>No hay certificados para mostrar.</td></tr>"
+    );
+    return;
+  }
+
+  $.each(data, function (index, item) {
+    let documentoUrl = "";
+    if (item.documentoDescargable) {
+      documentoUrl = item.documentoDescargable.startsWith("http")
+        ? item.documentoDescargable
+        : baseUrlArchivos + item.documentoDescargable;
+    }
+
+    const documentoHtml = item.documentoDescargable
+      ? `
+      <p class="text-muted d-flex align-items-center gap-2 mb-2">
+        <a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
+          <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+          <span>Descargar</span>
+        </a>
+      </p>
+      `
+      : "";
+
+    tablaBody.append(`
+      <tr>
+        <td class='align-middle'>${item.empleado.nombreCompleto}</td>
+        <td class='align-middle'>${documentoHtml}</td>
+        <td class='align-middle'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
+      </tr>
+    `);
+  });
+
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+function BuscarCertificadoId() {
+  const id = parseInt(document.getElementById("IdCertificado").value);
+
+  if (!id || id === 0) {
+    CrearCertificado();
+  } else {
+    EditarCertificado(id);
+  }
+}
+
+// function ValidarFormularioAsistencia() {
+//     const selectEmpleadoId = document.getElementById("EmpleadoId");
+//     const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
+
+//     const inputFecha = document.getElementById("FechaAsistencia");
+//     const inputErrorFecha = document.getElementById("errorFechaAsistencia");
+
+//     const inputResultado = document.getElementById("ResultadoAsistencia");
+//     const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+
+//     const empleadoId = selectEmpleadoId.value;
+//     const fecha = inputFecha.value;;
+//     const resultado = inputResultado.value;
+
+//     //Limpiar errores previos
+//     selectErrorEmpleadoId.style.display = "none";
+//     selectErrorEmpleadoId.textContent = "";
+//     selectEmpleadoId.classList.remove("is-invalid", "is-valid");
+//     inputErrorFecha.style.display = "none";
+//     inputErrorFecha.textContent = "";
+//     inputFecha.classList.remove("is-invalid", "is-valid");
+//     inputErrorResultado.style.display = "none";
+//     inputErrorResultado.textContent = "";
+//     inputResultado.classList.remove("is-invalid", "is-valid");
+
+//     let esValid = true;
+
+//     if(empleadoId === ""){
+//         selectEmpleadoId.classList.add("is-invalid");
+//         selectErrorEmpleadoId.style.display = "block";
+//         selectErrorEmpleadoId.textContent = "Seleccione un empleado.";
+//         esValid = false;
+//     }
+
+//     //Validar fecha
+//     if (fecha.length === 0) {
+//       inputFecha.classList.add("is-invalid");
+//       inputErrorFecha.style.display = "block";
+//       inputErrorFecha.textContent = "Seleccione una fecha.";
+//       esValid = false;
+//     }
+//     // Validar resultado 
+//     if (resultado.length === 0) {
+//       inputResultado.classList.add("is-invalid");
+//       inputErrorResultado.style.display = "block";
+//       inputErrorResultado.textContent = "Ingrese un resultado.";
+//       esValid = false;
+//     }
+//     return esValid;
+// }
+// document.getElementById("EmpleadoId").addEventListener("input", () => {
+//     const inputEmpleado = document.getElementById("EmpleadoId");
+//     const errorEmpleadoId = document.getElementById("errorEmpleadoId");
+//     const empleadoId = inputEmpleado.value;
+
+//     // Limpiar cualquier estado previo
+//     inputEmpleado.classList.remove("is-invalid", "is-valid");
+
+//     let esValid = true;
+
+//     if(empleadoId === ""){
+//       inputEmpleado.classList.add("is-invalid");
+//       errorEmpleadoId.style.display = "block";
+//       errorEmpleadoId.textContent = "Seleccione un empleado.";
+//       esValid = false;
+//     } else {
+//       inputEmpleado.classList.add("is-valid");
+//       errorEmpleadoId.style.display = "none";
+//       errorEmpleadoId.textContent = "";
+//     }
+//     return esValid;
+// });
+
+// function LimpiarModalAsistencias() {
+//     //Limpiar el formulario
+//     document.getElementById("IdAsistencia").value = "";
+//     const inputEmpleado = document.getElementById("EmpleadoId");
+//     inputEmpleado.value = "";
+//     const inputFechaAsistencia = document.getElementById("FechaAsistencia");
+//     inputFechaAsistencia.value = "";
+//     const inputResultadoAsistencia = document.getElementById("ResultadoAsistencia");
+//     inputResultadoAsistencia.value = "";
+
+//     //Limpia las validaciones
+//     inputEmpleado.classList.remove("is-invalid", "is-valid");
+//     inputFechaAsistencia.classList.remove("is-invalid", "is-valid");
+//     inputResultadoAsistencia.classList.remove("is-invalid", "is-valid");
+
+//     //Limpiar los mensajes de error
+//     const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
+//     inputErrorEmpleado.textContent = "";
+//     inputErrorEmpleado.style.display = "none";
+//     const inputErrorFecha = document.getElementById("errorFechaAsistencia");
+//     inputErrorFecha.textContent = "";
+//     inputErrorFecha.style.display = "none";
+//     const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+//     inputErrorResultado.textContent = "";
+//     inputErrorResultado.style.display = "none";
+// }
+async function CrearCertificado() {
+  // if(!ValidarFormularioAsistencia()){
+  //   return;
+  // }
+
+    const certificado = {
+      empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+      fechaEmision: document.getElementById("FechaCertificado").value,
+      documentoDescargable: document.getElementById("DocumentoDescargable").value || "",
+    };
+    const res = await authFetch("Certificados", {
+      method: 'POST',
+      body: JSON.stringify(certificado),
+    })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.mensaje) {
+        ValidarCriterioDeEvaluacionExistente(response.mensaje);
+      } else {
+        ObtenerCertificados(cursoIdSeleccionado); 
+        cerrarPanelCertificados();
+       
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
+          icon: "success",
+          title: "¡Certificado Creado!",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#f0f0f0",
+          color: "#000",
+        });
+      }
+    });
+}
+ObtenerCertificados(cursoIdSeleccionado);

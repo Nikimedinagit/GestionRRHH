@@ -24,7 +24,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Certificado>>> GetCertificado()
         {
-            return await _context.Certificado.ToListAsync();
+            return await _context.Certificado
+            .Include(c => c.Curso)
+            .Include(c => c.Empleado)
+            .ToListAsync();
         }
 
         // GET: api/Certificados/5
