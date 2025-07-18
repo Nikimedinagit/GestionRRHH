@@ -82,6 +82,20 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<AsistenciaCapacitacion>> PostAsistenciaCapacitacion(AsistenciaCapacitacion asistenciaCapacitacion)
         {
+            //No se puede registrar dos veces el mismo empleado 
+            var empleadoExistente = await _context.AsistenciaCapacitacion
+            .Where(c => c.EmpleadoId == asistenciaCapacitacion.EmpleadoId && c.CursoId == asistenciaCapacitacion.CursoId)
+            .FirstOrDefaultAsync();
+
+            if (empleadoExistente != null)
+            {
+                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene una asistencia registrada para este curso"});
+            }
+
+            if (asistenciaCapacitacion.Fecha.Date < DateTime.Today)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "La fecha de asistencia no puede ser menor a hoy" });
+            }
             _context.AsistenciaCapacitacion.Add(asistenciaCapacitacion);
             await _context.SaveChangesAsync();
 

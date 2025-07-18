@@ -141,7 +141,7 @@ function MostrarCursos(data) {
 
           <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
             <span style="margin-right: 5px;">&bull;</span>
-            El curso comienza el ${fecha} a las ${hora}
+            Comienza el ${fecha} a las ${hora}
           </div>
 
           <div class="d-flex align-items-center" style="gap: 20px;">
@@ -187,7 +187,7 @@ function MostrarCursos(data) {
       const asistenciaDetalle = $(`
         <div class="panelAsistencias collapse px-3 pb-2" style="display: none;">
           <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Asistencia de curso</h3>
+            <h3 class="titulo-sub-seccion">Asistencia de Cursos</h3>
           </div>
           <hr style="margin-bottom: 1rem;" />
           <div class="asistencias-panel mt-3">
@@ -686,7 +686,7 @@ function ValidarFormularioAsistencia() {
 
     const empleadoId = selectEmpleadoId.value;
     const fecha = inputFecha.value;;
-    const resultado = inputResultado.value;
+    const resultado = parseInt(inputResultado.value);
 
     //Limpiar errores previos
     selectErrorEmpleadoId.style.display = "none";
@@ -716,11 +716,18 @@ function ValidarFormularioAsistencia() {
       esValid = false;
     }
     // Validar resultado 
-    if (resultado.length === 0) {
+    if (isNaN(resultado)) {
       inputResultado.classList.add("is-invalid");
       inputErrorResultado.style.display = "block";
       inputErrorResultado.textContent = "Ingrese un resultado.";
       esValid = false;
+    }else if (resultado < 0 || resultado > 10) {
+      inputResultado.classList.add("is-invalid");
+      inputErrorResultado.style.display = "block";
+      inputErrorResultado.textContent = "Resultado debe estar entre 0 y 10.";
+      esValid = false;
+    }else {
+      inputResultado.classList.add("is-valid");
     }
     return esValid;
 }
@@ -773,6 +780,22 @@ function LimpiarModalAsistencias() {
     inputErrorResultado.textContent = "";
     inputErrorResultado.style.display = "none";
 }
+
+function ValidarAsistenciaExistente(mensaje) {
+  const errorEmpleadoId = document.getElementById("errorEmpleadoId");
+  const inputEmpleadoId = document.getElementById("EmpleadoId");
+  const errorFechaAsistencia = document.getElementById("errorFechaAsistencia");
+  const inputFechaAsistencia = document.getElementById("FechaAsistencia");
+
+  errorFechaAsistencia.textContent = mensaje;
+  errorFechaAsistencia.style.display = "block";
+  inputFechaAsistencia.classList.add("is-invalid");
+
+  errorEmpleadoId.textContent = mensaje;
+  errorEmpleadoId.style.display = "block";
+  inputEmpleadoId.classList.add("is-invalid");
+}
+
 async function CrearAsistencia() {
   if(!ValidarFormularioAsistencia()){
     return;
@@ -792,7 +815,7 @@ const asistencia = {
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
-        ValidarCriterioDeEvaluacionExistente(response.mensaje);
+        ValidarAsistenciaExistente(response.mensaje);
       } else {
         ObtenerAsistencia(cursoIdSeleccionado); 
                 cerrarPanelAsistencias();
@@ -880,17 +903,33 @@ async function MarcarAsistencia(id, nuevoEstado)  {
       body: JSON.stringify(nuevoEstado)
     })
     .then(() => {
-      ObtenerAsistencia(cursoIdSeleccionado);
+      if(nuevoEstado){
+        ObtenerAsistencia(cursoIdSeleccionado);
       Swal.fire({
         toast: true,
         position: "bottom-end",
         icon: "success",
-        title: "¡Asistencia Marcada!",
+        title: "¡Asistio Correctamente!",
         showConfirmButton: false,
         timer: 1500,
         background: "#f0f0f0",
         color: "#000",
       });
+      }
+      //Si marca y luego desmarca
+      else {
+        ObtenerAsistencia(cursoIdSeleccionado);
+        Swal.fire({
+          toast: true,
+          position: "bottom-end",
+          icon: "success",
+          title: "¡No asistio correctamente!",
+          showConfirmButton: false,
+          timer: 1500,
+          background: "#f0f0f0",
+          color: "#000",
+        });
+      }
     })
     .catch(error => console.log('No se puede acceder al servicio', error))
 }
@@ -979,27 +1018,42 @@ function BuscarCertificadoId() {
   }
 }
 
+function LimpiarModalCertificado() {
+    //Limpiar el formulario
+    document.getElementById("IdCertificado").value = "";
+    const inputEmpleado = document.getElementById("EmpleadoIdCertificado");
+    inputEmpleado.value = "";
+    const inputDocumento = document.getElementById("DocumentoDescargable");
+    inputDocumento.value = "";
+
+    //Limpia las validaciones
+    inputEmpleado.classList.remove("is-invalid", "is-valid");
+    inputDocumento.classList.remove("is-invalid", "is-valid");
+
+    //Limpiar los mensajes de error
+    const inputErrorEmpleado = document.getElementById("errorEmpleadoIdCertificado");
+    inputErrorEmpleado.textContent = "";
+    inputErrorEmpleado.style.display = "none";
+    const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
+    inputErrorDocumento.textContent = "";
+    inputErrorDocumento.style.display = "none";
+}
+
+
 function ValidarFormularioCertificado() {
     const selectEmpleadoId = document.getElementById("EmpleadoIdCertificado");
-    const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
-
-    const inputFecha = document.getElementById("FechaCertificado");
-    const inputErrorFecha = document.getElementById("errorFechaCertificado");
+    const selectErrorEmpleadoId = document.getElementById("errorEmpleadoIdCertificado");
 
     const inputDocumento = document.getElementById("DocumentoDescargable");
     const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
 
     const empleadoId = selectEmpleadoId.value;
-    const fecha = inputFecha.value;;
     const documento = inputDocumento.value;
 
     //Limpiar errores previos
     selectErrorEmpleadoId.style.display = "none";
     selectErrorEmpleadoId.textContent = "";
     selectEmpleadoId.classList.remove("is-invalid", "is-valid");
-    inputErrorFecha.style.display = "none";
-    inputErrorFecha.textContent = "";
-    inputFecha.classList.remove("is-invalid", "is-valid");
     inputErrorDocumento.style.display = "none";
     inputErrorDocumento.textContent = "";
     inputDocumento.classList.remove("is-invalid", "is-valid");
@@ -1012,14 +1066,6 @@ function ValidarFormularioCertificado() {
         selectErrorEmpleadoId.textContent = "Seleccione un empleado.";
         esValid = false;
     }
-
-    //Validar fecha
-    if (fecha.length === 0) {
-      inputFecha.classList.add("is-invalid");
-      inputErrorFecha.style.display = "block";
-      inputErrorFecha.textContent = "Seleccione una fecha.";
-      esValid = false;
-    }
     // Validar resultado 
     if (documento.length === 0) {
       inputDocumento.classList.add("is-invalid");
@@ -1029,55 +1075,17 @@ function ValidarFormularioCertificado() {
     }
     return esValid;
 }
-document.getElementById("EmpleadoIdCertificado").addEventListener("input", () => {
-    const inputEmpleado = document.getElementById("EmpleadoIdCertificado");
-    const errorEmpleadoId = document.getElementById("errorEmpleadoId");
-    const empleadoId = inputEmpleado.value;
 
-    // Limpiar cualquier estado previo
-    inputEmpleado.classList.remove("is-invalid", "is-valid");
 
-    let esValid = true;
+function ValidarCertificadoExistente(mensaje) {
+  const errorEmpleadoId = document.getElementById("errorEmpleadoIdCertificado");
+  const inputEmpleadoId = document.getElementById("EmpleadoIdCertificado");
 
-    if(empleadoId === ""){
-      inputEmpleado.classList.add("is-invalid");
-      errorEmpleadoId.style.display = "block";
-      errorEmpleadoId.textContent = "Seleccione un empleado.";
-      esValid = false;
-    } else {
-      inputEmpleado.classList.add("is-valid");
-      errorEmpleadoId.style.display = "none";
-      errorEmpleadoId.textContent = "";
-    }
-    return esValid;
-});
-
-function LimpiarModalCertificado() {
-    //Limpiar el formulario
-    document.getElementById("IdCertificado").value = "";
-    const inputEmpleado = document.getElementById("EmpleadoIdCertificado");
-    inputEmpleado.value = "";
-    const inputFechaCertificado = document.getElementById("FechaCertificado");
-    inputFechaCertificado.value = "";
-    const inputDocumento = document.getElementById("DocumentoDescargable");
-    inputDocumento.value = "";
-
-    //Limpia las validaciones
-    inputEmpleado.classList.remove("is-invalid", "is-valid");
-    inputFechaCertificado.classList.remove("is-invalid", "is-valid");
-    inputDocumento.classList.remove("is-invalid", "is-valid");
-
-    //Limpiar los mensajes de error
-    const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
-    inputErrorEmpleado.textContent = "";
-    inputErrorEmpleado.style.display = "none";
-    const inputErrorFecha = document.getElementById("errorFechaCertificado");
-    inputErrorFecha.textContent = "";
-    inputErrorFecha.style.display = "none";
-    const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
-    inputErrorDocumento.textContent = "";
-    inputErrorDocumento.style.display = "none";
+  errorEmpleadoId.textContent = mensaje;
+  errorEmpleadoId.style.display = "block";
+  inputEmpleadoId.classList.add("is-invalid");
 }
+
 async function CrearCertificado() {
   if(!ValidarFormularioCertificado()){
     return;
@@ -1086,7 +1094,6 @@ async function CrearCertificado() {
     const certificado = {
       cursoId: cursoIdSeleccionado,
       empleadoId: parseInt(document.getElementById("EmpleadoIdCertificado").value),
-      fechaEmision: document.getElementById("FechaCertificado").value,
       documentoDescargable: document.getElementById("DocumentoDescargable").value || "",
     };
     console.log(certificado);
@@ -1097,7 +1104,7 @@ async function CrearCertificado() {
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
-        ValidarCriterioDeEvaluacionExistente(response.mensaje);
+        ValidarCertificadoExistente(response.mensaje);
       } else {
         ObtenerCertificados(cursoIdSeleccionado); 
         cerrarPanelCertificados();

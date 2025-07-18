@@ -53,7 +53,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 return BadRequest();
             }
+            var empleadoExistente = await _context.Certificado
+            .Where(c => c.EmpleadoId == certificado.EmpleadoId)
+            .AnyAsync();
 
+            if (empleadoExistente)
+            {
+                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
+            }
+
+            certificado.FechaEmision = DateTime.Now;
             _context.Entry(certificado).State = EntityState.Modified;
 
             try
@@ -80,6 +89,17 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Certificado>> PostCertificado(Certificado certificado)
         {
+
+            //No se puede registrar dos veces el mismo empleado 
+            var empleadoExistente = await _context.Certificado
+            .Where(c => c.EmpleadoId == certificado.EmpleadoId && c.CursoId == certificado.CursoId)
+            .FirstOrDefaultAsync();
+
+            if (empleadoExistente != null)
+            {
+                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
+            }
+            certificado.FechaEmision = DateTime.Now;
             _context.Certificado.Add(certificado);
             await _context.SaveChangesAsync();
 
