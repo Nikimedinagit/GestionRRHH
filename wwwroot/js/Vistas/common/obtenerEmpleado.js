@@ -11,7 +11,7 @@ async function ObtenerEmpleadosDropDown() {
 
 
 function MostrarEmpleadosDropDown(data) {
-    const $dropdown = $('#EmpleadoId');
+    const $dropdown = $('#EmpleadoId, #EmpleadoIdCertificado');
      console.log("Select encontrado:", $dropdown.length); 
     $dropdown.empty();  
 

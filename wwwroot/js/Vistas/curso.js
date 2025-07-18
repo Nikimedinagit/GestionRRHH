@@ -75,7 +75,7 @@ function cerrarPanelCertificados() {
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.remove("visible");
 
-  // LimpiarModalAsistencias();
+  LimpiarModalCertificado();
 }
 
 
@@ -233,15 +233,17 @@ function MostrarCursos(data) {
             <div class="table-responsive">
               <table class="table table-bordered">
                 <colgroup>
-                  <col style="width: 40%" />
-                  <col style="width: 30%" />
-                  <col style="width: 30%" />
+                  <col style="width: 42%" />
+                  <col style="width: 14%" />
+                  <col style="width: 34%" />
+                  <col style="width: 10%" />
                 </colgroup>
                 <thead>
                   <tr>
                     <th class="text-start header-table">Empleado</th>
-                    <th class="text-start header-table">Fecha</th>
-                    <th class="text-start header-table">Documento Descargable</th>
+                    <th class="text-center header-table">Fecha de Emisión</th>
+                    <th class="text-center header-table">Documento Descargable</th>
+                    <th class="text-center header-table">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="tabla-certificados-body" data-curso-id="${element.id}">
@@ -907,7 +909,7 @@ async function ObtenerCertificados(cursoId) {
     .then(data => {
       // Filtrar cursos por certificados
       const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
-      MostrarAsistencias(cursoId, cursosFiltrados);
+      MostrarCertificados(cursoId, cursosFiltrados);
     })
     .catch(error => console.log("Error al obtener certificados", error));
 }
@@ -925,6 +927,7 @@ function MostrarCertificados(cursoId, data) {
     return;
   }
 
+  const baseUrlArchivos = "/uploads/documentos/";
   $.each(data, function (index, item) {
     let documentoUrl = "";
     if (item.documentoDescargable) {
@@ -934,21 +937,27 @@ function MostrarCertificados(cursoId, data) {
     }
 
     const documentoHtml = item.documentoDescargable
-      ? `
-      <p class="text-muted d-flex align-items-center gap-2 mb-2">
-        <a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
-          <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
-          <span>Descargar</span>
-        </a>
-      </p>
-      `
-      : "";
+    ? `
+    <p class="d-flex justify-content-center text-muted d-flex align-items-center gap-2 mb-2">
+      <a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
+        <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+        <span>Descargar</span>
+      </a>
+    </p>
+    `
+    : "";
 
     tablaBody.append(`
       <tr>
         <td class='align-middle'>${item.empleado.nombreCompleto}</td>
-        <td class='align-middle'>${documentoHtml}</td>
-        <td class='align-middle'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
+        <td class='align-middle text-center'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
+        <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
+        <td class='d-flex justify-content-center align-items-center'>
+          <button class='btn-eliminar' style='background: none; border: none;' 
+            onclick='EliminarCertificado(${item.id})' data-tippy-content='Eliminar'>
+            <i class='bi bi-trash3 icono-elimina-detalle'></i>
+          </button>
+        </td>
       </tr>
     `);
   });
@@ -970,115 +979,117 @@ function BuscarCertificadoId() {
   }
 }
 
-// function ValidarFormularioAsistencia() {
-//     const selectEmpleadoId = document.getElementById("EmpleadoId");
-//     const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
+function ValidarFormularioCertificado() {
+    const selectEmpleadoId = document.getElementById("EmpleadoIdCertificado");
+    const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
 
-//     const inputFecha = document.getElementById("FechaAsistencia");
-//     const inputErrorFecha = document.getElementById("errorFechaAsistencia");
+    const inputFecha = document.getElementById("FechaCertificado");
+    const inputErrorFecha = document.getElementById("errorFechaCertificado");
 
-//     const inputResultado = document.getElementById("ResultadoAsistencia");
-//     const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+    const inputDocumento = document.getElementById("DocumentoDescargable");
+    const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
 
-//     const empleadoId = selectEmpleadoId.value;
-//     const fecha = inputFecha.value;;
-//     const resultado = inputResultado.value;
+    const empleadoId = selectEmpleadoId.value;
+    const fecha = inputFecha.value;;
+    const documento = inputDocumento.value;
 
-//     //Limpiar errores previos
-//     selectErrorEmpleadoId.style.display = "none";
-//     selectErrorEmpleadoId.textContent = "";
-//     selectEmpleadoId.classList.remove("is-invalid", "is-valid");
-//     inputErrorFecha.style.display = "none";
-//     inputErrorFecha.textContent = "";
-//     inputFecha.classList.remove("is-invalid", "is-valid");
-//     inputErrorResultado.style.display = "none";
-//     inputErrorResultado.textContent = "";
-//     inputResultado.classList.remove("is-invalid", "is-valid");
+    //Limpiar errores previos
+    selectErrorEmpleadoId.style.display = "none";
+    selectErrorEmpleadoId.textContent = "";
+    selectEmpleadoId.classList.remove("is-invalid", "is-valid");
+    inputErrorFecha.style.display = "none";
+    inputErrorFecha.textContent = "";
+    inputFecha.classList.remove("is-invalid", "is-valid");
+    inputErrorDocumento.style.display = "none";
+    inputErrorDocumento.textContent = "";
+    inputDocumento.classList.remove("is-invalid", "is-valid");
 
-//     let esValid = true;
+    let esValid = true;
 
-//     if(empleadoId === ""){
-//         selectEmpleadoId.classList.add("is-invalid");
-//         selectErrorEmpleadoId.style.display = "block";
-//         selectErrorEmpleadoId.textContent = "Seleccione un empleado.";
-//         esValid = false;
-//     }
+    if(empleadoId === ""){
+        selectEmpleadoId.classList.add("is-invalid");
+        selectErrorEmpleadoId.style.display = "block";
+        selectErrorEmpleadoId.textContent = "Seleccione un empleado.";
+        esValid = false;
+    }
 
-//     //Validar fecha
-//     if (fecha.length === 0) {
-//       inputFecha.classList.add("is-invalid");
-//       inputErrorFecha.style.display = "block";
-//       inputErrorFecha.textContent = "Seleccione una fecha.";
-//       esValid = false;
-//     }
-//     // Validar resultado 
-//     if (resultado.length === 0) {
-//       inputResultado.classList.add("is-invalid");
-//       inputErrorResultado.style.display = "block";
-//       inputErrorResultado.textContent = "Ingrese un resultado.";
-//       esValid = false;
-//     }
-//     return esValid;
-// }
-// document.getElementById("EmpleadoId").addEventListener("input", () => {
-//     const inputEmpleado = document.getElementById("EmpleadoId");
-//     const errorEmpleadoId = document.getElementById("errorEmpleadoId");
-//     const empleadoId = inputEmpleado.value;
+    //Validar fecha
+    if (fecha.length === 0) {
+      inputFecha.classList.add("is-invalid");
+      inputErrorFecha.style.display = "block";
+      inputErrorFecha.textContent = "Seleccione una fecha.";
+      esValid = false;
+    }
+    // Validar resultado 
+    if (documento.length === 0) {
+      inputDocumento.classList.add("is-invalid");
+      inputErrorDocumento.style.display = "block";
+      inputErrorDocumento.textContent = "Seleccione un documento.";
+      esValid = false;
+    }
+    return esValid;
+}
+document.getElementById("EmpleadoIdCertificado").addEventListener("input", () => {
+    const inputEmpleado = document.getElementById("EmpleadoIdCertificado");
+    const errorEmpleadoId = document.getElementById("errorEmpleadoId");
+    const empleadoId = inputEmpleado.value;
 
-//     // Limpiar cualquier estado previo
-//     inputEmpleado.classList.remove("is-invalid", "is-valid");
+    // Limpiar cualquier estado previo
+    inputEmpleado.classList.remove("is-invalid", "is-valid");
 
-//     let esValid = true;
+    let esValid = true;
 
-//     if(empleadoId === ""){
-//       inputEmpleado.classList.add("is-invalid");
-//       errorEmpleadoId.style.display = "block";
-//       errorEmpleadoId.textContent = "Seleccione un empleado.";
-//       esValid = false;
-//     } else {
-//       inputEmpleado.classList.add("is-valid");
-//       errorEmpleadoId.style.display = "none";
-//       errorEmpleadoId.textContent = "";
-//     }
-//     return esValid;
-// });
+    if(empleadoId === ""){
+      inputEmpleado.classList.add("is-invalid");
+      errorEmpleadoId.style.display = "block";
+      errorEmpleadoId.textContent = "Seleccione un empleado.";
+      esValid = false;
+    } else {
+      inputEmpleado.classList.add("is-valid");
+      errorEmpleadoId.style.display = "none";
+      errorEmpleadoId.textContent = "";
+    }
+    return esValid;
+});
 
-// function LimpiarModalAsistencias() {
-//     //Limpiar el formulario
-//     document.getElementById("IdAsistencia").value = "";
-//     const inputEmpleado = document.getElementById("EmpleadoId");
-//     inputEmpleado.value = "";
-//     const inputFechaAsistencia = document.getElementById("FechaAsistencia");
-//     inputFechaAsistencia.value = "";
-//     const inputResultadoAsistencia = document.getElementById("ResultadoAsistencia");
-//     inputResultadoAsistencia.value = "";
+function LimpiarModalCertificado() {
+    //Limpiar el formulario
+    document.getElementById("IdCertificado").value = "";
+    const inputEmpleado = document.getElementById("EmpleadoIdCertificado");
+    inputEmpleado.value = "";
+    const inputFechaCertificado = document.getElementById("FechaCertificado");
+    inputFechaCertificado.value = "";
+    const inputDocumento = document.getElementById("DocumentoDescargable");
+    inputDocumento.value = "";
 
-//     //Limpia las validaciones
-//     inputEmpleado.classList.remove("is-invalid", "is-valid");
-//     inputFechaAsistencia.classList.remove("is-invalid", "is-valid");
-//     inputResultadoAsistencia.classList.remove("is-invalid", "is-valid");
+    //Limpia las validaciones
+    inputEmpleado.classList.remove("is-invalid", "is-valid");
+    inputFechaCertificado.classList.remove("is-invalid", "is-valid");
+    inputDocumento.classList.remove("is-invalid", "is-valid");
 
-//     //Limpiar los mensajes de error
-//     const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
-//     inputErrorEmpleado.textContent = "";
-//     inputErrorEmpleado.style.display = "none";
-//     const inputErrorFecha = document.getElementById("errorFechaAsistencia");
-//     inputErrorFecha.textContent = "";
-//     inputErrorFecha.style.display = "none";
-//     const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
-//     inputErrorResultado.textContent = "";
-//     inputErrorResultado.style.display = "none";
-// }
+    //Limpiar los mensajes de error
+    const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
+    inputErrorEmpleado.textContent = "";
+    inputErrorEmpleado.style.display = "none";
+    const inputErrorFecha = document.getElementById("errorFechaCertificado");
+    inputErrorFecha.textContent = "";
+    inputErrorFecha.style.display = "none";
+    const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
+    inputErrorDocumento.textContent = "";
+    inputErrorDocumento.style.display = "none";
+}
 async function CrearCertificado() {
-  // if(!ValidarFormularioAsistencia()){
-  //   return;
-  // }
+  if(!ValidarFormularioCertificado()){
+    return;
+  }
 
     const certificado = {
-      empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+      cursoId: cursoIdSeleccionado,
+      empleadoId: parseInt(document.getElementById("EmpleadoIdCertificado").value),
       fechaEmision: document.getElementById("FechaCertificado").value,
       documentoDescargable: document.getElementById("DocumentoDescargable").value || "",
     };
+    console.log(certificado);
     const res = await authFetch("Certificados", {
       method: 'POST',
       body: JSON.stringify(certificado),
@@ -1104,5 +1115,65 @@ async function CrearCertificado() {
         });
       }
     });
+}
+
+function EliminarCertificado(id) {
+    Swal.fire({
+        title: "¿Confirmás que querés eliminar este certificado?",
+        text: "Esta acción es irreversible y eliminará definitivamente el registro. ¿Querés continuar?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        focusCancel: true,
+        customClass: {
+          popup: "swal2-border-radius",
+          confirmButton: "swal2-btn-eliminar",
+          cancelButton: "swal2-btn-cancelar",
+          title: "swal2-title-custom",
+          content: "swal2-content-custom",
+        },
+        background: "#fff",
+        color: "#22223b",
+      })
+      .then((result) => {
+      if(result.isConfirmed) {
+            EliminarSiCertificado(id);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire({
+                title: "Acción cancelada",
+                text: "El certificado sigue registrado.",
+                icon: "info",
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: "bottom-end",
+            })
+        }
+      })
+}
+
+async function EliminarSiCertificado(id) {
+    const res = await authFetch(`Certificados/${id}`, {
+      method: 'DELETE',
+    })
+      if (!res.ok) {
+        throw new Error("No se pudo eliminar el certificado");
+      }
+    await ObtenerCertificados(cursoIdSeleccionado);
+
+        Swal.fire({
+            toast: true,
+            position: "bottom-end",
+            icon: "success",
+            title: "¡Certificado Eliminado!",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: "#f0f0f0",
+            color: "#000",
+        })
+
 }
 ObtenerCertificados(cursoIdSeleccionado);
