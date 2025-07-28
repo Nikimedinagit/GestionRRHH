@@ -364,16 +364,22 @@ async function CrearLocalidad() {
         ObtenerLocalidades();
         // Mostrar alerta de éxito
         Swal.fire({
-          toast: true,
-          position: "bottom-end",
-          icon: "success",
-          title: "¡Localidad Creada!",
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
-        });
+        title: "¡Localidad Creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7", 
+        color: "#1c3d26", 
+        icon: "success",
+        iconColor: "#28a746d8", 
+        customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+        },
+      });
       }
     });
 }
@@ -401,16 +407,22 @@ async function EditarLocalidad(id) {
         ObtenerLocalidades();
         // Mostrar alerta de éxito
         Swal.fire({
-          toast: true,
-          position: "bottom-end",
-          icon: "success",
-          title: "¡Localidad Modificada!",
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
-        });
+        title: "¡Localidad Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7", 
+        color: "#1c3d26", 
+        icon: "success",
+        iconColor: "#28a746d8", 
+        customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+        },
+      });
       }
     });
 }
@@ -418,39 +430,46 @@ async function EditarLocalidad(id) {
 // Funcion para activar o desactivar una localidad
 function EliminarLocalidadId(id, eliminado) {
   Swal.fire({
-    title: eliminado ? "¿Reactivar localidad?" : "¿Desactivar localidad?",
-    text: eliminado
-      ? "Se reactivará esta localidad en el sistema."
-      : "Esta localidad se desactivará y no estará disponible.",
-    icon: "warning",
+    title: eliminado
+      ? "¿Deseás reactivar esta localidad?"
+      : "¿Deseás desactivar esta localidad?",
+    html: eliminado
+      ? "<p class='swal2-content-center'>Esta acción volverá a habilitar la localidad en el sistema.</p>"
+      : "<p class='swal2-content-center'>La localidad se desactivará y dejará de estar disponible.</p>",
     showCancelButton: true,
-    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
     cancelButtonText: "Cancelar",
-    reverseButtons: true,
     focusCancel: true,
     customClass: {
-      popup: "swal2-border-radius",
-      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      popup: "swal2-border-radius swal2-custom-popup",
+      confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
       cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
-      content: "swal2-content-custom",
+      htmlContainer: "swal2-content-custom",
     },
-    background: "#fff",
-    color: "#22223b",
+    background: "#ffffff",
+    color: "#1a1a1a",
   }).then((result) => {
     if (result.isConfirmed) {
       EliminarSiLocalidad(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
-        title: "Acción cancelada",
-        text: eliminado
-          ? "La localidad sigue desactivada."
-          : "La localidad sigue activa.",
-        icon: "info",
-        timer: 2000,
-        showConfirmButton: false,
+        title: "Acción Cancelada",
+        text: eliminado ? "Continuará desactivada." : "Continuará activada.",
         toast: true,
         position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
       });
     }
   });
@@ -468,18 +487,22 @@ async function EliminarSiLocalidad(id) {
     })
     .then((data) => {
       ObtenerLocalidades();
-
-      // Mostrar el mensaje que vino del backend
       Swal.fire({
+        title: "¡" + data.mensaje + "!",
         toast: true,
         position: "bottom-end",
-        icon: "success",
-        title: "¡" + data.mensaje + "!",
         showConfirmButton: false,
-        timer: 2000,
+        timer: 2200,
         timerProgressBar: true,
-        background: "#f0f0f0",
-        color: "#000",
+        background: "#f4fff7", 
+        color: "#1c3d26", 
+        icon: "success",
+        iconColor: "#28a746d8", 
+        customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+        },
       });
     })
     .catch((error) => {

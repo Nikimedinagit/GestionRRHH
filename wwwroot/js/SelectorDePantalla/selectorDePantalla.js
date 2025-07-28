@@ -1,6 +1,8 @@
+
 document.addEventListener("DOMContentLoaded", () => {
-  
-  // Cargar la vista correspondiente al hash actual (o por defecto)
+  if (!window.location.hash) {
+    window.location.hash = 'inicio';
+  }
   CargarVistaPorHash();
 });
 
@@ -28,31 +30,24 @@ function CargarVista(view) {
         }
         document.body.appendChild(nuevoScript);
       });
+
+      ActualizarLinkActivo(); // actualizar menú luego de cargar vista
     })
     .catch(err => {
       console.error(err);
       document.getElementById('app').innerHTML = `<p>Error cargando la vista: ${view}</p>`;
+      ActualizarLinkActivo(); // también actualizar menú en error para que no quede desactualizado
     });
 }
 
 function CargarVistaPorHash() {
-    let vista = window.location.hash.replace('#', '') || 'inicio';
-
-    // Si el hash cambia, cargar la vista correspondiente
-    if (!window.location.hash) {
-        window.location.hash = 'inicio';
-    }
-
-    CargarVista(vista);
+  let vista = window.location.hash.replace('#', '') || 'inicio';
+  CargarVista(vista);
 }
-
-
-
 
 function ActualizarLinkActivo() {
   const vistaActual = window.location.hash.replace('#', '') || 'inicio';
 
-  // Quitar clases active
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     const hrefVista = link.getAttribute('href').replace('#', '');
@@ -66,6 +61,4 @@ function ActualizarLinkActivo() {
   });
 }
 
-// Eventos para cargar la vista y actualizar menú activo
 window.addEventListener('hashchange', CargarVistaPorHash);
-window.addEventListener('load', CargarVistaPorHash);
