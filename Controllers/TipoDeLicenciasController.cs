@@ -9,8 +9,8 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
-{   
-    [Authorize (Roles = "ADMINISTRADOR")]
+{
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class TipoDeLicenciasController : ControllerBase
@@ -29,6 +29,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             return await _context.TipoDeLicencia
             .OrderBy(t => t.Nombre)
             .ToListAsync();
+        }
+
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> GetTipoDeLicenciasActivos()
+        {
+            var tipoDeLicenciasActivos = await _context.TipoDeLicencia
+                .Where(t => !t.Eliminado)
+                .OrderBy(t => t.Nombre)
+                .ToListAsync();
+            return tipoDeLicenciasActivos;
         }
 
         // GET: api/TipoDeLicencias/5
@@ -59,12 +69,12 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         // PUT: api/TipoDeLicencias/5
-                // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTipoDeLicencia(int id, TipoDeLicencia tipoDeLicencia)
         {
 
-            
+
 
             if (id != tipoDeLicencia.Id)
             {
@@ -129,16 +139,29 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoDeLicencia(int id)
         {
-            var tipoDeLicencia = await _context.TipoDeLicencia.FindAsync(id);
+            var tipoDeLicencia = await _context.TipoDeLicencia
+            .Include(t => t.Licencias)
+            .FirstOrDefaultAsync(t => t.Id == id);
             if (tipoDeLicencia == null)
             {
                 return NotFound();
             }
 
+            // Si está activo y tiene licencias asociadas, NO permitir desactivarlo, pero si estan expiradas si pueden borrarse
+            if (!tipoDeLicencia.Eliminado &&
+                tipoDeLicencia.Licencias != null &&
+                tipoDeLicencia.Licencias.Any(l =>
+                (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                l.FechaFin > DateTime.Now))
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar el tipo de licencia porque tiene licencias activas o pendientes vigentes asociadas." });
+            }
+
+
             tipoDeLicencia.Eliminado = !tipoDeLicencia.Eliminado;
             var mensaje = tipoDeLicencia.Eliminado ?
-            "Tipo de Licencia Desactivada" :
-            "Tipo de Licencia Activada";
+            "Licencia Desactivada" :
+            "Licencia Activada";
 
             _context.TipoDeLicencia.Update(tipoDeLicencia);
             await _context.SaveChangesAsync();

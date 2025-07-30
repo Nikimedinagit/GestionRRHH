@@ -1,13 +1,13 @@
 async function ObtenerTiposDeLicenciasDropDown() {
-    const res = await authFetch("TipoDeLicencias", {
+    const res = await authFetch("TipoDeLicencias/Activos", {
         method: "GET",
       })
         .then(response => response.json()) 
         .then(data => {
             MostrarTiposDeLicenciasDropDown(data) 
         })
-        .catch(error => console.log("No se puede acceder al servicio.", error))  // En caso que falle, muestra el error por consola.
-}
+        .catch(error => console.log("No se puede acceder al servicio.", error))  
+    }
 
 
 function MostrarTiposDeLicenciasDropDown(data) {
@@ -16,9 +16,6 @@ function MostrarTiposDeLicenciasDropDown(data) {
 
     // Agrega la opción por defecto
     $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
-
-    // Filtra solo los no eliminados
-    data = data.filter(item => item.eliminado === false);
 
     // Agrega los tipos de licencia activos
     $.each(data, function (index, item) {

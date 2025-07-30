@@ -1,4 +1,3 @@
-
 //INICIO PANEL FORMUALRIO//
 //Función para abrir el formulario lateral
 function abrirPanelProvincia() {
@@ -55,8 +54,6 @@ function AbrilPanelFiltros(idPanel) {
 }
 //FIN PANEL FILTROS//
 
-
-
 //INICIO PANEL GENERAR//
 //Funcion para abrir panel de genera
 function AbrilPanelGenerar(idPanel) {
@@ -100,34 +97,31 @@ $(document).ready(function () {
 });
 //FIN ONCHANGE DE FILTROS//
 
-
-
-
 // Funcion Para Obtener las Provincias
 async function ObtenerProvincias() {
-
   let estado = document.getElementById("EstadoIdBuscar").value;
   let filtro = {
     eliminado: estado !== "" ? parseInt(estado) : null,
   };
 
-
-const res = await authFetch("Provincias/Filtrar", {
-        method: "POST",
-        body: JSON.stringify(filtro),
-    })
-    .then(response => response.json())
+  const res = await authFetch("Provincias/Filtrar", {
+    method: "POST",
+    body: JSON.stringify(filtro),
+  })
+    .then((response) => response.json())
     .then((data) => {
       MostrarProvincias(data);
       LimpiarModalProvincia();
       cerrarPanelProvincia();
     })
-    .catch((error) => console.log("No se pudo obtener las provincias", error));
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
-    
+
 // Funcion Para Mostrar Las Provincias
 function MostrarProvincias(data) {
-    window.listaProvincias = data;
+  window.listaProvincias = data;
 
   $("#tablaProvinciasBody").empty();
 
@@ -174,7 +168,8 @@ function MostrarProvincias(data) {
         "<button class='btn-editar' data-action='edit' style='" +
         visibleBotones +
         " background: none; border: none;' onclick='MostrarModalEditar(" +
-        item.id +  ")' data-tippy-content='Editar'>" +
+        item.id +
+        ")' data-tippy-content='Editar'>" +
         "<i class='bi bi-pencil-square icono-editar'></i>" +
         "</button>" +
         "</td>" +
@@ -308,28 +303,35 @@ async function CrearProvincia() {
         MostrarErrorProvinciaExistente(response.mensaje);
       } else {
         cerrarPanelProvincia();
-        ObtenerProvincias(); 
-        // Mostrar alerta de éxito
+        ObtenerProvincias();
         Swal.fire({
+          title: "¡Provincia Creada!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Provincia Creada!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
-    });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+    }); 
 }
 
 // Funcion para editar una provincia
 async function EditarProvincia(id) {
-
   if (!ValidarFormularioProvincia()) return;
-  
+
   let provincia = {
     id: document.getElementById("IdProvincia").value,
     nombre: document.getElementById("NombreProvincia").value.trim(),
@@ -343,62 +345,76 @@ async function EditarProvincia(id) {
       if (response.mensaje) {
         MostrarErrorProvinciaExistente(response.mensaje);
       } else {
-        ObtenerProvincias(); 
+        ObtenerProvincias();
         // Mostrar alerta de éxito
         Swal.fire({
+          title: "¡Provincia Modificada!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Provincia Modificada!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
-    });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+    }); 
 }
-
-
 
 // Función para eliminar una provincia
 function EliminarProvinciaId(id, eliminado) {
   Swal.fire({
-    title: eliminado ? "¿Reactivar provincia?" : "¿Desactivar provincia?",
-    text: eliminado
-      ? "Se reactivará esta provincia en el sistema."
-      : "Esta provincia se desactivará y no estará disponible.",
-    icon: "warning",
+    title: eliminado
+      ? "¿Deseás reactivar esta provincia?"
+      : "¿Deseás desactivar esta provincia?",
+    html: eliminado
+      ? "<p class='swal2-content-center'>Esta acción volverá a habilitar la provincia en el sistema.</p>"
+      : "<p class='swal2-content-center'>La provincia se desactivará y dejará de estar disponible.</p>",
     showCancelButton: true,
-    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
     cancelButtonText: "Cancelar",
-    reverseButtons: true,
     focusCancel: true,
     customClass: {
-      popup: "swal2-border-radius",
-      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      popup: "swal2-border-radius swal2-custom-popup",
+      confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
       cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
-      content: "swal2-content-custom",
+      htmlContainer: "swal2-content-custom",
     },
-    background: "#fff",
-    color: "#22223b",
+    background: "#ffffff",
+    color: "#1a1a1a",
   })
   .then((result) => {
     if (result.isConfirmed) {
       EliminarSiProvincia(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
-        title: "Acción cancelada",
-        text: eliminado
-          ? "La provincia sigue desactivada."
-          : "La provincia sigue activa.",
-        icon: "info",
-        timer: 2000,
-        showConfirmButton: false,
+        title: "Acción Cancelada",
+        text: eliminado ? "Continuará desactivada." : "Continuará activada.",
         toast: true,
         position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
       });
     }
   });
@@ -406,44 +422,80 @@ function EliminarProvinciaId(id, eliminado) {
 
 // Función para eliminar una provincia
 async function EliminarSiProvincia(id) {
-  const res = await authFetch(`Provincias/${id}`, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("No se pudo eliminar/reactivar la provincia");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      ObtenerProvincias();
+  try {
+    const response = await authFetch(`Provincias/${id}`, {
+      method: "DELETE",
+    });
 
-      // Mostrar el mensaje que vino del backend
+    const data = await response.json();
+
+    if (response.ok) {
       Swal.fire({
+        title: "¡" + data.mensaje + "!",
         toast: true,
         position: "bottom-end",
-        icon: "success",
-        title: "¡" + data.mensaje + "!",
         showConfirmButton: false,
-        timer: 2000,
+        timer: 2200,
         timerProgressBar: true,
-        background: "#f0f0f0",
-        color: "#000",
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
       });
-    })
-    .catch((error) => {
-      console.error(error);
-      Swal.fire("Error", "No se pudo actualizar la provincia.", "error");
-    });
+      ObtenerProvincias();
+    } else {
+      // Error controlado desde el backend
+      Swal.fire({
+        title: "Acción no permitida",
+        html: `
+          <div class="text-center">
+            <p>${data.mensaje || "No se puede realizar esta acción."}</p>
+            <p>Eliminá las localidades antes de intentar desactivarlo.</p>
+          </div>
+        `,
+        confirmButtonText: "Entendido",
+        customClass: {
+          popup: "shadow rounded-3 p-3",
+          confirmButton: "btn btn-danger",
+          title: "fs-5 text-dark mb-2",
+          htmlContainer: "text-muted fs-6",
+        },
+        buttonsStyling: false,
+      });
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
+
+
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
 }
 
 
 
-
-
-
-
-window.GenerarExcel = async function() {
+window.GenerarExcel = async function () {
   const nombreSistema = "WorkSync - Listado de Provincias";
   const fecha = new Date().toLocaleString();
 
@@ -456,7 +508,7 @@ window.GenerarExcel = async function() {
   const filas = tabla?.querySelectorAll("tr") || [];
 
   const datos = [];
-  filas.forEach(fila => {
+  filas.forEach((fila) => {
     if (fila.offsetParent !== null) {
       const celdas = fila.querySelectorAll("td");
       if (celdas.length >= 2) {
@@ -472,59 +524,59 @@ window.GenerarExcel = async function() {
 
   // Estilos
   const estiloTitulo = {
-    font: { size: 18, bold: true, color: { argb: 'FF0D47A1' } }, // azul oscuro
-    alignment: { horizontal: 'center', vertical: 'middle' },
+    font: { size: 18, bold: true, color: { argb: "FF0D47A1" } }, // azul oscuro
+    alignment: { horizontal: "center", vertical: "middle" },
     border: {
-      bottom: { style: 'thick', color: { argb: 'FF0D47A1' } }
-    }
+      bottom: { style: "thick", color: { argb: "FF0D47A1" } },
+    },
   };
 
   const estiloSubtitulo = {
-    font: { italic: true, color: { argb: 'FF555555' } },
-    alignment: { horizontal: 'left' }
+    font: { italic: true, color: { argb: "FF555555" } },
+    alignment: { horizontal: "left" },
   };
 
   const estiloEncabezado = {
-    font: { bold: true, color: { argb: 'FF000000' } },
-    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD3D3D3' } }, // gris claro
+    font: { bold: true, color: { argb: "FF000000" } },
+    fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FFD3D3D3" } }, // gris claro
     border: {
-      top: { style: 'thin', color: { argb: 'FF000000' } },
-      bottom: { style: 'thin', color: { argb: 'FF000000' } },
-      left: { style: 'thin', color: { argb: 'FF000000' } },
-      right: { style: 'thin', color: { argb: 'FF000000' } }
+      top: { style: "thin", color: { argb: "FF000000" } },
+      bottom: { style: "thin", color: { argb: "FF000000" } },
+      left: { style: "thin", color: { argb: "FF000000" } },
+      right: { style: "thin", color: { argb: "FF000000" } },
     },
-    alignment: { horizontal: 'center' }
+    alignment: { horizontal: "center" },
   };
 
   const estiloCeldaNormal = {
     border: {
-      top: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-      bottom: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-      left: { style: 'thin', color: { argb: 'FFCCCCCC' } },
-      right: { style: 'thin', color: { argb: 'FFCCCCCC' } }
+      top: { style: "thin", color: { argb: "FFCCCCCC" } },
+      bottom: { style: "thin", color: { argb: "FFCCCCCC" } },
+      left: { style: "thin", color: { argb: "FFCCCCCC" } },
+      right: { style: "thin", color: { argb: "FFCCCCCC" } },
     },
-    alignment: { vertical: 'middle' }
+    alignment: { vertical: "middle" },
   };
 
   const estiloCeldaActivo = {
     ...estiloCeldaNormal,
-    alignment: { horizontal: 'right', vertical: 'middle' }
+    alignment: { horizontal: "right", vertical: "middle" },
   };
 
   // Título
-  hoja.mergeCells('A1:B1');
-  hoja.getCell('A1').value = nombreSistema;
-  hoja.getCell('A1').style = estiloTitulo;
+  hoja.mergeCells("A1:B1");
+  hoja.getCell("A1").value = nombreSistema;
+  hoja.getCell("A1").style = estiloTitulo;
   hoja.getRow(1).height = 28;
 
   // Fecha y filtro (filas 2 y 3)
-  hoja.getCell('A2').value = "Fecha de exportación:";
-  hoja.getCell('A2').style = estiloSubtitulo;
-  hoja.getCell('B2').value = fecha;
+  hoja.getCell("A2").value = "Fecha de exportación:";
+  hoja.getCell("A2").style = estiloSubtitulo;
+  hoja.getCell("B2").value = fecha;
 
-  hoja.getCell('A3').value = "Filtro aplicado:";
-  hoja.getCell('A3').style = estiloSubtitulo;
-  hoja.getCell('B3').value = filtroTexto;
+  hoja.getCell("A3").value = "Filtro aplicado:";
+  hoja.getCell("A3").style = estiloSubtitulo;
+  hoja.getCell("B3").value = filtroTexto;
 
   hoja.getRow(2).height = 18;
   hoja.getRow(3).height = 18;
@@ -534,7 +586,7 @@ window.GenerarExcel = async function() {
 
   // Encabezados (fila 5)
   const filaEncabezado = hoja.addRow(["Activo", "Provincia"]);
-  filaEncabezado.eachCell(cell => {
+  filaEncabezado.eachCell((cell) => {
     Object.assign(cell.style, estiloEncabezado);
   });
   hoja.getRow(5).height = 22;
@@ -549,39 +601,36 @@ window.GenerarExcel = async function() {
 
     // Zebra striping
     if (i % 2 === 0) {
-      fila.eachCell(cell => {
+      fila.eachCell((cell) => {
         cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFF5F5F5' }
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFF5F5F5" },
         };
       });
     }
   });
 
   // Ancho columnas: Activo más angosta, Provincia más ancha
-  hoja.columns = [
-    { width: 12 },
-    { width: 40 }
-  ];
+  hoja.columns = [{ width: 12 }, { width: 40 }];
 
   // Descargar archivo
   const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "Provincias_WorkSync.xlsx";
   link.click();
 };
 
-
-
 function GenerarGrafico() {
   const data = window.listaProvincias || [];
   let activas = 0;
   let inactivas = 0;
 
-  data.forEach(item => {
+  data.forEach((item) => {
     if (item.eliminado) inactivas++;
     else activas++;
   });
@@ -597,77 +646,74 @@ function GenerarGrafico() {
     window.miGraficoProvincias.destroy();
   }
 
-  const ctx = document.getElementById('graficoProvincias').getContext('2d');
+  const ctx = document.getElementById("graficoProvincias").getContext("2d");
 
   window.miGraficoProvincias = new Chart(ctx, {
     data: {
-      labels: ['Activas', 'Inactivas'],
+      labels: ["Activas", "Inactivas"],
       datasets: [
         {
-          type: 'bar',
-          label: 'Cantidad',
+          type: "bar",
+          label: "Cantidad",
           data: [activas, inactivas],
-          backgroundColor: ['#28a745', '#dc3545'],
+          backgroundColor: ["#28a745", "#dc3545"],
           borderRadius: 6,
           borderSkipped: false,
-          barPercentage: 0.6
+          barPercentage: 0.6,
         },
         {
-          type: 'line',
-          label: 'Porcentaje %',
+          type: "line",
+          label: "Porcentaje %",
           data: [porcentajeActivas, porcentajeInactivas],
-          borderColor: '#3697E1',
-          backgroundColor: 'rgba(54, 151, 225, 0.2)',
+          borderColor: "#3697E1",
+          backgroundColor: "rgba(54, 151, 225, 0.2)",
           fill: true,
           tension: 0.4,
-          yAxisID: 'y1',
+          yAxisID: "y1",
           pointRadius: 6,
           pointHoverRadius: 8,
           borderWidth: 3,
-          hoverBorderWidth: 4
-        }
-      ]
+          hoverBorderWidth: 4,
+        },
+      ],
     },
     options: {
       responsive: true,
       scales: {
         y: {
           beginAtZero: true,
-          position: 'left',
-          title: { display: true, text: 'Cantidad' }
+          position: "left",
+          title: { display: true, text: "Cantidad" },
         },
         y1: {
           beginAtZero: true,
-          position: 'right',
+          position: "right",
           max: 100,
           ticks: {
-            callback: val => val + '%'
+            callback: (val) => val + "%",
           },
           grid: {
-            drawOnChartArea: false
+            drawOnChartArea: false,
           },
-          title: { display: true, text: 'Porcentaje' }
-        }
+          title: { display: true, text: "Porcentaje" },
+        },
       },
       plugins: {
-        legend: { position: 'bottom' },
+        legend: { position: "bottom" },
         tooltip: {
           callbacks: {
             label: function (context) {
-              if (context.dataset.type === 'bar') {
+              if (context.dataset.type === "bar") {
                 return `Cantidad: ${context.parsed.y}`;
               } else {
                 return `Porcentaje: ${context.parsed.y}%`;
               }
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        },
+      },
+    },
   });
-  
 }
-
-
 
 ObtenerProvincias();

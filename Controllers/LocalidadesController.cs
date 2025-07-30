@@ -35,6 +35,16 @@ namespace API_RRHH_TESIS2025.Controllers
             return localidades;
         }
 
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidadesActivos()
+        {
+            var localidadesActivos = await _context.Localidad
+                .Where(l => !l.Eliminado)
+                .OrderBy(l => l.Nombre)
+                .ToListAsync();
+            return localidadesActivos;
+        }
+
         // GET: api/Localidades/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Localidad>> GetLocalidad(int id)
@@ -168,10 +178,20 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocalidad(int id)
         {
-            var localidad = await _context.Localidad.FindAsync(id);
+            var localidad = await _context.Localidad
+            .Include(l => l.Empleados)
+            .FirstOrDefaultAsync(l => l.Id == id);
             if (localidad == null)
             {
                 return NotFound();
+            }
+
+            // Si está activo y tiene empleados asociados, NO permitir desactivarlo
+            if (!localidad.Eliminado &&
+                localidad.Empleados != null &&
+                localidad.Empleados.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar la localidad porque tiene empleados asociados." });
             }
 
             localidad.Eliminado = !localidad.Eliminado;

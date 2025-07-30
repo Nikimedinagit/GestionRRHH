@@ -134,7 +134,9 @@ async function ObtenerLocalidades() {
       LimpiarModalLocalidad();
       CerrarPanelLocalidad();
     })
-    .catch((error) => console.log("No se pudo obtener las localidades", error));
+    .catch((error) => {
+      MostrarErrorCatch();
+      });
 }
 
 // Funcion Para Mostrar Las Localidades
@@ -309,7 +311,7 @@ function ValidarFormularioLocalidad() {
   return esValido;
 }
 
-// 🎨 Validación en vivo: cambia el color mientras el usuario escribe
+// Validación en vivo: cambia el color mientras el usuario escribe
 document.getElementById("NombreLocalidad").addEventListener("input", () => {
   const inputNombre = document.getElementById("NombreLocalidad");
   const errorNombre = document.getElementById("errorNombreLocalidad");
@@ -381,7 +383,10 @@ async function CrearLocalidad() {
         },
       });
       }
-    });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+      });
 }
 
 //Funcion para editar localidad
@@ -424,7 +429,10 @@ async function EditarLocalidad(id) {
         },
       });
       }
-    });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+      });
 }
 
 // Funcion para activar o desactivar una localidad
@@ -476,17 +484,14 @@ function EliminarLocalidadId(id, eliminado) {
 }
 
 async function EliminarSiLocalidad(id) {
-  const res = await authFetch(`Localidades/${id}`, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("No se pudo eliminar/reactivar la localidad");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      ObtenerLocalidades();
+  try {
+    const response = await authFetch(`Localidades/${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
       Swal.fire({
         title: "¡" + data.mensaje + "!",
         toast: true,
@@ -494,21 +499,60 @@ async function EliminarSiLocalidad(id) {
         showConfirmButton: false,
         timer: 2200,
         timerProgressBar: true,
-        background: "#f4fff7", 
-        color: "#1c3d26", 
+        background: "#f4fff7",
+        color: "#1c3d26",
         icon: "success",
-        iconColor: "#28a746d8", 
+        iconColor: "#28a746d8",
         customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
         },
       });
-    })
-    .catch((error) => {
-      console.error(error);
-      Swal.fire("Error", "No se pudo actualizar la localidad.", "error");
-    });
+      ObtenerLocalidades();
+    } else {
+      // Error controlado desde el backend
+      Swal.fire({
+        title: "Acción no permitida",
+        html: `
+          <div class="text-center">
+            <p>${data.mensaje || "No se puede realizar esta acción."}</p>
+            <p>Eliminá los empleados antes de intentar desactivarlo.</p>
+          </div>
+        `,
+        confirmButtonText: "Entendido",
+        customClass: {
+          popup: "shadow rounded-3 p-3",
+          confirmButton: "btn btn-danger",
+          title: "fs-5 text-dark mb-2",
+          htmlContainer: "text-muted fs-6",
+        },
+        buttonsStyling: false,
+      });
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
+
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
+}
+
 
 ComboParaFiltrarProvincias();

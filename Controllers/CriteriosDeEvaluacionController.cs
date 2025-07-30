@@ -53,7 +53,9 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             // Validar si ya existe un criterio con el mismo TipoDeCriterioId
             var existeCriterio = await _context.CriterioDeEvaluacion
-                .AnyAsync(c => c.TipoDeCriterioId == criterioDeEvaluacion.TipoDeCriterioId);
+                .AnyAsync(c => c.TipoDeCriterioId == criterioDeEvaluacion.TipoDeCriterioId
+                && c.EvaluacionId == criterioDeEvaluacion.EvaluacionId);
+
 
             if (existeCriterio)
             {
@@ -80,7 +82,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.CriterioDeEvaluacion.Remove(criterioDeEvaluacion);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(criterioDeEvaluacion);
         }
 
         private bool CriterioDeEvaluacionExists(int id)

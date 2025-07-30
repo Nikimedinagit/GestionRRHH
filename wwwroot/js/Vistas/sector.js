@@ -120,7 +120,9 @@ async function ObtenerSectores() {
         LimpiarModalSector();
         CerrarPanelSector();
       })
-    .catch(error => console.log('No se pudo obtener las sectores', error)); 
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
 
 
@@ -265,7 +267,7 @@ function ValidarFormularioSector() {
     return true;
 }
 
-// 🎨 Validación en vivo: cambia el color mientras el usuario escribe
+// Validación en vivo: cambia el color mientras el usuario escribe
 document.getElementById("NombreSector").addEventListener("input", () => {
     const inputNombre = document.getElementById("NombreSector");
     const errorNombre = document.getElementById("errorNombreSector");
@@ -322,23 +324,27 @@ async function CrearSector() {
             ObtenerSectores();
             // Mostrar alerta de éxito
         Swal.fire({
-        toast: true,
-        position: 'bottom-end',
-        icon: 'success',
-        title: '¡Sector Creado!',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-        background: '#f0f0f0',
-        color: '#000',
+          title: "¡Sector Creado!",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
         }
-
-      
-   
-
-    
     })
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 } 
 
 
@@ -364,58 +370,74 @@ function EditarSector(id) {
             ObtenerSectores();
             // Mostrar alerta de éxito
         Swal.fire({
-        toast: true,
-        position: 'bottom-end',
-        icon: 'success',
-        title: '¡Sector Modificado!',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-        background: '#f0f0f0',
-        color: '#000',
+          title: "¡Sector Modificado!",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
         }
     })
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 } 
 
 
 // Función para eliminar una sector
 function EliminarSectorId(id, eliminado) {
-  Swal.fire({
-    title: eliminado ? "¿Reactivar sector?" : "¿Desactivar sector?",
-    text: eliminado
-      ? "Se reactivará este sector en el sistema."
-      : "Este sector se desactivará y no estará disponible.",
-    icon: "warning",
+   Swal.fire({
+    title: eliminado
+      ? "¿Deseás reactivar este sector?"
+      : "¿Deseás desactivar este sector?",
+    html: eliminado
+      ? "<p class='swal2-content-center'>Esta acción volverá a habilitar el sector en el sistema.</p>"
+      : "<p class='swal2-content-center'>El sector se desactivará y dejará de estar disponible.</p>",
     showCancelButton: true,
-    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
     cancelButtonText: "Cancelar",
-    reverseButtons: true,
     focusCancel: true,
     customClass: {
-      popup: "swal2-border-radius",
-      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      popup: "swal2-border-radius swal2-custom-popup",
+      confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
       cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
-      content: "swal2-content-custom",
+      htmlContainer: "swal2-content-custom",
     },
-    background: "#fff",
-    color: "#22223b",
+    background: "#ffffff",
+    color: "#1a1a1a",
   })
   .then((result) => {
     if (result.isConfirmed) {
       EliminarSiSector(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
-        title: "Acción cancelada",
-        text: eliminado
-          ? "El sector sigue desactivado."
-          : "El sector sigue activo.",
-        icon: "info",
-        timer: 2000,
-        showConfirmButton: false,
+        title: "Acción Cancelada",
+        text: eliminado ? "Continuará desactivada." : "Continuará activada.",
         toast: true,
         position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
       });
     }
   });
@@ -423,35 +445,74 @@ function EliminarSectorId(id, eliminado) {
 
 // Función para eliminar una sector
 async function EliminarSiSector(id) {
-   const res = await authFetch(`Sector/${id}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("No se pudo eliminar/reactivar la sector");
-        }
-        return response.json();
-    })
-    .then((data) => {
-        ObtenerSectores();
-
-        // Mostrar el mensaje que vino del backend
-        Swal.fire({
-            toast: true,
-            position: 'bottom-end',
-            icon: 'success',
-            title: '¡' + data.mensaje + '!',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: '#f0f0f0',
-            color: '#000',
-        });
-    })
-    .catch(error => {
-        console.error(error);
-        Swal.fire('Error', 'No se pudo actualizar la sector.', 'error');
+   try {
+    const response = await authFetch(`Sector/${id}`, {
+      method: "DELETE",
     });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      Swal.fire({
+        title: "¡" + data.mensaje + "!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+      ObtenerSectores();
+    } else {
+      // Error controlado desde el backend
+      Swal.fire({
+        title: "Acción no permitida",
+        html: `
+          <div class="text-center">
+            <p>${data.mensaje || "No se puede realizar esta acción."}</p>
+            <p>Eliminá los puesto antes de intentar desactivarlo.</p>
+          </div>
+        `,
+        confirmButtonText: "Entendido",
+        customClass: {
+          popup: "shadow rounded-3 p-3",
+          confirmButton: "btn btn-danger",
+          title: "fs-5 text-dark mb-2",
+          htmlContainer: "text-muted fs-6",
+        },
+        buttonsStyling: false,
+      });
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
+
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
 }
 
 

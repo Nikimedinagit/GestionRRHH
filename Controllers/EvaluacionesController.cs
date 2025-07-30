@@ -29,14 +29,15 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<ActionResult<IEnumerable<Evaluacion>>> GetEvaluacion()
         {
             return await _context.Evaluacion
-            .Include(e => e.Empleado)
-            .Include(e => e.Empleado.Puesto)
-            .Include(e => e.CriterioDeEvaluacion)
-                .ThenInclude(ce => ce.TipoDeCriterio)
-            .OrderBy(e => e.Calificacion)
-            .ThenByDescending(e => e.Fecha)
-            .ToListAsync();
-            ;
+                .Include(e => e.Empleado)
+                .Include(e => e.Empleado.Puesto)
+                .Include(e => e.CriterioDeEvaluacion)
+                    .ThenInclude(ce => ce.TipoDeCriterio)
+                .Where(e => e.Empleado != null && !e.Empleado.Eliminado)
+                .OrderByDescending(e => e.Fecha)
+                .ThenBy(e => e.Calificacion)
+                .ToListAsync();
+
         }
 
         // GET: api/Evaluaciones/5
@@ -99,9 +100,14 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
 
             var listaFiltrada = await evaluacionFiltrar
-            .Include(e => e.Empleado)
-            .ThenInclude(e => e.Puesto)
-            .ToListAsync();
+                .Include(e => e.Empleado)
+                .Include(e => e.Empleado.Puesto)
+                .Include(e => e.CriterioDeEvaluacion)
+                    .ThenInclude(ce => ce.TipoDeCriterio)
+                .Where(e => e.Empleado != null && !e.Empleado.Eliminado)
+                .OrderByDescending(e => e.Fecha)
+                .ThenBy(e => e.Calificacion)
+                .ToListAsync();
 
             foreach (var evaluacion in listaFiltrada)
             {
@@ -181,22 +187,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
-        }
-
-        // DELETE: api/Evaluaciones/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvaluacion(int id)
-        {
-            var evaluacion = await _context.Evaluacion.FindAsync(id);
-            if (evaluacion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Evaluacion.Remove(evaluacion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
 

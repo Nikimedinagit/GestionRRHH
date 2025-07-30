@@ -191,9 +191,9 @@ async function ObtenerEmpleados() {
       LimpiarFormularioEmpleado();
       CerrarPanelEmpleado();
     })
-    .catch((error) => {
-      console.error("No se pudo obtener los empleados", error);
-    });
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 // Funcion para mostrar todos los empleados
@@ -1161,21 +1161,28 @@ async function CrearEmpleado() {
       ObtenerEmpleados();
       CerrarPanelEmpleado();
 
+      // Mostrar alerta de éxito
       Swal.fire({
+        title: "¡Empleado Creado!",
         toast: true,
         position: "bottom-end",
-        icon: "success",
-        title: "¡Empleado Creado!",
         showConfirmButton: false,
-        timer: 2000,
+        timer: 2200,
         timerProgressBar: true,
-        background: "#f0f0f0",
-        color: "#000",
-      });
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+        });
     })
-    .catch((error) => {
-      console.error("Error al crear empleado:", error);
-    });
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 // Función para editar empleado
@@ -1216,55 +1223,71 @@ async function EditarEmpleado(id) {
     ObtenerEmpleados();
     // Mostrar alerta de éxito
     Swal.fire({
-      toast: true,
-      position: "bottom-end",
-      icon: "success",
-      title: "¡Empleado Modificado!",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-      background: "#f0f0f0",
-      color: "#000",
-    });
-  });
+        title: "¡Empleado Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+        });
+  })
+  .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 // Función para eliminar una provincia
 function EliminarEmpleadoId(id, eliminado) {
   Swal.fire({
-    title: eliminado ? "¿Reactivar provincia?" : "¿Desactivar provincia?",
-    text: eliminado
-      ? "Se reactivará este empleado en el sistema."
-      : "Este empleado se desactivará y no estará disponible.",
-    icon: "warning",
+    title: eliminado
+      ? "¿Deseás reactivar este empleado?"
+      : "¿Deseás desactivar este empleado?",
+    html: eliminado
+      ? "<p class='swal2-content-center'>Esta acción volverá a habilitar el empleado en el sistema.</p>"
+      : "<p class='swal2-content-center'>El empleado se desactivará y dejará de estar disponible.</p>",
     showCancelButton: true,
-    confirmButtonText: eliminado ? "Reactivar" : "Desactivar",
+    confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
     cancelButtonText: "Cancelar",
-    reverseButtons: true,
     focusCancel: true,
     customClass: {
-      popup: "swal2-border-radius",
-      confirmButton: eliminado ? "swal2-btn-reactivar" : "swal2-btn-desactivar",
+      popup: "swal2-border-radius swal2-custom-popup",
+      confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
       cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
-      content: "swal2-content-custom",
+      htmlContainer: "swal2-content-custom",
     },
-    background: "#fff",
-    color: "#22223b",
+    background: "#ffffff",
+    color: "#1a1a1a",
   }).then((result) => {
     if (result.isConfirmed) {
       EliminarSiEmpleado(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
-        title: "Acción cancelada",
-        text: eliminado
-          ? "El empleado sigue desactivado."
-          : "El empleado sigue activado.",
-        icon: "info",
-        timer: 2000,
-        showConfirmButton: false,
+        title: "Acción Cancelada",
+        text: eliminado ? "Continuará desactivad0." : "Continuará activado.",
         toast: true,
         position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
       });
     }
   });
@@ -1285,22 +1308,27 @@ async function EliminarSiEmpleado(id) {
       ObtenerEmpleados();
 
       // Mostrar el mensaje que vino del backend
-      Swal.fire({
+       Swal.fire({
+        title: "¡" + data.mensaje + "!",
         toast: true,
         position: "bottom-end",
-        icon: "success",
-        title: "¡" + data.mensaje + "!",
         showConfirmButton: false,
-        timer: 2000,
+        timer: 2200,
         timerProgressBar: true,
-        background: "#f0f0f0",
-        color: "#000",
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
       });
     })
-    .catch((error) => {
-      console.error(error);
-      Swal.fire("Error", "No se pudo actualizar el empleado.", "error");
-    });
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 
@@ -1326,9 +1354,9 @@ async function ObtenerHistorialEmpleados(empleadoId) {
     .then((data) => {
       MostrarHistorialEmpleado(data);
     })
-    .catch((error) => {
-      console.log("No se puede acceder al servicio.", error);
-    });
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 // Función para mostrar el historial de empleados
@@ -1394,7 +1422,24 @@ function MostrarDetalleHistorial(index) {
 }
 
 
-
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
+}
 
 
 ComboParaFiltrarLocalidadPuesto();

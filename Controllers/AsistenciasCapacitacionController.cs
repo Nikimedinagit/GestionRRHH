@@ -29,6 +29,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             return await _context.AsistenciaCapacitacion
             .Include(a => a.Curso)
             .Include(a => a.Empleado)
+            .Where(a => a.Empleado != null && !a.Empleado.Eliminado)
             .ToListAsync();
         }
 

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize (Roles = "ADMINISTRADOR")]
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProvinciasController : ControllerBase
@@ -27,15 +27,25 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<ActionResult<IEnumerable<Provincia>>> GetProvincia()
         {
             return await _context.Provincia
-            .Where(p => !p.Eliminado) 
+            .Where(p => !p.Eliminado)
             .OrderBy(p => p.Nombre)
             .ToListAsync();
+        }
+        
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Provincia>>> GetProvinciasActivos()
+        {
+            var provinciasActivos = await _context.Provincia
+                .Where(p => !p.Eliminado)
+                .OrderBy(p => p.Nombre)
+                .ToListAsync();
+            return provinciasActivos;
         }
 
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<Provincia>>> GetProvincia([FromBody] FiltrarProvincias filtro)
         {
-        
+
             var provinciasFiltro = _context.Provincia.AsQueryable();
             if (filtro.Eliminado.HasValue)
             {
@@ -68,7 +78,7 @@ namespace API_RRHH_TESIS2025.Controllers
             {
                 return BadRequest();
             }
-            
+
             // Convertimos el nombre a minúsculas
             provincia.Nombre = provincia.Nombre.ToUpper();
 
@@ -79,7 +89,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
             }
 
-            
+
             _context.Entry(provincia).State = EntityState.Modified;
 
             try
@@ -128,22 +138,31 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProvincia(int id)
         {
-            var provincia = await _context.Provincia.FindAsync(id);
+            var provincia = await _context.Provincia
+            .Include(p => p.Localidades)
+            .FirstOrDefaultAsync(p => p.Id == id);
             if (provincia == null)
             {
                 return NotFound();
             }
 
-             provincia.Eliminado = !provincia.Eliminado; 
-             var mensaje = provincia.Eliminado ? 
-             "Provincia Desactivada" :
-             "Provincia Activada";
-             
-             
+            // Si está activo y tiene localidades asociadas, NO permitir desactivarlo
+            if (!provincia.Eliminado && provincia.Localidades != null && provincia.Localidades.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar la provincia porque tiene localidades asociadas." });
+            }
+
+
+            provincia.Eliminado = !provincia.Eliminado;
+            var mensaje = provincia.Eliminado ?
+            "Provincia Desactivada" :
+            "Provincia Activada";
+
+
             _context.Provincia.Update(provincia);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje });	
+            return Ok(new { mensaje });
         }
 
         private bool ProvinciaExists(int id)

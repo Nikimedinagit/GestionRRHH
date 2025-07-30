@@ -1,5 +1,5 @@
 async function ObtenerLocalidadesDropDown() {
-    const res = await authFetch("Localidades", {
+    const res = await authFetch("Localidades/Activos", {
         method: "GET",
       })
         .then(response => response.json()) 
@@ -13,8 +13,6 @@ async function ObtenerLocalidadesDropDown() {
 function MostrarLocalidadesDropDown(data) {
     $("#IdLocalidad").empty();
 
-    // Mostrar solo los activos 
-    data = data.filter(item => item.eliminado == false);
 
     // mostar una opcion para seleccionar
     $('#IdLocalidad').append(

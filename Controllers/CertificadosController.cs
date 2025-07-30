@@ -27,6 +27,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             return await _context.Certificado
             .Include(c => c.Empleado)
             .Include(c => c.Curso)
+            .Where(c => c.Empleado != null && !c.Empleado.Eliminado)
             .ToListAsync();
         }
 

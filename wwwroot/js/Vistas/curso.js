@@ -92,7 +92,9 @@ async function ObtenerCursos() {
         LimpiarModalCursos();
         cerrarPanelCursos();
       })
-    .catch(error => console.log('No se pudo obtener los cursos', error)); 
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 function MostrarCursos(data) {
@@ -464,7 +466,7 @@ function ValidarFormularioCursos() {
     return esValid;
 }
 
-// 🎨 Validación en vivo: cambia el color mientras el usuario escribe
+// Validación en vivo: cambia el color mientras el usuario escribe
 document.getElementById("NombreCurso").addEventListener("input", () => {
   const inputNombre = document.getElementById("NombreCurso");
   const errorNombre = document.getElementById("errorNombreCurso");
@@ -523,19 +525,28 @@ console.log(curso);
         cerrarPanelCursos();
         ObtenerCursos();
         // Mostrar alerta de éxito
-        Swal.fire({
+         Swal.fire({
+          title: "¡Curso Creado!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Curso Creado!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
-        });
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
+          });
       }
-    });
+    })
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 //Funcion para editar un curso
@@ -566,19 +577,28 @@ async function EditarCurso(id) {
         cerrarPanelCursos();
         ObtenerCursos();
         // Mostrar alerta de éxito
-        Swal.fire({
+       Swal.fire({
+          title: "¡Curso Modificado!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Curso Modificado!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
-        });
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
+          });
       }
-    });
+    })
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 ObtenerCursos();
 
@@ -602,7 +622,9 @@ async function ObtenerAsistencia(cursoId) {
       const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
       MostrarAsistencias(cursoId, cursosFiltrados);
     })
-    .catch(error => console.log("Error al obtener asistencias", error));
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 function MostrarAsistencias(cursoId, data) {
@@ -821,52 +843,73 @@ const asistencia = {
                 cerrarPanelAsistencias();
        
         Swal.fire({
+          title: "¡Asistencia Creada!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Asistencia Creada!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
-    });
+    })
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 function EliminarAsistencia(id) {
     Swal.fire({
-        title: "¿Confirmás que querés eliminar esta asistencia?",
-        text: "Esta acción es irreversible y eliminará definitivamente el registro. ¿Querés continuar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        focusCancel: true,
-        customClass: {
-          popup: "swal2-border-radius",
-          confirmButton: "swal2-btn-eliminar",
-          cancelButton: "swal2-btn-cancelar",
-          title: "swal2-title-custom",
-          content: "swal2-content-custom",
-        },
-        background: "#fff",
-        color: "#22223b",
-      })
+    title: "¿Desea eliminar esta asistencia?",
+    html: `
+      <div class="text-center">
+        <p>Esta asistencia será eliminada de forma definitiva. ¿Desea continuar?</p>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
       .then((result) => {
       if(result.isConfirmed) {
             EliminarSiAsistencia(id);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire({
-                title: "Acción cancelada",
-                text: "La asistencia permanece registrada.",
-                icon: "info",
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: "bottom-end",
-            })
+        title: "Acción Cancelada",
+        text: "Permanece registrado.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
         }
       })
 }
@@ -881,17 +924,25 @@ async function EliminarSiAsistencia(id) {
     await ObtenerAsistencia(cursoIdSeleccionado);
 
         Swal.fire({
-            toast: true,
-            position: "bottom-end",
-            icon: "success",
-            title: "¡Asistencia Eliminada!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#f0f0f0",
-            color: "#000",
-        })
-
+        title: "¡Asistencia Eliminada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      })
+      .catch((error) => {;
+        MostrarErrorCatch();
+        });
 }
 
 async function MarcarAsistencia(id, nuevoEstado)  {
@@ -905,33 +956,47 @@ async function MarcarAsistencia(id, nuevoEstado)  {
     .then(() => {
       if(nuevoEstado){
         ObtenerAsistencia(cursoIdSeleccionado);
-      Swal.fire({
-        toast: true,
-        position: "bottom-end",
-        icon: "success",
-        title: "¡Asistio Correctamente!",
-        showConfirmButton: false,
-        timer: 1500,
-        background: "#f0f0f0",
-        color: "#000",
-      });
+        Swal.fire({
+          title: "¡Asistio Empleado!",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 1500,
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
+        });
       }
       //Si marca y luego desmarca
       else {
         ObtenerAsistencia(cursoIdSeleccionado);
-        Swal.fire({
+          Swal.fire({
+          title: "¡No Asistio Empleado!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡No asistio correctamente!",
           showConfirmButton: false,
           timer: 1500,
-          background: "#f0f0f0",
-          color: "#000",
-        });
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
+          });
       }
     })
-    .catch(error => console.log('No se puede acceder al servicio', error))
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 ObtenerAsistencia(cursoIdSeleccionado);
@@ -950,7 +1015,9 @@ async function ObtenerCertificados(cursoId) {
       const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
       MostrarCertificados(cursoId, cursosFiltrados);
     })
-    .catch(error => console.log("Error al obtener certificados", error));
+    .catch((error) => {;
+      MostrarErrorCatch();
+      });
 }
 
 function MostrarCertificados(cursoId, data) {
@@ -1126,37 +1193,49 @@ async function CrearCertificado() {
 
 function EliminarCertificado(id) {
     Swal.fire({
-        title: "¿Confirmás que querés eliminar este certificado?",
-        text: "Esta acción es irreversible y eliminará definitivamente el registro. ¿Querés continuar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        focusCancel: true,
-        customClass: {
-          popup: "swal2-border-radius",
-          confirmButton: "swal2-btn-eliminar",
-          cancelButton: "swal2-btn-cancelar",
-          title: "swal2-title-custom",
-          content: "swal2-content-custom",
-        },
-        background: "#fff",
-        color: "#22223b",
-      })
+    title: "¿Desea eliminar este certificado?",
+    html: `
+      <div class="text-center">
+        <p>Este certificado será eliminado de forma definitiva. ¿Desea continuar?</p>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
       .then((result) => {
       if(result.isConfirmed) {
             EliminarSiCertificado(id);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            Swal.fire({
-                title: "Acción cancelada",
-                text: "El certificado sigue registrado.",
-                icon: "info",
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: "bottom-end",
-            })
+           Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece registrado.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
         }
       })
 }
@@ -1171,16 +1250,44 @@ async function EliminarSiCertificado(id) {
     await ObtenerCertificados(cursoIdSeleccionado);
 
         Swal.fire({
-            toast: true,
-            position: "bottom-end",
-            icon: "success",
-            title: "¡Certificado Eliminado!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#f0f0f0",
-            color: "#000",
-        })
-
+        title: "¡Certificado Eliminado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      })
+      .catch((error) => {;
+        MostrarErrorCatch();
+        });
 }
 ObtenerCertificados(cursoIdSeleccionado);
+
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
+}
+

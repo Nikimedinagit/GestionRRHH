@@ -1,5 +1,5 @@
 async function ObtenerEmpleadosDropDown() {
-    const res = await authFetch("Empleados", {
+    const res = await authFetch("Empleados/Activos", {
         method: "GET",
       })
         .then(response => response.json()) 
@@ -12,16 +12,10 @@ async function ObtenerEmpleadosDropDown() {
 
 function MostrarEmpleadosDropDown(data) {
     const $dropdown = $('#EmpleadoId, #EmpleadoIdCertificado');
-     console.log("Select encontrado:", $dropdown.length); 
     $dropdown.empty();  
 
-    // Agrega la opción por defecto
     $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
-    // Filtra solo los no eliminados
-    // data = data.filter(item => item.eliminado === false);
-
-    // Agrega los empleados activos
     $.each(data, function (index, item) {
         $dropdown.append(`<option value="${item.id}">${item.nombreCompleto}</option>`);
     });

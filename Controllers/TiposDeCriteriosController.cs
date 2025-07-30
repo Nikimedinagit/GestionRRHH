@@ -29,6 +29,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             .ToListAsync();
         }
 
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<TipoDeCriterio>>> GetTipoDeCriteriosActivos()
+        {
+            var tipoDeCriteriosActivos = await _context.TipoDeCriterio
+                .Where(t => !t.Eliminado)
+                .OrderBy(t => t.Nombre)
+                .ToListAsync();
+            return tipoDeCriteriosActivos;
+        }
+
         // GET: api/TiposDeCriterios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TipoDeCriterio>> GetTipoDeCriterio(int id)
@@ -130,16 +140,24 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoDeCriterio(int id)
         {
-            var tipoDeCriterio = await _context.TipoDeCriterio.FindAsync(id);
+            var tipoDeCriterio = await _context.TipoDeCriterio
+            .Include(t => t.CriterioDeEvaluacion)
+            .FirstOrDefaultAsync(t => t.Id == id);
             if (tipoDeCriterio == null)
             {
                 return NotFound();
             }
 
+            // sie está activo y tiene criterios asociados, NO permitir desactivarlo
+            if (!tipoDeCriterio.Eliminado && tipoDeCriterio.CriterioDeEvaluacion != null && tipoDeCriterio.CriterioDeEvaluacion.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar el criterio porque tiene criterios de evaluación asociados." });
+            }
+
             tipoDeCriterio.Eliminado = !tipoDeCriterio.Eliminado;
             var mensaje = tipoDeCriterio.Eliminado ?
-            "Tipo de Criterio Desactivado" :
-            "Tipo de Criterio Activado";
+            "Criterio Desactivado" :
+            "Criterio Activado";
 
             _context.TipoDeCriterio.Update(tipoDeCriterio);
             await _context.SaveChangesAsync();

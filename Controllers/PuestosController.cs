@@ -49,6 +49,16 @@ namespace API_RRHH_TESIS2025.Controllers
             return puesto;
         }
 
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuestosActivos()
+        {
+            var puestosActivos = await _context.Puesto
+                .Where(p => !p.Eliminado)
+                .OrderBy(p => p.Descripcion)
+                .ToListAsync();
+            return puestosActivos;
+        }
+
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaPuesto>>> PuestoFiltrar([FromBody] PuestoFiltrar filtro)
         {
@@ -160,16 +170,25 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePuesto(int id)
         {
-            var puesto = await _context.Puesto.FindAsync(id);
+            var puesto = await _context.Puesto
+            .Include(p => p.Empleados)
+            .FirstOrDefaultAsync(p => p.Id == id);
             if (puesto == null)
             {
                 return NotFound();
+            }
+            // Si está activo y tiene empleados asociados, NO permitir desactivarlo
+            if (!puesto.Eliminado &&
+                puesto.Empleados != null &&
+                puesto.Empleados.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar el puesto porque tiene empleados asociados." });
             }
 
             puesto.Eliminado = !puesto.Eliminado;
             var mensaje = puesto.Eliminado ?
                 "Puesto Desactivado" :
-                "Puesto Activad0";
+                "Puesto Activado";
 
             _context.Puesto.Update(puesto);
             await _context.SaveChangesAsync();

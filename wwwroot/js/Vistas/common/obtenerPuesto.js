@@ -1,5 +1,5 @@
 async function ObtenerPuestosDropDown() {
-    const res = await authFetch("Puestos", {
+    const res = await authFetch("Puestos/Activos", {
         method: "GET",
       })
         .then(response => response.json()) 
@@ -12,9 +12,6 @@ async function ObtenerPuestosDropDown() {
 
 function MostrarPuestosDropDown(data) {
     $("#IdPuesto").empty();
-
-    // Mostrar solo los activos 
-    data = data.filter(item => item.eliminado == false);
 
     // mostar una opcion para seleccionar
     $('#IdPuesto').append(

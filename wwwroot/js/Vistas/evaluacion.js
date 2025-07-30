@@ -130,7 +130,9 @@ async function ObtenerEvaluaciones() {
         cerrarPanelEvaluaciones();
     }))
   
-    .catch(error => console.log("No se pudo obtener las evaluaciones", error));
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 
 }
 
@@ -420,17 +422,26 @@ const evaluacion = {
         ObtenerEvaluaciones();
         // Mostrar alerta de éxito
         Swal.fire({
+          title: "¡Evaluacion Creada!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Evaluación Creada!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
     });
 }
 
@@ -460,18 +471,27 @@ async function EditarEvaluacion(id) {
         cerrarPanelEvaluaciones();
         ObtenerEvaluaciones();
         // Mostrar alerta de éxito
-        Swal.fire({
+         Swal.fire({
+          title: "¡Evaluacion Modificada!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Evaluación Modificada!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
     });
 }
 
@@ -489,7 +509,9 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId) {
       const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
       MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados);
     })
-    .catch(error => console.log("Error al obtener criterios", error));
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
 
 function MostrarCriterioDeEvaluacion(evaluacionId, data) {
@@ -643,62 +665,83 @@ const criterioEvaluacion = {
         cerrarPanelCriterios();
         ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);        
         Swal.fire({
+          title: "¡Criterio Creado!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Criterio de Evaluación Creado!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
     });
 }
 
 function EliminarCriterioDeEvaluacion(id) {
     Swal.fire({
-        title: "¿Está seguro que desea eliminar este criterio?",
-        text: "Este criterio sera eliminado de forma definitiva. ¿Deseás continuar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        focusCancel: true,
-        customClass: {
-          popup: "swal2-border-radius",
-          confirmButton: "swal2-btn-eliminar",
-          cancelButton: "swal2-btn-cancelar",
-          title: "swal2-title-custom",
-          content: "swal2-content-custom",
-        },
-        background: "#fff",
-        color: "#22223b",
-      })
-      .then((result) => {
+    title: "¿Desea eliminar este criterio?",
+    html: `
+      <div class="text-center">
+        <p>Este criterio será eliminado de forma definitiva. ¿Desea continuar?</p>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
+    .then((result) => {
       if(result.isConfirmed) {
             EliminarSiCriterio(id);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            Swal.fire({
-                title: "Acción cancelada",
-                text: "El criterio permanece registrado.",
-                icon: "info",
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: "bottom-end",
-            })
+           Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece registrado.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
         }
       })
 }
 
-function EliminarSiCriterio(id) {
-    fetch(`http://localhost:5106/api/CriteriosDeEvaluacion/${id}`,
-        {
-            method: "DELETE"
-        })
+async function EliminarSiCriterio(id) {
+    const res = await authFetch(`CriteriosDeEvaluacion/${id}`, {
+      method: "DELETE",
+    })
+
     .then((response) => {
       if (!response.ok) {
         throw new Error("No se pudo eliminar el criterio");
@@ -706,20 +749,45 @@ function EliminarSiCriterio(id) {
       return response.text();
     })
     .then((data) => {
+         Swal.fire({
+        title: "¡Criterio Eliminado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
     ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 
-        Swal.fire({
-            toast: true,
-            position: "bottom-end",
-            icon: "success",
-            title: "¡Criterio de Evaluación Eliminado!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#f0f0f0",
-            color: "#000",
-        })
     })
+}
+
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
 }
 
 //Funcion para obtener los criterios de evaluacion de una evaluacion

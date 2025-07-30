@@ -202,7 +202,9 @@ async function ObtenerLicencias() {
         LimpiarModalLicencia();
         CerrarPanelLicencia();
     })
-    .catch((error) => console.log("No se pudo obtener las licencias", error));
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
 
 
@@ -656,19 +658,27 @@ async function CrearLicencia() {
                 ObtenerLicencias();
                 // Mostrar alerta de éxito
                 Swal.fire({
+                    title: "¡Licencia Creada!",
                     toast: true,
                     position: "bottom-end",
-                    icon: "success",
-                    title: "¡Licencia Creada!",
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 2200,
                     timerProgressBar: true,
-                    background: "#f0f0f0",
-                    color: "#000",
-                });
+                    background: "#f4fff7",
+                    color: "#1c3d26",
+                    icon: "success",
+                    iconColor: "#28a746d8",
+                    customClass: {
+                      popup: "swal2-toast-success",
+                      title: "swal2-toast-success-title",
+                      icon: "swal2-toast-success-icon",
+                    },
+                  });
             }
-        });
-    
+        })
+        .catch((error) => {
+          MostrarErrorCatch();
+          });
 }
 
 
@@ -700,58 +710,79 @@ let licencia = {
                 ObtenerLicencias();
                 // Mostrar alerta de éxito
                 Swal.fire({
+                    title: "¡Licencia Modificada!",
                     toast: true,
                     position: "bottom-end",
-                    icon: "success",
-                    title: "¡Licencia Modificada!",
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 2200,
                     timerProgressBar: true,
-                    background: "#f0f0f0",
-                    color: "#000",
-                });
+                    background: "#f4fff7",
+                    color: "#1c3d26",
+                    icon: "success",
+                    iconColor: "#28a746d8",
+                    customClass: {
+                      popup: "swal2-toast-success",
+                      title: "swal2-toast-success-title",
+                      icon: "swal2-toast-success-icon",
+                    },
+                  });
             }
+        })
+        .catch((error) => {
+          MostrarErrorCatch();
         });
-}
-
+    }
 
 
 function EliminarLicenciaId(id,) {
     Swal.fire({
-        title: "¿Eliminar licencia?",
-        text: "Esta seguro que desea eliminar esta licencia?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        focusCancel: true,
-        customClass: {
-          popup: "swal2-border-radius",
-          confirmButton: "swal2-btn-eliminar",
-          cancelButton: "swal2-btn-cancelar",
-          title: "swal2-title-custom",
-          content: "swal2-content-custom",
-        },
-        background: "#fff",
-        color: "#22223b",
-      })
+    title: "¿Desea eliminar esta licencia?",
+    html: `
+      <div class="text-center">
+        <p>Esta licencia será eliminada de forma definitiva. ¿Desea continuar?</p>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  })
       .then((result) => {
         if(result.isConfirmed) {
             EliminarSiLicencia(id);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire({
-                title: "Acción cancelada",
-                text: "La licencia sigue activa.",
-                icon: "info",
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: "bottom-end",
-            })
+        title: "Acción Cancelada",
+        text: "Permanece registrada.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
         }
       })
 }
+    
 
 async function EliminarSiLicencia(id) {
     const res = await authFetch(`Licencias/${id}`,
@@ -768,56 +799,75 @@ async function EliminarSiLicencia(id) {
         ObtenerLicencias();
 
         Swal.fire({
-            toast: true,
-            position: "bottom-end",
-            icon: "success",
-            title: "¡Licencia Eliminada!",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: "#f0f0f0",
-            color: "#000",
-        })
+        title: "¡Licencia Eliminada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
     })
+    .catch((error) => {
+          MostrarErrorCatch();
+        });
 }
 
 // Función para abrir el modal de acción sobre la licencia
 function AbrirModalAccionLicencia(id) {
-  Swal.fire({
-    title: "¿Acción sobre la licencia?",
-    text: "¿Desea aprobar o rechazar esta licencia?",
-    icon: "question",
-    showDenyButton: true,
-    showCancelButton: true,
-    confirmButtonText: "Aprobar",
-    denyButtonText: "Rechazar",
-    cancelButtonText: "Cancelar",
-    reverseButtons: true,
-    focusCancel: true,
-    customClass: {
-      popup: "swal2-border-radius",
-      confirmButton: "swal2-btn-confirmar", // clase para botón verde (aprobar)
-      denyButton: "swal2-btn-denegar",     // clase para botón rojo (rechazar)
-      cancelButton: "swal2-btn-cancelar",
-      title: "swal2-title-custom",
-      content: "swal2-content-custom",
-    },
-    background: "#fff",
-    color: "#22223b",
-  }).then((result) => {
+ Swal.fire({
+  title: "Acción sobre la licencia",
+   html: `
+    <p class='swal2-content-center'>¿Deseás aprobar o rechazar esta licencia?</p>
+    <p class='swal2-content-center'>Esta acción actualizará el estado de la licencia en el sistema.</p>
+  `,
+  showDenyButton: true,
+  showCancelButton: true,
+  confirmButtonText: "Si, aprobar",
+  denyButtonText: "No, rechazar",
+  cancelButtonText: "Cancelar",
+  focusCancel: true,
+  customClass: {
+    popup: "swal2-custom-popup",
+    confirmButton: "swal2-btn-activar",    // Verde
+    denyButton: "swal2-btn-desactivar",    // Rojo
+    cancelButton: "swal2-btn-cancelar",    // Gris
+    title: "swal2-title-custom",
+    htmlContainer: "swal2-content-center",
+  },
+  background: "#ffffff",
+  color: "#1a1a1a",
+}).then((result) => {
     if (result.isConfirmed) {
       AprobarLicencia(id);
     } else if (result.isDenied) {
       RechazarLicencia(id);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción cancelada",
-        text: "No se ha modificado el estado de la licencia.",
-        icon: "info",
-        timer: 2000,
-        showConfirmButton: false,
+       Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece pendiente.",
         toast: true,
         position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
       });
     }
   });
@@ -830,20 +880,28 @@ async function RechazarLicencia(id) {
     .then((response) => response.json())
     .then((data) => {
       Swal.fire({
-      title: "Licencia rechazada",
-      text: "La licencia fue rechazada correctamente.",
-      icon: "info",
-      timer: 2000,
-      showConfirmButton: false,
-      toast: true,
-      position: "bottom-end"
-    });
+        title: "¡Licencia Rechazada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fff5f5",
+        color: "#1c3d26",
+        icon: "error",
+        iconColor: "#dc3545d8 ",
+        customClass: {
+          popup: "swal2-toast-rechazada",
+          title: "swal2-toast-rechazada-title",
+          icon: "swal2-toast-rechazada-icon",
+        },
+      });
 
     ObtenerLicencias();
     })
     .catch((error) => {
-      console.log("Error al rechazar la licencia:", error);
-    });
+          MostrarErrorCatch();
+        });
 }
 
 
@@ -854,21 +912,46 @@ async function AprobarLicencia(id) {
     .then((response) => response.json())
     .then((data) => {
       Swal.fire({
-      title: "Licencia aprobada",
-      text: "La licencia fue aprobada correctamente.",
-      icon: "success",
-      timer: 2000,
-      showConfirmButton: false,
-      toast: true,
-      position: "bottom-end"
-    });
+        title: "¡Licencia Aprobada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
     ObtenerLicencias();
     })
     .catch((error) => {
-      console.log("Error al aprobar la licencia:", error);
-    });
+          MostrarErrorCatch();
+        });
 }
 
-
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
+}
 
 ComboParaFiltrarTiposDeLicencia();

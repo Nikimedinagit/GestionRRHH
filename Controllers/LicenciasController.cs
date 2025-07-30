@@ -33,10 +33,18 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<ActionResult<IEnumerable<Licencia>>> GetLicencia()
         {
             return await _context.Licencia
-            .Include(l => l.TipoDeLicencia)
-            .Include(l => l.Empleado)
-            .ToListAsync();
+                .Include(l => l.TipoDeLicencia)
+                .Include(l => l.Empleado)
+                .Where(l => l.Empleado != null && !l.Empleado.Eliminado)
+                .OrderBy(l =>
+                    l.Estado == EstadoLicencia.PENDIENTE ? 0 :
+                    l.Estado == EstadoLicencia.APROBADA ? 1 :
+                    l.Estado == EstadoLicencia.RECHAZADA ? 2 :
+                    l.Estado == EstadoLicencia.EXPIRADA ? 3 : 4)
+                .ToListAsync();
         }
+
+
 
         // GET: api/Licencias/5
         [HttpGet("{id}")]
@@ -85,6 +93,12 @@ namespace API_NET_CORE8_RRHH.Controllers
             var listaFiltrada = await licenciasFiltradas
                 .Include(l => l.TipoDeLicencia)
                 .Include(l => l.Empleado)
+                .Where(l => l.Empleado != null && !l.Empleado.Eliminado)
+                .OrderBy(l =>
+                    l.Estado == EstadoLicencia.PENDIENTE ? 0 :
+                    l.Estado == EstadoLicencia.APROBADA ? 1 :
+                    l.Estado == EstadoLicencia.RECHAZADA ? 2 :
+                    l.Estado == EstadoLicencia.EXPIRADA ? 3 : 4)
                 .ToListAsync();
 
             // Actualizar licencias expiradas

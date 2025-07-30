@@ -618,6 +618,34 @@ select.form-control:not([value=""])+label {
   font-size: 0.8rem !important;
 }
 
+/* Ventana de rechazada de licencias */
+.swal2-toast-rechazada {
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+  padding: 0.3rem 0.5rem !important;
+  border-left: 4px solid #dc3545;
+  max-width: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.swal2-toast-rechazada-title {
+  font-size: 0.95rem !important;
+  font-weight: 600;
+  color: #dc3545;
+  margin: 0;
+  line-height: 1.2;
+  width: 100%;
+  text-align: center;
+}
+
+.swal2-toast-rechazada-icon{
+  font-size: 0.8rem !important;
+}
+
 
 /* Ventana de cancelacion de acción abajo a la derecha*/
 .swal2-toast-status {

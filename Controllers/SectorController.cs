@@ -9,9 +9,9 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
-{   
+{
 
-    [Authorize (Roles = "ADMINISTRADOR")]
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class SectorController : ControllerBase
@@ -33,6 +33,16 @@ namespace API_RRHH_TESIS2025.Controllers
             .ToListAsync();
         }
 
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Sector>>> GetSectorsActivos()
+        {
+            var sectoresActivos = await _context.Sector
+                .Where(s => !s.Eliminado)
+                .OrderBy(s => s.Nombre)
+                .ToListAsync();
+            return sectoresActivos;
+        }
+
         // GET: api/Sector/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Sector>> GetSector(int id)
@@ -49,7 +59,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<Sector>>> GetSector([FromBody] FiltrarSectores filtro)
-        {   
+        {
             var sectorFiltro = _context.Sector.AsQueryable();
             if (filtro.Eliminado.HasValue)
             {
@@ -69,7 +79,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 return BadRequest();
             }
 
-                // Guardamos en mayúsculas
+            // Guardamos en mayúsculas
             sector.Nombre = sector.Nombre.ToUpper();
 
             var sectorExistente = await _context.Sector
@@ -127,13 +137,21 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSector(int id)
         {
-            var sector = await _context.Sector.FindAsync(id);
+            var sector = await _context.Sector
+            .Include(s => s.Puestos)
+            .FirstOrDefaultAsync(m => m.Id == id);
             if (sector == null)
             {
                 return NotFound();
             }
 
-                sector.Eliminado = !sector.Eliminado;
+            // Si está visible y tiene puestos asociados, NO permitir desactivarlo
+            if (!sector.Eliminado && sector.Puestos != null && sector.Puestos.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar el sector porque tiene puestos asociados." });
+            }
+
+            sector.Eliminado = !sector.Eliminado;
             var mensaje = sector.Eliminado ?
                 "Sector Desactivado" :
                 "Sector Activado";
@@ -144,7 +162,7 @@ namespace API_RRHH_TESIS2025.Controllers
             return Ok(new { mensaje });
         }
 
-            
+
         private bool SectorExists(int id)
         {
             return _context.Sector.Any(e => e.Id == id);

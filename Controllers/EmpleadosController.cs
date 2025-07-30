@@ -69,6 +69,16 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return vista;
         }
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
+        {
+            var empleadosActivos = await _context.Empleado
+                .Where(e => !e.Eliminado) 
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+            return empleadosActivos;
+        }
+
 
 
         [HttpPost("Filtrar")]
