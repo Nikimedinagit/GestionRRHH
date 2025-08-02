@@ -318,7 +318,8 @@ table tbody tr {
 #panelPuesto,
 #panelEmpleado,
 #panelTipoDeLicencia,
-#panelLicencia {
+#panelLicencia,
+#panelHorario{ 
   position: fixed;
   top: 50%;
   right: 0;
@@ -346,7 +347,8 @@ table tbody tr {
 #panelPuesto.abierto,
 #panelEmpleado.abierto,
 #panelTipoDeLicencia.abierto,
-#panelLicencia.abierto {
+#panelLicencia.abierto,
+#panelHorario.abierto {
   transform: translate(0, -50%);
 }
 
@@ -487,7 +489,8 @@ select.form-control:not([value=""])+label {
   #panelPuesto,
   #panelEmpleado,
   #panelTipoDeLicencia,
-  #panelLicencia {
+  #panelLicencia,
+  #panelHorario {
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -502,7 +505,8 @@ select.form-control:not([value=""])+label {
   #panelPuesto,
   #panelEmpleado,
   #panelTipoDeLicencia,
-  #panelLicencia {
+  #panelLicencia,
+  #panelHorario {
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -517,7 +521,8 @@ select.form-control:not([value=""])+label {
   #panelPuesto,
   #panelEmpleado,
   #panelTipoDeLicencia,
-  #panelLicencia {
+  #panelLicencia,
+  #panelHorario {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
@@ -712,7 +717,8 @@ select.form-control:not([value=""])+label {
 /* INICIO CARD DE LICENCIAS / EMPLEADOS */
 /* Boton editar una licencia/empleado */
 .icono-editar-empleado,
-.icono-editar-licencia {
+.icono-editar-licencia,
+.icono-editar-horario {
   font-size: 1.2rem !important;
   color: #0d6efd !important;
   font-weight: bold !important;
@@ -722,7 +728,8 @@ select.form-control:not([value=""])+label {
 
 /* Boton borrar una licencia/empleado */
 .icono-desactivar-empleado ,
-.icono-borrar-licencia {
+.icono-borrar-licencia,
+.icono-borrar-horario {
   font-size: 1.2rem !important;
   color: #dc3545 !important;
   font-weight: bold !important;
@@ -731,7 +738,8 @@ select.form-control:not([value=""])+label {
 }
 
 /* Boton ver más un empleado */
-.iocno-ver-empleado{
+.iocno-ver-empleado,
+.iocno-ver-horario{
   font-size: 1.2rem !important;
   color: #ffc107 !important;
   font-weight: bold !important;
@@ -837,7 +845,8 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-contenedor,
-.detalle-licencia-contenedor {
+.detalle-licencia-contenedor,
+.detalle-horario-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
  border-top-left-radius: 0.3rem;
@@ -846,7 +855,8 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-encabezado,
-.detalle-licencia-encabezado {
+.detalle-licencia-encabezado,
+.detalle-horario-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
@@ -854,7 +864,8 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-tarjeta,
-.detalle-licencia-tarjeta {
+.detalle-licencia-tarjeta,
+.detalle-horario-tarjeta {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
@@ -864,19 +875,22 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-seccion,
-.detalle-licencia-seccion {
+.detalle-licencia-seccion,
+.detalle-horario-seccion {
   padding: 0.75rem 1rem;
 }
 
 .detalle-empleado-fila,
-.detalle-licencia-fila {
+.detalle-licencia-fila,
+detalle-horario-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
 }
 
 .detalle-empleado-etiqueta,
-.detalle-licencia-etiqueta {
+.detalle-licencia-etiqueta,
+.detalle-horario-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
@@ -884,14 +898,16 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-valor,
-.detalle-licencia-valor {
+.detalle-licencia-valor,
+.detalle-horario-valor {
   color: #212529;
   flex-grow: 1;
   word-break: break-word;
 }
 
 .detalle-empleado-titulo-seccion,
-.detalle-licencia-titulo-seccion {
+.detalle-licencia-titulo-seccion,
+.detalle-horario-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -901,13 +917,15 @@ select.form-control:not([value=""])+label {
 }
 
 .detalle-empleado-etiqueta,
-.detalle-licencia-etiqueta{
+.detalle-licencia-etiqueta,
+detalle-horario-etiqueta{
    margin-right: 10px !important;
   font-weight: 600 !important;
 }
 
 .detalle-empleado-valor,
-.detalle-licencia-valor {
+.detalle-licencia-valor,
+.detalle-horario-valor {
   color: rgba(108, 117, 125, 0.9); 
 }
 /* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS */
@@ -1056,4 +1074,65 @@ select.form-control:not([value=""])+label {
   }
 }
 /* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS */
+
+
+/* INICIO PARA LOS BOTONES DE TIPO DE HORARIO(DIAS LABORALES) */
+.dia-btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+  background-color: rgba(0, 123, 255, 0.2); 
+
+}
+
+input[type="checkbox"].btn-check:checked + .dia-btn {
+  background-color: rgba(0, 123, 255, 0.7); 
+  border-color: #0d6efd;
+  color: #ffffff;
+  font-weight: 600;
+}
+/* FIN PARA LOS BOTONES DE TIPO DE HORARIO(DIAS LABORALES) */
+
+
+/* INICIO ESTILO PANEL HORARIOS Y TABLA EN EL DETALLE DE HORARIOS */
+.panelHorarios.mostrar{
+  border: 1px solid rgba(0, 0, 0, 0.152); 
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+}
+
+.table-horarios-body{
+  font-size: 11px !important;
+}
+/* FIN ESTILO PANEL HORARIOS Y TABLA EN EL DETALLE DE HORARIOS */
+
+
+/* INICIO PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
+.bg-separado {
+  background-color: #ffd6dd !important;
+  color: #a33a44 !important;            
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  text-align: center !important;
+  font-size: 0.7rem !important;
+}
+
+.bg-recorrido {
+  background-color: #d0e6ff !important;
+  color: #1a4a8a !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  text-align: center !important;
+  font-size: 0.7rem !important;
+}
+/* FIN PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
+
+
+
+
 

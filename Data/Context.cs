@@ -24,4 +24,5 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<API_RRHH_TESIS2025.Models.General.AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
     public DbSet<WorkSync.Models.General.HistorialLaboral> HistorialLaboral { get; set; }
     public DbSet<API_RRHH_TESIS2025.Models.General.Certificado> Certificado { get; set; }
+    public DbSet<API_RRHH_TESIS2025.Models.General.Horario> Horario { get; set; }
 }

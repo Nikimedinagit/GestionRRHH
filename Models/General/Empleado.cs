@@ -61,8 +61,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public virtual ICollection<AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
         public virtual ICollection<HistorialLaboral> HistorialLaboral { get; set; }
         public virtual ICollection<Certificado> Certificado { get; set; }
-
-
+        public virtual ICollection<Horario> Horario { get; set; }
 
     }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250801023100_ModelosHorariosCorregidoHorassss")]
+    partial class ModelosHorariosCorregidoHorassss
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,8 +258,8 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Domingo")
-                        .HasColumnType("bit");
+                    b.Property<string>("Domingo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
@@ -267,20 +270,20 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<TimeSpan>("HorarioInicio")
                         .HasColumnType("time");
 
-                    b.Property<bool>("Jueves")
-                        .HasColumnType("bit");
+                    b.Property<string>("Jueves")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Lunes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Lunes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Martes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Martes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Miercoles")
-                        .HasColumnType("bit");
+                    b.Property<string>("Miercoles")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Sabado")
-                        .HasColumnType("bit");
+                    b.Property<string>("Sabado")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeSpan>("SegundoHorarioFin")
                         .HasColumnType("time");
@@ -291,8 +294,8 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("TipoHorario")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Viernes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Viernes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

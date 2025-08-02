@@ -1,0 +1,421 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+
+  <!-- Título -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Control de Horarios</h3>
+    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+      Supervisá la carga horaria, días laborales y distribución del personal durante la semana.
+    </p>
+  </div>
+
+
+
+  <hr />
+
+  <!-- Contenedor de Botones y Tabla -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <!-- Fondo Oscuro al Abrir Panel -->
+    <div id="fondoOscuro" onclick="cerrarPanelHorario()"></div>
+
+    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <!-- Botón Asignar Horario -->
+      <button class="btn btn-agregar" onclick="abrirPanelHorario()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Asignar Horario</span>
+      </button>
+
+      <!-- Botones Filtros y Informe -->
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+          <i class="fa-solid fa-filter me-1"></i>
+          <span>Filtros</span>
+        </button>
+
+        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+          <i class="fa-solid fa-file-lines me-1"></i>
+          <span>Generar</span>
+        </button>
+      </div>
+    </div>
+
+
+
+    <!-- Contenedor Filtros-->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+        <!-- Empleado -->
+        <div class="col-12 col-md-3">
+          <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+          <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
+        </div>
+
+        <!-- Tipos de Horario -->
+        <div class="col-12 col-md-3">
+          <label for="TipoHorarioBuscar" class="form-label-fija">Tipo de Horario</label>
+          <select id="TipoHorarioBuscar" class="form-control filtro-select">
+            <option value="0">[Todos]</option>
+            <option value="1">Recorrido</option>
+            <option value="2">Separado</option>
+          </select>
+        </div>
+
+        <!-- Activar Horario -->
+        <div class="col-12 col-md-1">
+          <label class="form-label-fija">Horario</label>
+          <select id="filtrarHorarioSelect" class="form-control filtro-select">
+            <option value="no" selected>No</option>
+            <option value="si">Sí</option>
+          </select>
+        </div>
+
+        <!-- Horario Desde -->
+        <div id="horariosInputs" class="d-none col-12 col-md-2">
+          <label for="HorarioInicioBuscar" class="form-label-fija">Desde</label>
+          <input type="time" class="form-control filtro-select" id="HorarioInicioBuscar" />
+        </div>
+
+        <!-- Horario Hasta -->
+        <div id="horariosInputsFin" class="d-none col-12 col-md-2">
+          <label for="HorarioFinBuscar" class="form-label-fija">Hasta</label>
+          <input type="time" class="form-control filtro-select" id="HorarioFinBuscar" />
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- Contenedor Generar-->
+    <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+          <i class="fa-solid fa-file-pdf me-1"></i> PDF
+        </button>
+        <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+          <i class="fa-solid fa-file-excel me-1"></i> Excel
+        </button>
+        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
+          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
+        </button>
+      </div>
+    </div>
+
+
+    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+      <canvas id="graficoHorario" width="400" height="150"></canvas>
+    </div>
+
+
+    <!-- Contenedor de tarjetas de resumen de horarios -->
+    <div>
+      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+
+        <!-- Total horarios asignados -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-clock text-primary fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total horarios asignados</p>
+              <h5 class="mb-0 fw-bold" id="totalHorariosAsignados">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total horas semanales -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-info bg-opacity-10 p-3 me-3">
+              <i class="fas fa-hourglass-half text-info fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total horas semanales</p>
+              <h5 class="mb-0 fw-bold" id="totalHorasSemanales">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empleados que trabajan fines de semana -->
+        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 me-3">
+              <i class="fas fa-calendar-week text-warning fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Trabajan fines de semana</p>
+              <h5 class="mb-0 fw-bold" id="empleadosFindes">0</h5>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <hr style="margin-bottom: 1rem;" />
+
+    <!-- Contenedor de las horarios -->
+    <div class="container-fluid">
+      <div id="contenedorHorarios" class="row">
+        <!--Se cargarán dinámicamente-->
+      </div>
+    </div>
+
+
+
+    <!-- Panel Deslizante Formulario -->
+    <div id="panelHorario" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-75 p-4"
+      style="max-width:700px;">
+      <div class="panel-header mb-3">
+        <h2 id="panelTitulo" class="panel-title">Formulario de Horario</h2>
+      </div>
+
+      <form id="formHorario" class="needs-validation" novalidate>
+        <input type="hidden" id="IdHorario" />
+
+        <!-- Empleado -->
+        <div class="form-group position-relative mb-3">
+          <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
+            <option value="" disabled selected>Seleccione un empleado</option>
+          </select>
+          <label for="EmpleadoId">Empleado</label>
+          <div class="invalid-feedback" id="errorEmpleadoId"></div>
+        </div>
+
+        <!-- Tipo de Horario -->
+        <div class="form-group position-relative mb-3">
+          <select id="TipoHorario" name="TipoHorario" class="form-control" required onchange="toggleHorarioInputs()">
+            <option value="0" disabled selected>Seleccione tipo</option>
+            <option value="1">Recorrido</option>
+            <option value="2">Separado (Mañana y Tarde)</option>
+          </select>
+          <label for="TipoHorario">Tipo de Horario</label>
+        </div>
+
+        <!-- Horario RECORRIDO -->
+        <div id="horarioRecorrido" class="form-row mb-3 d-flex justify-content-between d-none">
+          <div class="form-group position-relative" style="width: 48%;">
+            <input type="time" id="HorarioInicio" name="HorarioInicio" class="form-control" />
+            <label for="HorarioInicio">Hora Inicio</label>
+            <div class="invalid-feedback" id="errorHorarioInicio"></div>
+          </div>
+
+          <div class="form-group position-relative" style="width: 48%;">
+            <input type="time" id="HorarioFin" name="HorarioFin" class="form-control" />
+            <label for="HorarioFin">Hora Fin</label>
+            <div class="invalid-feedback" id="errorHorarioFin"></div>
+          </div>
+        </div>
+
+        <!-- Horario SEPARADO -->
+        <div id="horarioSeparado" class="d-none">
+          <div class="form-row mb-3 d-flex justify-content-between">
+            <div class="form-group position-relative" style="width: 48%;">
+              <input type="time" id="PrimerHorarioInicio" class="form-control" />
+              <label for="PrimerHorarioInicio">Inicio Mañana</label>
+            </div>
+
+            <div class="form-group position-relative" style="width: 48%;">
+              <input type="time" id="PrimerHorarioFin" class="form-control" />
+              <label for="PrimerHorarioFin">Fin Mañana</label>
+            </div>
+          </div>
+
+          <div class="form-row mb-3 d-flex justify-content-between">
+            <div class="form-group position-relative" style="width: 48%;">
+              <input type="time" id="SegundoHorarioInicio" name="SegundoHorarioInicio" class="form-control" />
+              <label for="SegundoHorarioInicio">Inicio Tarde</label>
+            </div>
+
+            <div class="form-group position-relative" style="width: 48%;">
+              <input type="time" id="SegundoHorarioFin" name="SegundoHorarioFin" class="form-control" />
+              <label for="SegundoHorarioFin">Fin Tarde</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Días de la Semana -->
+        <div class="form-group mb-4 text-center">
+          <div class="d-inline-flex flex-wrap justify-content-center gap-2">
+            <!-- Checkbox como botón -->
+            <div><input type="checkbox" class="btn-check" id="lunes" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="lunes">Lun</label></div>
+            <div><input type="checkbox" class="btn-check" id="martes" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="martes">Mar</label></div>
+            <div><input type="checkbox" class="btn-check" id="miercoles" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="miercoles">Mié</label></div>
+            <div><input type="checkbox" class="btn-check" id="jueves" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="jueves">Jue</label></div>
+            <div><input type="checkbox" class="btn-check" id="viernes" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="viernes">Vie</label></div>
+            <div><input type="checkbox" class="btn-check" id="sabado" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="sabado">Sáb</label></div>
+            <div><input type="checkbox" class="btn-check" id="domingo" /><label
+                class="btn btn-outline-primary btn-sm dia-btn" for="domingo">Dom</label></div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="panel-footer">
+          <button type="button" class="btn btn-cancelar" onclick="cerrarPanelHorario()">Cancelar</button>
+          <button type="button" class="btn btn-guardar" onclick="BuscarHorarioId()">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- Offcanvs  detalle horario -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHorario"
+      aria-labelledby="tituloDetalleHorario" style="
+  width: 360px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+">
+      <div class="detalle-horario-contenedor">
+        <div class="detalle-horario-encabezado d-flex justify-content-between align-items-start">
+          <div>
+            <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+              Detalle del Horario
+            </h5>
+            <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+              Información detallada del horario seleccionado.
+            </p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+
+        <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+        <div class="offcanvas-body p-2" style="
+      font-size: 0.75rem;
+      line-height: 1.1;
+      max-height: calc(100vh - 70px);
+      overflow-y: auto;
+    ">
+          <div class="detalle-horario-seccion">
+
+            <div class="detalle-horario-tarjeta">
+              <div class="detalle-horario-seccion">
+                <p class="detalle-horario-titulo-seccion">
+                  Información Horarios
+                </p>
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Lunes:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioLunes"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinLunes"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoLunes2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioLunes2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinLunes2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Martes:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioMartes"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinMartes"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoMartes2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioMartes2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinMartes2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Miércoles:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioMiercoles"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinMiercoles"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoMiercoles2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioMiercoles2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinMiercoles2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Jueves:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioJueves"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinJueves"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoJueves2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioJueves2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinJueves2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Viernes:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioViernes"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinViernes"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoViernes2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioViernes2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinViernes2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Sábado:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioSabado"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinSabado"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoSabado2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioSabado2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinSabado2"></span>
+                  </div>
+                </div>
+
+                <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                <div class="detalle-horario-fila">
+                  <span class="detalle-horario-etiqueta">Domingo:</span>
+                  <div class="detalle-horario-turno">
+                    <span class="detalle-horario-valor" id="detalleInicioDomingo"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinDomingo"></span>
+                  </div>
+                  <div class="detalle-horario-turno" id="turnoDomingo2" style="display:none;">
+                    <span class="detalle-horario-valor" id="detalleInicioDomingo2"></span> a
+                    <span class="detalle-horario-valor" id="detalleFinDomingo2"></span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+  <script src="../js/Vistas/horario.js"></script>
+</div>

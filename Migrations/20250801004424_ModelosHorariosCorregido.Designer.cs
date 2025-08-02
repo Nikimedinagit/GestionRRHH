@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250801004424_ModelosHorariosCorregido")]
+    partial class ModelosHorariosCorregido
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,44 +258,44 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Domingo")
-                        .HasColumnType("bit");
+                    b.Property<string>("Domingo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("HorarioFin")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("HorarioFin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("HorarioInicio")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("HorarioInicio")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("Jueves")
-                        .HasColumnType("bit");
+                    b.Property<string>("Jueves")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Lunes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Lunes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Martes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Martes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Miercoles")
-                        .HasColumnType("bit");
+                    b.Property<string>("Miercoles")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Sabado")
-                        .HasColumnType("bit");
+                    b.Property<string>("Sabado")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan>("SegundoHorarioFin")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("SegundoHorarioFin")
+                        .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("SegundoHorarioInicio")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("SegundoHorarioInicio")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("TipoHorario")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Viernes")
-                        .HasColumnType("bit");
+                    b.Property<string>("Viernes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
