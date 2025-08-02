@@ -657,7 +657,9 @@ function MostrarAsistencias(cursoId, data) {
         <td class='text-center align-middle'>
           <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia? "checked" : ""} />
         </td>
-        <td class='align-middle td-empleado'>${item.empleado.nombreCompleto}</td>
+        <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
+          ${item.empleado.nombreCompleto}
+        </td>
         <td class='align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
         <td class='align-middle'>
         <span class="badge-pill ${badgeClass}" style="padding: 4px 12px; text-aling: center;">${etiqueta}</span>
@@ -1055,7 +1057,9 @@ function MostrarCertificados(cursoId, data) {
 
     tablaBody.append(`
       <tr>
-        <td class='align-middle'>${item.empleado.nombreCompleto}</td>
+        <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
+          ${item.empleado.nombreCompleto}
+        </td>
         <td class='align-middle text-center'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
         <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
         <td class='d-flex justify-content-center align-items-center'>

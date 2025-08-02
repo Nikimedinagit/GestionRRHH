@@ -373,3 +373,140 @@ textarea.form-control {
   font-size: 0.80rem !important;
   border-radius: 5px !important;
 }
+
+/*EVALUACIONES*/
+/* Ajustar botones en pantallas pequeñas */
+@media (max-width: 576px) {
+  .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* Tarjetas resumen en una sola columna */
+@media (max-width: 576px) {
+  .card.p-3 {
+    flex: 1 1 100% !important;
+  }
+}
+
+/* Adaptar evaluacion-item a formato columna en móviles */
+@media (max-width: 768px) {
+  .evaluacion-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .evaluacion-item > div {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .evaluacion-item .toggle-detalle {
+    align-self: flex-end;
+  }
+}
+
+/* Adaptar gráfico a ancho del contenedor */
+#contenedorGrafico canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+
+/* Paneles deslizantes más estrechos en pantallas chicas */
+@media (max-width: 350px) {
+  #panelEvaluaciones, #panelCriterios,
+  #panelProvincia, #panelTipoDeCriterio,
+  #panelCursos, #panelAsistencias, #panelCertificados {
+    max-width: 95vw !important;
+    padding: 8px !important;
+  }
+}
+
+
+/*CURSOS*/
+@media (max-width: 992px) {
+  .card-resumen {
+    flex: 1 1 calc(50% - 1rem) !important;
+  }
+}
+@media (max-width: 576px) {
+  .card-resumen {
+    flex: 1 1 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .btn {
+    width: 100% !important;
+    justify-content: center;
+  }
+}
+
+.table {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .table {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .curso-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .curso-item > div {
+    width: 100%;
+  }
+
+  .curso-item .badge {
+    align-self: flex-end;
+  }
+}
+#contenedorGrafico canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+ 
+@media (max-width: 360px) {
+  #panelCursos,
+  #panelAsistencias,
+  #panelCertificados {
+    max-width: 98vw !important;
+    padding: 6px !important;
+  }
+}
+
+
+@media (max-width: 600px) {
+  td.nombre-empleado {
+    max-width: 90px !important;      
+    white-space: nowrap !important;   
+    overflow: hidden !important;      
+    text-overflow: ellipsis !important; 
+  }
+}
+
+
+@media (max-width: 600px) {
+  /* Que la tabla ocupe todo el ancho */
+  .panelCriterios .table-responsive table {
+    width: 100%;
+  }
+
+  /* Para la celda con la descripción: que no se expanda, trunque y muestre ... */
+  .panelCriterios table td {
+    max-width: 150px;       /* ajusta según necesites */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
