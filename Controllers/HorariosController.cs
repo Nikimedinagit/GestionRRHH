@@ -26,7 +26,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         {
             var horarios = await _context.Horario
                 .Include(h => h.Empleado)
-                    .ThenInclude(e => e.Puesto) 
+                    .ThenInclude(e => e.Puesto)
                 .ToListAsync();
 
             var vista = horarios.Select(h => new VistaHorario
@@ -155,6 +155,26 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return BadRequest();
             }
 
+            // verificar si ya tiene un horario
+            var horarioExistente = await _context.Horario
+            .AnyAsync(h => h.EmpleadoId == horario.EmpleadoId && h.TipoHorario == horario.TipoHorario && h.Id != id);
+
+            if (horarioExistente)
+                return BadRequest(new { mensaje = "Ya existe." });
+
+
+            if (horario.TipoHorario == TipoHorario.RECORRIDO)
+            {
+                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
+                    return BadRequest("Debe completar el horario de inicio y fin.");
+            }
+            else if (horario.TipoHorario == TipoHorario.SEPARADO)
+            {
+                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
+                    horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
+                    return BadRequest("Debe completar ambos horarios.");
+            }
+
             _context.Entry(horario).State = EntityState.Modified;
 
             try
@@ -173,7 +193,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(horario);
         }
 
         // POST: api/Horarios
@@ -182,6 +202,13 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Horario>> PostHorario([FromBody] Horario horario)
         {
+            // verificar si ya tiene un horario
+            var horarioExistente = await _context.Horario
+                .AnyAsync(h => h.EmpleadoId == horario.EmpleadoId && h.TipoHorario == horario.TipoHorario);
+
+            if (horarioExistente)
+                return BadRequest(new { mensaje = "Ya esite." });
+
             if (horario.TipoHorario == TipoHorario.RECORRIDO)
             {
                 if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
@@ -218,8 +245,72 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Horario.Remove(horario);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(horario);
         }
+
+
+        [HttpGet("Total")]
+        public async Task<ActionResult<int>> GetTotalHorarios()
+        {
+            // Obtener el total de horarios asignados
+            var total = await _context.Horario
+                .Include(h => h.Empleado)
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .CountAsync();
+
+            return Ok(new { total });
+        }
+
+        [HttpGet("HorasSemanales")]
+        public async Task<ActionResult> GetTotalHorasSemanales()
+        {
+            var horarios = await _context.Horario
+                .Include(h => h.Empleado)
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .ToListAsync();
+
+            double totalMinutos = 0;
+
+            foreach (var h in horarios)
+            {
+                // Calcular duración del primer horario
+                double minutosTurno1 = (h.HorarioFin > h.HorarioInicio)
+                    ? (h.HorarioFin - h.HorarioInicio).TotalMinutes
+                    : 0;
+
+                // Calcular duración del segundo horario (si existe)
+                double minutosTurno2 = (h.SegundoHorarioFin > h.SegundoHorarioInicio)
+                    ? (h.SegundoHorarioFin - h.SegundoHorarioInicio).TotalMinutes
+                    : 0;
+
+                // Sumar minutos solo para los días activos
+                if (h.Lunes) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Martes) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Miercoles) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Jueves) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Viernes) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Sabado) totalMinutos += minutosTurno1 + minutosTurno2;
+                if (h.Domingo) totalMinutos += minutosTurno1 + minutosTurno2;
+            }
+
+            var totalHoras = Math.Floor(totalMinutos / 60);
+            var minutosRestantes = totalMinutos % 60;
+
+            return Ok(new { totalHorasSemanales = $"{totalHoras}h {minutosRestantes}m" });
+        }
+
+        [HttpGet("FindesDeSemana")]
+        public async Task<ActionResult<int>> GetEmpleadosQueTrabajanFinesDeSemana()
+        {
+            // Obtener el total de horarios asignados
+            var total = await _context.Horario
+                .Include(h => h.Empleado)
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado && h.Sabado || h.Domingo)
+                .CountAsync();
+
+            return Ok(new { empleadosFindes = total });
+        }
+
 
         private bool HorarioExists(int id)
         {

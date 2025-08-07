@@ -292,7 +292,7 @@ document.getElementById("NombreSector").addEventListener("input", () => {
 
 
 function MostrarErrorSectorExistente(mensaje) {
-    const errorSector = document.getElementById("errorNombreSector");
+    const errorSector = document.getElementById("errorEmpleadoId");
     const inputNombreSector = document.getElementById("NombreSector");
 
     errorSector.textContent = mensaje;
