@@ -26,14 +26,13 @@ builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("API-NET-CORE8-RRHH")));
 
 // Configuración de Identity para usuarios y roles
-// Configuración de Identity para usuarios y roles
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequiredLength = 8;                 // Mínimo 8 caracteres
-    options.Password.RequireDigit = true;                // Requiere al menos un número
-    options.Password.RequireLowercase = false;           // No exige minúsculas
-    options.Password.RequireUppercase = false;           // No exige mayúsculas
-    options.Password.RequireNonAlphanumeric = false;     // No exige símbolos
+    options.Password.RequiredLength = 6;        // mínimo 6 caracteres
+    options.Password.RequireDigit = false;      // no requiere números
+    options.Password.RequireLowercase = false;  // no exige minúsculas
+    options.Password.RequireUppercase = false;  // no exige mayúsculas
+    options.Password.RequireNonAlphanumeric = false; // no exige símbolos
 })
 .AddEntityFrameworkStores<Context>() // Usa EF para almacenar los usuarios/roles
 .AddDefaultTokenProviders();         // Activa generación de tokens

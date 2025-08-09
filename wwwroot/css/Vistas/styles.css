@@ -1133,6 +1133,19 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 /* FIN PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
 
 
-
+.btn-rol {
+    padding: 8px 18px;
+    border: 1px solid #198754;
+    background: #fff;
+    color: #198754;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-rol.selected {
+    background: #198754;
+    color: #fff;
+  }
 
 

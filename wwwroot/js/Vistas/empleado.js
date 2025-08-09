@@ -191,9 +191,9 @@ async function ObtenerEmpleados() {
       LimpiarFormularioEmpleado();
       CerrarPanelEmpleado();
     })
-    .catch((error) => {;
+    .catch((error) => {
       MostrarErrorCatch();
-      });
+    });
 }
 
 // Funcion para mostrar todos los empleados
@@ -272,36 +272,29 @@ function MostrarEmpleados(data) {
 
           <!-- Botones de acción -->
 <div class="d-flex justify-content-between mt-2 align-items-center">
-  ${
-    activo
-      ? `
-        <!-- Si está activo: mostrar historial + editar + ver + desactivar -->
-        <div>
-          <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id})" data-tippy-content="Historial">
-            <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
-          </button>
-        </div>
-        <div>
-          <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
-            <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
-          </button>
-          <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id})" data-tippy-content="Editar">
-            <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
-          </button>
-          <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, false)" data-tippy-content="Desactivar">
-            <i class="bi bi-person-x btn-sm text-danger"></i>
-          </button>
-        </div>
-      `
-      : `
-        <!-- Si está desactivado: solo mostrar botón de activar centrado -->
-        <div class="mx-auto">
-          <button class="btn-estado" style="background: none; border: none; cursor: pointer;" onclick="EliminarEmpleadoId(${item.id}, true)" data-tippy-content="Activar">
-            <i class="bi bi-person-check btn-sm text-success"></i>
-          </button>
-        </div>
-      `
-  }
+  <!-- Siempre mostrar historial, ver más y editar -->
+  <div>
+    <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${
+      item.id
+    })" data-tippy-content="Historial">
+      <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
+    </button>
+  </div>
+  <div>
+    <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${
+      item.id
+    })" data-tippy-content="Ver más">
+      <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+    </button>
+    <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${
+      item.id
+    })" data-tippy-content="Editar">
+      <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+    </button>
+  </div>
+</div>
+
+  
 </div>
 
 
@@ -1178,11 +1171,11 @@ async function CrearEmpleado() {
           title: "swal2-toast-success-title",
           icon: "swal2-toast-success-icon",
         },
-        });
-    })
-    .catch((error) => {;
-      MostrarErrorCatch();
       });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
 
 // Función para editar empleado
@@ -1211,18 +1204,19 @@ async function EditarEmpleado(id) {
   const res = await authFetch(`Empleados/${id}`, {
     method: "PUT",
     body: JSON.stringify(empleado),
-  }).then(async (response) => {
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        MostrarErrorEmpleadoExistente(errorData.mensaje);
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.mensaje) {
+          MostrarErrorEmpleadoExistente(errorData.mensaje);
+        }
+        return;
       }
-      return;
-    }
-    CerrarPanelEmpleado();
-    ObtenerEmpleados();
-    // Mostrar alerta de éxito
-    Swal.fire({
+      CerrarPanelEmpleado();
+      ObtenerEmpleados();
+      // Mostrar alerta de éxito
+      Swal.fire({
         title: "¡Empleado Modificado!",
         toast: true,
         position: "bottom-end",
@@ -1238,125 +1232,123 @@ async function EditarEmpleado(id) {
           title: "swal2-toast-success-title",
           icon: "swal2-toast-success-icon",
         },
-        });
-  })
-  .catch((error) => {;
-      MostrarErrorCatch();
       });
+    })
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 }
 
 // Función para eliminar una provincia
-function EliminarEmpleadoId(id, eliminado) {
-  Swal.fire({
-    title: eliminado
-      ? "¿Deseás reactivar este empleado?"
-      : "¿Deseás desactivar este empleado?",
-    html: eliminado
-      ? "<p class='swal2-content-center'>Esta acción volverá a habilitar el empleado en el sistema.</p>"
-      : "<p class='swal2-content-center'>El empleado se desactivará y dejará de estar disponible.</p>",
-    showCancelButton: true,
-    confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
-    cancelButtonText: "Cancelar",
-    focusCancel: true,
-    customClass: {
-      popup: "swal2-border-radius swal2-custom-popup",
-      confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
-      cancelButton: "swal2-btn-cancelar",
-      title: "swal2-title-custom",
-      htmlContainer: "swal2-content-custom",
-    },
-    background: "#ffffff",
-    color: "#1a1a1a",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      EliminarSiEmpleado(id);
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción Cancelada",
-        text: eliminado ? "Continuará desactivad0." : "Continuará activado.",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#fef8f4",
-        color: "#5f4339",
-        icon: "info",
-        iconColor: "#ff914d",
-        customClass: {
-          popup: "swal2-toast-status",
-          title: "swal2-toast-title",
-          content: "swal2-toast-content",
-        },
-      });
-    }
-  });
-}
+// function EliminarEmpleadoId(id, eliminado) {
+//   Swal.fire({
+//     title: eliminado
+//       ? "¿Deseás reactivar este empleado?"
+//       : "¿Deseás desactivar este empleado?",
+//     html: eliminado
+//       ? "<p class='swal2-content-center'>Esta acción volverá a habilitar el empleado en el sistema.</p>"
+//       : "<p class='swal2-content-center'>El empleado se desactivará y dejará de estar disponible.</p>",
+//     showCancelButton: true,
+//     confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
+//     cancelButtonText: "Cancelar",
+//     focusCancel: true,
+//     customClass: {
+//       popup: "swal2-border-radius swal2-custom-popup",
+//       confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
+//       cancelButton: "swal2-btn-cancelar",
+//       title: "swal2-title-custom",
+//       htmlContainer: "swal2-content-custom",
+//     },
+//     background: "#ffffff",
+//     color: "#1a1a1a",
+//   }).then((result) => {
+//     if (result.isConfirmed) {
+//       EliminarSiEmpleado(id);
+//     } else if (result.dismiss === Swal.DismissReason.cancel) {
+//       Swal.fire({
+//         title: "Acción Cancelada",
+//         text: eliminado ? "Continuará desactivad0." : "Continuará activado.",
+//         toast: true,
+//         position: "bottom-end",
+//         showConfirmButton: false,
+//         timer: 2200,
+//         timerProgressBar: true,
+//         background: "#fef8f4",
+//         color: "#5f4339",
+//         icon: "info",
+//         iconColor: "#ff914d",
+//         customClass: {
+//           popup: "swal2-toast-status",
+//           title: "swal2-toast-title",
+//           content: "swal2-toast-content",
+//         },
+//       });
+//     }
+//   });
+// }
 
 // Función para eliminar una provincia
-async function EliminarSiEmpleado(id) {
-  const res = await authFetch(`Empleados/${id}`, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("No se pudo eliminar/reactivar el empleado");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      ObtenerEmpleados();
+// async function EliminarSiEmpleado(id) {
+//   const res = await authFetch(`Empleados/${id}`, {
+//     method: "DELETE",
+//   })
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("No se pudo eliminar/reactivar el empleado");
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       ObtenerEmpleados();
 
-      // Mostrar el mensaje que vino del backend
-       Swal.fire({
-        title: "¡" + data.mensaje + "!",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#f4fff7",
-        color: "#1c3d26",
-        icon: "success",
-        iconColor: "#28a746d8",
-        customClass: {
-          popup: "swal2-toast-success",
-          title: "swal2-toast-success-title",
-          icon: "swal2-toast-success-icon",
-        },
-      });
-    })
-    .catch((error) => {;
-      MostrarErrorCatch();
-      });
-}
-
+//       Swal.fire({
+//         title: "¡" + data.mensaje + "!",
+//         toast: true,
+//         position: "bottom-end",
+//         showConfirmButton: false,
+//         timer: 2200,
+//         timerProgressBar: true,
+//         background: "#f4fff7",
+//         color: "#1c3d26",
+//         icon: "success",
+//         iconColor: "#28a746d8",
+//         customClass: {
+//           popup: "swal2-toast-success",
+//           title: "swal2-toast-success-title",
+//           icon: "swal2-toast-success-icon",
+//         },
+//       });
+//     })
+//     .catch((error) => {
+//       MostrarErrorCatch();
+//     });
+// }
 
 // Función para mostra el offcanvas de historial
 function VerHistorialEmpleado(empleadoId) {
   ObtenerHistorialEmpleados(empleadoId);
 
-  const offcanvasElement = document.getElementById("offcanvasHistorialEmpleado");
+  const offcanvasElement = document.getElementById(
+    "offcanvasHistorialEmpleado"
+  );
   console.log("Elemento encontrado:", offcanvasElement);
 
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
 
-
-
 // Función para obtener el historial de empleados
 async function ObtenerHistorialEmpleados(empleadoId) {
-  const res = await authFetch(`HistorialLaboral/empleado/${empleadoId}`,{
+  const res = await authFetch(`HistorialLaboral/empleado/${empleadoId}`, {
     method: "GET",
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((data) => {
       MostrarHistorialEmpleado(data);
     })
-    .catch((error) => {;
+    .catch((error) => {
       MostrarErrorCatch();
-      });
+    });
 }
 
 // Función para mostrar el historial de empleados
@@ -1374,23 +1366,37 @@ function MostrarHistorialEmpleado(data) {
   $.each(data, function (index, item) {
     $("#tablaHistorialEmpleadoBody").append(
       "<tr>" +
-        "<td class='text-center columna-fecha'>" + item.fechaModificacionString + "</td>" +
+        "<td class='text-center columna-fecha'>" +
+        item.fechaModificacionString +
+        "</td>" +
         "<td class='text-center'>" +
-          "<strong>" + item.puestoAnterior + "</strong><br>" +
-          "<small class='text-muted'>" + item.sectorAnterior + "</small>" +
+        "<strong>" +
+        item.puestoAnterior +
+        "</strong><br>" +
+        "<small class='text-muted'>" +
+        item.sectorAnterior +
+        "</small>" +
         "</td>" +
         "<td class='text-center columna-puesto-actual'>" +
-          "<strong>" + item.puestoActual + "</strong><br>" +
-          "<small class='text-muted'>" + item.sectorActual + "</small>" +
+        "<strong>" +
+        item.puestoActual +
+        "</strong><br>" +
+        "<small class='text-muted'>" +
+        item.sectorActual +
+        "</small>" +
         "</td>" +
         "<td class='text-center columna-responsable'>" +
-          "<strong>" + item.usuarioModificadorNombre + "</strong><br>" +
-          "<small class='text-muted'>" + item.usuarioModificadorEmail + "</small>" +
+        "<strong>" +
+        item.usuarioModificadorNombre +
+        "</strong><br>" +
+        "<small class='text-muted'>" +
+        item.usuarioModificadorEmail +
+        "</small>" +
         "</td>" +
         "<td class='text-center columna-accion d-none d-md-table-cell'>" +
-          `<button class="btn-editar icono-ver-detalle-historial-empleado" style="background: none; border: none;" onclick="MostrarDetalleHistorial(${index})" data-tippy-content="Ver más"><i class="bi bi-info-circle"></i></button>` +
+        `<button class="btn-editar icono-ver-detalle-historial-empleado" style="background: none; border: none;" onclick="MostrarDetalleHistorial(${index})" data-tippy-content="Ver más"><i class="bi bi-info-circle"></i></button>` +
         "</td>" +
-      "</tr>"
+        "</tr>"
     );
   });
 
@@ -1400,27 +1406,32 @@ function MostrarHistorialEmpleado(data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
-
 }
 
 function MostrarDetalleHistorial(index) {
   const item = historialGlobal[index];
 
   // Setear valores en el offcanvas
-  document.getElementById("detalleFechaModificacion").textContent = item.fechaModificacionString || 'N/D';
-  document.getElementById("detallePuestoAnterior").textContent = item.puestoAnterior || 'N/D';
-  document.getElementById("detalleSectorAnterior").textContent = item.sectorAnterior || 'N/D';
-  document.getElementById("detallePuestoActual").textContent = item.puestoActual || 'N/D';
-  document.getElementById("detalleSectorActual").textContent = item.sectorActual || 'N/D';
-  document.getElementById("detalleResponsableNombre").textContent = item.usuarioModificadorNombre || 'N/D';
-  document.getElementById("detalleResponsableEmail").textContent = item.usuarioModificadorEmail || 'N/D';
+  document.getElementById("detalleFechaModificacion").textContent =
+    item.fechaModificacionString || "N/D";
+  document.getElementById("detallePuestoAnterior").textContent =
+    item.puestoAnterior || "N/D";
+  document.getElementById("detalleSectorAnterior").textContent =
+    item.sectorAnterior || "N/D";
+  document.getElementById("detallePuestoActual").textContent =
+    item.puestoActual || "N/D";
+  document.getElementById("detalleSectorActual").textContent =
+    item.sectorActual || "N/D";
+  document.getElementById("detalleResponsableNombre").textContent =
+    item.usuarioModificadorNombre || "N/D";
+  document.getElementById("detalleResponsableEmail").textContent =
+    item.usuarioModificadorEmail || "N/D";
 
   // Mostrar offcanvas
   const offcanvasElement = document.getElementById("offcanvasDetalleHistorial");
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
-
 
 function MostrarErrorCatch() {
   Swal.fire({
@@ -1440,6 +1451,5 @@ function MostrarErrorCatch() {
     buttonsStyling: false,
   });
 }
-
 
 ComboParaFiltrarLocalidadPuesto();

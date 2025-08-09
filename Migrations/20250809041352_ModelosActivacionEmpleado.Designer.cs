@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250809041352_ModelosActivacionEmpleado")]
+    partial class ModelosActivacionEmpleado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,42 +23,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.ActivacionEmpleado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("Dni")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EmpleadoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FechaActivacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("NombreCompleto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PrimeraActivacion")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpleadoId");
-
-                    b.ToTable("ActivacionEmpleado");
-                });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.AprobacionDeLicencia", b =>
                 {
@@ -725,17 +692,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.HasIndex("EmpleadoId");
 
                     b.ToTable("HistorialLaboral");
-                });
-
-            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.ActivacionEmpleado", b =>
-                {
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
-                        .WithMany()
-                        .HasForeignKey("EmpleadoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Empleado");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.AprobacionDeLicencia", b =>

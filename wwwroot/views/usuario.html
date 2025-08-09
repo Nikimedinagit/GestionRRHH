@@ -1,0 +1,80 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+  <!-- Título -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Activación de Empleados</h3>
+    <p class="text-muted mb-3">Panel para gestionar la activación y roles de los empleados.</p>
+  </div>
+
+  <hr />
+
+  <!-- Contenedor de Botones y Tabla -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+    <!-- Contenedor de Acciones (Filtros y Generar Informe) -->
+    <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
+
+      <!-- Botones Filtros y Informe -->
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+          <i class="fa-solid fa-filter me-1"></i>
+          <span>Filtros</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor Filtros-->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+        <!-- Filtro por Activo -->
+        <div class="col-12 col-md-3">
+          <label for="FiltroActivo" class="form-label-fija">Estado de Activación</label>
+          <select id="FiltroActivo" class="form-control filtro-select">
+            <option value="">[Todos]</option>
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+
+        <!-- Filtro por Primera Activación -->
+        <div class="col-12 col-md-3">
+          <label for="FiltroPrimeraActivacion" class="form-label-fija">Primera Activación</label>
+          <select id="FiltroPrimeraActivacion" class="form-control filtro-select">
+            <option value="">[Todos]</option>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+
+        <!-- Buscar por Nombre -->
+        <div class="col-12 col-md-4">
+          <label for="FiltroNombre" class="form-label-fija">Nombre Completo</label>
+          <input type="text" id="FiltroNombre" class="form-control filtro-select" placeholder="Buscar por nombre..." />
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- Tabla de Datos -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle w-100">
+        <thead class="table-activacion-empleados">
+          <tr>
+            <th class="text-center">Fecha Alta</th>
+            <th class="text-start">Nombre Completo</th>
+            <th class="text-start">Email</th>
+            <th class="text-center">DNI</th>
+            <th class="text-center" style="width: 5%;">Activo</th>
+            <th class="text-center d-none" style="width: 5%;">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tablaActivacionEmpleadosBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="../js/Vistas/activacionEmpleado.js"></script>
+
+</div>

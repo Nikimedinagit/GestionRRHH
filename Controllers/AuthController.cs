@@ -5,6 +5,7 @@ using System.Text;
 using API_RRHH_TESIS2025.Models.Usuario;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 [Route("api/[controller]")]
@@ -73,16 +74,29 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
+            // Buscar el empleado vinculado al usuario
+            var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email == user.Email);
+
+            // Si el empleado está eliminado, no permitir el login
+            if (empleado != null && empleado.Eliminado)
+            {
+                return Unauthorized("Credenciales inválidas");
+            }
+
             // Obtener roles asignados al usuario
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Si no tiene el rol ADMINISTRADOR, rechazar el login (si solo querés permitir administradores)
-            if (!roles.Contains("ADMINISTRADOR"))
+            // Definir roles permitidos para iniciar sesión
+            var rolesPermitidos = new[] { "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" };
+
+            // Verificar si el usuario tiene al menos un rol permitido
+            if (!roles.Any(r => rolesPermitidos.Contains(r)))
             {
-                return Unauthorized("Acceso restringido solo para administradores.");
+                return Unauthorized("Acceso restringido.");
             }
 
-            string rolNombre = "ADMINISTRADOR"; // Porque solo permitimos administradores por ahora
+            // Usar el primer rol válido para el token (o ajusta según tu lógica)
+            string rolNombre = roles.First(r => rolesPermitidos.Contains(r));
 
             var claims = new[]
             {
@@ -120,6 +134,7 @@ public class AuthController : ControllerBase
 
         return Unauthorized("Credenciales inválidas");
     }
+
 
 
 

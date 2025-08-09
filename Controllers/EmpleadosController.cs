@@ -73,7 +73,7 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
         {
             var empleadosActivos = await _context.Empleado
-                .Where(e => !e.Eliminado) 
+                .Where(e => !e.Eliminado)
                 .OrderBy(e => e.NombreCompleto)
                 .ToListAsync();
             return empleadosActivos;
@@ -270,26 +270,21 @@ namespace API_RRHH_TESIS2025.Controllers
         }
 
 
-
-
-        // POST: api/Empleados
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            //Guarmamos en mayuscula
+            // Formateo
             empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
             empleado.Direccion = empleado.Direccion.ToUpper();
-
-            //Guardamos el email en minúsculas
             empleado.Email = empleado.Email.ToLower();
 
-            // Asignar valores predeterminados a los campos
+            // Valores por defecto
             empleado.UsuarioId = userId;
+            empleado.Eliminado = true;
 
-            // Validamos si existe el dni, cuil, emial y telefono
+            // Validaciones
             var errroresExistentes = new List<string>();
 
             var dniExistente = await _context.Empleado
@@ -310,16 +305,33 @@ namespace API_RRHH_TESIS2025.Controllers
             var telefonoExistente = await _context.Empleado
                 .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
             if (telefonoExistente != null)
-                errroresExistentes.Add("El Telefono ya existe.");
+                errroresExistentes.Add("El Teléfono ya existe.");
 
             if (errroresExistentes.Any())
                 return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
 
+            // Guardamos el empleado
             _context.Empleado.Add(empleado);
+            await _context.SaveChangesAsync();
+
+            // También creamos el registro en ActivacionEmpleado
+            var activacion = new ActivacionEmpleado
+            {
+                FechaActivacion = null,
+                NombreCompleto = empleado.NombreCompleto,
+                Email = empleado.Email,
+                Dni = empleado.DNI,
+                Activo = false,
+                PrimeraActivacion = true,
+                EmpleadoId = empleado.Id,
+            };
+
+            _context.ActivacionEmpleado.Add(activacion);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEmpleado", new { id = empleado.Id }, empleado);
         }
+
 
         // DELETE: api/Empleados/5
         [HttpDelete("{id}")]
