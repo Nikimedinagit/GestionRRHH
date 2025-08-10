@@ -26,4 +26,5 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<Certificado> Certificado { get; set; }
     public DbSet<Horario> Horario { get; set; }
     public DbSet<ActivacionEmpleado> ActivacionEmpleado { get; set; }
+    public DbSet<API_RRHH_TESIS2025.Models.General.Justificacion> Justificacion { get; set; }
 }
