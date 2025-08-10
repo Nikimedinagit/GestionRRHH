@@ -90,6 +90,19 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Certificado>> PostCertificado(Certificado certificado)
         {
+            //Un certificado solo puede emitirse si el empleado asistió y aprobó el curso con nota mínima de 6.
+            var asistenciaAprobada = await _context.AsistenciaCapacitacion
+            .Where(
+                a => a.EmpleadoId == certificado.EmpleadoId //Se busca que el empleado si hay un registro para ese empleado
+                && a.CursoId == certificado.CursoId //Se busca si hay un registro para ese curso
+                && a.Asistencia == true //Se busca si asistio
+                && a.Resultado >= 6) //Se busca si la nota es mayor o igual a 6
+            .FirstOrDefaultAsync();
+            if (asistenciaAprobada == null)
+            {
+                return BadRequest(new {codigo = 0, mensaje = "El empleado no ha aprobado este curso o no tiene asistencia registrada."});
+            }
+            
 
             //No se puede registrar dos veces el mismo empleado 
             var empleadoExistente = await _context.Certificado
