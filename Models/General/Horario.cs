@@ -42,6 +42,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public int EmpleadoId { get; set; }
 
         public virtual Empleado Empleado { get; set; }
+        public virtual ICollection<Asistencia> Asistencias { get; set; }
     }
 
     public enum TipoHorario

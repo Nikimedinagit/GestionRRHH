@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250810234026_ModeloJustificacionCorrecci")]
+    partial class ModeloJustificacionCorrecci
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,57 +86,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .IsUnique();
 
                     b.ToTable("AprobacionDeLicencia");
-                });
-
-            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Asistencia", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmpleadoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpleadoId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("HorarioId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("HorarioId1")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan?>("PrimerEntrada")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("PrimerSalida")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("SegundaEntrada")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("SegundaSalida")
-                        .HasColumnType("time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpleadoId");
-
-                    b.HasIndex("EmpleadoId1");
-
-                    b.HasIndex("HorarioId");
-
-                    b.HasIndex("HorarioId1");
-
-                    b.ToTable("Asistencia");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.AsistenciaCapacitacion", b =>
@@ -830,32 +782,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Navigation("Licencia");
                 });
 
-            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Asistencia", b =>
-                {
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
-                        .WithMany()
-                        .HasForeignKey("EmpleadoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", null)
-                        .WithMany("Asistencia")
-                        .HasForeignKey("EmpleadoId1");
-
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Horario", "Horario")
-                        .WithMany()
-                        .HasForeignKey("HorarioId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Horario", null)
-                        .WithMany("Asistencias")
-                        .HasForeignKey("HorarioId1");
-
-                    b.Navigation("Empleado");
-
-                    b.Navigation("Horario");
-                });
-
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.AsistenciaCapacitacion", b =>
                 {
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Curso", "Curso")
@@ -1077,8 +1003,6 @@ namespace API_NET_CORE8_RRHH.Migrations
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Empleado", b =>
                 {
-                    b.Navigation("Asistencia");
-
                     b.Navigation("AsistenciaCapacitacion");
 
                     b.Navigation("Certificado");
@@ -1097,11 +1021,6 @@ namespace API_NET_CORE8_RRHH.Migrations
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Evaluacion", b =>
                 {
                     b.Navigation("CriterioDeEvaluacion");
-                });
-
-            modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Horario", b =>
-                {
-                    b.Navigation("Asistencias");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Licencia", b =>

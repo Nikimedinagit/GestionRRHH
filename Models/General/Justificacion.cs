@@ -16,6 +16,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public string DocumentoAdjunto { get; set; }
         public TipoJustificacion TipoJustificacion { get; set; }
         public int EmpleadoId { get; set; }
+        public virtual Empleado Empleado { get; set; }
 
     }
     

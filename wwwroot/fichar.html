@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fichar Entrada/Salida - RRHH</title>
+  <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e88e5, #0d47a1);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      width: 85vw;
+      max-width: 600px;
+      padding: 40px 30px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    h3.titulo-seccion {
+      margin: 0 0 12px;
+      font-weight: 700;
+      font-size: 2rem;
+      color: #0d47a1;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    p.text-muted {
+      margin: 0 0 25px;
+      font-size: 1.1rem;
+      color: #546e7a;
+    }
+
+    hr {
+      border: none;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 30px;
+    }
+
+    label.form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #444;
+      font-size: 1.1rem;
+      text-align: left;
+    }
+
+    input[type="number"].form-control {
+      width: 100%;
+      padding: 14px 15px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      border: 1.5px solid #ccc;
+      transition: border-color 0.3s;
+    }
+
+    input[type="number"].form-control:focus {
+      border-color: #4e73df;
+      outline: none;
+      box-shadow: 0 0 6px rgba(78, 115, 223, 0.6);
+      background-color: #f9fbff;
+    }
+
+    .invalid-feedback {
+      color: #d93025;
+      font-size: 0.9rem;
+      margin-top: 6px;
+      min-height: 20px;
+      text-align: left;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 28px;
+      justify-content: center;
+    }
+
+    button.btn {
+      flex: 1;
+      padding: 14px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.btn-primary {
+      background-color: #1e88e5;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    button.btn-primary:hover {
+      background-color: #1565c0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    button.btn-secondary {
+      background-color: rgba(255,255,255,0.8);
+      color: #0d47a1;
+      border: 1px solid #0d47a1;
+      transition: all 0.3s ease;
+    }
+    button.btn-secondary:hover {
+      background-color: rgba(255,255,255,0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    #resultadoFichaje {
+      margin-top: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      min-height: 28px;
+      text-align: center;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container" role="main" aria-labelledby="tituloFichar">
+    <h3 id="tituloFichar" class="titulo-seccion">Fichar Entrada/Salida</h3>
+    <p class="text-muted">Ingrese su DNI para registrar su asistencia</p>
+    <hr />
+
+    <form id="formFichar" novalidate>
+      <label for="dniInput" class="form-label">DNI</label>
+      <input
+        type="number"
+        id="dniInput"
+        name="dniInput"
+        class="form-control"
+        placeholder="Ingrese su DNI"
+        required
+        autofocus
+        aria-describedby="dniError"
+      />
+      <div id="dniError" class="invalid-feedback" ></div>
+
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">Fichar</button>
+
+        <button type="button" class="btn btn-secondary" aria-label="Cancelar y limpiar formulario" onclick="limpiarFormulario()">Cancelar</button>
+      </div>
+    </form>
+
+    <div id="resultadoFichaje" aria-live="polite"></div>
+  </main>
+
+</body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+ <!--Autenticación -->
+  <script src="./js/authentication/authHandlers.js"></script>
+  <script src="./js/authentication/auth.js"></script>
+
+<script src="./js/Fichar/fichar.js"></script>
+</html>

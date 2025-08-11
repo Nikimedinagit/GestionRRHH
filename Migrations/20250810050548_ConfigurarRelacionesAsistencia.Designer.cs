@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250810050548_ConfigurarRelacionesAsistencia")]
+    partial class ConfigurarRelacionesAsistencia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,7 +108,7 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("HorarioId")
+                    b.Property<int>("HorarioId")
                         .HasColumnType("int");
 
                     b.Property<int?>("HorarioId1")
@@ -845,7 +848,8 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Horario", "Horario")
                         .WithMany()
                         .HasForeignKey("HorarioId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("API_RRHH_TESIS2025.Models.General.Horario", null)
                         .WithMany("Asistencias")
@@ -956,13 +960,11 @@ namespace API_NET_CORE8_RRHH.Migrations
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Justificacion", b =>
                 {
-                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", "Empleado")
+                    b.HasOne("API_RRHH_TESIS2025.Models.General.Empleado", null)
                         .WithMany("Justificacion")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Empleado");
                 });
 
             modelBuilder.Entity("API_RRHH_TESIS2025.Models.General.Licencia", b =>

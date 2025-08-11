@@ -24,7 +24,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Justificacion>>> GetJustificacion()
         {
-            return await _context.Justificacion.ToListAsync();
+            return await _context.Justificacion
+            .Include(j => j.Empleado)
+            .Include(j => j.Empleado.Puesto)
+            .ToListAsync();
         }
 
         // GET: api/Justificaciones/5
@@ -77,6 +80,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Justificacion>> PostJustificacion(Justificacion justificacion)
         {
+            justificacion.TipoJustificacion = TipoJustificacion.PENDIENTE; //Guarda el estado de la justificacion como pendiente
             _context.Justificacion.Add(justificacion);
             await _context.SaveChangesAsync();
 

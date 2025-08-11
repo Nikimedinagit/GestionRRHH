@@ -26,5 +26,25 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<Certificado> Certificado { get; set; }
     public DbSet<Horario> Horario { get; set; }
     public DbSet<ActivacionEmpleado> ActivacionEmpleado { get; set; }
-    public DbSet<API_RRHH_TESIS2025.Models.General.Justificacion> Justificacion { get; set; }
+    public DbSet<Justificacion> Justificacion { get; set; }
+    public DbSet<Asistencia> Asistencia { get; set; }
+
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+
+    modelBuilder.Entity<Asistencia>()
+        .HasOne(a => a.Empleado)
+        .WithMany()
+        .HasForeignKey(a => a.EmpleadoId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    modelBuilder.Entity<Asistencia>()
+        .HasOne(a => a.Horario)
+        .WithMany()
+        .HasForeignKey(a => a.HorarioId)
+        .OnDelete(DeleteBehavior.Restrict);
+}
+
 }
