@@ -91,8 +91,7 @@ function MostrarJustificaciones(data) {
             <!-- Nombre del empleado -->
             <div class="d-flex align-items-center" style="gap: 10px; flex: 1;">
               <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${
-                element.id
-              })" data-tippy-content="Editar">
+                element.id})" data-tippy-content="Editar">
                 <i class="bi bi-pencil-square icono-editar"></i>
               </button>
               <div class="fw-bold text-truncate" style="max-width: 200px;" title="${
@@ -122,33 +121,27 @@ function MostrarJustificaciones(data) {
       `);
 
       const descripcionDetalle = $(`
-        <div class="panelCriterios px-3 pb-2" style="display: none;">
+        <div class="panelJustificacion px-3 pb-2" style="display: none;">
           <div class="mb-3">
             <h3 class="titulo-sub-seccion">Detalle del evento</h3>
           </div>
           <hr style="margin-bottom: 1rem;" />
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th class = "text-center" style="width: 50%;">Motivo</th>
-                  <th class = "text-center" style="width: 50%;">Documento Adjunto</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class = "text-center">${
-                    element.motivo || "Sin motivo"
-                  }</td>
-                  <td class ="text-center">
-                    ${documentoHtml}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="d-flex gap-3 mb-3">
+            <!-- Motivo -->
+            <div class="p-3 rounded" style="flex: 2; background-color: #f8fbfd;" id="motivoDiv">
+              <small class="fw-bold d-block mb-1" id="tituloJustificacion">MOTIVO</small>
+              <hr style="margin: 0.2rem;" />
+              <div>${element.motivo || "Sin motivo"}</div>
+            </div>
+            <div class="p-3 rounded" style="flex: 1; background-color: #f8fbfd;" id="documentoDiv">
+              <small class="fw-bold d-block mb-1" id="tituloJustificacion">DOCUMENTO ADJUNTO</small>
+              <div>${documentoHtml || "No se adjuntó ningún documento"}</div>
+            </div>
+          </div>
           </div>
         </div>
       `);
+
       // Mostrar descripción
       item.find(".btn-ver-descripcion").on("click", function () {
         descripcionDetalle.slideToggle(200, function () {
@@ -186,8 +179,7 @@ async function MostrarModalEditar(id) {
       document.getElementById("MotivoJustificacion").value = data.motivo;
       document.getElementById("FechaJustificacion").value = data.fecha;
       document.getElementById("EmpleadoId").value = data.empleadoId;
-      document.getElementById("DocumentoDescargable").value =
-        data.documentoAdjunto;
+      document.getElementById("DocumentoDescargable").value = data.documentoAdjunto;
 
       abrirPanelJustificacion();
     });
@@ -290,13 +282,15 @@ function ValidarFormularioJustificacion() {
     }
 
     // Validar empleado
-    if (!selectEmpleado == "") {
+    if (selectEmpleado.value === "") {
       selectEmpleado.classList.add("is-invalid");
       selectErrorEmpleado.style.display = "block";
       selectErrorEmpleado.textContent = "Seleccione un empleado.";
       esValid = false;
     } else {
+      selectEmpleado.classList.remove("is-invalid");
       selectEmpleado.classList.add("is-valid");
+      selectErrorEmpleado.style.display = "none";
     }
     return esValid;
 }

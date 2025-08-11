@@ -218,7 +218,7 @@ td:nth-child(4) {
 }
 
 /*Acordeones*/
-.panelCriterios.mostrar {
+.panelCriterios.mostrar, .panelJustificacion.mostrar {
   border: 1px solid rgba(0, 0, 0, 0.152); 
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -537,4 +537,21 @@ textarea.form-control {
   background-color: #dc3546ab;
   color: #fff;
   font-size: 0.70rem;
+}
+
+
+#motivoDiv, #documentoDiv {
+  border: 1px solid rgba(0, 0, 0, 0.152); 
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+  background-color: #f4f8fb;
+}
+
+#tituloJustificacion {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #000000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: left;
 }
