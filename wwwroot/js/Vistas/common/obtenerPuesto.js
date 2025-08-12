@@ -15,7 +15,7 @@ function MostrarPuestosDropDown(data) {
 
     // mostar una opcion para seleccionar
     $('#IdPuesto').append(
-        `<option value="0" selected disabled hidden>Seleccione un puesto</option>`
+        `<option value="0" selected disabled hidden>Seleccione</option>`
     );
         
     $.each(data, function (index, item) {

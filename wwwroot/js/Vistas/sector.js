@@ -166,8 +166,8 @@ function MostrarSectores(data) {
         "</td>" +
         // Columna Provincia (nombre)
         "<td class='align-middle " +
-        filaClass +
-        "'>" +
+        filaClass + 
+        " sector-truncado'>" +
         item.nombre +
         "</td>" +
         // Columna Acciones (editar)

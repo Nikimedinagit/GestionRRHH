@@ -22,27 +22,27 @@ function cerrarPanelHorario() {
 
 function toggleHorarioInputs() {
   const tipo = document.getElementById("TipoHorario").value;
-  const recorridoDiv = document.getElementById("horarioRecorrido");
-  const separadoDiv = document.getElementById("horarioSeparado");
+  const continuoDiv = document.getElementById("horarioContinuo");
+  const alternoDiv = document.getElementById("horarioAlterno");
 
   if (tipo === "1") {
-    recorridoDiv.classList.remove("d-none");
-    recorridoDiv.classList.add("d-flex");
+    continuoDiv.classList.remove("d-none");
+    continuoDiv.classList.add("d-flex");
 
-    separadoDiv.classList.add("d-none");
-    separadoDiv.classList.remove("d-block");
+    alternoDiv.classList.add("d-none");
+    alternoDiv.classList.remove("d-block");
   } else if (tipo === "2") {
-    separadoDiv.classList.remove("d-none");
-    separadoDiv.classList.add("d-block");
+    alternoDiv.classList.remove("d-none");
+    alternoDiv.classList.add("d-block");
 
-    recorridoDiv.classList.add("d-none");
-    recorridoDiv.classList.remove("d-flex");
+    continuoDiv.classList.add("d-none");
+    continuoDiv.classList.remove("d-flex");
   } else {
-    recorridoDiv.classList.add("d-none");
-    recorridoDiv.classList.remove("d-flex");
+    continuoDiv.classList.add("d-none");
+    continuoDiv.classList.remove("d-flex");
 
-    separadoDiv.classList.add("d-none");
-    separadoDiv.classList.remove("d-block");
+    alternoDiv.classList.add("d-none");
+    alternoDiv.classList.remove("d-block");
   }
 }
 
@@ -198,8 +198,8 @@ function MostrarHorariosDesktop(data) {
   }
 
   const tipoColor = {
-    Separado: "bg-separado",
-    Recorrido: "bg-recorrido",
+    Alterno: "bg-alterno",
+    Continuo: "bg-continuo",
   };
 
   data.forEach((horario) => {
@@ -359,8 +359,8 @@ function MostrarHorariosMobile(data) {
 
   // Clase de color según tipo de horario
   const tipoColor = {
-    Separado: "bg-separado",
-    Recorrido: "bg-recorrido",
+    Alterno: "bg-alterno",
+    Continuo: "bg-continuo",
   };
   window.horariosData = data;
 
@@ -535,8 +535,8 @@ function LimpiarModalHorario() {
   errorDiasSemana.textContent = "";
   errorDiasSemana.style.display = "none";
 
-  document.getElementById("horarioRecorrido").classList.add("d-none");
-  document.getElementById("horarioSeparado").classList.add("d-none");
+  document.getElementById("horarioContinuo").classList.add("d-none");
+  document.getElementById("horarioAlterno").classList.add("d-none");
 
 }
 
@@ -575,14 +575,14 @@ async function MostrarModalEditar(id) {
 
     // Mostrar campos según el tipo de horario
     if (data.tipoHorario === 1) {
-      document.getElementById("horarioRecorrido").classList.remove("d-none");
-      document.getElementById("horarioSeparado").classList.add("d-none");
+      document.getElementById("horarioContinuo").classList.remove("d-none");
+      document.getElementById("horarioAlterno").classList.add("d-none");
 
       document.getElementById("HorarioInicio").value = data.horarioInicio;
       document.getElementById("HorarioFin").value = data.horarioFin;
     } else if (data.tipoHorario === 2) {
-      document.getElementById("horarioRecorrido").classList.add("d-none");
-      document.getElementById("horarioSeparado").classList.remove("d-none");
+      document.getElementById("horarioContinuo").classList.add("d-none");
+      document.getElementById("horarioAlterno").classList.remove("d-none");
 
       document.getElementById("PrimerHorarioInicio").value = data.horarioInicio;
       document.getElementById("PrimerHorarioFin").value = data.horarioFin;
@@ -653,7 +653,7 @@ function ValidarFormularioHorario() {
     esValido = false;
   }
 
-  // Validar Horario Recorrido
+  // Validar Horario Continuo
   if (selectTipoHorario.value === "1") {
     if (!inputHorarioInicio.value) {
       errorHorarioInicio.textContent = "Ingrese hora de inicio.";
@@ -670,7 +670,7 @@ function ValidarFormularioHorario() {
     }
   }
 
-  // Validar Horario Separado
+  // Validar Horario Alterno
   if (selectTipoHorario.value === "2") {
     if (!primerHorarioInicio.value) {
       errorPrimerHorarioInicio.textContent = "Ingrese hora de inicio (mañana).";
@@ -824,7 +824,7 @@ document.getElementById("TipoHorario").addEventListener("input", () => {
 });
 
 // valdiar en vivo horario inico nomas
-document.getElementById("horarioRecorrido").addEventListener("input", () => {
+document.getElementById("horarioContinuo").addEventListener("input", () => {
   const inputHorarioInicio = document.getElementById("HorarioInicio");
   const errorHorarioInicio = document.getElementById("errorHorarioInicio");
 
@@ -864,7 +864,7 @@ document.getElementById("horarioRecorrido").addEventListener("input", () => {
 });
 
 
-document.getElementById("horarioSeparado").addEventListener("input", () => {
+document.getElementById("horarioAlterno").addEventListener("input", () => {
   const inputPrimerHorarioInicio = document.getElementById("PrimerHorarioInicio");
   const errorPrimerHorarioInicio = document.getElementById("errorPrimerHorarioInicio");
 
@@ -999,7 +999,7 @@ async function CrearHorario() {
   };
 
   if (tipoHorario === 1) {
-    // RECORRIDO
+    // CONTINUO
     horario.horarioInicio = formatearHora(
       document.getElementById("HorarioInicio").value
     );
@@ -1007,7 +1007,7 @@ async function CrearHorario() {
       document.getElementById("HorarioFin").value
     );
   } else if (tipoHorario === 2) {
-    // SEPARADO
+    // ALTERNO
     horario.horarioInicio = formatearHora(
       document.getElementById("PrimerHorarioInicio").value
     );
@@ -1085,11 +1085,11 @@ async function EditarHorario(id) {
   };
 
   if (tipoHorario === 1) {
-    // Recorrido
+    // Continuo
     horarioEditar.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
     horarioEditar.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
   } else if (tipoHorario === 2) {
-    // Separado
+    // Alterno
     horarioEditar.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
     horarioEditar.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
     horarioEditar.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);

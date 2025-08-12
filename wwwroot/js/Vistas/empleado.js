@@ -1,5 +1,12 @@
 // Función para abrir el panel lateral
 function AbrirPanelEmpleado() {
+
+  // Reiniciar el valor del select
+  document.getElementById("EstadoCivilEmpleado").value = "0";
+  document.getElementById("TipoSexoEmpleado").value = "0";
+  document.getElementById("IdLocalidad").value = "0";
+  document.getElementById("IdPuesto").value = "0";
+
   document.getElementById("panelEmpleado").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.add("visible");

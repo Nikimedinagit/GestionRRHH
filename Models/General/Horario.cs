@@ -47,8 +47,8 @@ namespace API_RRHH_TESIS2025.Models.General
 
     public enum TipoHorario
     {
-        RECORRIDO = 1,
-        SEPARADO
+        CONTINUO = 1,
+        ALTERNO
     }
 
     public class VistaHorario

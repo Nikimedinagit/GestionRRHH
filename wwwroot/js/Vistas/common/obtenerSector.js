@@ -16,7 +16,7 @@ function MostrarSectoresDropDown(data) {
     $dropdown.empty();  
 
     // Agrega la opción por defecto
-    $dropdown.append(`<option value="" selected disabled hidden>Seleccione un sector</option>`);
+    $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
 
     // Agrega los sectores activos

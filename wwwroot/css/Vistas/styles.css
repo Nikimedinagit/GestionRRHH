@@ -334,7 +334,6 @@ table tbody tr {
   display: flex;
   flex-direction: column;
   z-index: 1100;
-
   transform: translate(100%, -50%);
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
   overflow-y: auto;
@@ -534,6 +533,83 @@ select.form-control:not([value=""])+label {
 
 
 
+/* INICIO RESPONSIVO PARA EMPLEADOS */
+#panelEmpleado .form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 12px !important;
+}
+
+
+@media (max-width: 1024px) {
+  #panelEmpleado .form-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #panelEmpleado .form-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 320px) {
+  #panelEmpleado .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* FIN RESPONSIVO PARA EMPLEADOS */
+
+
+
+
+
+/* INICIO RESPONSIVO PARA LICENCIAS */
+@media (max-width: 400px) {
+  #panelLicencia .form-grid {
+  grid-template-columns: repeat(1, 1fr) !important; 
+}
+}
+/* FIN RESPONSIVO PARA LICENCIAS */
+
+
+
+
+/* INICIO RESPONSIVO PARA HORARIOS */
+/* #panelHorario .form-group {
+  width: 100%;
+}
+
+#panelHorario .form-row {
+  display: flex;
+  gap: 12px;
+}
+
+#panelHorario .form-row .form-group {
+  flex: 1;
+}
+
+@media (max-width: 1024px) {
+  #panelHorario {
+    max-width: 70vw;
+  }
+}
+
+@media (max-width: 768px) {
+  #panelHorario .form-row {
+    flex-direction: column;
+  }
+
+  #panelHorario .form-row .form-group {
+    width: 100% !important;
+  }
+
+} */
+/* FIN RESPONSIVO PARA HORARIOS */
+
+
+
+
 /* INICIO VENTANAS EMERGENTES */
 /* Contenedor general del modal */
 .swal2-custom-popup {
@@ -685,9 +761,6 @@ select.form-control:not([value=""])+label {
   width: 100%;
   margin: 0;
 }
-
-
-
 /* FIN VENTANAS EMERGENTES */
 
 
@@ -947,8 +1020,14 @@ detalle-horario-etiqueta{
 
 
 
-/* INICIO RESPONSIVE TABALA PUESTOS */
-.puesto-truncado {
+/* INICIO RESPONSIVE TABLA PUESTOS-SECTOR-PROVINCIA-
+TIPO DE CRITERIO-TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
+.puesto-truncado,
+.sector-truncado,
+.provincia-truncada,
+.localidad-truncada,
+.tipo-de-licencia-truncado,
+.tipo-de-criterio-truncado {
   white-space: normal;   
   max-width: none;
   overflow: visible;
@@ -956,14 +1035,22 @@ detalle-horario-etiqueta{
 }
 
 @media (max-width: 430px) {
-  .puesto-truncado {
-    max-width: 100px;       
-    white-space: nowrap;    
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .puesto-truncado,
+  .sector-truncado,
+  .provincia-truncada,
+  .localidad-truncada,
+  .tipo-de-licencia-truncado,
+  .tipo-de-criterio-truncado {
+    max-width: 100px !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: break-word !important;
   }
 }
-/* FIN RESPONSIVE TABALA PUESTOS */
+/* FIN RESPONSIVE TABLA PUESTOS-SECTOR-PROVINCIA-TIPO DE CRITERIO-
+TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
+
 
 
 
@@ -1108,8 +1195,9 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 /* FIN ESTILO PANEL HORARIOS Y TABLA EN EL DETALLE DE HORARIOS */
 
 
+
 /* INICIO PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
-.bg-separado {
+.bg-alterno {
   background-color: #ffd6dd !important;
   color: #a33a44 !important;            
   padding: 2px 6px !important;
@@ -1120,7 +1208,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   font-size: 0.7rem !important;
 }
 
-.bg-recorrido {
+.bg-continuo {
   background-color: #d0e6ff !important;
   color: #1a4a8a !important;
   padding: 2px 6px !important;
@@ -1130,9 +1218,12 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   text-align: center !important;
   font-size: 0.7rem !important;
 }
-/* FIN PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
+/* FIN PARA LOS TIPOS DE HORARIOS DE LA VISTA HORARIO */
 
 
+
+
+/* INICIO BOTONES PARA SELECIONAR EL ROL EN ACTIVACION EMPLEADO */
 .btn-rol {
     padding: 8px 18px;
     border: 1px solid #198754;
@@ -1147,5 +1238,5 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
     background: #198754;
     color: #fff;
   }
-
+/* FIN BOTONES PARA SELECIONAR EL ROL EN ACTIVACION EMPLEADO */
 

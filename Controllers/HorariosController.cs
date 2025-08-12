@@ -163,12 +163,12 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return BadRequest(new { mensaje = "Ya existe." });
 
 
-            if (horario.TipoHorario == TipoHorario.RECORRIDO)
+            if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
                 if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
                     return BadRequest("Debe completar el horario de inicio y fin.");
             }
-            else if (horario.TipoHorario == TipoHorario.SEPARADO)
+            else if (horario.TipoHorario == TipoHorario.ALTERNO)
             {
                 if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
                     horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
@@ -209,12 +209,12 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (horarioExistente)
                 return BadRequest(new { mensaje = "Ya esite." });
 
-            if (horario.TipoHorario == TipoHorario.RECORRIDO)
+            if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
                 if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
                     return BadRequest("Debe completar el horario de inicio y fin.");
             }
-            else if (horario.TipoHorario == TipoHorario.SEPARADO)
+            else if (horario.TipoHorario == TipoHorario.ALTERNO)
             {
                 if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
                     horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)

@@ -15,7 +15,7 @@ function MostrarProvinciasDropDown(data) {
     $dropdown.empty();  
 
     // Agrega la opción por defecto
-    $dropdown.append(`<option value="" selected disabled hidden>Seleccione una provincia</option>`);
+    $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
     // Agrega las provincias activas
     $.each(data, function (index, item) {

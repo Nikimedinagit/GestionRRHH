@@ -186,7 +186,7 @@ function MostrarPuestos(data) {
        "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
 
         // Columna Sector (nombre)
-        "<td class='align-middle d-none d-md-table-cell" +
+        "<td class='text-start align-middle d-none d-md-table-cell" +
         filaClass +
         "'>" +
         (item.sectorString || "Sin sector") +

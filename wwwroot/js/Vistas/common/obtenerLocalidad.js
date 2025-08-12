@@ -16,7 +16,7 @@ function MostrarLocalidadesDropDown(data) {
 
     // mostar una opcion para seleccionar
     $('#IdLocalidad').append(
-        `<option value="0" selected disabled hidden>Seleccione una localidad</option>`
+        `<option value="0" selected disabled hidden>Seleccione</option>`
     );
         
     $.each(data, function (index, item) {

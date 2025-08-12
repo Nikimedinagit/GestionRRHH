@@ -179,7 +179,7 @@ function MostrarLocalidades(data) {
         // columna Localidad (nombre)
         "<td class='align-middle " +
         filaClass +
-        "'>" +
+        " localidad-truncada'>" +
         item.nombre +
         "</td>" +
         // Columna Provincia (nombre)

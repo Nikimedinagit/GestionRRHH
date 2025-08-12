@@ -167,7 +167,7 @@ function MostrarTiposDeLicencias(data) {
         // Columna Tipo de Licencia (nombre)
         "<td class='align-middle " +
         filaClass +
-        "'>" +
+        " tipo-de-licencia-truncado'>" +
         item.nombre +
         "</td>" +
         // Columna Acciones (editar)

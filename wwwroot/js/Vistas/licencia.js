@@ -318,17 +318,6 @@ function MostrarLicencias(data) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 // Función para convertir ISO a "9 may 2023"
 function formatearFecha(fechaStr) {
   const [dia, mes, anio] = fechaStr.split('/');

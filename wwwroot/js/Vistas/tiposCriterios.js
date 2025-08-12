@@ -166,7 +166,7 @@ function MostrarTiposDeCriterios(data) {
         // Columna Tipo de criterio(nombre)
         "<td class='align-middle " +
         filaClass +
-        "'>" +
+        " tipo-de-criterio-truncado'>" +
         item.nombre +
         "</td>" +
         // Columna Acciones (editar)

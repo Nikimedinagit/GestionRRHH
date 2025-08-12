@@ -160,7 +160,7 @@ function MostrarProvincias(data) {
         // Columna Provincia (nombre)
         "<td class='align-middle " +
         filaClass +
-        "'>" +
+        " provincia-truncada'>" +
         item.nombre +
         "</td>" +
         // Columna Acciones (editar)

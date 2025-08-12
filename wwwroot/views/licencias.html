@@ -213,7 +213,7 @@
             <form id="formLicencia">
                 <input type="hidden" id="IdLicencia" />
 
-                <!-- Fila 1: Tipo de Licencia y Empleado -->
+                <!-- Tipo de Licencia y Empleado -->
                 <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
                     <!-- Tipo de Licencia -->
                     <div class="form-group position-relative mb-3">
@@ -234,7 +234,7 @@
                     </div>
                 </div>
 
-                <!-- Fila 2: Fecha Inicio y Fecha Fin -->
+                <!-- Fecha Inicio y Fecha Fin -->
                 <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
                     <!-- Fecha Inicio -->
                     <div class="form-group position-relative mb-3">
@@ -251,17 +251,18 @@
                     </div>
                 </div>
 
-                <!-- Fila 3: Documento -->
+                <!-- : Documento -->
                 <div class="form-grid" style="grid-template-columns: 1fr;">
                     <!-- Documento Adjunto -->
                     <div class="form-group position-relative mb-3">
-                        <input type="file" id="DocumentoAdjunto" class="form-control" />
+                        <input type="file" id="DocumentoAdjunto" name="DocumentoAdjunto" class="form-control" multiple />
                         <label for="DocumentoAdjunto">Documento Adjunto (opcional)</label>
                         <div class="invalid-feedback" id="errorDocumentoAdjunto"></div>
-                        <div id="archivoAdjuntoActual" class="mt-1"></div> <!-- Aquí se muestra el archivo existente -->
+                        <div id="archivoAdjuntoActual" class="mt-1"></div>
+                        <div class="invalid-feedback" id="errorArchivoAdjunto"></div>
                     </div>
                 </div>
-            </form>
+            </form> 
         </div>
 
         <div class="panel-footer">
