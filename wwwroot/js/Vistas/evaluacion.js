@@ -136,7 +136,16 @@ async function ObtenerEvaluaciones() {
 
 }
 
+
 function MostrarEvaluaciones(data) {
+  if (window.innerWidth <= 764) {
+    MostrarEvalueacionesMobile(data);
+  } else {
+    MostrarEvaluacionesDesktop(data);
+  }
+}
+
+function MostrarEvaluacionesDesktop(data) {
   const contenedor = $("#contenedorEvaluaciones");
   contenedor.empty();
 
@@ -150,7 +159,7 @@ function MostrarEvaluaciones(data) {
   if(Array.isArray(data)){
   data.forEach(element => {
     const nota = Number(element.calificacion);
-    const fecha = element.fecha.split("T")[0];
+    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";;
 
     let etiqueta = "Regular";
     let badgeClass = "badge-regular";
@@ -254,6 +263,90 @@ function MostrarEvaluaciones(data) {
     delay: [100, 0],
   });
 }
+
+
+function MostrarEvalueacionesMobile(data) {
+  const contenedor = document.getElementById("contenedorEvaluaciones");
+  contenedor.innerHTML = "";
+
+  if (!Array.isArray(data) || data.length === 0) {
+    contenedor.innerHTML =
+      "<div class='text-center text-muted py-3'>No hay evaluaciones para mostrar.</div>";
+    return;
+  }
+
+  data.forEach((element) => {
+    const nota = Number(element.calificacion);
+    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
+    let etiqueta = "Regular";
+    let badgeClass = "badge-regular";
+
+    if (nota >= 9) {
+      etiqueta = "Excelente";
+      badgeClass = "badge-excelente";
+    } else if (nota >= 7) {
+      etiqueta = "Muy Buena";
+      badgeClass = "badge-muybuena";
+    } else if (nota >= 5) {
+      etiqueta = "Buena";
+      badgeClass = "badge-buena";
+    }
+
+    contenedor.innerHTML += `
+      <div class="col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex">
+        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+          <div class="flex-grow-1 d-flex flex-column">
+
+            <!-- Nombre del empleado -->
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${
+              element.empleadoNombre || "Sin nombre"
+            }</h5>
+
+            <!-- Puesto -->
+            <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
+              <i class="bi bi-briefcase me-2"></i>
+              ${element.empleadoPuesto || "Sin puesto"}
+            </p>
+
+            <!-- Fecha -->
+            <small class="text-muted mb-2" style="font-size: 0.75rem;">
+              ${fecha || "Fecha no disponible"}
+            </small>
+
+            <!-- Tipo de horario -->
+            <span class="badge ${badgeClass} my-2" style="width: fit-content; font-size: 1rem;">
+              ${etiqueta}
+            </span>
+          </div>
+          <!-- Botones de acción -->
+          <div class="d-flex justify-content-between mt-3 align-items-center">
+            <div>
+            <button class="btn-ver" onclick="MostrarDetalleEvaluacion(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
+              <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
+            </button>
+            </div>
+            <div>
+
+            <button class="btn-editar" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar" style="background: none; border: none;">
+              <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+            </button>
+            <button class="btn-eliminar" onclick="EliminarEvaluacionId(${element.id})" data-tippy-content="Eliminar" style="background: none; border: none;">
+              <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
+            </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  `;
+  });
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+
 
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
