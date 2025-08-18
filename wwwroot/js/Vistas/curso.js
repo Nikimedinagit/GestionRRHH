@@ -660,9 +660,9 @@ function MostrarAsistencias(cursoId, data) {
         <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
           ${item.empleado.nombreCompleto}
         </td>
-        <td class='align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
-        <td class='align-middle'>
-        <span class="badge-pill ${badgeClass}" style="padding: 4px 12px; text-aling: center;">${etiqueta}</span>
+        <td class='text-center align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
+        <td class='text-center align-middle'>
+        <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</span>
         </td>
         <td class='d-flex justify-content-center align-items-center'>
           <button class='btn-eliminar' style='background: none; border: none;' 

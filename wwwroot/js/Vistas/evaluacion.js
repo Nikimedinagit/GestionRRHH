@@ -139,7 +139,7 @@ async function ObtenerEvaluaciones() {
 
 function MostrarEvaluaciones(data) {
   if (window.innerWidth <= 764) {
-    MostrarEvalueacionesMobile(data);
+    MostrarEvaluacionesMobile(data);
   } else {
     MostrarEvaluacionesDesktop(data);
   }
@@ -240,16 +240,20 @@ function MostrarEvaluacionesDesktop(data) {
       </div>
     `);
 
-  item.find(".toggle-detalle").on("click", function () {
-    const iconoChevron = $(this).find("i"); // Icono de la flecha
-    const panel = detalleHTML; // Contenedor del panel
-  // Alternar visibilidad
-    panel.slideToggle(200, function () {
+item.find(".toggle-detalle").on("click", function () {
+  const iconoChevron = $(this).find("i");
+  const panel = detalleHTML;
+  $(".panelCriterios.mostrar").not(panel).slideUp(200).removeClass("mostrar");
+  $(".toggle-detalle i").not(iconoChevron)
+    .removeClass("bi-chevron-up")
+    .addClass("bi-chevron-down");
+
+  panel.slideToggle(200, function () {
     panel.toggleClass("mostrar", panel.is(":visible"));
   });
-
   iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
 });
+
 
  
     contenedor.append(item);
@@ -264,8 +268,7 @@ function MostrarEvaluacionesDesktop(data) {
   });
 }
 
-
-function MostrarEvalueacionesMobile(data) {
+function MostrarEvaluacionesMobile(data) {
   const contenedor = document.getElementById("contenedorEvaluaciones");
   contenedor.innerHTML = "";
 
@@ -274,8 +277,7 @@ function MostrarEvalueacionesMobile(data) {
       "<div class='text-center text-muted py-3'>No hay evaluaciones para mostrar.</div>";
     return;
   }
-
-  data.forEach((element) => {
+  data.forEach((element, item) => {
     const nota = Number(element.calificacion);
     const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
     let etiqueta = "Regular";
@@ -296,57 +298,93 @@ function MostrarEvalueacionesMobile(data) {
       <div class="col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex">
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
           <div class="flex-grow-1 d-flex flex-column">
-
-            <!-- Nombre del empleado -->
-            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${
-              element.empleadoNombre || "Sin nombre"
-            }</h5>
-
-            <!-- Puesto -->
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
+              ${element.empleadoNombre || "Sin nombre"}
+            </h5>
             <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-briefcase me-2"></i>
               ${element.empleadoPuesto || "Sin puesto"}
             </p>
-
-            <!-- Fecha -->
             <small class="text-muted mb-2" style="font-size: 0.75rem;">
               ${fecha || "Fecha no disponible"}
             </small>
-
-            <!-- Tipo de horario -->
             <span class="badge ${badgeClass} my-2" style="width: fit-content; font-size: 1rem;">
               ${etiqueta}
             </span>
           </div>
-          <!-- Botones de acción -->
-          <div class="d-flex justify-content-between mt-3 align-items-center">
-            <div>
-            <button class="btn-ver" onclick="MostrarDetalleEvaluacion(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
-              <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
-            </button>
-            </div>
-            <div>
-
-            <button class="btn-editar" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar" style="background: none; border: none;">
+          
+        <div class="d-flex justify-content-between mt-2 align-items-center">
+          <!-- Siempre mostrar historial, ver más y editar -->
+          <div>
+          <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
+            <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
+          </button>
+          </div>
+          <div>
+            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${
+              element.id
+            })" data-tippy-content="Editar" style="background: none; border: none;">
               <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
             </button>
-            <button class="btn-eliminar" onclick="EliminarEvaluacionId(${element.id})" data-tippy-content="Eliminar" style="background: none; border: none;">
-              <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
+            <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
+              <i class="bi bi-chevron-down"></i>
             </button>
-            </div>
           </div>
         </div>
-      </div>
-  `;
+
+
+        <div class="panelCriterios mt-2" style="display:none;">
+          <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${ element.id}"> 
+            <span>Agregar Criterio</span>
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm align-middle">
+              <colgroup>
+                <col style="width: 70%" /> 
+                <col style="width: 30%" /> 
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-start header-table">Criterio</th>
+                  <th class="text-center header-table">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+    `;
+
+      ObtenerCriterioDeEvaluacion(element.id);
   });
+
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
     delay: [100, 0],
   });
+
+  // Mostrar/ocultar tabla
+  document.querySelectorAll(".toggle-detalle").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const card = this.closest(".card");
+      const detalleTabla = card.querySelector(".panelCriterios");
+      const icono = this.querySelector("i");
+
+      if (detalleTabla.style.display === "none") {
+        detalleTabla.style.display = "block";
+        icono.classList.replace("bi-chevron-down", "bi-chevron-up");
+      } else {
+        detalleTabla.style.display = "none";
+        icono.classList.replace("bi-chevron-up", "bi-chevron-down");
+      }
+    });
+  });
 }
-
-
 
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
@@ -479,6 +517,27 @@ document.getElementById("CalificacionEvaluacion").addEventListener("input", () =
     errorCalificacion.style.display = "none";
   };
   return esValid;
+});
+document.getElementById("EmpleadoId").addEventListener("change", () => {
+    const input  = document.getElementById("EmpleadoId");
+    const error = document.getElementById("errorEmpleadoId");
+    const valor = input.value.trim();
+
+  // Limpiar cualquier estado previo
+  input.classList.remove("is-invalid", "is-valid");
+
+    let esValid = true;
+
+    if(valor === "0"){
+        input.classList.add("is-invalid");
+        error.style.display = "block";
+        error.textContent = "Seleccione un empleado.";
+        esValid = false;
+    } else {
+    input.classList.add("is-valid"); // Color verde cuando cumple
+    error.style.display = "none";
+  };
+  return esValid;
   });
 
 
@@ -591,6 +650,8 @@ async function EditarEvaluacion(id) {
 ObtenerEvaluaciones();
 
 
+
+
 //FUNCIONES CRITERIOS DE EVALUACION
 async function ObtenerCriterioDeEvaluacion(evaluacionId) {
   const res = await authFetch("CriteriosDeEvaluacion", {
@@ -620,11 +681,13 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
     return;
   }
 
+  const enMovil = window.innerWidth <= 764;
+
   $.each(data, function (index, item) {
+    if (enMovil) {
     tablaBody.append(`
       <tr>
         <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
-        <td class='align-middle'>${item.descripcion}</td>
         <td class='d-flex justify-content-center align-items-center'>
           <button class='btn-eliminar' style='background: none; border: none;' 
             onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
@@ -633,6 +696,20 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
         </td>
       </tr>
     `);
+    } else {
+      tablaBody.append(`
+        <tr>
+          <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
+          <td class='align-middle'>${item.descripcion}</td>
+          <td class='d-flex justify-content-center align-items-center'>
+            <button class='btn-eliminar' style='background: none; border: none;' 
+              onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
+              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+            </button>
+          </td>
+        </tr>
+      `);
+    }
   });
 
   tippy("[data-tippy-content]", {
@@ -641,6 +718,68 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
     delay: [100, 0],
   });
 
+}
+
+async function MostrarDetalleCriterios(evaluacionId) {
+  const contenedor = document.getElementById("contenedorCriteriosOffcanvas");
+
+   const res = await authFetch("CriteriosDeEvaluacion", {
+    method: "GET",
+    })
+    .then(response => response.json())
+    .then(data => {
+      const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
+
+      contenedor.innerHTML = "";
+
+      if (criteriosFiltrados.length === 0) {
+        contenedor.innerHTML = "<div class='text-center text-muted'>No hay criterios para mostrar.</div>";
+        return;
+      }
+
+      criteriosFiltrados.forEach(item => {
+        const card = `
+          <div class="card mb-3 detalle-criterio-tarjeta">
+            <div class="card-body detalle-criterio-seccion">
+              <p class="detalle-criterio-titulo-seccion">
+                Información del Criterio
+              </p>
+
+              <div class="detalle-criterio-fila">
+                <span class="detalle-criterio-valor-nombre"> ${item.tipoDeCriterio.nombre}</span>
+              </div>
+
+              <div class="detalle-criterio-fila">
+                <span class="detalle-criterio-valor">${item.descripcion || "Sin descripción"}</span>
+              </div>
+
+              <hr style="margin: 0.5rem 0;" />
+
+              <div style="display: flex; justify-content: center; align-items: center;">
+                <button class="btn-eliminar" onclick="EliminarCriterioDeEvaluacion(${item.id})" data-tippy-content="Eliminar" style="background: none; border: none;">
+                  <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        contenedor.innerHTML += card;
+      });
+
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+    })
+  // Mostrar el offcanvas
+  const offcanvasElement = document.getElementById("offcanvasDetalleCriterios");
+  if (offcanvasElement.parentNode !== document.body) {
+    document.body.appendChild(offcanvasElement);
+  }
+  let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+  if (!offcanvas) offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+  offcanvas.show();
 }
 
 function BuscarCriterioId() {
@@ -652,7 +791,6 @@ function BuscarCriterioId() {
     EditarCriterioDeEvaluacion(id);
   }
 }
-
 
 function ValidarFormularioCriterioDeEvaluacion() {
     const selectTipoCriterio = document.getElementById("IdTipoCriterio");
@@ -725,6 +863,7 @@ document.getElementById("Descripcion").addEventListener("input", () => {
     }
     return esValid;
 });
+
 
 
 //Funcion para validar criterios de evaluacion existente 
@@ -882,6 +1021,7 @@ function MostrarErrorCatch() {
     buttonsStyling: false,
   });
 }
+
 
 //Funcion para obtener los criterios de evaluacion de una evaluacion
 ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);

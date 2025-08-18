@@ -67,7 +67,7 @@
 /* FIN PANEL DESLIZANTE BASE */
 
 
-
+/*ICONOS*/
 .icono-eliminar {
   font-size: 1.4rem !important;
   color: #fd0d1d !important;
@@ -83,9 +83,12 @@
   /* font-weight: bold !important; */
   margin: 0px 3px !important;
   padding: 0% !important;
-
 }
+/*FIN DE ICONOS*/
 
+
+
+/*MENSAJES DE ALERTA*/
 .swal2-btn-eliminar {
   background-color: #e53935 !important;
   color: #fff !important;
@@ -102,6 +105,7 @@
 .swal2-btn-eliminar:hover {
   background-color: #c62828 !important;
 }
+/*FIN DEMENSAJES DE ALERTA*/
 /* ACA VAS A CAMBAIR EL ID ESE POR EL QUE TRABAJES VOS, ESO SOLO ID Y TODO ANDARIA, ACORATE REVISA EL MIO Y LO QUE AGREGUES DE EXTRA DEL CSS COMENTA COMO TENGO EN EL "styles.css", ACA AGREGAS TODO LO TUYO GRACIAS */
 /* ACORDATE DE LINKEAR EN EL HTML GRACIAS */
 
@@ -109,7 +113,7 @@
 
 
 
-
+/*CARD DEL COLAPSE DE EVALUACION QUE CONTIENE LA TABLA DE CRITERIOS*/
 .evaluacion-card {
   background: #fff;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -120,6 +124,9 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+/*FIN CARD DEL COLAPSE DE EVALUACION QUE CONTIENE LA TABLA DE CRITERIOS*/
+
+/*BDGES DE LAS NOTAS*/
 .badge-pill {
   padding: 4px 12px;
   border-radius: 2px;
@@ -146,6 +153,7 @@
   background-color: #f8d7da;
   color: #721c24;
 }
+/*BDGES DE LAS NOTAS*/
 
 .toggle-detalle {
   background: transparent;
@@ -153,22 +161,24 @@
   color: #6c757d;
 }
 
+/*Contenedor de la informacion de evaluacion*/
 .evaluacion-item {
-  border-radius: 8px; /* bordes redondeados */
-  border: 1px solid #ddd; /* borde suave */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* sombra muy ligera */
+  border-radius: 8px; 
+  border: 1px solid #ddd; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
   background-color: #fff;
 }
 
 .evaluacion-item:hover {
-  border-color: #4e73df; /* color azul suave al hacer hover */
-  box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3); /* sombra más marcada y azulada */
+  border-color: #4e73df; 
+  box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3); 
 }
+/*Fin Contenedor de la informacion de evaluacion*/
 
 
 
-/* Cabecera pequeña y ajustada */
+/* TABLA DE CRITERIOS DE EVALUACION*/
 .header-table {
   padding: 2px 6px !important;
   font-size: 14px !important;
@@ -372,6 +382,7 @@ textarea.form-control {
   color: #28a745  !important;
   font-size: 0.80rem !important;
   border-radius: 5px !important;
+
 }
 
 .badge-desaprobado {
@@ -555,3 +566,82 @@ textarea.form-control {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: left;
 }
+
+
+.detalle-criterio-contenedor {
+  border-left: 4px solid #ffc107;
+  background-color: #ffffff;
+ border-top-left-radius: 0.3rem;
+  border-bottom-left-radius: 0.3rem;
+  height: 100%;
+}
+
+.detalle-criterio-encabezado {
+  background-color: transparent !important;
+  color: #212529;
+  border-bottom: none !important;
+  padding: 0.5rem 1rem;
+}
+
+.detalle-criterio-seccion {
+  padding: 0.75rem 1rem;
+}
+
+
+.detalle-criterio-tarjeta {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
+  margin-bottom: 1rem !important;
+  overflow: hidden;
+  font-size: 0.75rem;
+}
+
+.detalle-criterio-titulo-seccion {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffc107;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.detalle-criterio-fila
+ {
+  display: flex;
+  margin-bottom: 0.5rem;
+  align-items: flex-start;
+}
+
+.detalle-criterio-valor {
+  color: #212529;
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.detalle-criterio-valor-nombre {
+  color: #000000;
+  flex-grow: 1;
+  word-break: break-word;
+  font-weight: 900;
+}
+
+.detalle-criterio-valor{
+  color: rgba(108, 117, 125, 0.9); 
+}
+
+
+.detalle-criterio-etiqueta {
+  font-weight: 600;
+  color: #495057;
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.detalle-criterio-valor {
+  color: #212529;
+  flex-grow: 1;
+  word-break: break-word;
+}
+
