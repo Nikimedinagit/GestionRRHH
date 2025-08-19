@@ -31,6 +31,15 @@
   transform: translate(0, -50%);
 }
 
+
+@media (max-width: 768px) {
+  #panelAsistencias {
+    max-width: 90vw;
+    padding: 20px;
+  }
+}
+
+
 @media (max-width: 1024px) {
 
 #panelProvincia, #panelEvaluaciones, #panelTipoDeCriterio, 
@@ -228,11 +237,11 @@ td:nth-child(4) {
 }
 
 /*Acordeones*/
-.panelCriterios.mostrar, .panelJustificacion.mostrar {
-  border: 1px solid rgba(0, 0, 0, 0.152); 
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  margin-bottom: 8px;
+.panelCriterios.mostrar, .panelJustificacion.mostrar, .panelDescripcionCurso.mostrar {
+  border: 1px solid rgba(0, 0, 0, 0.152) !important; 
+  border-radius: 5px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  margin-bottom: 8px !important;
 }
 
 .btn-agregar-criterio{
@@ -515,20 +524,7 @@ textarea.form-control {
 }
 
 
-@media (max-width: 600px) {
-  /* Que la tabla ocupe todo el ancho */
-  .panelCriterios .table-responsive table {
-    width: 100%;
-  }
 
-  /* Para la celda con la descripción: que no se expanda, trunque y muestre ... */
-  .panelCriterios table td {
-    max-width: 150px;       /* ajusta según necesites */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
 
 
 /*BADGES DE JUSTIFICACION*/
@@ -568,7 +564,9 @@ textarea.form-control {
 }
 
 
-.detalle-criterio-contenedor {
+.detalle-criterio-contenedor,
+.detalle-certificado-contenedor,
+.detalle-asistencia-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
  border-top-left-radius: 0.3rem;
@@ -576,7 +574,9 @@ textarea.form-control {
   height: 100%;
 }
 
-.detalle-criterio-encabezado {
+.detalle-criterio-encabezado,
+.detalle-certificado-encabezado, 
+.detalle-asistencia-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
@@ -645,3 +645,58 @@ textarea.form-control {
   word-break: break-word;
 }
 
+
+
+.panelDescripcionCurso table {
+  table-layout: fixed !important;  
+  width: 100% !important;  
+}
+
+.panelDescripcionCurso td {
+  white-space: normal !important;  /* permite que las palabras se expanden */
+  word-break: break-word !important;  /* permite que las palabras se expanden */
+}
+
+/*Boton agregar certificado en el offcanvas*/
+.btn-agregar-canvas {
+  --c: #3697E1;
+}
+
+.btn-agregar-canvas:hover {
+  background: var(--c);
+  border-color: var(--c);
+  color: #fff;
+}
+
+
+.btn-canvas {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-weight: 500;
+  padding: .45rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .5rem;
+  background: #fff;
+  color: #000;
+  transition: all .25s ease;
+}
+
+.btn-canvas:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
+}
+
+.btn-canvas {
+  all: unset;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.12);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 0.875rem;
+  min-width: 90px;
+}

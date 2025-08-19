@@ -98,6 +98,14 @@ async function ObtenerCursos() {
 }
 
 function MostrarCursos(data) {
+  if (window.innerWidth <= 764) {
+    MostrarCursosMobile(data);
+  } else {
+    MostrarCursosDesktop(data);
+  }
+}
+
+function MostrarCursosDesktop(data) {
   const contenedor = $("#contenedorCursos");
   contenedor.empty();
 
@@ -315,6 +323,151 @@ function MostrarCursos(data) {
     delay: [100, 0],
   });
 }
+
+function MostrarCursosMobile(data) {
+  const contenedor = document.getElementById("contenedorCursos");
+  contenedor.innerHTML = "";
+
+  if (!Array.isArray(data) || data.length === 0) {
+    contenedor.innerHTML =
+      "<div class='text-center text-muted py-3'>No hay cursos para mostrar.</div>";
+    return;
+  }
+
+  const modalidades = {
+    1: "PRESENCIAL",
+    2: "VIRTUAL",
+    3: "MIXTO",
+  };
+
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+  };
+
+  data.forEach((element) => {
+    const modalidadNombre = modalidades[element.modalidad] || "SIN MODALIDAD";
+    const claseModalidad =
+      modalidadColor[modalidadNombre] || "bg-light text-dark";
+
+    let fecha = "Sin fecha";
+    let hora = "";
+    if (element.fechaInicio) {
+      const partes = element.fechaInicio.split("T");
+      fecha = partes[0].split("-").reverse().join("/");
+      hora = partes[1] ? partes[1].substring(0, 5) : "";
+    }
+
+    // Crear tarjeta Mobile
+    const card = document.createElement("div");
+    card.className =
+      "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
+    card.innerHTML = `
+      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+        <div class="flex-grow-1 d-flex flex-column">
+          <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
+            ${element.nombre || "Sin nombre"}
+          </h5>
+          <small class="text-muted mb-1" style="font-size: 0.75rem;">
+            <i class="bx bx-calendar me-1"></i> ${fecha}
+          </small>
+          ${hora ? `<small class="text-muted mb-2" style="font-size: 0.75rem;"><i class="bx bx-time me-1"></i>${hora}</small>` : ""}
+          <span class="badge ${claseModalidad} my-2" style="width: fit-content; font-size: 1rem;">
+            ${modalidadNombre}
+          </span>
+        </div>
+
+        <div class="d-flex justify-content-between mt-2 align-items-center">
+          <div>
+            <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
+              <i class="bi-calendar-check"></i>
+            </button>
+
+            <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
+              <i class="bi-award"></i>
+            </button>
+            
+          </div>
+          <div>
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+            <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Crear descripción
+    const descripcionDetalle = $(`
+      <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
+        <div class="mb-3">
+          <h3 class="titulo-sub-seccion">Descripción</h3>
+        </div>
+        <hr style="margin-bottom: 1rem;" />
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td id="DescripcionCurso_${element.id}" style="white-space: normal; word-wrap: break-word;">
+                  ${element.descripcion ?? "Sin descripción"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+
+    // Botón de chevron para mostrar/ocultar descripción
+    $(card)
+      .find(".btn-ver-descripcion")
+      .on("click", function () {
+        descripcionDetalle.slideToggle(200);
+
+        const icono = $(this).find("i");
+        icono.toggleClass("bi-chevron-down bi-chevron-up");
+      });
+
+    // Abrir offcanvas de certificados en mobile
+  $(card).find(".btn-ver-certificados").on("click", function () {
+    cursoIdSeleccionado = element.id; // guardamos el curso actual
+    ObtenerCertificados(element.id); // cargamos certificados de ese curso
+
+  // Abrir offcanvas de Bootstrap
+  const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasCertificados"));
+  offcanvas.show();
+});
+
+    // Abrir offcanvas de certificados en mobile
+  $(card).find(".btn-ver-asistencias").on("click", function () {
+    cursoIdSeleccionado = element.id; 
+    ObtenerAsistencia(element.id); 
+
+  // Abrir offcanvas de Bootstrap
+  const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasAsistencias"));
+  offcanvas.show();
+});
+
+
+    // Agregar card y descripción al contenedor
+    contenedor.appendChild(card);
+    contenedor.appendChild(descripcionDetalle[0]);
+  });
+
+  // Inicializar tooltips
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+
+
 
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
@@ -628,58 +781,120 @@ async function ObtenerAsistencia(cursoId) {
 }
 
 function MostrarAsistencias(cursoId, data) {
+  const enMovil = window.innerWidth <= 764;
+
   const tablaBody = $(`.tabla-asistencias-body[data-curso-id="${cursoId}"]`);
-  if (!tablaBody.length) return;
+  const cardsContenedor = $("#contenedorAsistenciasOffcanvas"); 
 
-  tablaBody.empty();
+  if (enMovil) {
+    if (!cardsContenedor.length) return;
+    cardsContenedor.empty();
 
-  if (data.length === 0) {
-    tablaBody.append(
-      "<tr><td colspan='5' class='text-center text-muted'>No hay asistencias para mostrar.</td></tr>"
-    );
-    return;
+    if (!data || data.length === 0) {
+      cardsContenedor.append(`
+        <div class="col-12 text-center text-muted py-3">
+          No hay asistencias para mostrar.
+        </div>
+      `);
+      return;
+    }
+
+    data.forEach(item => {
+      const resultado = Number(item.resultado);
+      const aprobado = resultado >= 6;
+      const etiqueta = aprobado ? "Aprobado" : "Desaprobado";
+      const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
+
+const card = $(`
+  <div class="col-12 mb-2">
+    <div class="card shadow-sm rounded-3 p-3">
+      
+      <!-- Checkbox + Nombre -->
+      <div class="d-flex align-items-center mb-1">
+        <input class="form-check-input checkbox-asistio-card me-2" 
+               type="checkbox" 
+               data-id="${item.id}" 
+               ${item.asistencia ? "checked" : ""}/>
+        <h6 class="fw-bold mb-0">${item.empleado.nombreCompleto}</h6>
+      </div>
+
+      <!-- Fecha -->
+      <small class="text-muted d-block">
+        Fecha: ${new Date(item.fecha).toLocaleDateString()}
+      </small>
+
+      <!-- Badge + Botón eliminar en la misma fila -->
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <span class="badge-pill ${badgeClass}" 
+              style="padding: 4px 12px; font-size: 0.85rem;">
+          ${etiqueta}
+        </span>
+        <button class='btn-eliminar text-danger' 
+                style='background: none; border: none; font-size: 1.2rem;' 
+                onclick='EliminarAsistencia(${item.id})' 
+                data-tippy-content='Eliminar'>
+          <i class='bi bi-trash3'></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+`);
+      cardsContenedor.append(card);
+    });
+
+    $(".checkbox-asistio-card").off("change").on("change", function () {
+      const asistenciaId = $(this).data("id");
+      const nuevoEstado = $(this).is(":checked");
+      MarcarAsistencia(asistenciaId, nuevoEstado);
+    });
+
+  } else {
+    // ----- DESKTOP (tabla) -----
+    if (!tablaBody.length) return;
+    tablaBody.empty();
+
+    if (!data || data.length === 0) {
+      tablaBody.append(
+        "<tr><td colspan='5' class='text-center text-muted'>No hay asistencias para mostrar.</td></tr>"
+      );
+      return;
+    }
+
+    $.each(data, function (index, item) {
+      const resultado = Number(item.resultado);
+      const aprobado = resultado >= 6;
+      const etiqueta = aprobado ? "Aprobado" : "Desaprobado";
+      const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
+
+      tablaBody.append(`
+        <tr>
+          <td class='text-center align-middle'>
+            <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia ? "checked" : ""} />
+          </td>
+          <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
+            ${item.empleado.nombreCompleto}
+          </td>
+          <td class='text-center align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
+          <td class='text-center align-middle'>
+            <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</span>
+          </td>
+          <td class='d-flex justify-content-center align-items-center'>
+            <button class='btn-eliminar' style='background: none; border: none;' 
+              onclick='EliminarAsistencia(${item.id})' data-tippy-content='Eliminar'>
+              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+            </button>
+          </td>
+        </tr>
+      `);
+    });
+
+    $(".checkbox-asistio").off("change").on("change", function () {
+      const asistenciaId = $(this).data("id");
+      const nuevoEstado = $(this).is(":checked");
+      MarcarAsistencia(asistenciaId, nuevoEstado);
+    });
   }
-
-  $.each(data, function (index, item) {
-    const resultado = Number(item.resultado);
-    let etiqueta = "Aprobado";
-    let badgeClass = "badge-aprobado";
-
-    if (resultado >= 6) {
-      etiqueta = "Aprobado";
-      badgeClass = "badge-aprobado";
-    } else {
-      etiqueta = "Desaprobado";
-      badgeClass = "badge-desaprobado";
-    } 
-    tablaBody.append(`
-      <tr>
-        <td class='text-center align-middle'>
-          <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia? "checked" : ""} />
-        </td>
-        <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
-          ${item.empleado.nombreCompleto}
-        </td>
-        <td class='text-center align-middle'>${new Date(item.fecha).toLocaleDateString()}</td>
-        <td class='text-center align-middle'>
-        <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</span>
-        </td>
-        <td class='d-flex justify-content-center align-items-center'>
-          <button class='btn-eliminar' style='background: none; border: none;' 
-            onclick='EliminarAsistencia(${item.id})' data-tippy-content='Eliminar'>
-            <i class='bi bi-trash3 icono-elimina-detalle'></i>
-          </button>
-        </td>
-      </tr>
-    `);
-  });
-
-  $(".checkbox-asistio").off("change").on("change", function () {
-  const asistenciaId = $(this).data("id");
-  const nuevoEstado = $(this).is(":checked");
-  MarcarAsistencia(asistenciaId, nuevoEstado);
-});
-
 
   tippy("[data-tippy-content]", {
     animation: "scale",
@@ -687,6 +902,7 @@ function MostrarAsistencias(cursoId, data) {
     delay: [100, 0],
   });
 }
+
 
 function BuscarAsistenciaId() {
   const id = parseInt(document.getElementById("IdAsistencia").value);
@@ -1023,61 +1239,121 @@ async function ObtenerCertificados(cursoId) {
 }
 
 function MostrarCertificados(cursoId, data) {
+  const enMovil = window.innerWidth <= 764;
+
   const tablaBody = $(`.tabla-certificados-body[data-curso-id="${cursoId}"]`);
-  if (!tablaBody.length) return;
+  const cardsContenedor = $("#contenedorCertificadosOffcanvas");
 
-  tablaBody.empty();
+  if (enMovil) {
+    if (!cardsContenedor.length) return;
+    cardsContenedor.empty();
 
-  if (data.length === 0) {
-    tablaBody.append(
-      "<tr><td colspan='5' class='text-center text-muted'>No hay certificados para mostrar.</td></tr>"
-    );
-    return;
-  }
-
-  const baseUrlArchivos = "/uploads/documentos/";
-  $.each(data, function (index, item) {
-    let documentoUrl = "";
-    if (item.documentoDescargable) {
-      documentoUrl = item.documentoDescargable.startsWith("http")
-        ? item.documentoDescargable
-        : baseUrlArchivos + item.documentoDescargable;
+    if (!data || data.length === 0) {
+      cardsContenedor.append(`
+        <div class="col-12 text-center text-muted py-3">
+          No hay certificados para mostrar.
+        </div>
+      `);
+      return;
     }
 
-    const documentoHtml = item.documentoDescargable
-    ? `
-    <p class="d-flex justify-content-center text-muted d-flex align-items-center gap-2 mb-2">
-      <a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
-        <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
-        <span>Descargar</span>
-      </a>
-    </p>
-    `
-    : "";
+    const baseUrlArchivos = "/uploads/documentos/";
 
-    tablaBody.append(`
-      <tr>
-        <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
-          ${item.empleado.nombreCompleto}
-        </td>
-        <td class='align-middle text-center'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
-        <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
-        <td class='d-flex justify-content-center align-items-center'>
-          <button class='btn-eliminar' style='background: none; border: none;' 
-            onclick='EliminarCertificado(${item.id})' data-tippy-content='Eliminar'>
-            <i class='bi bi-trash3 icono-elimina-detalle'></i>
-          </button>
-        </td>
-      </tr>
-    `);
-  });
+    data.forEach(item => {
+      let documentoUrl = "";
+      if (item.documentoDescargable) {
+        documentoUrl = item.documentoDescargable.startsWith("http")
+          ? item.documentoDescargable
+          : baseUrlArchivos + item.documentoDescargable;
+      }
 
+      const documentoHtml = item.documentoDescargable
+        ? `<a href="${documentoUrl}" target="_blank" download 
+              class="document-link d-flex align-items-center gap-1"
+              data-tippy-content="Descargar"
+              style="color: inherit; text-decoration: none; font-size: 0.9rem; white-space: nowrap;">
+              <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+              Descargar
+          </a>`
+        : `<span class="text-muted">Sin documento</span>`;
+
+
+
+        const card = $(`
+          <div class="col-12 mb-2">
+            <div class="card shadow-sm rounded-3 p-3">
+              <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
+              <small class="text-muted d-block mb-2">
+                Emisión: ${new Date(item.fechaEmision).toLocaleDateString()}
+              </small>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>${documentoHtml}</div>
+                <button class='btn-eliminar'  style='background: none; border: none;' 
+                         onclick='EliminarCertificado(${item.id})'
+                        data-tippy-content="Eliminar">
+                  <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `);
+
+
+      cardsContenedor.append(card);
+    });
+
+  } else {
+    // ----- DESKTOP (tabla) -----
+    if (!tablaBody.length) return;
+    tablaBody.empty();
+
+    if (!data || data.length === 0) {
+      tablaBody.append(
+        "<tr><td colspan='4' class='text-center text-muted'>No hay certificados para mostrar.</td></tr>"
+      );
+      return;
+    }
+
+    const baseUrlArchivos = "/uploads/documentos/";
+
+    $.each(data, function (index, item) {
+      let documentoUrl = "";
+      if (item.documentoDescargable) {
+        documentoUrl = item.documentoDescargable.startsWith("http")
+          ? item.documentoDescargable
+          : baseUrlArchivos + item.documentoDescargable;
+      }
+
+      const documentoHtml = item.documentoDescargable
+        ? `<a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
+             <i class="bi bi-file-earmark-text"></i> Descargar
+           </a>`
+        : "";
+
+      tablaBody.append(`
+        <tr>
+          <td class='align-middle nombre-empleado'>${item.empleado.nombreCompleto}</td>
+          <td class='align-middle text-center'>${new Date(item.fechaEmision).toLocaleDateString()}</td>
+          <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
+          <td class='d-flex justify-content-center align-items-center'>
+            <button class='btn-eliminar' style='background: none; border: none;' 
+              onclick='EliminarCertificado(${item.id})' data-tippy-content='Eliminar'>
+              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+            </button>
+          </td>
+        </tr>
+      `);
+    });
+  }
+
+  // Reaplicar tooltips en ambos casos
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
     delay: [100, 0],
   });
 }
+
 
 function BuscarCertificadoId() {
   const id = parseInt(document.getElementById("IdCertificado").value);

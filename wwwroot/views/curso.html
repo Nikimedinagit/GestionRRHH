@@ -3,6 +3,10 @@
   <!-- Título -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Seguimiento de Cursos</h3>
+    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+      Visualizá la información de los cursos, controlá la asistencia de los participantes, 
+      emití certificados y accedé al detalle de cada capacitación.
+    </p>
   </div>
 
   <hr />
@@ -240,6 +244,73 @@
       <button type="submit" class="btn btn-guardar" onclick="BuscarCertificadoId()">Guardar</button>
     </div>
   </div>
+
+
+<!-- CONTENEDDOR PARA CERTIFICADOS -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCertificados" aria-labelledby="tituloDetalleCurso"
+  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+  <div class="detalle-certificado-contenedor">
+    <div class="detalle-certificado-encabezado d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+          Detalle de Cursos
+        </h5>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+          Información detallada de los cursos
+        </p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+    <div class="offcanvas-body" 
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;" 
+        id="contenedorCursosOffcanvas">
+
+      <!-- Botón para crear certificado -->
+      <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelCertificados()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Carga de Certificados</span>
+      </button>
+
+      <!-- 🔹 Aquí se insertan los certificados -->
+      <div id="contenedorCertificadosOffcanvas" class="mt-3 row"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- CONTENEDOR PARA ASISTENCIAS -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAsistencias" aria-labelledby="tituloDetalleCurso"
+  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+  <div class="detalle-asistencia-contenedor">
+    <div class="detalle-asistencia-encabezado d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+          Detalle de Asistencias
+        </h5>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+          Información detallada de las asistencias
+        </p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+    <div class="offcanvas-body" 
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;" 
+        id="contenedorCursosOffcanvas">
+
+      <!-- Botón para crear certificado -->
+      <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelAsistencias()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Registrar Asistencia</span>
+      </button>
+
+      <div id="contenedorAsistenciasOffcanvas" class="mt-3 row"></div>
+
+    </div>
+  </div>
+</div>
+
 
   <!-- Scripts -->
   <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
