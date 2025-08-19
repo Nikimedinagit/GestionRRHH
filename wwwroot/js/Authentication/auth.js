@@ -43,17 +43,43 @@ function refreshToken() {
 }
 
 // Función para hacer fetch con autenticación y renovación de token si es necesario
+// function authFetch(url, options = {}, retry = true) {
+//   options.headers = options.headers || {};
+//   options.headers["Authorization"] = "Bearer " + getToken();
+//   options.headers["Content-Type"] = "application/json";
+
+//   return fetch(API_BASE_URL + url, options).then((response) => {
+//     if (response.status === 401 && retry) {
+//       return refreshToken()
+//         .then((newToken) => {
+//           // Reintenta la solicitud original con el nuevo token
+//           options.headers["Authorization"] = "Bearer " + newToken;
+//           return fetch(API_BASE_URL + url, options);
+//         })
+//         .catch((err) => {
+//           console.error("No se pudo renovar el token:", err);
+//           window.location.href = "login.html";
+//           return response; 
+//         });
+//     }
+//     return response;
+//   });
+// }
+
 function authFetch(url, options = {}, retry = true) {
   options.headers = options.headers || {};
   options.headers["Authorization"] = "Bearer " + getToken();
-  options.headers["Content-Type"] = "application/json";
+
+  // Solo poner Content-Type si NO es FormData
+  if (!(options.body instanceof FormData)) {
+    options.headers["Content-Type"] = "application/json";
+  }
 
   return fetch(API_BASE_URL + url, options).then((response) => {
     if (response.status === 401 && retry) {
       // Token expirado, intentamos renovarlo
       return refreshToken()
         .then((newToken) => {
-          // Reintenta la solicitud original con el nuevo token
           options.headers["Authorization"] = "Bearer " + newToken;
           return fetch(API_BASE_URL + url, options);
         })

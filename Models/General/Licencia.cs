@@ -25,7 +25,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public EstadoLicencia Estado { get; set; }
 
 
-        public string DocumentoAdjunto { get; set; }
+        public byte[] DocumentoAdjunto { get; set; }
+        public string DocumentoNombre { get; set; }
+        public string DocumentoMimeType { get; set; }
 
         [NotMapped]
         public string EmpleadoString { get { return Empleado?.NombreCompleto; } }
@@ -44,7 +46,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public string FechaInicioString { get; set; }
         public string FechaFinString { get; set; }
         public string EstadoString { get; set; }
-        public string DocumentoAdjunto { get; set; }
+        public byte[] DocumentoAdjunto { get; set; }
+        public string DocumentoNombre { get; set; }
+        public string DocumentoMimeType { get; set; }
         public string EmpleadoString { get; set; }
         public int EmpleadoId { get; set; }
     }
@@ -58,7 +62,7 @@ namespace API_RRHH_TESIS2025.Models.General
     }
 
     public class LicenciaFiltrar
-    {   
+    {
         public string EmpleadoTexto { get; set; }
         public int? TipoDeLicenciaId { get; set; }
         public int? Estado { get; set; }
@@ -66,4 +70,4 @@ namespace API_RRHH_TESIS2025.Models.General
         public DateTime? FechaFin { get; set; }
     }
 
-} 
+}

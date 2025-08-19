@@ -684,7 +684,7 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
   } else if (valor.length < 8) {
     input.classList.add("is-invalid");
     error.style.display = "block";
-    error.textContent = "DNI inválido.";
+    error.textContent = "DNI 8 digitos.";
   } else {
     input.classList.add("is-valid");
     error.style.display = "none";

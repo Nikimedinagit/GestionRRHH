@@ -34,6 +34,8 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public int CantidadHijos { get; set; }
 
+        public byte[]? FaceDescriptor { get; set; }
+
 
         [NotMapped]
         public string TipoSexoString { get { return TipoSexo.ToString(); } }

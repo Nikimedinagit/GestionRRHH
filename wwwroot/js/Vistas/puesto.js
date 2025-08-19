@@ -160,7 +160,7 @@ function MostrarPuestos(data) {
   $.each(data, function (index, item) {
     let filaClass = item.eliminado ? "fila-desactivada" : "";
     let visibleBotones = item.eliminado ? "display: none;" : "";
-    let iconColor = item.eliminado ? "text-success" : "text-danger";
+    let iconColor = item.eliminado ? "text-danger" : "text-success";
 
     $("#tablaPuestosBody").append(
       "<tr>" +
@@ -186,9 +186,7 @@ function MostrarPuestos(data) {
        "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
 
         // Columna Sector (nombre)
-        "<td class='text-start align-middle d-none d-md-table-cell" +
-        filaClass +
-        "'>" +
+        "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
         (item.sectorString || "Sin sector") +
         "</td>" +
         // Columna Acciones (editar)

@@ -254,7 +254,7 @@ function MostrarHorariosDesktop(data) {
 
     const esSeparado =
       horario.tipoHorarioString &&
-      horario.tipoHorarioString.toLowerCase() === "separado";
+      horario.tipoHorarioString.toLowerCase() === "alterno";
 
     let filasHorario = "";
 
@@ -429,7 +429,7 @@ function MostrarDetalleHorario(id) {
   const horario = horariosData.find((e) => e.id === id);
   if (!horario) return;
 
-  const esSeparado = horario.tipoHorarioString?.toLowerCase() === "separado";
+  const esSeparado = horario.tipoHorarioString?.toLowerCase() === "alterno";
 
   const dias = [
     "Lunes",

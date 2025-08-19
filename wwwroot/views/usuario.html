@@ -2,7 +2,7 @@
 <div class="px-3 py-3">
   <!-- Título -->
   <div class="mb-3">
-    <h3 class="titulo-seccion">Activación de Empleados</h3>
+    <h3 class="titulo-seccion">Estado del Empleados</h3>
     <p class="text-muted mb-3">Panel para gestionar la activación y roles de los empleados.</p>
   </div>
 
@@ -61,12 +61,11 @@
       <table class="table table-bordered table-hover align-middle w-100">
         <thead class="table-activacion-empleados">
           <tr>
-            <th class="text-center">Fecha Alta</th>
-            <th class="text-start">Nombre Completo</th>
-            <th class="text-start">Email</th>
-            <th class="text-center">DNI</th>
-            <th class="text-center" style="width: 5%;">Activo</th>
-            <th class="text-center d-none" style="width: 5%;">Acción</th>
+            <th class="text-center columna-fecha-activacion">Fecha Alta</th>
+            <th class="text-start ">Nombre Completo</th>
+            <th class="text-start columna-email-activacion">Email</th>
+            <th class="text-center columna-dni-activacion">DNI</th>
+            <th class="text-center columna-estado-activacion" style="width: 5%;">Estado</th>
           </tr>
         </thead>
         <tbody id="tablaActivacionEmpleadosBody"></tbody>
@@ -74,6 +73,73 @@
     </div>
 
   </div>
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleadoActivacion"
+  aria-labelledby="tituloEmpleadoActivacion"
+  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+  
+  <div class="detalle-activacion-contenedor">
+    <!-- Encabezado -->
+    <div class="detalle-activacion-encabezado d-flex justify-content-between align-items-start">
+      <div>
+        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+          Detalle del Empleado
+        </h5>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+          Información detallada del estado de activación del empleado.
+        </p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+    <!-- Cuerpo -->
+    <div class="offcanvas-body p-2"
+      style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+
+      <!-- Datos del Cambio -->
+      <div class="detalle-activacion-tarjeta">
+        <div class="detalle-activacion-seccion">
+          <p class="detalle-activacion-titulo-seccion">Datos de Activación</p>
+
+          <div class="detalle-activacion-fila">
+            <span class="detalle-activacion-etiqueta">Fecha Activación:</span>
+            <span class="detalle-activacion-valor" id="detalleEmpleadoFecha"></span>
+          </div>
+          <div class="detalle-activacion-fila">
+            <span class="detalle-activacion-etiqueta">Estado:</span>
+            <span class="detalle-activacion-valor" id="detalleEmpleadoEstado"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos del Empleado -->
+      <div class="detalle-activacion-tarjeta" style="margin-bottom: 1rem;">
+        <div class="detalle-activacion-seccion">
+          <p class="detalle-activacion-titulo-seccion">Datos Personales</p>
+
+          <div class="detalle-activacion-fila">
+            <span class="detalle-activacion-etiqueta">Nombre:</span>
+            <span class="detalle-activacion-valor" id="detalleEmpleadoNombre"></span>
+          </div>
+          <div class="detalle-activacion-fila">
+            <span class="detalle-activacion-etiqueta">Email:</span>
+            <span class="detalle-activacion-valor" id="detalleEmpleadoEmail"></span>
+          </div>
+          <div class="detalle-activacion-fila">
+            <span class="detalle-activacion-etiqueta">DNI:</span>
+            <span class="detalle-activacion-valor" id="detalleEmpleadoDNI"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
   <script src="../js/Vistas/activacionEmpleado.js"></script>
 

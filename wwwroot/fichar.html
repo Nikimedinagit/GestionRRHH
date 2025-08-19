@@ -1,188 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fichar Entrada/Salida - RRHH</title>
-  <style>
-    /* Reset básico */
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichaje Facial Profesional</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4e73df, #1c3f9b);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 70px;
+    overflow-x: hidden;
+  }
 
-    body {
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1e88e5, #0d47a1);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #fff;
-    }
+  /* Header con logo */
+  header {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    display: flex; align-items: center; gap: 15px;
+    background: rgba(0,0,0,0.4); padding: 10px 20px;
+    z-index: 1000; backdrop-filter: blur(5px);
+  }
+  header img { height: 50px; width: 50px; object-fit: contain; }
+  header h1 { font-size: 1.8rem; margin-left: 10px; }
 
-    .container {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      width: 85vw;
-      max-width: 600px;
-      padding: 40px 30px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
-    }
-    
-    .container:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-    }
+  #dniSection { 
+    display: flex; flex-direction: column; align-items: center; gap: 15px; 
+    margin-top: 100px; transition: all 0.3s ease;
+  }
+  input { 
+    padding: 12px 20px; font-size: 18px; border-radius: 8px; border: none; 
+    text-align: center; width: 250px; transition: 0.3s; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  button { 
+    padding: 12px 25px; font-size: 18px; border-radius: 8px; border: none; 
+    cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  #btnFichar { background: #28a745; color: white; }
+  #btnFichar:hover { background: #218838; transform: translateY(-2px); }
+  #btnRegistrar { background: #ffc107; color: #333; }
+  #btnRegistrar:hover { background: #e6b800; transform: translateY(-2px); }
 
-    h3.titulo-seccion {
-      margin: 0 0 12px;
-      font-weight: 700;
-      font-size: 2rem;
-      color: #0d47a1;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+  /* Video y Canvas */
+  #videoContainer { 
+    display: none; position: fixed; top: 50%; left: 50%; 
+    transform: translate(-50%, -50%); z-index: 900; border-radius: 15px; 
+    overflow: hidden; border: 4px solid #ffd700; box-shadow: 0 0 25px #ffd700;
+    animation: fadeIn 0.5s ease;
+  }
+  video { display: block; max-width: 90vw; height: auto; }
 
-    p.text-muted {
-      margin: 0 0 25px;
-      font-size: 1.1rem;
-      color: #546e7a;
-    }
+  canvas { position: absolute; top: 0; left: 0; }
 
-    hr {
-      border: none;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 30px;
-    }
+  /* Toasts animados */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: white; padding: 15px 30px; border-radius: 10px;
+    font-weight: bold; font-size: 1.2rem; z-index: 2000; text-align: center; max-width: 90vw;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .toast.success { border-left: 5px solid #28a745; }
+  .toast.error { border-left: 5px solid #dc3545; }
 
-    label.form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #444;
-      font-size: 1.1rem;
-      text-align: left;
-    }
+  #spinner {
+    display: none; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); z-index: 1500;
+    border: 8px solid #f3f3f3; border-top: 8px solid #28a745;
+    border-radius: 50%; width: 80px; height: 80px; animation: spin 1s linear infinite;
+  }
 
-    input[type="number"].form-control {
-      width: 100%;
-      padding: 14px 15px;
-      font-size: 1.1rem;
-      border-radius: 6px;
-      border: 1.5px solid #ccc;
-      transition: border-color 0.3s;
-    }
-
-    input[type="number"].form-control:focus {
-      border-color: #4e73df;
-      outline: none;
-      box-shadow: 0 0 6px rgba(78, 115, 223, 0.6);
-      background-color: #f9fbff;
-    }
-
-    .invalid-feedback {
-      color: #d93025;
-      font-size: 0.9rem;
-      margin-top: 6px;
-      min-height: 20px;
-      text-align: left;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 15px;
-      margin-top: 28px;
-      justify-content: center;
-    }
-
-    button.btn {
-      flex: 1;
-      padding: 14px 0;
-      font-size: 1.15rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button.btn-primary {
-      background-color: #1e88e5;
-      color: #fff;
-      transition: all 0.3s ease;
-    }
-    button.btn-primary:hover {
-      background-color: #1565c0;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    button.btn-secondary {
-      background-color: rgba(255,255,255,0.8);
-      color: #0d47a1;
-      border: 1px solid #0d47a1;
-      transition: all 0.3s ease;
-    }
-    button.btn-secondary:hover {
-      background-color: rgba(255,255,255,0.9);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    #resultadoFichaje {
-      margin-top: 30px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      min-height: 28px;
-      text-align: center;
-      color: #2c3e50;
-    }
-  </style>
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  @keyframes fadeIn { 0% { opacity: 0;} 100% { opacity: 1;} }
+</style>
 </head>
 <body>
 
-  <main class="container" role="main" aria-labelledby="tituloFichar">
-    <h3 id="tituloFichar" class="titulo-seccion">Fichar Entrada/Salida</h3>
-    <p class="text-muted">Ingrese su DNI para registrar su asistencia</p>
-    <hr />
+<header>
+  <img src="tu-logo.png" alt="Logo">
+  <h1>Fichaje Facial</h1>
+</header>
 
-    <form id="formFichar" novalidate>
-      <label for="dniInput" class="form-label">DNI</label>
-      <input
-        type="number"
-        id="dniInput"
-        name="dniInput"
-        class="form-control"
-        placeholder="Ingrese su DNI"
-        required
-        autofocus
-        aria-describedby="dniError"
-      />
-      <div id="dniError" class="invalid-feedback" ></div>
+<div id="dniSection">
+  <input type="text" id="dniInput" placeholder="Ingrese su DNI">
+  <div style="display: flex; gap: 15px;">
+    <button id="btnFichar">FICHAR</button>
+    <button id="btnRegistrar">REGISTRAR ROSTRO</button>
+  </div>
+</div>
 
-      <div class="btn-group">
-        <button type="submit" class="btn btn-primary">Fichar</button>
+<div id="videoContainer">
+  <video id="video" autoplay muted></video>
+</div>
 
-        <button type="button" class="btn btn-secondary" aria-label="Cancelar y limpiar formulario" onclick="limpiarFormulario()">Cancelar</button>
-      </div>
-    </form>
+<div id="spinner"></div>
+<div id="alerta" class="toast"></div>
 
-    <div id="resultadoFichaje" aria-live="polite"></div>
-  </main>
+<script src="lib/face/face-api.min.js"></script>
+<script>
+const btnFichar = document.getElementById('btnFichar');
+const btnRegistrar = document.getElementById('btnRegistrar');
+const dniInput = document.getElementById('dniInput');
+const videoContainer = document.getElementById('videoContainer');
+const video = document.getElementById('video');
+const alerta = document.getElementById('alerta');
+const spinner = document.getElementById('spinner');
+let faceDescriptor, canvas, stream;
 
+function showToast(msg, tipo='success', tiempo=4000) {
+  alerta.textContent = msg;
+  alerta.className = `toast show ${tipo}`;
+  setTimeout(() => { alerta.className = 'toast'; }, tiempo);
+}
+
+function showSpinner(show=true) { spinner.style.display = show ? 'block' : 'none'; }
+
+async function startVideo() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+    video.srcObject = stream;
+    videoContainer.style.display = 'block';
+  } catch (e) {
+    showToast('❌ ' + e.message, 'error', 5000);
+  }
+}
+
+async function stopVideo() {
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  videoContainer.style.display = 'none';
+  if (canvas) { canvas.remove(); canvas = null; }
+}
+
+async function captureFace() {
+  showSpinner(true);
+  const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+                                  .withFaceLandmarks()
+                                  .withFaceDescriptor();
+  showSpinner(false);
+  if (!detection) throw new Error("❌ No se detectó rostro");
+  faceDescriptor = Array.from(new Float32Array(detection.descriptor));
+
+  if (!canvas) {
+    canvas = faceapi.createCanvasFromMedia(video);
+    videoContainer.append(canvas);
+  }
+  const displaySize = { width: video.videoWidth, height: video.videoHeight };
+  faceapi.matchDimensions(canvas, displaySize);
+  const resized = faceapi.resizeResults(detection, displaySize);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  faceapi.draw.drawDetections(canvas, resized);
+  faceapi.draw.drawFaceLandmarks(canvas, resized);
+}
+
+async function callBackend(endpoint, dni) {
+  try {
+    const payload = endpoint === 'Fichar' 
+      ? { FaceDescriptor: faceDescriptor } 
+      : { Dni: dni, FaceDescriptor: faceDescriptor };
+      
+    const res = await fetch(`https://localhost:7006/api/Asistencias/${endpoint}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    await stopVideo();
+    dniInput.value = ''; // Limpiar input
+
+    if (res.ok) {
+      showToast(`✅ ${data.empleado?.NombreCompleto || data.empleado?.nombreCompleto} (DNI ${data.empleado?.DNI || data.empleado?.dni}) - ${data.Mensaje || data.mensaje}`, 'success', 7000);
+    } else {
+      showToast(`❌ ${data.Mensaje || data.mensaje}`, 'error', 7000);
+    }
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error', 5000);
+    await stopVideo();
+  }
+}
+
+async function loadModels() {
+
+  await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+  await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+  await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+}
+
+async function handleFaceAction(endpoint) {
+  const dni = dniInput.value.trim();
+  if (endpoint === 'RegistrarRostro' && !dni) { showToast('Ingrese DNI válido', 'error'); return; }
+
+  await loadModels();
+  await startVideo();
+
+  showToast(endpoint === 'Fichar' ? '😊 Mire la cámara para fichar' : '📷 Mire la cámara para registrar rostro', 'success', 3000);
+
+  setTimeout(async () => {
+    try {
+      await captureFace();
+      await callBackend(endpoint, dni);
+    } catch(e) {
+      showToast(e.message, 'error', 4000);
+      await stopVideo();
+    }
+  }, 1500);
+}
+
+btnFichar.addEventListener('click', () => handleFaceAction('Fichar'));
+btnRegistrar.addEventListener('click', () => handleFaceAction('RegistrarRostro'));
+</script>
 </body>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
- <!--Autenticación -->
-  <script src="./js/authentication/authHandlers.js"></script>
-  <script src="./js/authentication/auth.js"></script>
-
-<script src="./js/Fichar/fichar.js"></script>
 </html>

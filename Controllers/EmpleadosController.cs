@@ -13,7 +13,9 @@ using WorkSync.Models.General;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR")]
+    // [Authorize(Roles = "ADMINISTRADOR")]
+
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class EmpleadosController : ControllerBase
@@ -69,6 +71,43 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return vista;
         }
+
+
+        [HttpGet("Buscar")]
+        public async Task<ActionResult<VistaEmpleado>> BuscarEmpleado([FromQuery] long dni)
+        {
+            var empleado = await _context.Empleado
+                .Include(e => e.Localidad)
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.DNI == dni && !e.Eliminado);
+
+            if (empleado == null)
+                return NotFound(new { Mensaje = "❌ Empleado no encontrado." });
+
+            var vista = new VistaEmpleado
+            {
+                Id = empleado.Id,
+                NombreCompleto = empleado.NombreCompleto,
+                DNI = empleado.DNI,
+                Direccion = empleado.Direccion,
+                FechaNacimientoString = empleado.FechaNacimientoString,
+                EstadoCivilesString = empleado.EstadoCivilesString,
+                Email = empleado.Email,
+                Telefono = empleado.Telefono,
+                Cuil = empleado.Cuil,
+                CantidadHijos = empleado.CantidadHijos,
+                TipoSexoString = empleado.TipoSexoString,
+                LocalidadIdString = empleado.LocalidadIdString,
+                PuestoIdString = empleado.PuestoIdString,
+                UsuarioId = empleado.UsuarioId,
+                Eliminado = empleado.Eliminado
+            };
+
+            return Ok(vista); // ✅ Aquí devolvemos el empleado encontrado
+        }
+
+
+
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
         {
@@ -91,6 +130,7 @@ namespace API_RRHH_TESIS2025.Controllers
             {
                 empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
             }
+
             if (filtro.DNI.HasValue)
             {
                 string dniFiltro = filtro.DNI.Value.ToString();

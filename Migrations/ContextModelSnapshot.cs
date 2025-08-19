@@ -280,6 +280,9 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("EstadoCiviles")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("FaceDescriptor")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<DateTime>("FechaNacimiento")
                         .HasColumnType("datetime2");
 
@@ -426,7 +429,13 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DocumentoAdjunto")
+                    b.Property<byte[]>("DocumentoAdjunto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DocumentoMimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")

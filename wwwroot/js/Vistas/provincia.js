@@ -135,7 +135,7 @@ function MostrarProvincias(data) {
   $.each(data, function (index, item) {
     let filaClass = item.eliminado ? "fila-desactivada" : "";
     let visibleBotones = item.eliminado ? "display: none;" : "";
-    let iconColor = item.eliminado ? "text-success" : "text-danger";
+    let iconColor = item.eliminado ? "text-danger" : "text-success";
 
     $("#tablaProvinciasBody").append(
       "<tr>" +

@@ -60,6 +60,23 @@ namespace API_NET_CORE8_RRHH.Controllers
             return licencia;
         }
 
+
+        [HttpGet("Documento/{id}")]
+        public async Task<IActionResult> DescargarDocumento(int id)
+        {
+            var licencia = await _context.Licencia.FindAsync(id);
+            if (licencia == null || licencia.DocumentoAdjunto == null)
+                return NotFound();
+
+            // Usar nombre y tipo original
+            var nombreArchivo = licencia.DocumentoNombre ?? $"Licencia_{id}";
+            var mimeType = licencia.DocumentoMimeType ?? "application/octet-stream";
+
+            return File(licencia.DocumentoAdjunto, mimeType, nombreArchivo);
+        }
+
+
+
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaLicencia>>> LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
         {
@@ -126,7 +143,9 @@ namespace API_NET_CORE8_RRHH.Controllers
                     EstadoString = licencia.Estado.ToString(),
                     DocumentoAdjunto = licencia.DocumentoAdjunto,
                     EmpleadoString = licencia.EmpleadoString,
-                    EmpleadoId = licencia.EmpleadoId
+                    EmpleadoId = licencia.EmpleadoId,
+                    DocumentoNombre = licencia.DocumentoNombre,
+                    DocumentoMimeType = licencia.DocumentoMimeType
                 };
                 vista.Add(vistaLicencia);
             }
@@ -261,8 +280,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         // POST: api/Licencias
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Licencia>> PostLicencia(Licencia licencia)
+        public async Task<ActionResult<Licencia>> PostLicencia([FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
+
         {
+            // Validación de licencias existentes
             var licenciasExistentes = await _context.Licencia
                 .Where(l =>
                     l.EmpleadoId == licencia.EmpleadoId &&
@@ -274,20 +295,29 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             if (licenciasExistentes.Any())
             {
-                return BadRequest(new
-                {
-                    codigo = 0,
-                    mensaje = "Ya tiene licencia aplicada."
-                });
+                return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
             }
 
             licencia.Estado = EstadoLicencia.PENDIENTE;
+
+            // Guardar archivo en la base de datos
+            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    await DocumentoAdjunto.CopyToAsync(ms);
+                    licencia.DocumentoAdjunto = ms.ToArray();
+                }
+                licencia.DocumentoNombre = DocumentoAdjunto.FileName;
+                licencia.DocumentoMimeType = DocumentoAdjunto.ContentType;
+            }
 
             _context.Licencia.Add(licencia);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetLicencia", new { id = licencia.Id }, licencia);
         }
+
 
 
         // DELETE: api/Licencias/5

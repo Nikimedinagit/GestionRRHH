@@ -1,0 +1,48 @@
+body {
+  background-color: #4e73df; /* Fondo azul */
+  color: white; /* Color del texto */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.input-group {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.container {
+  display: flex; /* Usar flexbox para dividir la pantalla */
+  justify-content: space-between;
+}
+
+#video-container {
+  flex: 1; /* Ocupa la mitad de la pantalla */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#detalleDNI {
+  flex: 1; /* Ocupa la otra mitad de la pantalla */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.1); /* Fondo semi-transparente */
+  border-radius: 10px;
+}
+
+button {
+  background-color: #007bff; /* Color del botón */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3; /* Color del botón al pasar el mouse */
+}

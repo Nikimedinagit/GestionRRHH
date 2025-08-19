@@ -11,13 +11,16 @@ async function ObtenerEmpleadosActivacion() {
 }
 
 // funcion para mostar los datos en la tabala 
+let empleadosActivacionGlobal = [];
+
 function MostrarEmpleadosActivacion(data) {
+  empleadosActivacionGlobal = data; // guardamos para el detalle
   const tbody = $("#tablaActivacionEmpleadosBody");
   tbody.empty();
 
   if (data.length === 0) {
     tbody.append(
-      `<tr><td colspan="5" class="text-center text-muted">No hay usuarios para mostrar.</td></tr>`
+      `<tr><td colspan="6" class="text-center text-muted">No hay usuarios para mostrar.</td></tr>`
     );
     return;
   }
@@ -39,16 +42,22 @@ function MostrarEmpleadosActivacion(data) {
 
     tbody.append(`
       <tr>
-        <td class="text-center ${filaClass}">${item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo"}</td>
+        <td class="text-center ${filaClass} columna-fecha-activacion">${item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo"}</td>
         <td class="text-start ${filaClass}">${item.nombreCompleto}</td>
-        <td class="text-start ${filaClass}">${item.email}</td>
-        <td class="text-center ${filaClass}">${item.dni}</td>
+        <td class="text-start ${filaClass} columna-email-activacion">${item.email}</td>
+        <td class="text-center ${filaClass} columna-dni-activacion">${item.dni}</td>
         <td class="text-center">
+        <button class="btn-editar icono-ver-detalle-empleado-activacion d-md-none" style="background: none; border: none;" 
+            onclick="MostrarDetalleEmpleadoActivacion(${index})" data-tippy-content="Ver más">
+            <i class="bi bi-info-circle"></i>
+          </button>
+
           <button type="button" class="btn-sm" data-tippy-content="${tooltip}" 
             onclick="MostrarVentanaToggleEmpleado(${item.empleadoId}, ${item.id}, ${item.activo})"
- style="${btnStyle}">
-            <i class="bi ${iconClass} ${iconColor}"></i>
+            style="${btnStyle}">
+            <i class="bi ${iconClass} ${iconColor}" style="font-size: 1.6rem !important;"></i>
           </button>
+          
         </td>
       </tr>
     `);
@@ -60,6 +69,22 @@ function MostrarEmpleadosActivacion(data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
+}
+
+function MostrarDetalleEmpleadoActivacion(index) {
+  const item = empleadosActivacionGlobal[index];
+
+  // Setear datos
+  document.getElementById("detalleEmpleadoFecha").textContent = item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo";
+  document.getElementById("detalleEmpleadoNombre").textContent = item.nombreCompleto || "N/D";
+  document.getElementById("detalleEmpleadoEmail").textContent = item.email || "N/D";
+  document.getElementById("detalleEmpleadoDNI").textContent = item.dni || "N/D";
+  document.getElementById("detalleEmpleadoEstado").textContent = item.activo ? "Activo" : "Inactivo";
+
+  // Mostrar el offcanvas
+  const offcanvasElement = document.getElementById("offcanvasDetalleEmpleadoActivacion");
+  const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+  offcanvas.show();
 }
 
 
