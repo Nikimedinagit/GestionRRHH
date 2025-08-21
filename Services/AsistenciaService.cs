@@ -35,7 +35,7 @@ namespace API_RRHH_TESIS2025.Services
                 var saved = EmbeddingHelper.BytesToFloats(e.FaceDescriptor);
                 var dist = EmbeddingHelper.Euclidean(faceDescriptor, saved);
                 if (dist <= FACE_TOLERANCE)
-                    return (false, new { Mensaje = "❌ Este rostro ya está registrado con otro DNI." });
+                    return (false, new { Mensaje = "Este rostro ya está registrado con otro DNI." });
             }
 
             empleado.FaceDescriptor = EmbeddingHelper.FloatsToBytes(faceDescriptor);
@@ -75,7 +75,7 @@ namespace API_RRHH_TESIS2025.Services
             }
 
             if (empleado == null)
-                return (false, new { Mensaje = "❌ Rostro no reconocido." });
+                return (false, new { Mensaje = "Rostro no reconocido." });
 
             // --- Lógica de fichaje idéntica a la versión anterior ---
             var ahoraDt = DateTime.Now;
@@ -104,7 +104,12 @@ namespace API_RRHH_TESIS2025.Services
 
             var proxima = ProximaFichadaEsperada(asistencia, horario);
             if (proxima == null)
-                return (false, new { Mensaje = "✅ Ya registraste todas las fichadas de hoy." });
+                return (false, new
+                {
+                    Mensaje = "Ya registraste todas las fichadas de hoy.",
+                    Empleado = new { empleado.NombreCompleto, empleado.DNI }
+                });
+
 
             var esperado = HoraEsperada(proxima, horario);
             bool fuera = false, tarde = false;
@@ -134,11 +139,11 @@ namespace API_RRHH_TESIS2025.Services
 
             var msg = proxima switch
             {
-                "PrimerEntrada" => $"✅ Primer entrada registrada a las {ahoraDt:HH:mm}" + SufijoEstado(asistencia.Estado),
-                "PrimerSalida" => $"✅ Primer salida registrada a las {ahoraDt:HH:mm}",
-                "SegundaEntrada" => $"✅ Segunda entrada registrada a las {ahoraDt:HH:mm}" + SufijoEstado(asistencia.Estado),
-                "SegundaSalida" => $"✅ Segunda salida registrada a las {ahoraDt:HH:mm}",
-                _ => "✅ Marcación registrada"
+                "PrimerEntrada" => $"Primer entrada registrada a las {ahoraDt:HH:mm}" + SufijoEstado(asistencia.Estado),
+                "PrimerSalida" => $"Primer salida registrada a las {ahoraDt:HH:mm}",
+                "SegundaEntrada" => $"Segunda entrada registrada a las {ahoraDt:HH:mm}" + SufijoEstado(asistencia.Estado),
+                "SegundaSalida" => $"Segunda salida registrada a las {ahoraDt:HH:mm}",
+                _ => "Marcación registrada"
             };
 
             return (true, new
