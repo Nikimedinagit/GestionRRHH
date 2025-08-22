@@ -910,16 +910,18 @@ select.form-control:not([value=""])+label {
 
 
 
-/* INICIO PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS */
+/* INICIO PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION / PANEL DETALLE HORARIO */
 #offcanvasDetalleEmpleado,
-#offcanvasDetalleLicenciaAprobadas {
+#offcanvasDetalleLicenciaAprobadas,
+#offcanvasDetalleEmpleadoActivacion {
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
 }
-
+ 
 .detalle-empleado-contenedor,
 .detalle-licencia-contenedor,
-.detalle-horario-contenedor {
+.detalle-horario-contenedor,
+.detalle-activacion-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
  border-top-left-radius: 0.3rem;
@@ -929,16 +931,18 @@ select.form-control:not([value=""])+label {
 
 .detalle-empleado-encabezado,
 .detalle-licencia-encabezado,
-.detalle-horario-encabezado {
+.detalle-horario-encabezado,
+.detalle-activacion-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem;
 }
 
 .detalle-empleado-tarjeta,
 .detalle-licencia-tarjeta,
-.detalle-horario-tarjeta {
+.detalle-horario-tarjeta,
+.detalle-activacion-tarjeta {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
@@ -949,13 +953,15 @@ select.form-control:not([value=""])+label {
 
 .detalle-empleado-seccion,
 .detalle-licencia-seccion,
-.detalle-horario-seccion {
-  padding: 0.75rem 1rem;
+.detalle-horario-seccion,
+.detalle-activacion-seccion {
+  padding: 1rem 1rem;
 }
 
 .detalle-empleado-fila,
 .detalle-licencia-fila,
-detalle-horario-fila {
+.detalle-horario-fila,
+.detalle-activacion-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
@@ -963,7 +969,8 @@ detalle-horario-fila {
 
 .detalle-empleado-etiqueta,
 .detalle-licencia-etiqueta,
-.detalle-horario-etiqueta {
+.detalle-horario-etiqueta,
+.detalle-activacion-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
@@ -972,7 +979,8 @@ detalle-horario-fila {
 
 .detalle-empleado-valor,
 .detalle-licencia-valor,
-.detalle-horario-valor {
+.detalle-horario-valor,
+.detalle-activacion-valor {
   color: #212529;
   flex-grow: 1;
   word-break: break-word;
@@ -980,7 +988,8 @@ detalle-horario-fila {
 
 .detalle-empleado-titulo-seccion,
 .detalle-licencia-titulo-seccion,
-.detalle-horario-titulo-seccion {
+.detalle-horario-titulo-seccion,
+.detalle-activacion-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -991,17 +1000,20 @@ detalle-horario-fila {
 
 .detalle-empleado-etiqueta,
 .detalle-licencia-etiqueta,
-detalle-horario-etiqueta{
+.detalle-horario-etiqueta,
+.detalle-activacion-etiqueta {
    margin-right: 10px !important;
   font-weight: 600 !important;
 }
 
 .detalle-empleado-valor,
 .detalle-licencia-valor,
-.detalle-horario-valor {
+.detalle-horario-valor,
+.detalle-activacion-valor {
   color: rgba(108, 117, 125, 0.9); 
 }
-/* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS */
+/* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION / PANEL DETALLE HORARIOI */
+
 
 
 /* INICIO ESTILO TABALA LICENCIAS APROBADAS */
@@ -1122,13 +1134,15 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 
 
-/* INICIO ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS */
-.icono-ver-detalle-licencia-aprobada{
+/* INICIO ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS/ ACTIVACION EMPLEADO */
+.icono-ver-detalle-licencia-aprobada,
+.icono-ver-detalle-empleado-activacion{
   font-size: 1.6rem !important;
   color: #ffc107 !important;
   font-weight: bold !important;
   margin: 0px 3px !important;
   padding: 0% !important;
+  
 }
 
 .columna-accion {
@@ -1137,13 +1151,16 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 @media (max-width: 768px) {
   .columna-estado,
-  .columna-responsable {
+  .columna-responsable,
+  .columna-fecha-activacion,
+  .columna-dni-activacion {
     display: none;
   }
 
   .columna-fecha,
   .columna-licencia,
-  .columna-accion {
+  .columna-accion
+  {
     display: table-cell !important;
   }
 }
@@ -1151,7 +1168,8 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 @media (max-width: 576px) {
   .columna-fecha,
   .columna-estado,
-  .columna-responsable {
+  .columna-responsable,
+  .columna-email-activacion  {
     display: none !important;
   }
 
@@ -1160,7 +1178,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     display: table-cell !important;
   }
 }
-/* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS */
+/* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS/ ACTIVACION EMPLEADO */
 
 
 /* INICIO PARA LOS BOTONES DE TIPO DE HORARIO(DIAS LABORALES) */
