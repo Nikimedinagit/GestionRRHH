@@ -23,7 +23,7 @@
       </button>
 
       <!-- Botones Filtros y Informe -->
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
           <span>Filtros</span>
@@ -312,7 +312,7 @@
           <!-- Puesto -->
           <div class="form-group position-relative mb-3">
             <select id="IdPuesto" class="form-control" required>
-              <option value="" disabled selected hidden>
+              <option value="0" disabled selected hidden>
                 Seleccione
               </option>
               <!-- opciones dinámicas -->

@@ -359,8 +359,9 @@ async function MostrarModalEditarEmpleado(id) {
   const res = await authFetch(`Empleados/${id}`);
   const empleado = await res.json();
 
+  console.log(empleado);
   const fecha = new Date(empleado.fechaNacimiento);
-  const fechaFormateada = fecha.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const fechaFormateada = fecha.toISOString().slice(0, 10);
 
   document.getElementById("IdEmpleado").value = empleado.id;
   document.getElementById("NombreEmpleado").value = empleado.nombreCompleto;
@@ -506,18 +507,18 @@ function ValidarFormularioEmpleado() {
   }
 
   if (dni.length === 0) {
-    inputDni.classList.add("is-invalid");
-    inputErrorDni.textContent = "Campo obligatorio.";
-    inputErrorDni.style.display = "block";
-    esValido = false;
-  } else if (dni.length < 8) {
-    inputDni.classList.add("is-invalid");
-    inputErrorDni.textContent = "DNI inválido.";
-    inputErrorDni.style.display = "block";
-    esValido = false;
-  } else {
-    inputDni.classList.add("is-valid");
-  }
+  inputDni.classList.add("is-invalid");
+  inputErrorDni.textContent = "Campo obligatorio.";
+  inputErrorDni.style.display = "block";
+  esValido = false;
+} else if (!/^\d{8}$/.test(dni)) {
+  inputDni.classList.add("is-invalid");
+  inputErrorDni.textContent = "DNI inválido.";
+  inputErrorDni.style.display = "block";
+  esValido = false;
+} else {
+  inputDni.classList.add("is-valid");
+}
 
   if (telefono.length === 0) {
     inputTelefono.classList.add("is-invalid");
@@ -543,18 +544,33 @@ function ValidarFormularioEmpleado() {
   }
 
   if (fechaNacimiento.length === 0) {
+  inputFechaNacimiento.classList.add("is-invalid");
+  inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
+  inputErrorFechaNacimiento.style.display = "block";
+  esValido = false;
+} else if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
+  inputFechaNacimiento.classList.add("is-invalid");
+  inputErrorFechaNacimiento.textContent = "Formato inválido.";
+  inputErrorFechaNacimiento.style.display = "block";
+  esValido = false;
+} else {
+  const hoy = new Date();
+  const fechaNac = new Date(fechaNacimiento);
+  const edad = hoy.getFullYear() - fechaNac.getFullYear();
+  const m = hoy.getMonth() - fechaNac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+    edad--;
+  }
+  if (edad < 18) {
     inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
-    inputErrorFechaNacimiento.style.display = "block";
-    esValido = false;
-  } else if (fechaNacimiento.length < 10) {
-    inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "Formato inválido.";
+    inputErrorFechaNacimiento.textContent = "Mayor de 18 años.";
     inputErrorFechaNacimiento.style.display = "block";
     esValido = false;
   } else {
     inputFechaNacimiento.classList.add("is-valid");
   }
+}
+
 
   if (tipoSexo.length === 0) {
     inputTipoSexo.classList.add("is-invalid");
@@ -681,37 +697,16 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
     input.classList.add("is-invalid");
     error.style.display = "block";
     error.textContent = "Campo obligatorio.";
-  } else if (valor.length < 8) {
+  } else if (!/^\d{8}$/.test(valor)) {
     input.classList.add("is-invalid");
     error.style.display = "block";
-    error.textContent = "DNI 8 digitos.";
+    error.textContent = "8 dígitos.";
   } else {
     input.classList.add("is-valid");
     error.style.display = "none";
   }
 });
 
-// EmailEmpleado
-document.getElementById("EmailEmpleado").addEventListener("input", () => {
-  const input = document.getElementById("EmailEmpleado");
-  const error = document.getElementById("errorEmailEmpleado");
-  const valor = input.value.trim();
-
-  input.classList.remove("is-invalid", "is-valid");
-
-  if (valor.length === 0) {
-    input.classList.add("is-invalid");
-    error.style.display = "block";
-    error.textContent = "Campo obligatorio.";
-  } else if (!valor.includes("@")) {
-    input.classList.add("is-invalid");
-    error.style.display = "block";
-    error.textContent = "Email inválido.";
-  } else {
-    input.classList.remove("is-invalid");
-    error.style.display = "none";
-  }
-});
 
 // TelefonoEmpleado
 document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
@@ -749,15 +744,32 @@ document
       input.classList.add("is-invalid");
       error.style.display = "block";
       error.textContent = "Campo obligatorio.";
-    } else if (valor.length < 10) {
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+      // Asume formato yyyy-mm-dd
       input.classList.add("is-invalid");
       error.style.display = "block";
       error.textContent = "Formato inválido.";
     } else {
-      input.classList.add("is-valid");
-      error.style.display = "none";
+      const hoy = new Date();
+      const fechaNacimiento = new Date(valor);
+      const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      const dia = hoy.getDate() - fechaNacimiento.getDate();
+
+      if (
+        edad < 18 ||
+        (edad === 18 && (mes < 0 || (mes === 0 && dia < 0)))
+      ) {
+        input.classList.add("is-invalid");
+        error.style.display = "block";
+        error.textContent = "Mayor de 18 años.";
+      } else {
+        input.classList.add("is-valid");
+        error.style.display = "none";
+      }
     }
   });
+
 
 // DireccionEmpleado
 document.getElementById("DireccionEmpleado").addEventListener("input", () => {
@@ -847,7 +859,7 @@ document.getElementById("CuilEmpleado").addEventListener("input", () => {
   if (valor.length > 0) {
     if (!/^\d{11}$/.test(valor)) {
       input.classList.add("is-invalid");
-      error.textContent = "Debe tener 11 dígitos.";
+      error.textContent = "11 dígitos.";
       error.style.display = "block";
     } else {
       input.classList.add("is-valid");

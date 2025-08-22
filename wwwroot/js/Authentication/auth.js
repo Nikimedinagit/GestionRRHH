@@ -1,6 +1,14 @@
 const AUTH_API_URL = "http://localhost:5106/api/auth/";
 const API_BASE_URL = "http://localhost:5106/api/";
 
+// const AUTH_API_URL = "http://192.168.100.173:2002/api/auth/";
+// const API_BASE_URL = "http://192.168.100.173:2002/api/";
+
+// const AUTH_API_URL = "http://192.168.120.50:2000/api/auth/";
+// const API_BASE_URL = "http://192.168.120.50:2000/api/";
+
+
+
 // Función para obtener el token de acceso
 function getToken() {
   return localStorage.getItem("token");

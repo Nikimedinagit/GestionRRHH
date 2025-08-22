@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setTimeout(() => {
           window.location.href = "index.html";
-        }, 3000);
+        }, 2000);
       } else {
         mostrarMensaje("Correo o contraseña incorrectos.", "error");
         loginBtn.disabled = false;

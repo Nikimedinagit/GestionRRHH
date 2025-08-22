@@ -1089,7 +1089,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
-  padding: 0.5rem 1rem;
+  padding: 1rem 0.5rem;
 }
 
 .icono-ver-detalle-historial-empleado{
@@ -1261,4 +1261,23 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
+
+
+/* RESPONSIVE BOTONES FILTROS Y GENERAR EN CELULARES */
+@media (max-width: 580px) {
+  .d-flex.justify-content-between > .btn-agregar {
+    flex: 1 1 100%;
+    margin-bottom: 8px;
+  }
+
+  .responsive-buttons {
+    flex-wrap: nowrap !important; 
+    justify-content: space-between; 
+    width: 100%;
+  }
+  .responsive-buttons button {
+    flex: 1 1 48%; 
+    max-width: 48%;
+  }
+}
 
