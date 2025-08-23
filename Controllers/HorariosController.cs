@@ -207,7 +207,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 .AnyAsync(h => h.EmpleadoId == horario.EmpleadoId && h.TipoHorario == horario.TipoHorario);
 
             if (horarioExistente)
-                return BadRequest(new { mensaje = "Ya esite." });
+                return BadRequest(new { mensaje = "Ya existe." });
 
             if (horario.TipoHorario == TipoHorario.CONTINUO)
             {

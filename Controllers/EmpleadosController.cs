@@ -212,102 +212,144 @@ namespace API_RRHH_TESIS2025.Controllers
 
         // PUT: api/Empleados/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
+       [HttpPut("{id}")]
+public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
+{
+    if (id != empleado.Id)
+        return BadRequest();
+
+    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Sistema";
+
+    // Obtener empleado original con puesto incluido
+    var empleadoOriginal = await _context.Empleado
+        .Include(e => e.Puesto)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(e => e.Id == id);
+
+    if (empleadoOriginal == null)
+        return NotFound();
+
+    // Formateo
+    empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
+    empleado.Direccion = empleado.Direccion.ToUpper();
+    empleado.Email = empleado.Email.ToLower();
+    empleado.UsuarioId = userId;
+
+    // Validaciones
+    var erroresExistentes = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(empleado.DNI.ToString()))
+    {
+        var dniExistente = await _context.Empleado
+            .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
+        if (dniExistente != null)
+            erroresExistentes.Add("El DNI ya existe.");
+    }
+
+    if (empleado.Cuil != 0)
+    {
+        var cuilExistente = await _context.Empleado
+            .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
+        if (cuilExistente != null)
+            erroresExistentes.Add("El CUIL ya existe.");
+    }
+
+    if (!string.IsNullOrWhiteSpace(empleado.Email))
+    {
+        var emailExistente = await _context.Empleado
+            .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
+        if (emailExistente != null)
+            erroresExistentes.Add("El Email ya existe.");
+    }
+
+    if (!string.IsNullOrWhiteSpace(empleado.Telefono))
+    {
+        var telefonoExistente = await _context.Empleado
+            .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
+        if (telefonoExistente != null)
+            erroresExistentes.Add("El Teléfono ya existe.");
+    }
+
+    if (erroresExistentes.Any())
+        return BadRequest(new { codigo = 0, mensaje = erroresExistentes });
+
+    // Historial laboral si cambió el puesto
+    var puestoNuevo = await _context.Puesto.FindAsync(empleado.PuestoId);
+    var puestoAnterior = empleadoOriginal.Puesto?.Descripcion ?? "Desconocido";
+    var puestoActual = puestoNuevo?.Descripcion ?? "Desconocido";
+
+    if (puestoAnterior != puestoActual)
+    {
+        var historial = new HistorialLaboral
         {
-            if (id != empleado.Id)
-                return BadRequest();
+            FechaModificacion = DateTime.Now,
+            EmpleadoId = empleado.Id,
+            PuestoAnterior = puestoAnterior,
+            PuestoActual = puestoActual,
+            UsuarioModificador = userId
+        };
+        _context.HistorialLaboral.Add(historial);
+    }
 
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Sistema";
+    // -----------------------
+    // Actualizar ApplicationUser
+    // -----------------------
+    var usuario = await _userManager.FindByEmailAsync(empleadoOriginal.Email);
+    if (usuario != null)
+    {
+        bool cambio = false;
 
-            // Obtener empleado original con puesto incluido para comparar
-            var empleadoOriginal = await _context.Empleado
-                .Include(e => e.Puesto)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (empleadoOriginal == null)
-                return NotFound();
-
-            // Pasar a mayúsculas/minúsculas según necesidad
-            empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
-            empleado.Direccion = empleado.Direccion.ToUpper();
-            empleado.Email = empleado.Email.ToLower();
-            empleado.UsuarioId = userId;
-
-            // Validaciones (DNI, CUIL, Email, Teléfono)
-            var erroresExistentes = new List<string>();
-
-            if (!string.IsNullOrWhiteSpace(empleado.DNI.ToString()))
-            {
-                var dniExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
-                if (dniExistente != null)
-                    erroresExistentes.Add("El DNI ya existe.");
-            }
-
-            if (empleado.Cuil != 0)
-            {
-                var cuilExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
-                if (cuilExistente != null)
-                    erroresExistentes.Add("El CUIL ya existe.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(empleado.Email))
-            {
-                var emailExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
-                if (emailExistente != null)
-                    erroresExistentes.Add("El Email ya existe.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(empleado.Telefono))
-            {
-                var telefonoExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
-                if (telefonoExistente != null)
-                    erroresExistentes.Add("El Teléfono ya existe.");
-            }
-
-            if (erroresExistentes.Any())
-                return BadRequest(new { codigo = 0, mensaje = erroresExistentes });
-
-            // Obtener descripción del nuevo puesto
-            var puestoNuevo = await _context.Puesto.FindAsync(empleado.PuestoId);
-
-            var puestoAnterior = empleadoOriginal.Puesto?.Descripcion ?? "Desconocido";
-            var puestoActual = puestoNuevo?.Descripcion ?? "Desconocido";
-
-            if (puestoAnterior != puestoActual)
-            {
-                var historial = new HistorialLaboral
-                {
-                    FechaModificacion = DateTime.Now,
-                    EmpleadoId = empleado.Id,
-                    PuestoAnterior = puestoAnterior,
-                    PuestoActual = puestoActual,
-                    UsuarioModificador = userId
-                };
-                _context.HistorialLaboral.Add(historial);
-            }
-
-            _context.Entry(empleado).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmpleadoExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return Ok(empleado);
+        // Actualizar Email y UserName si cambió
+        if (usuario.Email != empleado.Email)
+        {
+            usuario.Email = empleado.Email;
+            usuario.UserName = empleado.Email;
+            cambio = true;
         }
+
+        // Actualizar NombreCompleto si cambió
+        if (usuario.NombreCompleto != empleado.NombreCompleto)
+        {
+            usuario.NombreCompleto = empleado.NombreCompleto;
+            cambio = true;
+        }
+
+        // Actualizar contraseña si cambió el DNI
+        if (empleado.DNI != empleadoOriginal.DNI)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
+            var resultadoPass = await _userManager.ResetPasswordAsync(usuario, token, empleado.DNI.ToString());
+            if (!resultadoPass.Succeeded)
+                return BadRequest(resultadoPass.Errors);
+        }
+
+        // Guardar cambios en Identity
+        if (cambio)
+        {
+            var resultadoUpdate = await _userManager.UpdateAsync(usuario);
+            if (!resultadoUpdate.Succeeded)
+                return BadRequest(resultadoUpdate.Errors);
+        }
+    }
+
+    // Guardar cambios en Empleado
+    _context.Entry(empleado).State = EntityState.Modified;
+
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        if (!EmpleadoExists(id))
+            return NotFound();
+        else
+            throw;
+    }
+
+    return Ok(empleado);
+}
+
 
 
         [HttpPost]
@@ -358,11 +400,7 @@ namespace API_RRHH_TESIS2025.Controllers
             var activacion = new ActivacionEmpleado
             {
                 FechaActivacion = null,
-                NombreCompleto = empleado.NombreCompleto,
-                Email = empleado.Email,
-                Dni = empleado.DNI,
                 Activo = false,
-                PrimeraActivacion = true,
                 EmpleadoId = empleado.Id,
             };
 

@@ -31,7 +31,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActivacionEmpleado>>> GetActivacionEmpleado()
         {
-            return await _context.ActivacionEmpleado.ToListAsync();
+            var activacionEmpleados = await _context.ActivacionEmpleado
+            .Include(x => x.Empleado)
+            .ToListAsync(); 
+            return activacionEmpleados;
         }
 
         // GET: api/ActivacionEmpleados/5
@@ -128,7 +131,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (activacion == null) return NotFound("Activación no encontrada.");
 
             activacion.Activo = false;
-            empleado.Eliminado = true; // o lo que corresponda para "desactivar"
+            empleado.Eliminado = true;
 
             await _context.SaveChangesAsync();
 

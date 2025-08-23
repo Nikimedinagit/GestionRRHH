@@ -14,7 +14,7 @@ async function ObtenerEmpleadosActivacion() {
 let empleadosActivacionGlobal = [];
 
 function MostrarEmpleadosActivacion(data) {
-  empleadosActivacionGlobal = data; // guardamos para el detalle
+  empleadosActivacionGlobal = data; 
   const tbody = $("#tablaActivacionEmpleadosBody");
   tbody.empty();
 
@@ -43,9 +43,9 @@ function MostrarEmpleadosActivacion(data) {
     tbody.append(`
       <tr>
         <td class="text-center ${filaClass} columna-fecha-activacion">${item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo"}</td>
-        <td class="text-start ${filaClass}">${item.nombreCompleto}</td>
-        <td class="text-start ${filaClass} columna-email-activacion">${item.email}</td>
-        <td class="text-center ${filaClass} columna-dni-activacion">${item.dni}</td>
+        <td class="text-start ${filaClass}">${item.empleado?.nombreCompleto}</td>
+        <td class="text-start ${filaClass} columna-email-activacion">${item.empleado?.email}</td>
+        <td class="text-center ${filaClass} columna-dni-activacion">${item.empleado?.dni}</td>
         <td class="text-center">
         <button class="btn-editar icono-ver-detalle-empleado-activacion d-md-none" style="background: none; border: none;" 
             onclick="MostrarDetalleEmpleadoActivacion(${index})" data-tippy-content="Ver más">

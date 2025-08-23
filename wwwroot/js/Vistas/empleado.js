@@ -1,11 +1,22 @@
 // Función para abrir el panel lateral
 function AbrirPanelEmpleado() {
+let id = document.getElementById("IdEmpleado").value;
+console.log(id);
+if (!id) {
+    document.getElementById("EstadoCivilEmpleado").value = "0";
+    document.getElementById("TipoSexoEmpleado").value = "0";
+    document.getElementById("IdLocalidad").value = "0";
+    document.getElementById("IdPuesto").value = "0";
+  
+  document.getElementById("panelEmpleado").classList.add("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.add("visible");
 
-  // Reiniciar el valor del select
-  document.getElementById("EstadoCivilEmpleado").value = "0";
-  document.getElementById("TipoSexoEmpleado").value = "0";
-  document.getElementById("IdLocalidad").value = "0";
-  document.getElementById("IdPuesto").value = "0";
+  setTimeout(() => {
+    const inputNombre = document.getElementById("NombreEmpleado");
+    if (inputNombre) inputNombre.focus();
+  }, 400);
+} else {
 
   document.getElementById("panelEmpleado").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -17,6 +28,9 @@ function AbrirPanelEmpleado() {
   }, 400);
 }
 
+
+}
+
 //Funcion para cerrar el panel lateral
 function CerrarPanelEmpleado() {
   document.getElementById("panelEmpleado").classList.remove("abierto");
@@ -26,71 +40,6 @@ function CerrarPanelEmpleado() {
   LimpiarFormularioEmpleado();
 }
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
 
 //INICIO ONCHANGE DE FILTROS//
 $(document).ready(function () {
@@ -543,36 +492,56 @@ function ValidarFormularioEmpleado() {
     inputDireccion.classList.add("is-valid");
   }
 
-  if (fechaNacimiento.length === 0) {
+if (fechaNacimiento.length === 0) {
   inputFechaNacimiento.classList.add("is-invalid");
   inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
   inputErrorFechaNacimiento.style.display = "block";
   esValido = false;
+
 } else if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
   inputFechaNacimiento.classList.add("is-invalid");
-  inputErrorFechaNacimiento.textContent = "Formato inválido.";
+  inputErrorFechaNacimiento.textContent = "Formato inválido (YYYY-MM-DD).";
   inputErrorFechaNacimiento.style.display = "block";
   esValido = false;
+
 } else {
   const hoy = new Date();
   const fechaNac = new Date(fechaNacimiento);
-  const edad = hoy.getFullYear() - fechaNac.getFullYear();
+
+  let edad = hoy.getFullYear() - fechaNac.getFullYear();
   const m = hoy.getMonth() - fechaNac.getMonth();
   if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
     edad--;
   }
-  if (edad < 18) {
+
+  if (edad < 16) {
     inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "Mayor de 18 años.";
+    inputErrorFechaNacimiento.textContent = "Mayor de 16 años.";
     inputErrorFechaNacimiento.style.display = "block";
     esValido = false;
+
+  } else if (edad > 80) {
+    inputFechaNacimiento.classList.add("is-invalid");
+    inputErrorFechaNacimiento.textContent = "Menor de 80 años.";
+    inputErrorFechaNacimiento.style.display = "block";
+    esValido = false;
+
+  } else if (fechaNac > hoy) {
+    inputFechaNacimiento.classList.add("is-invalid");
+    inputErrorFechaNacimiento.textContent = "No puede ser una fecha futura.";
+    inputErrorFechaNacimiento.style.display = "block";
+    esValido = false;
+
   } else {
+    inputFechaNacimiento.classList.remove("is-invalid");
+    inputErrorFechaNacimiento.style.display = "none";
     inputFechaNacimiento.classList.add("is-valid");
   }
 }
 
 
-  if (tipoSexo.length === 0) {
+
+  if (tipoSexo !== 0) {
     inputTipoSexo.classList.add("is-invalid");
     inputErrorTipoSexo.textContent = "Campo obligatorio.";
     inputErrorTipoSexo.style.display = "block";
@@ -581,7 +550,7 @@ function ValidarFormularioEmpleado() {
     inputTipoSexo.classList.add("is-valid");
   }
 
-  if (localidadId.length === 0) {
+  if (localidadId !== 0) {
     inputIdLocalidad.classList.add("is-invalid");
     inputErrorIdLocalidad.textContent = "Campo obligatorio.";
     inputErrorIdLocalidad.style.display = "block";
@@ -590,7 +559,7 @@ function ValidarFormularioEmpleado() {
     inputIdLocalidad.classList.add("is-valid");
   }
 
-  if (puestoId.length === 0) {
+  if (puestoId !== 0) {
     inputIdPuesto.classList.add("is-invalid");
     inputErrorIdPuesto.textContent = "Campo obligatorio.";
     inputErrorIdPuesto.style.display = "block";
@@ -738,37 +707,49 @@ document
     const error = document.getElementById("errorFechaNacimientoEmpleado");
     const valor = input.value.trim();
 
+    // Limpiar clases
     input.classList.remove("is-invalid", "is-valid");
 
     if (valor.length === 0) {
       input.classList.add("is-invalid");
       error.style.display = "block";
       error.textContent = "Campo obligatorio.";
+
     } else if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
-      // Asume formato yyyy-mm-dd
       input.classList.add("is-invalid");
       error.style.display = "block";
-      error.textContent = "Formato inválido.";
+      error.textContent = "Formato inválido (00/00/0000).";
+
     } else {
       const hoy = new Date();
       const fechaNacimiento = new Date(valor);
-      const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
       const mes = hoy.getMonth() - fechaNacimiento.getMonth();
       const dia = hoy.getDate() - fechaNacimiento.getDate();
+      if (mes < 0 || (mes === 0 && dia < 0)) edad--;
 
-      if (
-        edad < 18 ||
-        (edad === 18 && (mes < 0 || (mes === 0 && dia < 0)))
-      ) {
+      if (edad < 16) {
         input.classList.add("is-invalid");
         error.style.display = "block";
-        error.textContent = "Mayor de 18 años.";
+        error.textContent = "Mayor de 16 años.";
+
+      } else if (edad > 80) {
+        input.classList.add("is-invalid");
+        error.style.display = "block";
+        error.textContent = "Menor de 80 años.";
+
+      } else if (fechaNacimiento > hoy) {
+        input.classList.add("is-invalid");
+        error.style.display = "block";
+        error.textContent = "Fecha invalida.";
+
       } else {
         input.classList.add("is-valid");
         error.style.display = "none";
       }
     }
   });
+
 
 
 // DireccionEmpleado
@@ -1258,90 +1239,6 @@ async function EditarEmpleado(id) {
     });
 }
 
-// Función para eliminar una provincia
-// function EliminarEmpleadoId(id, eliminado) {
-//   Swal.fire({
-//     title: eliminado
-//       ? "¿Deseás reactivar este empleado?"
-//       : "¿Deseás desactivar este empleado?",
-//     html: eliminado
-//       ? "<p class='swal2-content-center'>Esta acción volverá a habilitar el empleado en el sistema.</p>"
-//       : "<p class='swal2-content-center'>El empleado se desactivará y dejará de estar disponible.</p>",
-//     showCancelButton: true,
-//     confirmButtonText: eliminado ? "Sí, activar" : "Sí, desactivar",
-//     cancelButtonText: "Cancelar",
-//     focusCancel: true,
-//     customClass: {
-//       popup: "swal2-border-radius swal2-custom-popup",
-//       confirmButton: eliminado ? "swal2-btn-activar" : "swal2-btn-desactivar",
-//       cancelButton: "swal2-btn-cancelar",
-//       title: "swal2-title-custom",
-//       htmlContainer: "swal2-content-custom",
-//     },
-//     background: "#ffffff",
-//     color: "#1a1a1a",
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       EliminarSiEmpleado(id);
-//     } else if (result.dismiss === Swal.DismissReason.cancel) {
-//       Swal.fire({
-//         title: "Acción Cancelada",
-//         text: eliminado ? "Continuará desactivad0." : "Continuará activado.",
-//         toast: true,
-//         position: "bottom-end",
-//         showConfirmButton: false,
-//         timer: 2200,
-//         timerProgressBar: true,
-//         background: "#fef8f4",
-//         color: "#5f4339",
-//         icon: "info",
-//         iconColor: "#ff914d",
-//         customClass: {
-//           popup: "swal2-toast-status",
-//           title: "swal2-toast-title",
-//           content: "swal2-toast-content",
-//         },
-//       });
-//     }
-//   });
-// }
-
-// Función para eliminar una provincia
-// async function EliminarSiEmpleado(id) {
-//   const res = await authFetch(`Empleados/${id}`, {
-//     method: "DELETE",
-//   })
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error("No se pudo eliminar/reactivar el empleado");
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       ObtenerEmpleados();
-
-//       Swal.fire({
-//         title: "¡" + data.mensaje + "!",
-//         toast: true,
-//         position: "bottom-end",
-//         showConfirmButton: false,
-//         timer: 2200,
-//         timerProgressBar: true,
-//         background: "#f4fff7",
-//         color: "#1c3d26",
-//         icon: "success",
-//         iconColor: "#28a746d8",
-//         customClass: {
-//           popup: "swal2-toast-success",
-//           title: "swal2-toast-success-title",
-//           icon: "swal2-toast-success-icon",
-//         },
-//       });
-//     })
-//     .catch((error) => {
-//       MostrarErrorCatch();
-//     });
-// }
 
 // Función para mostra el offcanvas de historial
 function VerHistorialEmpleado(empleadoId) {
@@ -1452,23 +1349,6 @@ function MostrarDetalleHistorial(index) {
   offcanvas.show();
 }
 
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
+
 
 ComboParaFiltrarLocalidadPuesto();

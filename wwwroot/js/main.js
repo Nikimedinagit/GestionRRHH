@@ -73,4 +73,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // Podés agregar más roles si necesitás:
   // if (rol === "RRHH") { ... }
   // if (rol === "EMPLEADO") { ... }
-

@@ -48,71 +48,7 @@ function toggleHorarioInputs() {
 
 //FIN PANEL FORMULARIO//
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
 
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
 
 // Mostrar/ocultar fechas
 document
@@ -288,7 +224,7 @@ function MostrarHorariosDesktop(data) {
 
     const detalleHTML = $(`
       <div class="panelHorarios collapse px-3 pb-2" style="display: none;">
-        <h3 class="titulo-sub-seccion mb-3" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Detalle de Horarios</h3>
+        <h3 class="titulo-sub-seccion mb-3" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Detalle de Horarios y Días</h3>
         <div class="table-responsive">
           <table class="table table-bordered table-hover">
             <colgroup>
@@ -622,7 +558,7 @@ function ValidarFormularioHorario() {
   const errorSegundoHorarioInicio = document.getElementById("errorSegundoHorarioInicio");
   const errorSegundoHorarioFin = document.getElementById("errorSegundoHorarioFin");
 
-  // Limpiar errores anteriores
+  // Limpiar errores
   [
     errorEmpleado, errorTipoHorario, errorHorarioInicio, errorHorarioFin, errorDiasSemana,
     errorPrimerHorarioInicio, errorPrimerHorarioFin, errorSegundoHorarioInicio, errorSegundoHorarioFin
@@ -640,14 +576,14 @@ function ValidarFormularioHorario() {
   let esValido = true;
 
   // Validar Empleado
-  if (selectEmpleado.value.trim() === "") {
+  if (!selectEmpleado.value.trim()) {
     errorEmpleado.textContent = "Campo obligatorio.";
     errorEmpleado.style.display = "block";
     esValido = false;
   }
 
   // Validar Tipo de Horario
-  if (selectTipoHorario.value.trim() === "" || selectTipoHorario.value === "0") {
+  if (!selectTipoHorario.value.trim() || selectTipoHorario.value === "0") {
     errorTipoHorario.textContent = "Campo obligatorio.";
     errorTipoHorario.style.display = "block";
     esValido = false;
@@ -661,108 +597,72 @@ function ValidarFormularioHorario() {
       inputHorarioInicio.classList.add("is-invalid");
       esValido = false;
     }
-
     if (!inputHorarioFin.value) {
       errorHorarioFin.textContent = "Ingrese hora de fin.";
       errorHorarioFin.style.display = "block";
       inputHorarioFin.classList.add("is-invalid");
       esValido = false;
     }
+
+    if (inputHorarioInicio.value && inputHorarioFin.value) {
+      const [hiH, hiM] = inputHorarioInicio.value.split(":").map(Number);
+      const [hfH, hfM] = inputHorarioFin.value.split(":").map(Number);
+      const inicio = new Date(0, 0, 0, hiH, hiM);
+      const fin = new Date(0, 0, 0, hfH, hfM);
+      if (fin <= inicio) {
+        errorHorarioFin.textContent = "El fin debe ser mayor al inicio.";
+        errorHorarioFin.style.display = "block";
+        inputHorarioFin.classList.add("is-invalid");
+        esValido = false;
+      }
+    }
   }
 
   // Validar Horario Alterno
   if (selectTipoHorario.value === "2") {
-    if (!primerHorarioInicio.value) {
-      errorPrimerHorarioInicio.textContent = "Ingrese hora de inicio (mañana).";
-      errorPrimerHorarioInicio.style.display = "block";
-      primerHorarioInicio.classList.add("is-invalid");
-      esValido = false;
-    }
+    const horarios = [
+      { inicio: primerHorarioInicio, fin: primerHorarioFin, errorIni: errorPrimerHorarioInicio, errorFin: errorPrimerHorarioFin },
+      { inicio: segundoHorarioInicio, fin: segundoHorarioFin, errorIni: errorSegundoHorarioInicio, errorFin: errorSegundoHorarioFin }
+    ];
 
-    if (!primerHorarioFin.value) {
-      errorPrimerHorarioFin.textContent = "Ingrese hora de fin (mañana).";
-      errorPrimerHorarioFin.style.display = "block";
-      primerHorarioFin.classList.add("is-invalid");
-      esValido = false;
-    }
-
-    if (!segundoHorarioInicio.value) {
-      errorSegundoHorarioInicio.textContent = "Ingrese hora de inicio (tarde).";
-      errorSegundoHorarioInicio.style.display = "block";
-      segundoHorarioInicio.classList.add("is-invalid");
-      esValido = false;
-    }
-
-    if (!segundoHorarioFin.value) {
-      errorSegundoHorarioFin.textContent = "Ingrese hora de fin (tarde).";
-      errorSegundoHorarioFin.style.display = "block";
-      segundoHorarioFin.classList.add("is-invalid");
-      esValido = false;
-    }
-
-    if (
-      primerHorarioInicio.value &&
-      primerHorarioFin.value
-    ) {
-      const [piH, piM] = primerHorarioInicio.value.split(":").map(Number);
-      const [pfH, pfM] = primerHorarioFin.value.split(":").map(Number);
-      const inicioAM = piH < 12;
-      const primerInicioDate = new Date(0, 0, 0, piH, piM);
-      const primerFinDate = new Date(0, 0, 0, pfH, pfM);
-
-      if (!inicioAM) {
-        errorPrimerHorarioInicio.textContent = "Debe estar en la mañana (AM).";
-        errorPrimerHorarioInicio.style.display = "block";
-        primerHorarioInicio.classList.add("is-invalid");
+    horarios.forEach(horario => {
+      if (!horario.inicio.value) {
+        horario.errorIni.textContent = "Ingrese hora de inicio.";
+        horario.errorIni.style.display = "block";
+        horario.inicio.classList.add("is-invalid");
+        esValido = false;
+      }
+      if (!horario.fin.value) {
+        horario.errorFin.textContent = "Ingrese hora de fin.";
+        horario.errorFin.style.display = "block";
+        horario.fin.classList.add("is-invalid");
         esValido = false;
       }
 
-      if (primerFinDate <= primerInicioDate) {
-        errorPrimerHorarioFin.textContent = "El fin debe ser mayor al inicio.";
-        errorPrimerHorarioFin.style.display = "block";
-        primerHorarioFin.classList.add("is-invalid");
-        esValido = false;
+      if (horario.inicio.value && horario.fin.value) {
+        const [hH, hM] = horario.inicio.value.split(":").map(Number);
+        const [fH, fM] = horario.fin.value.split(":").map(Number);
+        const inicioDate = new Date(0, 0, 0, hH, hM);
+        const finDate = new Date(0, 0, 0, fH, fM);
+        if (finDate <= inicioDate) {
+          horario.errorFin.textContent = "El fin debe ser mayor al inicio.";
+          horario.errorFin.style.display = "block";
+          horario.fin.classList.add("is-invalid");
+          esValido = false;
+        }
       }
-    }
+    });
 
-    if (
-      primerHorarioFin.value &&
-      segundoHorarioInicio.value
-    ) {
+    // Validar que el segundo horario empiece después del primero
+    if (primerHorarioFin.value && segundoHorarioInicio.value) {
       const [pfH, pfM] = primerHorarioFin.value.split(":").map(Number);
       const [siH, siM] = segundoHorarioInicio.value.split(":").map(Number);
-      const segundoInicioPM = siH >= 12;
       const primerFinDate = new Date(0, 0, 0, pfH, pfM);
       const segundoInicioDate = new Date(0, 0, 0, siH, siM);
-
-      if (!segundoInicioPM) {
-        errorSegundoHorarioInicio.textContent = "Debe estar en la tarde (PM).";
-        errorSegundoHorarioInicio.style.display = "block";
-        segundoHorarioInicio.classList.add("is-invalid");
-        esValido = false;
-      }
-
       if (segundoInicioDate <= primerFinDate) {
-        errorSegundoHorarioInicio.textContent = "Debe ser mayor que el fin del primer horario.";
+        errorSegundoHorarioInicio.textContent = "El inicio del segundo horario debe ser mayor que el fin del primero.";
         errorSegundoHorarioInicio.style.display = "block";
         segundoHorarioInicio.classList.add("is-invalid");
-        esValido = false;
-      }
-    }
-
-    if (
-      segundoHorarioInicio.value &&
-      segundoHorarioFin.value
-    ) {
-      const [siH, siM] = segundoHorarioInicio.value.split(":").map(Number);
-      const [sfH, sfM] = segundoHorarioFin.value.split(":").map(Number);
-      const segundoInicioDate = new Date(0, 0, 0, siH, siM);
-      const segundoFinDate = new Date(0, 0, 0, sfH, sfM);
-
-      if (segundoFinDate <= segundoInicioDate) {
-        errorSegundoHorarioFin.textContent = "El fin debe ser mayor al inicio.";
-        errorSegundoHorarioFin.style.display = "block";
-        segundoHorarioFin.classList.add("is-invalid");
         esValido = false;
       }
     }
@@ -785,14 +685,13 @@ function ValidarFormularioHorario() {
 
 
 
-
 // validacion en vivo: cambia el color mientras el usuario escribe
+// Validación Empleado
 document.getElementById("EmpleadoId").addEventListener("input", () => {
   const inputEmpleado = document.getElementById("EmpleadoId");
   const errorEmpleado = document.getElementById("errorEmpleadoId");
   const empleado = inputEmpleado.value.trim();
 
-  // Limpiar cualquier estado previo
   inputEmpleado.classList.remove("is-invalid", "is-valid");
 
   if (empleado.length === 0) {
@@ -805,15 +704,15 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
   }
 });
 
+// Validación Tipo de Horario
 document.getElementById("TipoHorario").addEventListener("input", () => {
   const inputTipoHorario = document.getElementById("TipoHorario");
   const errorTipoHorario = document.getElementById("errorTipoHorario");
   const tipoHorario = inputTipoHorario.value.trim();
 
-  // Limpiar cualquier estado previo
   inputTipoHorario.classList.remove("is-invalid", "is-valid");
 
-  if (tipoHorario.length === 0) {
+  if (tipoHorario.length === 0 || tipoHorario === "0") {
     inputTipoHorario.classList.add("is-invalid");
     errorTipoHorario.style.display = "block";
     errorTipoHorario.textContent = "Campo obligatorio.";
@@ -823,29 +722,19 @@ document.getElementById("TipoHorario").addEventListener("input", () => {
   }
 });
 
-// valdiar en vivo horario inico nomas
+// Validación Horario Continuo (24h)
 document.getElementById("horarioContinuo").addEventListener("input", () => {
   const inputHorarioInicio = document.getElementById("HorarioInicio");
   const errorHorarioInicio = document.getElementById("errorHorarioInicio");
-
   const inputHorarioFin = document.getElementById("HorarioFin");
   const errorHorarioFin = document.getElementById("errorHorarioFin");
 
-  // Obtener valor de horario inicio
-  const horarioInicioTs = inputHorarioInicio.value;
-  const horarioFinTs = inputHorarioFin.value;
-
-  // Limpiar estados previos
   inputHorarioInicio.classList.remove("is-invalid", "is-valid");
-  errorHorarioInicio.style.display = "none";
-  errorHorarioInicio.textContent = "";
-
   inputHorarioFin.classList.remove("is-invalid", "is-valid");
+  errorHorarioInicio.style.display = "none";
   errorHorarioFin.style.display = "none";
-  errorHorarioFin.textContent = "";
 
-  // Validar horario inicio
-  if (!horarioInicioTs) {
+  if (!inputHorarioInicio.value) {
     inputHorarioInicio.classList.add("is-invalid");
     errorHorarioInicio.style.display = "block";
     errorHorarioInicio.textContent = "Ingrese hora de inicio.";
@@ -853,92 +742,85 @@ document.getElementById("horarioContinuo").addEventListener("input", () => {
     inputHorarioInicio.classList.add("is-valid");
   }
 
-  // Validar horario fin
-  if (!horarioFinTs) {
+  if (!inputHorarioFin.value) {
     inputHorarioFin.classList.add("is-invalid");
     errorHorarioFin.style.display = "block";
     errorHorarioFin.textContent = "Ingrese hora de fin.";
+  } else if (inputHorarioInicio.value && inputHorarioFin.value <= inputHorarioInicio.value) {
+    inputHorarioFin.classList.add("is-invalid");
+    errorHorarioFin.style.display = "block";
+    errorHorarioFin.textContent = "Debe ser mayor que la hora de inicio.";
   } else {
     inputHorarioFin.classList.add("is-valid");
   }
 });
 
-
+// Validación Horario Alterno (24h)
 document.getElementById("horarioAlterno").addEventListener("input", () => {
-  const inputPrimerHorarioInicio = document.getElementById("PrimerHorarioInicio");
-  const errorPrimerHorarioInicio = document.getElementById("errorPrimerHorarioInicio");
+  const inputs = [
+    { id: "PrimerHorarioInicio", error: "errorPrimerHorarioInicio", mensaje: "Ingrese hora de inicio." },
+    { id: "PrimerHorarioFin", error: "errorPrimerHorarioFin", mensaje: "Ingrese hora de fin." },
+    { id: "SegundoHorarioInicio", error: "errorSegundoHorarioInicio", mensaje: "Ingrese hora de inicio." },
+    { id: "SegundoHorarioFin", error: "errorSegundoHorarioFin", mensaje: "Ingrese hora de fin." }
+  ];
 
-  const inputPrimerHorarioFin = document.getElementById("PrimerHorarioFin");
-  const errorPrimerHorarioFin = document.getElementById("errorPrimerHorarioFin");
-
-  const inputSegundoHorarioInicio = document.getElementById("SegundoHorarioInicio");
-  const errorSegundoHorarioInicio = document.getElementById("errorSegundoHorarioInicio");
-
-  const inputSegundoHorarioFin = document.getElementById("SegundoHorarioFin");
-  const errorSegundoHorarioFin = document.getElementById("errorSegundoHorarioFin");
-
-  const primerHorarioInicio = inputPrimerHorarioInicio.value;
-  const primerHorarioFin = inputPrimerHorarioFin.value;
-  const segundoHorarioInicio = inputSegundoHorarioInicio.value;
-  const segundoHorarioFin = inputSegundoHorarioFin.value;
-
-  // Limpiar estados previos
-  [inputPrimerHorarioInicio, inputPrimerHorarioFin, inputSegundoHorarioInicio, inputSegundoHorarioFin].forEach(input => {
+  const valores = {};
+  inputs.forEach(item => {
+    const input = document.getElementById(item.id);
+    const error = document.getElementById(item.error);
     input.classList.remove("is-invalid", "is-valid");
-  });
-  [errorPrimerHorarioInicio, errorPrimerHorarioFin, errorSegundoHorarioInicio, errorSegundoHorarioFin].forEach(error => {
     error.style.display = "none";
     error.textContent = "";
+    valores[item.id] = input.value;
   });
 
-  // Validar Primer Horario Inicio
-  if (!primerHorarioInicio) {
-    inputPrimerHorarioInicio.classList.add("is-invalid");
-    errorPrimerHorarioInicio.textContent = "Ingrese hora de inicio (mañana).";
-    errorPrimerHorarioInicio.style.display = "block";
+  // Primer Horario
+  if (!valores.PrimerHorarioInicio) {
+    document.getElementById("PrimerHorarioInicio").classList.add("is-invalid");
+    document.getElementById("errorPrimerHorarioInicio").textContent = "Ingrese hora de inicio.";
+    document.getElementById("errorPrimerHorarioInicio").style.display = "block";
   } else {
-    inputPrimerHorarioInicio.classList.add("is-valid");
+    document.getElementById("PrimerHorarioInicio").classList.add("is-valid");
   }
 
-  // Validar Primer Horario Fin
-  if (!primerHorarioFin) {
-    inputPrimerHorarioFin.classList.add("is-invalid");
-    errorPrimerHorarioFin.textContent = "Ingrese hora de fin (mañana).";
-    errorPrimerHorarioFin.style.display = "block";
-  } else if (primerHorarioInicio && primerHorarioFin <= primerHorarioInicio) {
-    inputPrimerHorarioFin.classList.add("is-invalid");
-    errorPrimerHorarioFin.textContent = "Debe ser mayor que la hora de inicio.";
-    errorPrimerHorarioFin.style.display = "block";
+  if (!valores.PrimerHorarioFin) {
+    document.getElementById("PrimerHorarioFin").classList.add("is-invalid");
+    document.getElementById("errorPrimerHorarioFin").textContent = "Ingrese hora de fin.";
+    document.getElementById("errorPrimerHorarioFin").style.display = "block";
+  } else if (valores.PrimerHorarioFin && valores.PrimerHorarioInicio && valores.PrimerHorarioFin <= valores.PrimerHorarioInicio) {
+    document.getElementById("PrimerHorarioFin").classList.add("is-invalid");
+    document.getElementById("errorPrimerHorarioFin").textContent = "Debe ser mayor que la hora de inicio.";
+    document.getElementById("errorPrimerHorarioFin").style.display = "block";
   } else {
-    inputPrimerHorarioFin.classList.add("is-valid");
+    document.getElementById("PrimerHorarioFin").classList.add("is-valid");
   }
 
-  // Validar Segundo Horario Inicio
-  if (!segundoHorarioInicio) {
-    inputSegundoHorarioInicio.classList.add("is-invalid");
-    errorSegundoHorarioInicio.textContent = "Ingrese hora de inicio (tarde).";
-    errorSegundoHorarioInicio.style.display = "block";
-  } else if (primerHorarioFin && segundoHorarioInicio <= primerHorarioFin) {
-    inputSegundoHorarioInicio.classList.add("is-invalid");
-    errorSegundoHorarioInicio.textContent = "Debe ser mayor que el fin de la mañana.";
-    errorSegundoHorarioInicio.style.display = "block";
+  // Segundo Horario
+  if (!valores.SegundoHorarioInicio) {
+    document.getElementById("SegundoHorarioInicio").classList.add("is-invalid");
+    document.getElementById("errorSegundoHorarioInicio").textContent = "Ingrese hora de inicio.";
+    document.getElementById("errorSegundoHorarioInicio").style.display = "block";
+  } else if (valores.PrimerHorarioFin && valores.SegundoHorarioInicio <= valores.PrimerHorarioFin) {
+    document.getElementById("SegundoHorarioInicio").classList.add("is-invalid");
+    document.getElementById("errorSegundoHorarioInicio").textContent = "Debe ser mayor que el fin del primer horario.";
+    document.getElementById("errorSegundoHorarioInicio").style.display = "block";
   } else {
-    inputSegundoHorarioInicio.classList.add("is-valid");
+    document.getElementById("SegundoHorarioInicio").classList.add("is-valid");
   }
 
-  // Validar Segundo Horario Fin
-  if (!segundoHorarioFin) {
-    inputSegundoHorarioFin.classList.add("is-invalid");
-    errorSegundoHorarioFin.textContent = "Ingrese hora de fin (tarde).";
-    errorSegundoHorarioFin.style.display = "block";
-  } else if (segundoHorarioInicio && segundoHorarioFin <= segundoHorarioInicio) {
-    inputSegundoHorarioFin.classList.add("is-invalid");
-    errorSegundoHorarioFin.textContent = "Debe ser mayor que la hora de inicio (tarde).";
-    errorSegundoHorarioFin.style.display = "block";
+  if (!valores.SegundoHorarioFin) {
+    document.getElementById("SegundoHorarioFin").classList.add("is-invalid");
+    document.getElementById("errorSegundoHorarioFin").textContent = "Ingrese hora de fin.";
+    document.getElementById("errorSegundoHorarioFin").style.display = "block";
+  } else if (valores.SegundoHorarioFin && valores.SegundoHorarioInicio && valores.SegundoHorarioFin <= valores.SegundoHorarioInicio) {
+    document.getElementById("SegundoHorarioFin").classList.add("is-invalid");
+    document.getElementById("errorSegundoHorarioFin").textContent = "Debe ser mayor que la hora de inicio.";
+    document.getElementById("errorSegundoHorarioFin").style.display = "block";
   } else {
-    inputSegundoHorarioFin.classList.add("is-valid");
+    document.getElementById("SegundoHorarioFin").classList.add("is-valid");
   }
 });
+
 
 
 document.getElementById("diasSemana").addEventListener("input", () => {
