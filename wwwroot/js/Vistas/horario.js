@@ -431,6 +431,10 @@ function LimpiarModalHorario() {
   inputSegundoHorarioInicio.value = "";
   const inputSegundoHorarioFin = document.getElementById("SegundoHorarioFin");
   inputSegundoHorarioFin.value = "";
+  const checkDiasSemana = document.getElementById("diasSemana");
+  checkDiasSemana.querySelectorAll("input[type=checkbox]").forEach((checkbox) => {
+    checkbox.checked = false;
+  });
 
   // Limpia los estilos de validación
   inputEmpleado.classList.remove("is-invalid", "is-valid");

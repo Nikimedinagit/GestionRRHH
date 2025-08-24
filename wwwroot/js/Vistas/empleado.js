@@ -541,7 +541,7 @@ if (fechaNacimiento.length === 0) {
 
 
 
-  if (tipoSexo !== 0) {
+  if (parseInt(tipoSexo) === 0 || isNaN(parseInt(tipoSexo))) {
     inputTipoSexo.classList.add("is-invalid");
     inputErrorTipoSexo.textContent = "Campo obligatorio.";
     inputErrorTipoSexo.style.display = "block";
@@ -550,7 +550,7 @@ if (fechaNacimiento.length === 0) {
     inputTipoSexo.classList.add("is-valid");
   }
 
-  if (localidadId !== 0) {
+  if (parseInt(localidadId) === 0 || isNaN(parseInt(localidadId))) {
     inputIdLocalidad.classList.add("is-invalid");
     inputErrorIdLocalidad.textContent = "Campo obligatorio.";
     inputErrorIdLocalidad.style.display = "block";
@@ -559,7 +559,7 @@ if (fechaNacimiento.length === 0) {
     inputIdLocalidad.classList.add("is-valid");
   }
 
-  if (puestoId !== 0) {
+  if (parseInt(puestoId) === 0 || isNaN(parseInt(puestoId))) {
     inputIdPuesto.classList.add("is-invalid");
     inputErrorIdPuesto.textContent = "Campo obligatorio.";
     inputErrorIdPuesto.style.display = "block";

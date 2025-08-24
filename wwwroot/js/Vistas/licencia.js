@@ -603,7 +603,7 @@ document.getElementById("FechaInicio").addEventListener("input", () => {
       input.classList.add("is-invalid");
       input.classList.remove("is-valid");
       error.style.display = "block";
-      error.textContent = "Fecha inválida (anterior a hoy).";
+      error.textContent = "Debe ser superior a la de hoy.";
     } else {
       input.classList.remove("is-invalid");
       input.classList.add("is-valid");
@@ -629,7 +629,7 @@ document.getElementById("FechaFin").addEventListener("input", () => {
     inputFin.classList.add("is-invalid");
     inputFin.classList.remove("is-valid");
     error.style.display = "block";
-    error.textContent = "Fecha inválida (anterior a la de inicio).";
+    error.textContent = "Debe ser superior a la de inicio.";
   } else {
     inputFin.classList.remove("is-invalid");
     inputFin.classList.add("is-valid");
@@ -674,7 +674,7 @@ async function CrearLicencia() {
   try {
     const res = await authFetch("Licencias", {
       method: "POST",
-      body: formData, // Enviar FormData directamente
+      body: formData, 
     });
 
     const response = await res.json();

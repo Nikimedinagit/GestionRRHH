@@ -342,17 +342,24 @@
       border-bottom-left-radius: 0;
     ">
     <div class="detalle-empleado-contenedor">
-      <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-start">
-        <div>
-          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+      <div class="detalle-empleado-encabezado row align-items-start">
+        
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
             Detalle del Empleado
           </h5>
           <p class="mb-0 text-muted" style="font-size: 0.85rem;">
             Información personal y de contacto del empleado seleccionado.
           </p>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+
+        <!-- Botón con línea divisoria -->
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
       </div>
+
+
 
       <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
@@ -451,17 +458,22 @@
     <div class="historial-empleado-contenedor">
 
 
-      <div class="historial-empleado-encabezado d-flex justify-content-between align-items-start">
-        <div>
-          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+      <div class="historial-empleado-encabezado row align-items-start">
+        
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
             Historial del Empleado
           </h5>
           <p class="mb-0 text-muted" style="font-size: 0.85rem;">
             Visualizá los cambios de puesto y sector de este empleado a lo largo del tiempo.
           </p>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
       </div>
+
 
 
       <hr style="margin: 0 0 1rem 0; border-top: 1px solid #dee2e6" />
@@ -490,69 +502,77 @@
 
 
 
-<!-- Offcanvas Detalle Historial Laboral -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHistorial" aria-labelledby="tituloDetalleHistorial" style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  <div class="detalle-empleado-contenedor">
-    <div class="detalle-empleado-encabezado d-flex justify-content-between align-items-start">
-      <div>
-        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
-          Detalle del Cambio Laboral
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
-          Información detallada del cambio seleccionado en el historial laboral.
-        </p>
+  <!-- Offcanvas Detalle Historial Laboral -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHistorial"
+    aria-labelledby="tituloDetalleHistorial"
+    style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+    <div class="detalle-cambio-laboral-contenedor">
+      <div class="detalle-cambio-laboral-encabezado row align-items-start">
+        
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
+            Detalle del Cambio Laboral
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Información detallada del cambio seleccionado en el historial laboral.
+          </p>
+        </div>
+
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
       </div>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-    </div>
 
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
-      <div class="detalle-empleado-tarjeta">
-        <div class="detalle-empleado-seccion">
-          <p class="detalle-empleado-titulo-seccion">Datos del Cambio</p>
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-          <div class="detalle-empleado-fila">
-            <span class="detalle-empleado-etiqueta">Fecha:</span>
-            <span class="detalle-empleado-valor" id="detalleFechaModificacion"></span>
+      <div class="offcanvas-body p-2"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+        <div class="detalle-cambio-laboral-tarjeta">
+          <div class="detalle-cambio-laboral-seccion">
+            <p class="detalle-cambio-laboral-titulo-seccion">Datos del Cambio</p>
+
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Fecha:</span>
+              <span class="detalle-cambio-laboral-valor" id="detalleFechaModificacion"></span>
+            </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Puesto Anterior:</span>
+              <span class="detalle-cambio-laboral-valor" id="detallePuestoAnterior"></span>
+            </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Sector Anterior:</span>
+              <span class="detalle-cambio-laboral-valor" id="detalleSectorAnterior"></span>
+            </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Puesto Actual:</span>
+              <span class="detalle-cambio-laboral-valor" id="detallePuestoActual"></span>
+            </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Sector Actual:</span>
+              <span class="detalle-cambio-laboral-valor" id="detalleSectorActual"></span>
+            </div>
+
           </div>
-          <div class="detalle-empleado-fila">
-            <span class="detalle-empleado-etiqueta">Puesto Anterior:</span>
-            <span class="detalle-empleado-valor" id="detallePuestoAnterior"></span>
-          </div>
-          <div class="detalle-empleado-fila">
-            <span class="detalle-empleado-etiqueta">Sector Anterior:</span>
-            <span class="detalle-empleado-valor" id="detalleSectorAnterior"></span>
-          </div>
-          <div class="detalle-empleado-fila">
-            <span class="detalle-empleado-etiqueta">Puesto Actual:</span>
-            <span class="detalle-empleado-valor" id="detallePuestoActual"></span>
-          </div>
-          <div class="detalle-empleado-fila">
-            <span class="detalle-empleado-etiqueta">Sector Actual:</span>
-            <span class="detalle-empleado-valor" id="detalleSectorActual"></span>
-          </div>
-          
         </div>
-        </div>
-        <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
-            <div class="detalle-empleado-seccion">
-              <p class="detalle-empleado-titulo-seccion">Responsable del Cambio</p>
+        <div class="detalle-cambio-laboral-tarjeta" style="margin-bottom: 1rem">
+          <div class="detalle-cambio-laboral-seccion">
+            <p class="detalle-cambio-laboral-titulo-seccion">Responsable del Cambio</p>
 
-              <div class="detalle-empleado-fila">
-                <span class="detalle-empleado-etiqueta">Nombre:</span>
-                <span class="detalle-empleado-valor" id="detalleResponsableNombre"></span>
-              </div>
-              <div class="detalle-empleado-fila">
-                <span class="detalle-empleado-etiqueta">Email:</span>
-                <span class="detalle-empleado-valor" id="detalleResponsableEmail"></span>
-              </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Nombre:</span>
+              <span class="detalle-cambio-laboral-valor" id="detalleResponsableNombre"></span>
+            </div>
+            <div class="detalle-cambio-laboral-fila">
+              <span class="detalle-cambio-laboral-etiqueta">Email:</span>
+              <span class="detalle-cambio-laboral-valor" id="detalleResponsableEmail"></span>
             </div>
           </div>
-      
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 
 
 
