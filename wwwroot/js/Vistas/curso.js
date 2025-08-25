@@ -24,6 +24,14 @@ function cerrarPanelCursos() {
 
 //Inicio Panel Asistencias//
 function abrirPanelAsistencias() {
+  // Si el offcanvas está abierto → cerrarlo
+  const offcanvasEl = document.getElementById("offcanvasAsistencias");
+  const offcanvasObj = bootstrap.Offcanvas.getInstance(offcanvasEl);
+  if (offcanvasObj) {
+    offcanvasObj.hide();
+  }
+
+  // Ahora sí abrir el panel lateral
   document.getElementById("panelAsistencias").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.add("visible");
@@ -32,8 +40,8 @@ function abrirPanelAsistencias() {
     const inputEmpleadoId = document.getElementById("EmpleadoId");
     if (inputEmpleadoId) inputEmpleadoId.focus();
   }, 400);
-  
 }
+
 
 $(document).on("click", ".crearAsistencias", function () {
   const cursoId = $(this).data("curso-id");
@@ -78,24 +86,77 @@ function cerrarPanelCertificados() {
   LimpiarModalCertificado();
 }
 
+//Abir el drop de fecha en caso de que qiera filtrar
+  document.getElementById('filtrarFechaSelect').addEventListener('change', function () {
+    const mostrar = this.value === 'si';
+    document.getElementById('fechasInputs').classList.toggle('d-none', !mostrar);
 
+    // Opcional: limpiar valores al ocultar
+    document.getElementById("FechaCursoBuscar").value = "";
+  });
+
+$(document).ready(function () {
+  ObtenerCursos();
+
+  $("#NombreCursoBuscar").on("input", function () {
+    ObtenerCursos();
+  });
+
+  $("#ModalidadBuscar").on("change", function () {
+    ObtenerCursos();
+  });
+
+  $("#FechaCursoBuscar").on("input", function () {
+    ObtenerCursos();
+  });
+}) 
 
 
 //Funcion para obtener los cursos
 async function ObtenerCursos() {
-    const res = await authFetch("Cursos", {
-        method: 'GET',
+  let nombreCurso = document.getElementById("NombreCursoBuscar").value;
+  let modalidadCurso = document.getElementById("ModalidadBuscar").value;
+  let modalidad = modalidadCurso !== "0" && modalidadCurso !== "" ? modalidadCurso: null;
+  let fecha = document.getElementById("FechaCursoBuscar").value;
+
+  const filtro = {
+    nombreCurso : nombreCurso,
+    modalidad : modalidad,
+    fecha : fecha ? fecha: null,
+  };
+  const res = await authFetch("Cursos/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .then(response => response.json())
-    .then(data => {
-        MostrarCursos(data)
-        LimpiarModalCursos();
-        cerrarPanelCursos();
-      })
-    .catch((error) => {;
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Respuesta del backend:", data);
+      MostrarCursos(data);
+      LimpiarModalCursos();
+      cerrarPanelCursos();
+    })
+    .catch((error) => {
       MostrarErrorCatch();
-      });
+    });
 }
+
+
+
+
+// async function ObtenerCursos() {
+//     const res = await authFetch("Cursos", {
+//         method: 'GET',
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         MostrarCursos(data)
+//         LimpiarModalCursos();
+//         cerrarPanelCursos();
+//       })
+//     .catch((error) => {;
+//       MostrarErrorCatch();
+//       });
+// }
 
 function MostrarCursos(data) {
   if (window.innerWidth <= 764) {
@@ -265,46 +326,65 @@ function MostrarCursosDesktop(data) {
       `);
 
       // Mostrar descripción
-      item.find(".btn-ver-descripcion").on("click", function () {
+      item.find(".btn-ver-descripcion").on("click", function (e) {
+        e.stopPropagation(); // evita que el click se propague al documento
+
+        $(".panelCriterios.mostrar, .panelAsistencias.mostrar, .panelCertificados.mostrar")
+          .not(descripcionDetalle)
+          .slideUp(200)
+          .removeClass("mostrar");
+
         descripcionDetalle.slideToggle(200, function () {
           descripcionDetalle.toggleClass("mostrar", descripcionDetalle.is(":visible"));
         });
-
-        if (asistenciaDetalle.is(":visible")) {
-          asistenciaDetalle.slideUp(200).removeClass("mostrar");
-        }else if (certificadoetalle.is(":visible")) {
-          certificadoetalle.slideUp(200).removeClass("mostrar");
-        }
 
         const icono = $(this).find("i");
         icono.toggleClass("bi-chevron-down bi-chevron-up");
       });
 
       // Mostrar asistencias
-      item.find(".btn-ver-asistencias").on("click", function () {
+      item.find(".btn-ver-asistencias").on("click", function (e) {
+        e.stopPropagation();
+
+        $(".panelCriterios.mostrar, .panelAsistencias.mostrar, .panelCertificados.mostrar")
+          .not(asistenciaDetalle)
+          .slideUp(200)
+          .removeClass("mostrar");
+
         asistenciaDetalle.slideToggle(200, function () {
           asistenciaDetalle.toggleClass("mostrar", asistenciaDetalle.is(":visible"));
         });
-
-        if (descripcionDetalle.is(":visible")) {
-          descripcionDetalle.slideUp(200).removeClass("mostrar");
-        }else if (certificadoetalle.is(":visible")) {
-          certificadoetalle.slideUp(200).removeClass("mostrar");
-        }
       });
 
-      // Mostrar cerificados
-      item.find(".btn-ver-certificados").on("click", function () {
+      // Mostrar certificados
+      item.find(".btn-ver-certificados").on("click", function (e) {
+        e.stopPropagation();
+
+        $(".panelCriterios.mostrar, .panelAsistencias.mostrar, .panelCertificados.mostrar")
+          .not(certificadoetalle)
+          .slideUp(200)
+          .removeClass("mostrar");
+
         certificadoetalle.slideToggle(200, function () {
           certificadoetalle.toggleClass("mostrar", certificadoetalle.is(":visible"));
         });
+      });
 
-        if (asistenciaDetalle.is(":visible")) {
-          asistenciaDetalle.slideUp(200).removeClass("mostrar");
-        }else if (descripcionDetalle.is(":visible")) {
-          descripcionDetalle.slideUp(200).removeClass("mostrar");
+      // Cerrar al hacer click fuera
+      $(document).on("click", function (e) {
+        if (
+          !$(e.target).closest(".curso-item").length &&   // no es un item del curso
+          !$(e.target).closest(".panelCriterios, .panelAsistencias, .panelCertificados").length // ni un panel abierto
+        ) {
+          $(".panelCriterios.mostrar, .panelAsistencias.mostrar, .panelCertificados.mostrar")
+            .slideUp(200)
+            .removeClass("mostrar");
+          
+          // resetear íconos abiertos
+          $(".btn-ver-descripcion i").removeClass("bi-chevron-up").addClass("bi-chevron-down");
         }
       });
+
 
       contenedor.append(item);
       contenedor.append(descripcionDetalle);

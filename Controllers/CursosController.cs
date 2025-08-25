@@ -41,6 +41,54 @@ namespace API_NET_CORE8_RRHH.Controllers
             return curso;
         }
 
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<CursoVista>>> FiltroCurso([FromBody] FiltroCurso filtro)
+        {
+            List<CursoVista> vista = new List<CursoVista>();
+            var cursosFiltrados = _context.Curso.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.NombreCurso))
+            {
+                cursosFiltrados = cursosFiltrados.Where(c => c.Nombre.ToLower().Contains(filtro.NombreCurso.ToLower()));
+            }
+
+            if (filtro.Modalidad.HasValue && filtro.Modalidad.Value != 0)
+            {
+                cursosFiltrados = cursosFiltrados.Where(c => (int)c.Modalidad == filtro.Modalidad);
+            }
+
+            if (filtro.Fecha.HasValue)
+            {
+                var fecha = filtro.Fecha.Value.Date;
+                cursosFiltrados = cursosFiltrados.Where(c => c.FechaInicio.Date == fecha);
+            }
+
+            var listaFiltrada = await cursosFiltrados.ToListAsync();
+                // .Include(c => c.AsistenciaCapacitacion)
+                // .Include(c => c.Certificado)
+                // .Where(c => c.AsistenciaCapacitacion != null && !c.AsistenciaCapacitacion.Any(a => a.Asistencia == false))
+                // .Where(c => c.Certificado != null && !c.Certificado.Any(c => c.DocumentoDescargable != null))
+                
+
+            foreach (var curso in listaFiltrada)
+            {
+                var vistaCurso = new CursoVista
+                {
+                    Id = curso.Id,
+                    FechaInicio = curso.FechaInicio,
+                    Modalidad = curso.Modalidad,
+                    Nombre = curso.Nombre,
+                    Descripcion = curso.Descripcion
+                };
+                vista.Add(vistaCurso);
+            }
+            
+            Console.WriteLine($"Nombre: {filtro.NombreCurso}, Modalidad: {filtro.Modalidad}, Fecha: {filtro.Fecha}");
+
+            return Ok(vista);
+
+        }
+
         // PUT: api/Cursos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

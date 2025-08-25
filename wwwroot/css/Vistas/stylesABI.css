@@ -700,3 +700,9 @@ textarea.form-control {
   font-size: 0.875rem;
   min-width: 90px;
 }
+
+
+
+.offcanvas {
+  pointer-events: auto !important;
+}

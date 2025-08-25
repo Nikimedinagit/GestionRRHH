@@ -90,12 +90,21 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             if (empleadoExistente != null)
             {
-                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene una asistencia registrada para este curso"});
+                return BadRequest(new {codigo = 0, campo = "empleado", mensaje = "Este empleado ya tiene una asistencia registrada para este curso"});
             }
 
-            if (asistenciaCapacitacion.Fecha.Date < DateTime.Today)
+            var curso = await _context.Curso.FindAsync(asistenciaCapacitacion.CursoId);
+
+
+            if (curso == null)
             {
-                return BadRequest(new { codigo = 0, mensaje = "La fecha de asistencia no puede ser menor a hoy" });
+                return BadRequest(new { codigo = 0, mensaje = "Seleccione un curso" });
+            }
+
+            //La fecha de asistencia no puede ser menor a la fecha de inicio del curso.
+            if (asistenciaCapacitacion.Fecha.Date < curso.FechaInicio.Date)
+            {
+                return BadRequest(new { codigo = 0, campo = "fecha", mensaje = "La fecha de asistencia no puede ser menor a la fecha de inicio del curso" });
             }
             _context.AsistenciaCapacitacion.Add(asistenciaCapacitacion);
             await _context.SaveChangesAsync();

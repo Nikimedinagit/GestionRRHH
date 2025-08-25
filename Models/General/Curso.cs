@@ -25,4 +25,20 @@ namespace API_RRHH_TESIS2025.Models.General
         VIRTUAL = 2,
         MIXTO = 3
     }
+
+    public class CursoVista
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public  Modalidades Modalidad { get; set; }
+    }
+
+    public class FiltroCurso
+    {
+        public string NombreCurso { get; set; }
+        public int? Modalidad { get; set; }
+        public DateTime? Fecha { get; set; }
+    }
 }

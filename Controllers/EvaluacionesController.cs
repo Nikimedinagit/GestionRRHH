@@ -65,7 +65,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
             {
                 evaluacionFiltrar = evaluacionFiltrar
-                .Where(e => e.Empleado.NombreCompleto.Contains(filtro.NombreEmpleado));
+                .Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
             }
 
             if (filtro.Fecha.HasValue)

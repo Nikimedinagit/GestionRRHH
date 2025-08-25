@@ -50,38 +50,6 @@ function cerrarPanelCriterios() {
 }
 //FIN PANEL CRITERIOS//
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
 
 
   document.getElementById('filtrarFechaSelect').addEventListener('change', function () {
@@ -93,17 +61,32 @@ function AbrilPanelFiltros(idPanel) {
   });
 
 //Onchange de filtro
-document.getElementById("EmpleadoIdBuscar").onchange = function () {
+$(document).ready(function () {
   ObtenerEvaluaciones();
-}
 
-document.getElementById("FechaEvalBuscar").onchange = function () {
-  ObtenerEvaluaciones();
-}
+  $("#EmpleadoIdBuscar").on("input", function () {
+    ObtenerEvaluaciones();
+  });
 
-document.getElementById("CalificacionBuscar").onchange = function () {
-  ObtenerEvaluaciones();
-}
+  $("#FechaEvalBuscar").on("input", function () {
+    ObtenerEvaluaciones();
+  });
+
+  $("#CalificacionBuscar").on("input", function () {
+    ObtenerEvaluaciones();
+  });
+})
+// document.getElementById("EmpleadoIdBuscar").onchange = function () {
+//   ObtenerEvaluaciones();
+// }
+
+// document.getElementById("FechaEvalBuscar").onchange = function () {
+//   ObtenerEvaluaciones();
+// }
+
+// document.getElementById("CalificacionBuscar").onchange = function () {
+//   ObtenerEvaluaciones();
+// }
 
 //Funcion para obtener las evaluaciones
 async function ObtenerEvaluaciones() {
@@ -1001,25 +984,6 @@ async function EliminarSiCriterio(id) {
     ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
 
     })
-}
-
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
 }
 
 
