@@ -6,7 +6,7 @@
   position: fixed;
   top: 50%;
   right: 0;
-  max-width: 35vw;
+  max-width: 60vw; /*Antes tenia 35vw*/
   max-height: 90vh;
   height: auto;
   background: #fff;
@@ -376,6 +376,23 @@ textarea.form-control {
   margin: 0px 3px !important;
   padding: 0% !important;
   border-radius: 12px;
+}
+
+.icono-asistencia-mobile {
+  font-size: 1.2rem !important;
+  color: #dc5260 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+  border-radius: 12px;
+}
+
+.icono-certificado-mobile {
+  font-size: 1.2rem !important;
+  color: #77BEF0 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
 }
 
 .icono-certificado {

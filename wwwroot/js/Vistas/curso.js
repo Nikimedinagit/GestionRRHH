@@ -449,10 +449,10 @@ function MostrarCursosMobile(data) {
           <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
             ${element.nombre || "Sin nombre"}
           </h5>
-          <small class="text-muted mb-1" style="font-size: 0.75rem;">
-            <i class="bx bx-calendar me-1"></i> ${fecha}
+          <small class="text-muted mb-1" style="font-size: 0.90rem;">
+            <i class="bx bx-calendar me-1"></i>${fecha}
           </small>
-          ${hora ? `<small class="text-muted mb-2" style="font-size: 0.75rem;"><i class="bx bx-time me-1"></i>${hora}</small>` : ""}
+          ${hora ? `<small class="text-muted mb-2" style="font-size: 0.90rem;"><i class="bx bx-time me-1"></i>${hora}</small>` : ""}
           <span class="badge ${claseModalidad} my-2" style="width: fit-content; font-size: 1rem;">
             ${modalidadNombre}
           </span>
@@ -460,11 +460,11 @@ function MostrarCursosMobile(data) {
 
         <div class="d-flex justify-content-between mt-2 align-items-center">
           <div>
-            <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
+            <button class="btn-ver-asistencias icono-asistencia-mobile" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
               <i class="bi-calendar-check"></i>
             </button>
 
-            <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
+            <button class="btn-ver-certificados icono-certificado-mobile" style="background: none; border: none;" data-tippy-content="Ver Certificados">
               <i class="bi-award"></i>
             </button>
             
