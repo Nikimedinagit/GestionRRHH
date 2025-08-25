@@ -160,8 +160,8 @@
       </div>
     </div>
 
-    <!-- Panel Deslizante DETALLE -->
-    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <!-- Panel Deslizante Formulario -->
+    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTituloCriterio" tabindex="-1" class="w-30">
       <div class="panel-header">
         <h2 id="panelTitulo" class="panel-title">Formulario De Criterios de Evaluación</h2>
       </div>
@@ -198,24 +198,17 @@
     </div>
 
     <!-- Panel Deslizante Formulario -->
-    <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1"
+    <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTituloEvaluacion" tabindex="-1"
       class="w-30">
       <div class="panel-header">
-        <h2 id="panelTitulo" class="panel-title">Formulario De Evaluaciones</h2>
+        <h2 id="panelTituloEvaluacion" class="panel-title">Formulario De Evaluaciones</h2>
       </div>
       <div class="panel-body">
         <form id="formEvaluaciones">
           <input type="hidden" id="IdEvaluacion" />
           <div class="form-grid">
 
-            <!-- Calificacion -->
-            <div class="form-group position-relative mb-3">
-              <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
-              <label for="CalificacionEvaluacion">Calificación</label>
-              <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
-            </div>
-
-            <!-- Empleado -->
+             <!-- Empleado -->
             <div class="form-group position-relative mb-3">
               <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
                 <option value="EmpleadoId" disabled selected>Seleccione un empleado</option>
@@ -224,6 +217,12 @@
               <div class="invalid-feedback" id="errorEmpleadoId"></div>
             </div>
 
+            <!-- Calificacion -->
+            <div class="form-group position-relative mb-3">
+              <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
+              <label for="CalificacionEvaluacion">Calificación</label>
+              <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
+            </div>
 
         </form>
       </div>
@@ -241,8 +240,8 @@
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleCriterios" aria-labelledby="tituloDetalleHorario"
   style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
   <div class="detalle-criterio-contenedor">
-    <div class="detalle-criterio-encabezado d-flex justify-content-between align-items-start">
-      <div>
+    <div class="detalle-criterio-encabezado row align-items-start">
+      <div class="col-10">
         <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
           Detalle de Criterios de Evaluacion
         </h5>
@@ -250,7 +249,10 @@
           Información detallada de los criterios de evaluacion .
         </p>
       </div>
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
     </div>
     <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
