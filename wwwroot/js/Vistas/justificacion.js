@@ -81,7 +81,7 @@ function MostrarJustificaciones(data) {
       const justificacionNombre = tipoJustificacion[element.tipoJustificacion];
       const claseJustificacion =
         justificacionColor[justificacionNombre] || "bg-light text-dark";
-      const fecha = element.fecha.split("T")[0];
+      const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
 
       const item = $(`
         <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">

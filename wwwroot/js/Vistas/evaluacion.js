@@ -142,7 +142,7 @@ function MostrarEvaluacionesDesktop(data) {
   if(Array.isArray(data)){
   data.forEach(element => {
     const nota = Number(element.calificacion);
-    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";;
+    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
 
     let etiqueta = "Regular";
     let badgeClass = "badge-regular";

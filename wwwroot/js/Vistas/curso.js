@@ -193,7 +193,7 @@ function MostrarCursosDesktop(data) {
     data.forEach(element => {
       const modalidadNombre = modalidades[element.modalidad];
       const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
-      const fecha = element.fechaInicio.split("T")[0];
+      const fecha = element.fechaInicio.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
       const horaCompleta = element.fechaInicio.split("T")[1];
       const hora = horaCompleta.substring(0, 5);
 
@@ -1537,15 +1537,21 @@ async function CrearCertificado() {
         cerrarPanelCertificados();
        
         Swal.fire({
+          title: "¡Certificado Creado!",
           toast: true,
           position: "bottom-end",
-          icon: "success",
-          title: "¡Certificado Creado!",
           showConfirmButton: false,
-          timer: 2000,
+          timer: 2200,
           timerProgressBar: true,
-          background: "#f0f0f0",
-          color: "#000",
+          background: "#f4fff7",
+          color: "#1c3d26",
+          icon: "success",
+          iconColor: "#28a746d8",
+          customClass: {
+            popup: "swal2-toast-success",
+            title: "swal2-toast-success-title",
+            icon: "swal2-toast-success-icon",
+          },
         });
       }
     });

@@ -42,16 +42,17 @@
 
     <!-- Contenedor Filtros-->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
-      <div class="row g-3 align-items-end">
+      <div class="row g-3 align-items-end justify-content-start">
+        
         <!-- Empleado -->
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
           <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
           <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
 
         <!-- Calificacion -->
-        <div class="col-12 col-md-2">
-          <label for="CalificacionBuscar" class="form-label-fija">Calificacion</label>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+          <label for="CalificacionBuscar" class="form-label-fija">Calificación</label>
           <select id="CalificacionBuscar" class="form-control filtro-select">
             <option value="0">[Todas]</option>
             <option value="1">REGULAR</option>
@@ -61,9 +62,8 @@
           </select>
         </div>
 
-
         <!-- Activar Fecha -->
-        <div class="col-12 col-md-1">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label-fija">Fecha</label>
           <select id="filtrarFechaSelect" class="form-control filtro-select">
             <option value="no" selected>No</option>
@@ -72,14 +72,15 @@
         </div>
 
         <!-- Fecha de Evaluacion -->
-        <div id="fechasInputs" class="d-none col-12 col-md-2">
+        <div id="fechasInputs" class="d-none col-12 col-sm-6 col-md-4 col-lg-3">
           <label for="FechaEvalBuscar" class="form-label-fija">Fecha de Evaluación</label>
           <input type="date" class="form-control filtro-select" id="FechaEvalBuscar" />
         </div>
 
-
       </div>
     </div>
+
+
 
 
     <!-- Contenedor Generar-->
