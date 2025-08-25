@@ -25,7 +25,7 @@
       </button>
 
       <!-- Botones Filtros e Informe -->
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
           <span>Filtros</span>
@@ -299,7 +299,9 @@
           Información detallada de los cursos
         </p>
       </div>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
     </div>
     <hr style="margin: 0; border-top: 1px solid #dee2e6" />
     <div class="offcanvas-body" 

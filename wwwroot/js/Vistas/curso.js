@@ -159,7 +159,7 @@ async function ObtenerCursos() {
 // }
 
 function MostrarCursos(data) {
-  if (window.innerWidth <= 764) {
+  if (window.innerWidth <= 880) {
     MostrarCursosMobile(data);
   } else {
     MostrarCursosDesktop(data);
@@ -444,7 +444,7 @@ function MostrarCursosMobile(data) {
     card.className =
       "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
     card.innerHTML = `
-      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
         <div class="flex-grow-1 d-flex flex-column">
           <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
             ${element.nombre || "Sin nombre"}
@@ -899,7 +899,7 @@ const card = $(`
       </div>
 
       <!-- Fecha -->
-      <small class="text-muted d-block">
+      <small class="text-muted d-block" style='font-size: 0.90rem;'>
         Fecha: ${new Date(item.fecha).toLocaleDateString()}
       </small>
 
@@ -1363,7 +1363,7 @@ function MostrarCertificados(cursoId, data) {
           <div class="col-12 mb-2">
             <div class="card shadow-sm rounded-3 p-3">
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
-              <small class="text-muted d-block mb-2">
+              <small class="text-muted d-block mb-2" style='font-size: 0.90rem;'>
                 Emisión: ${new Date(item.fechaEmision).toLocaleDateString()}
               </small>
               <div class="d-flex justify-content-between align-items-center mt-2">
