@@ -116,6 +116,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                     l.Estado == EstadoLicencia.APROBADA ? 1 :
                     l.Estado == EstadoLicencia.RECHAZADA ? 2 :
                     l.Estado == EstadoLicencia.EXPIRADA ? 3 : 4)
+                    .ThenByDescending(l => l.FechaInicio)
                 .ToListAsync();
 
             // Actualizar licencias expiradas
@@ -154,10 +155,8 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
-        // PUT: api/Licencias/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLicencia(int id, Licencia licencia)
+        public async Task<IActionResult> PutLicencia(int id, [FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
         {
             if (id != licencia.Id)
             {
@@ -186,13 +185,23 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
             }
 
-            // Solo actualizar los campos permitidos
+            // Actualizar los campos permitidos
             licenciaOriginal.TipoDeLicenciaId = licencia.TipoDeLicenciaId;
             licenciaOriginal.EmpleadoId = licencia.EmpleadoId;
             licenciaOriginal.FechaInicio = licencia.FechaInicio;
             licenciaOriginal.FechaFin = licencia.FechaFin;
-            licenciaOriginal.DocumentoAdjunto = licencia.DocumentoAdjunto;
 
+            // Actualizar archivo si se proporciona uno nuevo
+            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    await DocumentoAdjunto.CopyToAsync(ms);
+                    licenciaOriginal.DocumentoAdjunto = ms.ToArray();
+                }
+                licenciaOriginal.DocumentoNombre = DocumentoAdjunto.FileName;
+                licenciaOriginal.DocumentoMimeType = DocumentoAdjunto.ContentType;
+            }
 
             try
             {
@@ -342,22 +351,10 @@ namespace API_NET_CORE8_RRHH.Controllers
 
         //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
         //Total de licencias
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Total")]
         public async Task<ActionResult<int>> GetTotalLicencias()
         {
-            // Obtener el rol del usuario autenticado
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _context.Users.FindAsync(userId);
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var rol = roles.FirstOrDefault();
-
-            // Permitir solo si es ADMINISTRADOR
-            if (rol != "ADMINISTRADOR")
-            {
-                return Forbid(); // O return Unauthorized();
-            }
-
             // Consultar todas las licencias de empleados no eliminados
             var total = await _context.Licencia
                 .Include(l => l.Empleado)
@@ -368,16 +365,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         //Licencias aprobadas
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Aprobadas")]
         public async Task<ActionResult<int>> GetAprobadasLicencias()
         {
-            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
-            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-            if (!roles.Contains("ADMINISTRADOR"))
-            {
-                return Forbid();
-            }
-
             // Obtener el total de licencias aprobadas
             var total = await _context.Licencia
                 .Include(l => l.TipoDeLicencia)
@@ -388,16 +379,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         //Licencias rechazadas
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Rechazadas")]
         public async Task<ActionResult<int>> GetRechazadasLicencias()
         {
-            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
-            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-            if (!roles.Contains("ADMINISTRADOR"))
-            {
-                return Forbid();
-            }
-
             // Obtener el total de licencias rechazadas
             var total = await _context.Licencia
                 .Include(l => l.TipoDeLicencia)
@@ -408,16 +393,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         //Licencias expiradas
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Expiradas")]
         public async Task<ActionResult<int>> GetExpiradasLicencias()
         {
-            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
-            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-            if (!roles.Contains("ADMINISTRADOR"))
-            {
-                return Forbid();
-            }
-
             // Obtener el total de licencias expiradas
             var total = await _context.Licencia
                 .Include(l => l.TipoDeLicencia)
@@ -428,16 +407,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         //Licencias pendientes
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Pendientes")]
         public async Task<ActionResult<int>> GetPendientesLicencias()
         {
-            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
-            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-            if (!roles.Contains("ADMINISTRADOR"))
-            {
-                return Forbid();
-            }
-
             // Obtener el total de licencias pendientes
             var total = await _context.Licencia
                 .Include(l => l.TipoDeLicencia)

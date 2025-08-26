@@ -1,14 +1,37 @@
-// funcion para obtener los datos
+//INICIO ONCHANGE FILTROS//
+$(document).ready(function () {
+  // Filtrado en tiempo real
+  $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", ObtenerEmpleadosActivacion);
+  $("#FiltroActivo").on("change", ObtenerEmpleadosActivacion);
+});
+
 async function ObtenerEmpleadosActivacion() {
-    const res = await authFetch("ActivacionEmpleados")
-    .then(response => response.json())
-    .then(data => {
-        MostrarEmpleadosActivacion(data);
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  const nombre = document.getElementById("FiltroNombre").value || "";
+  const email = document.getElementById("FiltroEmail").value || "";
+  const dniValue = document.getElementById("FiltroDNI").value;
+  const activoValue = document.getElementById("FiltroActivo").value;
+
+  const filtro = {
+    Nombre: nombre,
+    Email: email,
+    DNI: dniValue ? Number(dniValue) : null,
+    Activo: activoValue !== "" ? parseInt(activoValue) : null
+  };
+
+  try {
+    const res = await authFetch("ActivacionEmpleados/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro)
     });
+    const data = await res.json();
+    MostrarEmpleadosActivacion(data);
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
+
+
+
 
 // funcion para mostar los datos en la tabala 
 let empleadosActivacionGlobal = [];
@@ -40,16 +63,18 @@ function MostrarEmpleadosActivacion(data) {
       tooltip = "Activar";
     }
 
-    tbody.append(`
+     tbody.append(`
       <tr>
-        <td class="text-center ${filaClass} columna-fecha-activacion">${item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo"}</td>
-        <td class="text-start ${filaClass}">${item.empleado?.nombreCompleto}</td>
-        <td class="text-start ${filaClass} columna-email-activacion">${item.empleado?.email}</td>
-        <td class="text-center ${filaClass} columna-dni-activacion">${item.empleado?.dni}</td>
+        <td class="text-center ${filaClass} columna-fecha-activacion">
+          ${item.fechaActivacionString ? new Date(item.fechaActivacionString).toLocaleDateString() : "No Activo"}
+        </td>
+        <td class="text-start ${filaClass}">${item.empleadoNombreString}</td>
+        <td class="text-start ${filaClass} columna-email-activacion">${item.empleadoEmailString}</td>
+        <td class="text-center ${filaClass} columna-dni-activacion">${item.empleadoDNIString}</td>
         <td class="text-center">
-        <button class="btn-editar icono-ver-detalle-empleado-activacion d-md-none" style="background: none; border: none;" 
-            onclick="MostrarDetalleEmpleadoActivacion(${index})" data-tippy-content="Ver más">
-            <i class="bi bi-info-circle"></i>
+          <button class="btn-editar icono-ver-detalle-empleado-activacion d-md-none" style="background: none; border: none;" 
+              onclick="MostrarDetalleEmpleadoActivacion(${index})" data-tippy-content="Ver más">
+              <i class="bi bi-info-circle"></i>
           </button>
 
           <button type="button" class="btn-sm" data-tippy-content="${tooltip}" 
@@ -57,7 +82,6 @@ function MostrarEmpleadosActivacion(data) {
             style="${btnStyle}">
             <i class="bi ${iconClass} ${iconColor}" style="font-size: 1.6rem !important;"></i>
           </button>
-          
         </td>
       </tr>
     `);

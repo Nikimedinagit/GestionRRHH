@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -98,15 +99,16 @@ namespace API_NET_CORE8_RRHH.Controllers
                 }
 
             }
-
+            // ordenar por empleado, después por fecha más reciente y por nota más alta
             var listaFiltrada = await evaluacionFiltrar
                 .Include(e => e.Empleado)
                 .Include(e => e.Empleado.Puesto)
                 .Include(e => e.CriterioDeEvaluacion)
                     .ThenInclude(ce => ce.TipoDeCriterio)
                 .Where(e => e.Empleado != null && !e.Empleado.Eliminado)
-                .OrderByDescending(e => e.Fecha)
-                .ThenBy(e => e.Calificacion)
+                .OrderBy(e => e.Empleado.NombreCompleto)
+                .ThenByDescending(e => e.Fecha)
+                .ThenByDescending(e => e.Calificacion)
                 .ToListAsync();
 
             foreach (var evaluacion in listaFiltrada)
@@ -167,7 +169,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Evaluacion>> PostEvaluacion(Evaluacion evaluacion)
         {
-
             //Por empleado se puede evaluar solo una vez al mes
             var evaluacionExistente = await _context.Evaluacion
             .Where(e => e.EmpleadoId == evaluacion.EmpleadoId
@@ -196,23 +197,11 @@ namespace API_NET_CORE8_RRHH.Controllers
 
         //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
         //Total de evaluaciones
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Total")]
         public async Task<ActionResult<int>> GetTotalEvaluaciones()
         {
-            // Obtener el rol del usuario autenticado
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _context.Users.FindAsync(userId);
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var rol = roles.FirstOrDefault();
-
-            // Permitir solo si es ADMINISTRADOR
-            if (rol != "ADMINISTRADOR")
-            {
-                return Forbid(); // O return Unauthorized();
-            }
-
-            // Consultar todas las evaluaciones de empleados no eliminados
+           
             var total = await _context.Evaluacion
                 .Include(e => e.Empleado)
                 .Where(e => !e.Empleado.Eliminado)
@@ -223,22 +212,10 @@ namespace API_NET_CORE8_RRHH.Controllers
 
 
         //Evaluacion promedio general
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("PromedioGeneral")]
         public async Task<ActionResult<double>> GetPromedioGeneral()
         {
-            // Obtener el rol del usuario autenticado
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _context.Users.FindAsync(userId);
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var rol = roles.FirstOrDefault();
-
-            // Permitir solo si es ADMINISTRADOR
-            if (rol != "ADMINISTRADOR")
-            {
-                return Forbid(); // O return Unauthorized();
-            }
-
             // Consultar todas las evaluaciones de empleados no eliminados
             var promedio = await _context.Evaluacion
                 .Include(e => e.Empleado)
@@ -251,16 +228,10 @@ namespace API_NET_CORE8_RRHH.Controllers
 
 
         //Empleados evaluados
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Empleados")]
         public async Task<ActionResult<int>> GetEmpleadosEvaluados()
         {
-            // Validar rol ADMINISTRADOR directamente de claims (optimización, si lo tienes)
-            var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-            if (!roles.Contains("ADMINISTRADOR"))
-            {
-                return Forbid();
-            }
-
             // Obtener el total de empleados distintos evaluados que no están eliminados
             var totalEmpleadosEvaluados = await _context.Evaluacion
                 .Where(e => !e.Empleado.Eliminado)

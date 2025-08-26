@@ -65,7 +65,10 @@ namespace API_RRHH_TESIS2025.Controllers
             {
                 sectorFiltro = sectorFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
             }
-            var resultado = await sectorFiltro.OrderBy(c => c.Nombre).ToListAsync();
+            var resultado = await sectorFiltro
+                            .OrderBy(c => c.Eliminado)
+                            .ThenBy(c => c.Nombre)
+                            .ToListAsync();
             return resultado;
         }
 

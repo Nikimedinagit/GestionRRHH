@@ -62,7 +62,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 tipoDeCriteriosFiltro = tipoDeCriteriosFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
             }
-            var resultado = await tipoDeCriteriosFiltro.OrderBy(c => c.Nombre).ToListAsync();
+            var resultado = await tipoDeCriteriosFiltro
+            .OrderBy(c => c.Eliminado)
+            .ThenBy(c => c.Nombre)
+            .ToListAsync();
             return resultado;
 
         }

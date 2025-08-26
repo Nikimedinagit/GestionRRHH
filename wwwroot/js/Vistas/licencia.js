@@ -329,7 +329,8 @@ async function DescargarDocumento(id) {
     let filename = "archivo_descargado";
 
     if (disposition) {
-      const match = disposition.match(/filename\*?=(?:UTF-8'')?(.+)$/i);
+      // Captura solo el primer filename válido antes de cualquier ;
+      const match = disposition.match(/filename\*?=(?:UTF-8'')?([^;\r\n]+)/i);
       if (match && match[1]) {
         filename = decodeURIComponent(match[1].replace(/['"]/g, ""));
       }
@@ -338,7 +339,7 @@ async function DescargarDocumento(id) {
     // Crear enlace temporal para descargar
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
+    link.download = filename; // nombre limpio
     link.click();
 
     // Liberar memoria
@@ -347,6 +348,7 @@ async function DescargarDocumento(id) {
     MostrarErrorCatch();
   }
 }
+
 
 // Función para convertir ISO a "9 may 2023"
 function formatearFecha(fechaStr) {
@@ -371,20 +373,33 @@ async function MostrarModalEditar(id) {
   document.getElementById("FechaFin").value = licencia.fechaFin.split("T")[0];
   document.getElementById("EmpleadoId").value = licencia.empleadoId;
 
-  // No asignar valor al input file
   const archivoAdjuntoDiv = document.getElementById("archivoAdjuntoActual");
-  if (licencia.documentoAdjunto && licencia.documentoAdjunto.trim() !== "") {
-    // Armar la URL si es solo el nombre
-    const baseUrlArchivos = "/uploads/documentos/";
-    const documentoUrl = licencia.documentoAdjunto.startsWith("http")
-      ? licencia.documentoAdjunto
-      : baseUrlArchivos + licencia.documentoAdjunto;
+
+  if (licencia.documentoAdjunto && licencia.documentoAdjunto.length > 0) {
+    // Convertir base64 a Blob
+    const byteCharacters = atob(licencia.documentoAdjunto);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: licencia.documentoMimeType });
+    const url = URL.createObjectURL(blob);
+
+    // Truncar nombre visualmente (solo para mostrar)
+    let nombreArchivo = licencia.documentoNombre;
+    if (nombreArchivo) {
+      nombreArchivo = nombreArchivo.split("\\").pop().split("/").pop(); // eliminar rutas
+      if (nombreArchivo.length > 40) {
+        nombreArchivo = nombreArchivo.substring(0, 40) + "...";
+      }
+    }
 
     archivoAdjuntoDiv.innerHTML = `
-      <a href="${documentoUrl}" target="_blank" download>
-        <i class="bi bi-file-earmark-text"></i> Ver/Descargar archivo actual
-      </a>
-    `;
+    <a href="${url}" download="${licencia.documentoNombre}">
+      <i class="bi bi-file-earmark-text"></i> ${nombreArchivo}
+    </a>
+  `;
   } else {
     archivoAdjuntoDiv.innerHTML = "";
   }
@@ -674,7 +689,7 @@ async function CrearLicencia() {
   try {
     const res = await authFetch("Licencias", {
       method: "POST",
-      body: formData, 
+      body: formData,
     });
 
     const response = await res.json();
@@ -714,18 +729,25 @@ async function EditarLicencia(id) {
   if (!ValidarFormularioLicencia()) {
     return;
   }
-  let licenciaId = parseInt(document.getElementById("IdLicencia").value);
-  let licencia = {
-    id: licenciaId,
-    tipoDeLicenciaId: parseInt(document.getElementById("IdTipoLicencia").value),
-    fechaInicio: document.getElementById("FechaInicio").value,
-    fechaFin: document.getElementById("FechaFin").value,
-    documentoAdjunto: document.getElementById("DocumentoAdjunto").value || "",
-    empleadoId: parseInt(document.getElementById("EmpleadoId").value) || 0,
-  };
+  const formData = new FormData();
+  formData.append("Id", parseInt(document.getElementById("IdLicencia").value));
+  formData.append(
+    "TipoDeLicenciaId",
+    parseInt(document.getElementById("IdTipoLicencia").value)
+  );
+  formData.append("FechaInicio", document.getElementById("FechaInicio").value);
+  formData.append("FechaFin", document.getElementById("FechaFin").value);
+  formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+
+  // Agregar archivo si hay
+  const archivo = document.getElementById("DocumentoAdjunto").files[0];
+  if (archivo) {
+    formData.append("DocumentoAdjunto", archivo);
+  }
+
   const res = await authFetch(`Licencias/${id}`, {
     method: "PUT",
-    body: JSON.stringify(licencia),
+    body: formData,
   })
     .then((response) => response.json())
     .then((response) => {

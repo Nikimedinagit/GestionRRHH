@@ -33,7 +33,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         {
             var activacionEmpleados = await _context.ActivacionEmpleado
             .Include(x => x.Empleado)
-            .ToListAsync(); 
+            .ToListAsync();
             return activacionEmpleados;
         }
 
@@ -49,6 +49,53 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
 
             return activacionEmpleado;
+        }
+
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaActivacionEmpleado>>> FiltrarActivacionEmpleado([FromBody] FiltrarActivacionEmpleado filtro)
+        {
+            var activacionEmpleadoFiltro = _context.ActivacionEmpleado.Include(x => x.Empleado).AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.Nombre))
+                activacionEmpleadoFiltro = activacionEmpleadoFiltro
+                    .Where(x => x.Empleado.NombreCompleto.ToLower().Contains(filtro.Nombre.ToLower()));
+
+            if (!string.IsNullOrEmpty(filtro.Email))
+                activacionEmpleadoFiltro = activacionEmpleadoFiltro
+                    .Where(x => x.Empleado.Email.ToLower().Contains(filtro.Email.ToLower()));
+
+            if (filtro.DNI.HasValue)
+            {
+                string dniFiltro = filtro.DNI.Value.ToString();
+                activacionEmpleadoFiltro = activacionEmpleadoFiltro
+                    .Where(e => e.Empleado.DNI.ToString().StartsWith(dniFiltro));
+            }
+
+            if (filtro.Activo.HasValue)
+            {
+                activacionEmpleadoFiltro = activacionEmpleadoFiltro
+                    .Where(c => c.Activo == (filtro.Activo.Value == 1));
+            }
+
+
+            var resultado = await activacionEmpleadoFiltro
+                .OrderBy(x => !x.Activo)
+                .ThenBy(x => x.Empleado.NombreCompleto)
+                .ThenBy(x => x.FechaActivacion)
+                .Select(x => new VistaActivacionEmpleado
+                {
+                    Id = x.Id,
+                    EmpleadoNombreString = x.EmpleadoNombreString,
+                    EmpleadoEmailString = x.EmpleadoEmailString,
+                    EmpleadoDNIString = x.EmpleadoDNIString,
+                    FechaActivacionString = x.FechaActivacionString,
+                    EmpleadoId = x.EmpleadoId,
+                    Activo = x.Activo
+                })
+                .ToListAsync();
+
+
+            return resultado;
         }
 
         // metodo post para activar un empleado

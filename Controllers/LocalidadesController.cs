@@ -79,7 +79,8 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             var listaFiltrada = await localidadesFiltro
-                .OrderBy(l => l.Provincia.Nombre)
+                .OrderBy(l => l.Eliminado)
+                .ThenBy(l => l.Provincia.Nombre)
                 .ThenBy(l => l.Nombre)
                 .ToListAsync(); 
 

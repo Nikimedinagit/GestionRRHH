@@ -51,7 +51,10 @@ namespace API_RRHH_TESIS2025.Controllers
             {
                 provinciasFiltro = provinciasFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
             }
-            var resultado = await provinciasFiltro.OrderBy(c => c.Nombre).ToListAsync();
+            var resultado = await provinciasFiltro
+                            .OrderBy(c => c.Eliminado)
+                            .ThenBy(c => c.Nombre)
+                            .ToListAsync();
             return resultado;
         }
 

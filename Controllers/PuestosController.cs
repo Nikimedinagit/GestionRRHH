@@ -80,7 +80,8 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
             var listaFiltrada = await puestosFiltro
-                .OrderBy(p => p.Sector.Nombre)
+                .OrderBy(p => p.Eliminado)
+                .ThenBy(p => p.Sector.Nombre)
                 .ThenBy(p => p.Descripcion)
                 .ToListAsync();
             foreach (var puesto in listaFiltrada)

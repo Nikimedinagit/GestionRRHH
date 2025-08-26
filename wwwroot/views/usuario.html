@@ -15,7 +15,7 @@
     <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
 
       <!-- Botones Filtros y Informe -->
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2 flex-wrap responsive-button">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
           <span>Filtros</span>
@@ -26,31 +26,36 @@
     <!-- Contenedor Filtros-->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <!-- Filtro por Activo -->
+
+         <!-- Buscar por Nombre -->
         <div class="col-12 col-md-3">
+          <label for="FiltroNombre" class="form-label-fija">Empleado</label>
+          <input type="text" id="FiltroNombre" class="form-control filtro-select" placeholder="Buscar..." />
+        </div>
+
+        <!-- Buscar por Email -->
+        <div class="col-12 col-md-3">
+          <label for="FiltroEmail" class="form-label-fija">Email</label>
+          <input type="email" id="FiltroEmail" class="form-control filtro-select" placeholder="Buscar..." />
+        </div>
+
+        <!-- Buscar por DNI -->
+        <div class="col-12 col-md-2">
+          <label for="FiltroDNI" class="form-label-fija">DNI</label>
+          <input type="text" id="FiltroDNI" class="form-control filtro-select" placeholder="Buscar..." />
+        </div>
+
+        <!-- Buscar por Activo -->
+        <div class="col-12 col-md-2">
           <label for="FiltroActivo" class="form-label-fija">Estado de Activación</label>
           <select id="FiltroActivo" class="form-control filtro-select">
             <option value="">[Todos]</option>
-            <option value="true">Activo</option>
-            <option value="false">Inactivo</option>
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
           </select>
         </div>
 
-        <!-- Filtro por Primera Activación -->
-        <div class="col-12 col-md-3">
-          <label for="FiltroPrimeraActivacion" class="form-label-fija">Primera Activación</label>
-          <select id="FiltroPrimeraActivacion" class="form-control filtro-select">
-            <option value="">[Todos]</option>
-            <option value="true">Sí</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-
-        <!-- Buscar por Nombre -->
-        <div class="col-12 col-md-4">
-          <label for="FiltroNombre" class="form-label-fija">Nombre Completo</label>
-          <input type="text" id="FiltroNombre" class="form-control filtro-select" placeholder="Buscar por nombre..." />
-        </div>
+       
 
       </div>
     </div>

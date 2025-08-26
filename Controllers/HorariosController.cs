@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -97,6 +98,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 .Include(h => h.Empleado)
                     .ThenInclude(e => e.Puesto)
                 .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .OrderBy(h => h.Empleado.NombreCompleto)
                 .AsQueryable();
 
             if (filtro.TipoHorario.HasValue)
@@ -249,6 +251,8 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
+
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("Total")]
         public async Task<ActionResult<int>> GetTotalHorarios()
         {
@@ -261,6 +265,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(new { total });
         }
 
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("HorasSemanales")]
         public async Task<ActionResult> GetTotalHorasSemanales()
         {
@@ -299,6 +304,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(new { totalHorasSemanales = $"{totalHoras}h {minutosRestantes}m" });
         }
 
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpGet("FindesDeSemana")]
         public async Task<ActionResult<int>> GetEmpleadosQueTrabajanFinesDeSemana()
         {
