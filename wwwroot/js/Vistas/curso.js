@@ -546,9 +546,6 @@ function MostrarCursosMobile(data) {
   });
 }
 
-
-
-
 // Funcion para mostrar el modal de edición de la evaluación   
 async function MostrarModalEditar(id) {
   const res = await authFetch(`Cursos/${id}`,
@@ -723,7 +720,6 @@ document.getElementById("NombreCurso").addEventListener("input", () => {
   }
 });
 
-
 //Funcion para evitar que se pueda evaluar el mismo empleado en el mismo mes
 function ValidarCursoExistente(mensaje) {
   const errorNombre = document.getElementById("errorNombreCurso");
@@ -733,6 +729,7 @@ function ValidarCursoExistente(mensaje) {
   errorNombre.style.display = "block";
   inputNombre.classList.add("is-invalid");
 }
+
 //Funcion crear curso
 async function CrearCurso() {
   if(!ValidarFormularioCursos()){
@@ -861,7 +858,7 @@ async function ObtenerAsistencia(cursoId) {
 }
 
 function MostrarAsistencias(cursoId, data) {
-  const enMovil = window.innerWidth <= 764;
+  const enMovil = window.innerWidth <= 880;
 
   const tablaBody = $(`.tabla-asistencias-body[data-curso-id="${cursoId}"]`);
   const cardsContenedor = $("#contenedorAsistenciasOffcanvas"); 
@@ -1163,6 +1160,7 @@ const asistencia = {
       MostrarErrorCatch();
       });
 }
+
 function EliminarAsistencia(id) {
     Swal.fire({
     title: "¿Desea eliminar esta asistencia?",
@@ -1319,7 +1317,7 @@ async function ObtenerCertificados(cursoId) {
 }
 
 function MostrarCertificados(cursoId, data) {
-  const enMovil = window.innerWidth <= 764;
+  const enMovil = window.innerWidth <= 880;
 
   const tablaBody = $(`.tabla-certificados-body[data-curso-id="${cursoId}"]`);
   const cardsContenedor = $("#contenedorCertificadosOffcanvas");
