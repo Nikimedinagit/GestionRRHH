@@ -68,6 +68,11 @@ $(document).ready(function () {
   $("#IdPuestoFiltro").on("change", function () {
     ObtenerEmpleados();
   });
+
+  $("#NroLegajoFiltro").on("input", function () {
+    ObtenerEmpleados();
+  });
+    
 });
 
 async function ComboParaFiltrarLocalidadPuesto() {
@@ -109,6 +114,8 @@ async function ComboParaFiltrarLocalidadPuesto() {
 async function ObtenerEmpleados() {
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
 
+  let nroLegajo = document.getElementById("NroLegajoFiltro").value;
+
   let estadoCivilEmpleado = document.getElementById(
     "EstadoCivilEmpleadoFiltro"
   ).value;
@@ -131,6 +138,7 @@ async function ObtenerEmpleados() {
   let filtro = {
     nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
     dNI: dniEmpleado ? Number(dniEmpleado) : null,
+    nroLegajo: nroLegajo ? Number(nroLegajo) : null,
     estadoCiviles: estadoCivil,
     tipoSexo: tipoSexo,
     localidadId: localidadFiltro === "0" ? null : Number(localidadFiltro),
@@ -289,6 +297,8 @@ function MostrarDetalleEmpleado(id) {
     empleado.cantidadHijos || 0;
   document.getElementById("detallePuesto").textContent =
     empleado.puestoIdString || "";
+  document.getElementById("detalleLegajo").textContent =
+    empleado.nroLegajo || "";
   document.getElementById("detalleLocalidad").textContent =
     empleado.localidadIdString || "";
   document.getElementById("detalleSexo").textContent =

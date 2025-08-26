@@ -50,6 +50,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 Id = e.Id,
                 NombreCompleto = e.NombreCompleto,
                 DNI = e.DNI,
+                NroLegajo = e.NroLegajo,
                 Direccion = e.Direccion,
                 FechaNacimientoString = e.FechaNacimientoString,
                 EstadoCivilesString = e.EstadoCivilesString,
@@ -86,6 +87,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 Id = empleado.Id,
                 NombreCompleto = empleado.NombreCompleto,
                 DNI = empleado.DNI,
+                NroLegajo = empleado.NroLegajo,
                 Direccion = empleado.Direccion,
                 FechaNacimientoString = empleado.FechaNacimientoString,
                 EstadoCivilesString = empleado.EstadoCivilesString,
@@ -134,6 +136,12 @@ namespace API_RRHH_TESIS2025.Controllers
                 empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
             }
 
+            if (!string.IsNullOrEmpty(filtro.NroLegajo.ToString()))
+            {
+                string legajoFiltro = filtro.NroLegajo.Value.ToString();
+                empleadosFiltrados = empleadosFiltrados.Where(e => e.NroLegajo.ToString().StartsWith(legajoFiltro));
+            }
+
             if (filtro.EstadoCiviles.HasValue)
             {
                 empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
@@ -174,6 +182,7 @@ namespace API_RRHH_TESIS2025.Controllers
                     Id = empleado.Id,
                     NombreCompleto = empleado.NombreCompleto,
                     DNI = empleado.DNI,
+                    NroLegajo = empleado.NroLegajo,
                     Direccion = empleado.Direccion,
                     FechaNacimientoString = empleado.FechaNacimientoString,
                     EstadoCivilesString = empleado.EstadoCivilesString,
@@ -290,9 +299,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 _context.HistorialLaboral.Add(historial);
             }
 
-            // -----------------------
             // Actualizar ApplicationUser
-            // -----------------------
             var usuario = await _userManager.FindByEmailAsync(empleadoOriginal.Email);
             if (usuario != null)
             {
@@ -390,6 +397,20 @@ namespace API_RRHH_TESIS2025.Controllers
 
             if (errroresExistentes.Any())
                 return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
+
+
+            //generar Numero Legajo automaticamnte de 6 digitos alatorio y que no se repita
+            var random = new Random();
+            bool legajoExistente;
+
+            do
+            {
+                empleado.NroLegajo = random.Next(100000, 999999);
+                legajoExistente = await _context.Empleado.AnyAsync(e => e.NroLegajo == empleado.NroLegajo);
+            }
+            while (legajoExistente);
+
+
 
             // Guardamos el empleado
             _context.Empleado.Add(empleado);

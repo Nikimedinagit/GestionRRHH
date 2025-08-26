@@ -16,6 +16,8 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public long DNI { get; set; }
 
+        public int NroLegajo { get; set; }
+
         public string Direccion { get; set; }
 
         [NotMapped]
@@ -109,6 +111,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public string UsuarioId { get; set; }
         public string UsuarioNombreCreador { get; set; }
         public string UsuarioEmailCreador { get; set; }
+        public int NroLegajo { get; set; }
         public bool Eliminado { get; set; }
 
     }
@@ -118,6 +121,7 @@ namespace API_RRHH_TESIS2025.Models.General
     {
         public string NombreCompleto { get; set; }
         public long? DNI { get; set; }
+        public int? NroLegajo { get; set; }
         public int? EstadoCiviles { get; set; }
 
         public int? TipoSexo { get; set; }

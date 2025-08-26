@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("emailLogin").value.trim();
     const password = document.getElementById("claveLogin").value.trim();
     const loginBtn = document.getElementById("btnIniciarSesion");
-
+ 
     if (!email || !password) {
       mostrarMensaje("Por favor completá todos los campos.", "error");
       return;
@@ -141,7 +141,3 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function cerrarSesion() {
-  localStorage.clear();
-  window.location.href = "login.html";
-}
