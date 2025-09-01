@@ -78,10 +78,20 @@ async function captureFace() {
 
 async function callBackend(endpoint, dni) {
   try {
-    const payload = endpoint === 'Fichar' 
-      ? { FaceDescriptor: faceDescriptor } 
+    // Capturamos la foto del video como base64
+    let fotoBase64 = null;
+    if (endpoint === 'Fichar') {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = video.videoWidth;
+      tempCanvas.height = video.videoHeight;
+      tempCanvas.getContext('2d').drawImage(video, 0, 0);
+      fotoBase64 = tempCanvas.toDataURL('image/png').split(',')[1]; // solo el contenido Base64
+    }
+
+    const payload = endpoint === 'Fichar'
+      ? { FaceDescriptor: faceDescriptor, FotoBase64: fotoBase64 }
       : { Dni: dni, FaceDescriptor: faceDescriptor };
-      
+
     const res = await fetch(`https://localhost:7006/api/Asistencias/${endpoint}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -92,7 +102,6 @@ async function callBackend(endpoint, dni) {
     await stopVideo();
     dniInput.value = '';
 
-    // Mostrar nombre y DNI aunque sea error
     showMensajeBackend({
       nombre: data.empleado?.NombreCompleto || data.empleado?.nombreCompleto,
       dni: data.empleado?.Dni || data.empleado?.dni,
@@ -104,6 +113,7 @@ async function callBackend(endpoint, dni) {
     await stopVideo();
   }
 }
+
 
 async function loadModels() {
   await faceapi.nets.tinyFaceDetector.loadFromUri('/models');

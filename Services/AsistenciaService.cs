@@ -1,7 +1,10 @@
+using API_RRHH_TESIS2025.Models.Dto;
 using API_RRHH_TESIS2025.Models.General;
 using API_RRHH_TESIS2025.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +18,9 @@ namespace API_RRHH_TESIS2025.Services
 
         public AsistenciaService(Context db) => _db = db;
 
-        // Registrar rostro: DNI + rostro
+        // ========================
+        // Registrar rostro
+        // ========================
         public async Task<(bool ok, object payload)> RegistrarRostroAsync(string dni, float[] faceDescriptor)
         {
             if (string.IsNullOrWhiteSpace(dni) || faceDescriptor == null || faceDescriptor.Length == 0)
@@ -48,13 +53,17 @@ namespace API_RRHH_TESIS2025.Services
             });
         }
 
-        // Fichar: solo rostro
-        public async Task<(bool ok, object payload)> FicharAsync(float[] faceDescriptor)
+        // ========================
+        // Fichar
+        // ========================
+        public async Task<(bool ok, object payload)> FicharAsync(FicharDto dto)
         {
-            if (faceDescriptor == null || faceDescriptor.Length == 0)
+            if (dto == null || dto.FaceDescriptor == null || dto.FaceDescriptor.Length == 0)
                 return (false, new { Mensaje = "El rostro es obligatorio." });
 
-            // Buscar empleado por rostro
+            var faceDescriptor = dto.FaceDescriptor;
+            var fotoBase64 = dto.FotoBase64;
+
             var empleadosConRostro = await _db.Empleado
                 .Include(e => e.Horario)
                 .Where(e => e.FaceDescriptor != null && e.FaceDescriptor.Length > 0 && !e.Eliminado)
@@ -77,10 +86,8 @@ namespace API_RRHH_TESIS2025.Services
             if (empleado == null)
                 return (false, new { Mensaje = "Rostro no reconocido." });
 
-            // --- Lógica de fichaje idéntica a la versión anterior ---
             var ahoraDt = DateTime.Now;
             var hoy = ahoraDt.Date;
-            var hora = ahoraDt.TimeOfDay;
 
             var horario = await ObtenerHorarioDelDiaAsync(empleado, ahoraDt.DayOfWeek);
             if (horario == null)
@@ -96,44 +103,47 @@ namespace API_RRHH_TESIS2025.Services
                     EmpleadoId = empleado.Id,
                     HorarioId = horario.Id,
                     Fecha = hoy,
-                    Estado = EstadoAsistencia.Incompleta
+                    Estado = EstadoAsistencia.INCOMPLETA
                 };
                 _db.Asistencia.Add(asistencia);
                 await _db.SaveChangesAsync();
             }
 
+            if (!string.IsNullOrEmpty(fotoBase64))
+            {
+                byte[] fotoBytes = Convert.FromBase64String(fotoBase64);
+                asistencia.FotoRuta = await GuardarFotoAsync(fotoBytes, empleado.Id);
+            }
+
+            await _db.SaveChangesAsync();
+
             var proxima = ProximaFichadaEsperada(asistencia, horario);
             if (proxima == null)
-                return (false, new
-                {
-                    Mensaje = "Ya registraste todas las fichadas de hoy.",
-                    Empleado = new { empleado.NombreCompleto, empleado.DNI }
-                });
-
+                return (false, new { Mensaje = "Ya registraste todas las fichadas de hoy.", Empleado = new { empleado.NombreCompleto, empleado.DNI } });
 
             var esperado = HoraEsperada(proxima, horario);
             bool fuera = false, tarde = false;
 
             if (proxima.Contains("Entrada"))
             {
-                if (hora < esperado - TOLERANCIA) fuera = true;
-                if (hora > esperado + TOLERANCIA) tarde = true;
+                if (ahoraDt.TimeOfDay < esperado - TOLERANCIA) fuera = true;
+                if (ahoraDt.TimeOfDay > esperado + TOLERANCIA) tarde = true;
 
-                if (proxima == "PrimerEntrada") asistencia.PrimerEntrada = hora;
-                else if (proxima == "SegundaEntrada") asistencia.SegundaEntrada = hora;
+                if (proxima == "PrimerEntrada") asistencia.PrimerEntrada = ahoraDt.TimeOfDay;
+                else if (proxima == "SegundaEntrada") asistencia.SegundaEntrada = ahoraDt.TimeOfDay;
             }
             else
             {
-                if (hora < esperado - TOLERANCIA) fuera = true;
-                if (proxima == "PrimerSalida") asistencia.PrimerSalida = hora;
-                else if (proxima == "SegundaSalida") asistencia.SegundaSalida = hora;
+                if (ahoraDt.TimeOfDay < esperado - TOLERANCIA) fuera = true;
+                if (proxima == "PrimerSalida") asistencia.PrimerSalida = ahoraDt.TimeOfDay;
+                else if (proxima == "SegundaSalida") asistencia.SegundaSalida = ahoraDt.TimeOfDay;
             }
 
-            if (fuera) asistencia.Estado = EstadoAsistencia.FueraDeHorario;
+            if (fuera) asistencia.Estado = EstadoAsistencia.FUERADEHORARIO;
             else if (tarde && (proxima == "PrimerEntrada" || proxima == "SegundaEntrada"))
-                asistencia.Estado = EstadoAsistencia.Tarde;
+                asistencia.Estado = EstadoAsistencia.TARDE;
             else
-                asistencia.Estado = CompletaSegunTipo(asistencia, horario) ? EstadoAsistencia.Completa : EstadoAsistencia.Incompleta;
+                asistencia.Estado = CompletaSegunTipo(asistencia, horario) ? EstadoAsistencia.COMPLETA : EstadoAsistencia.INCOMPLETA;
 
             await _db.SaveChangesAsync();
 
@@ -159,9 +169,87 @@ namespace API_RRHH_TESIS2025.Services
             });
         }
 
+        // ========================
+        // Registrar ausentes automáticamente
+        // ========================
+        public async Task RegistrarAusentesAutomaticamenteAsync()
+        {
+            var hoy = DateTime.Today;
+
+            var empleados = await _db.Empleado
+                .Where(e => !e.Eliminado)
+                .ToListAsync();
+
+            foreach (var empleado in empleados)
+            {
+                var existe = await _db.Asistencia
+                    .FirstOrDefaultAsync(a => a.EmpleadoId == empleado.Id && a.Fecha == hoy);
+
+                if (existe == null)
+                {
+                    _db.Asistencia.Add(new Asistencia
+                    {
+                        EmpleadoId = empleado.Id,
+                        Fecha = hoy,
+                        Estado = EstadoAsistencia.AUSENTE,
+                        FotoRuta = "/img/avatarAusente.png"
+                    });
+                }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        // ========================
+        // Obtener asistencias de la semana
+        // ========================
+        public async Task<List<VistaAsistencia>> GetAsistenciasSemanaAsync()
+        {
+            var hoy = DateTime.Today;
+            int diff = (7 + (hoy.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var lunes = hoy.AddDays(-1 * diff);
+            var domingo = lunes.AddDays(6);
+
+            var asistencias = await _db.Asistencia
+                .Include(a => a.Empleado)
+                .Include(a => a.Horario)
+                .Where(a => a.Fecha.Date >= lunes && a.Fecha.Date <= domingo)
+                .ToListAsync();
+
+            var vistaSemana = new List<VistaAsistencia>();
+
+            var empleados = asistencias.GroupBy(a => a.EmpleadoId);
+            foreach (var grupo in empleados)
+            {
+                var empleado = grupo.First().Empleado;
+                string estadoSemana = CalcularEstadoSemana(grupo.ToList());
+
+                vistaSemana.Add(new VistaAsistencia
+                {
+                    Id = grupo.First().Id,
+                    EmpleadoString = empleado?.NombreCompleto ?? "Sin empleado",
+                    NroLegajo = empleado?.NroLegajo.ToString() ?? "-",
+                    TipoHorario = grupo.First().Horario?.TipoHorarioString ?? "CONTINUO",
+                    FechaString = $"{lunes:dd/MM/yyyy} - {domingo:dd/MM/yyyy}",
+                    DiaSemana = "Semana",
+                    EstadoString = estadoSemana,
+                    PrimerEntradaString = null,
+                    PrimerSalidaString = null,
+                    SegundaEntradaString = null,
+                    SegundaSalidaString = null,
+                    FotoUrl = grupo.First().FotoRuta != null ? $"http://localhost:5106/{grupo.First().FotoRuta}" : null
+                });
+            }
+
+            return vistaSemana;
+        }
+
+        // ========================
+        // Métodos auxiliares privados
+        // ========================
         private static string SufijoEstado(EstadoAsistencia e) =>
-            e == EstadoAsistencia.Tarde ? " (TARDE)" :
-            e == EstadoAsistencia.FueraDeHorario ? " (FUERA DE HORARIO)" : "";
+            e == EstadoAsistencia.TARDE ? " (TARDE)" :
+            e == EstadoAsistencia.FUERADEHORARIO ? " (FUERA DE HORARIO)" : "";
 
         private static bool CompletaSegunTipo(Asistencia a, Horario h) =>
             h.TipoHorario == TipoHorario.CONTINUO
@@ -206,5 +294,43 @@ namespace API_RRHH_TESIS2025.Services
             DayOfWeek.Sunday => h.Domingo,
             _ => false
         };
+
+        private string CalcularEstadoSemana(List<Asistencia> registrosSemana)
+        {
+            string estadoGeneral = "COMPLETA";
+
+            foreach (var r in registrosSemana)
+            {
+                string estadoDia = r.Estado.ToString().ToUpper();
+
+                if (estadoDia == "AUSENTE")
+                    return "AUSENTE";
+
+                if (estadoDia == "FUERADEHORARIO" && estadoGeneral != "AUSENTE")
+                    estadoGeneral = "FUERA DE HORARIO";
+
+                if (estadoDia == "TARDE" && estadoGeneral != "AUSENTE" && estadoGeneral != "FUERA DE HORARIO")
+                    estadoGeneral = "TARDE";
+
+                if (estadoDia == "INCOMPLETA" && !new[] { "AUSENTE", "FUERA DE HORARIO", "TARDE" }.Contains(estadoGeneral))
+                    estadoGeneral = "INCOMPLETA";
+            }
+
+            return estadoGeneral;
+        }
+
+        private async Task<string> GuardarFotoAsync(byte[] fotoBytes, int empleadoId)
+        {
+            var fecha = DateTime.Now;
+            var carpeta = Path.Combine("wwwroot", "fichadas", fecha.ToString("yyyy-MM-dd"));
+            if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
+
+            var nombreArchivo = $"empleado{empleadoId}_{fecha:HHmmss}.png";
+            var rutaCompleta = Path.Combine(carpeta, nombreArchivo);
+
+            await File.WriteAllBytesAsync(rutaCompleta, fotoBytes);
+
+            return $"/fichadas/{fecha:yyyy-MM-dd}/{nombreArchivo}";
+        }
     }
 }

@@ -1,0 +1,339 @@
+<!-- Contenedor Principal -->
+<div class="px-3 py-3">
+    <!-- Título -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Control De Asistencias</h3>
+        <p class="text-muted mb-0" style="font-size: 0.95rem">
+            Verificá la presencia del personal, horarios de entrada y salida, y
+            cumplimiento de los días laborales establecidos.
+        </p>
+    </div>
+
+    <hr />
+
+    <!-- Contenedor de Botones y Tabla -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+        <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <button class="btn btn-agregar" id="btnToggleSemana">
+                <i class="fa-solid fa-calendar-day me-1"></i>
+                <span id="textToggleSemana">Ver Semana</span>
+            </button>
+
+            <!-- Botones Filtros y Informe -->
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenedor Filtros-->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+                <!-- Empleado -->
+                <div class="col-12 col-md-3">
+                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
+                        placeholder="Buscar..." />
+                </div>
+
+                <!-- Tipos de Horario -->
+                <div class="col-12 col-md-3">
+                    <label for="TipoHorarioBuscar" class="form-label-fija">Tipo de Horario</label>
+                    <select id="TipoHorarioBuscar" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">CONTINUO</option>
+                        <option value="2">ALTERNO</option>
+                    </select>
+                </div>
+
+                <!-- Activar Horario -->
+                <div class="col-12 col-md-1">
+                    <label class="form-label-fija">Horario</label>
+                    <select id="filtrarHorarioSelect" class="form-control filtro-select">
+                        <option value="no" selected>No</option>
+                        <option value="si">Sí</option>
+                    </select>
+                </div>
+
+                <!-- Horario Desde -->
+                <div id="horariosInputs" class="d-none col-12 col-md-2">
+                    <label for="HorarioInicioBuscar" class="form-label-fija">Desde</label>
+                    <input type="time" class="form-control filtro-select" id="HorarioInicioBuscar" min="00:00"
+                        max="23:59" />
+                </div>
+
+                <!-- Horario Hasta -->
+                <div id="horariosInputsFin" class="d-none col-12 col-md-2">
+                    <label for="HorarioFinBuscar" class="form-label-fija">Hasta</label>
+                    <input type="time" class="form-control filtro-select" id="HorarioFinBuscar" min="00:00"
+                        max="23:59" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor Generar-->
+        <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                </button>
+                <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+                    <i class="fa-solid fa-file-excel me-1"></i> Excel
+                </button>
+                <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
+                    <i class="fa-solid fa-chart-column me-1"></i> Gráfico
+                </button>
+            </div>
+        </div>
+
+        <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
+            <canvas id="graficoHorario" width="400" height="150"></canvas>
+        </div>
+
+        <!-- Contenedor de tarjetas de resumen de asistncias -->
+        <div>
+            <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
+                <!-- Total asistencias fichadas -->
+                <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-user-check text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Total asistencias fichadas</p>
+                            <h5 class="mb-0 fw-bold" id="totalAsistenciasFichadas">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total horas trabajadas -->
+                <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-hourglass-half text-info fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Total horas trabajadas</p>
+                            <h5 class="mb-0 fw-bold" id="totalHorasTrabajadas">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empleados ausentes -->
+                <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-user-times text-danger fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Ausencias</p>
+                            <h5 class="mb-0 fw-bold" id="empleadosAusentes">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empleados tardanzas o llegadas tardes -->
+                <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-clock text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 text-muted small">Tardanzas / Llegadas Tardes</p>
+                            <h5 class="mb-0 fw-bold" id="empleadosLLegadasTardes">0</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin-bottom: 1rem" />
+
+        <h3 id="tituloAsistencias"
+            class="shadow-sm p-2 rounded-3 d-flex align-items-center justify-content-center gap-2 mb-3 mt-3 titulo-asistencias">
+        </h3>
+
+        <div id="asistenciasContainer" class="row g-4"></div>
+    </div>
+
+    <!-- Detallle Asistencia Por Dia -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistencia"
+        aria-labelledby="tituloDetalleAsistencia" style="
+      width: 380px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    ">
+        <div class="detalle-asistencia-contenedor">
+            <div class="detalle-asistencia-encabezado row align-items-start">
+                <div class="col-10">
+                    <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529">
+                        Detalle de Asistencia
+                    </h5>
+                    <p class="mb-0 text-muted" style="font-size: 0.85rem">
+                        Información personal y de asistencia del empleado seleccionado.
+                    </p>
+                </div>
+                <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+                </div>
+            </div>
+
+            <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+            <div class="offcanvas-body p-2" style="
+          font-size: 0.75rem;
+          line-height: 1.1;
+          max-height: calc(100vh - 70px);
+          overflow-y: auto;
+        ">
+                <div class=".detalle-asistencia-seccion">
+                    <div class="text-center mb-3">
+                        <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+                            Nombre del Empleado
+                        </h4>
+                        <span id="detalleLegajoAsistencia" class="text-muted" style="font-size: 0.85rem">Nro
+                            Legajo</span>
+                    </div>
+
+                    <div class="detalle-asistencia-tarjeta">
+                        <div class="detalle-asistencia-seccion">
+                            <p class="detalle-asistencia-titulo-seccion">INFORMACION</p>
+
+                            <div class="detalle-asistencia-fila">
+                                <span class="detalle-asistencia-valor" id="detalleTipoHorarioAsistencia"></span>
+                            </div>
+
+                            <div class="detalle-asistencia-fila">
+                                <span class="detalle-asistencia-etiqueta">Primer Entrada:</span>
+                                <span class="detalle-asistencia-valor" id="detallePrimerEntradaAsistencia"></span>
+                            </div>
+                            <div class="detalle-asistencia-fila">
+                                <span class="detalle-asistencia-etiqueta">Primer Salida:</span>
+                                <span class="detalle-asistencia-valor" id="detallePrimerSalidaAsistencia"></span>
+                            </div>
+                            <div class="detalle-asistencia-fila" id="filaSegundaEntrada">
+                                <span class="detalle-asistencia-etiqueta">Segunda Entrada:</span>
+                                <span class="detalle-asistencia-valor" id="detalleSegundaEntradaAsistencia"></span>
+                            </div>
+                            <div class="detalle-asistencia-fila" id="filaSegundaSalida">
+                                <span class="detalle-asistencia-etiqueta">Segunda Salida:</span>
+                                <span class="detalle-asistencia-valor" id="detalleSegundaSalidaAsistencia"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-asistencia-tarjeta">
+                        <div class="detalle-asistencia-seccion">
+                            <p class="detalle-asistencia-titulo-seccion">ESTADO</p>
+
+                            <div class="detalle-asistencia-fila text-center">
+                                <span class="detalle-asistencia-valor" id="detalleEstadoAsistencia"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offcanvas Detalle Semana -->
+   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistenciaSemana"
+    aria-labelledby="tituloDetalleSemana">
+    <div class="detalle-asistencia-semana-contenedor">
+        <!-- Encabezado -->
+        <div class="detalle-asistencia-semana-encabezado row align-items-start">
+            <div class="col-10">
+                <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529">
+                    Detalle de Asistencia Semanal
+                </h5>
+                <p class="mb-0 text-muted" style="font-size: 0.85rem">
+                    Información de cada día trabajado y estado general del empleado.
+                </p>
+            </div>
+            <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+            </div>
+        </div>
+
+        <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+        <div class="offcanvas-body p-2" style="
+          font-size: 0.75rem;
+          line-height: 1.1;
+          max-height: calc(100vh - 70px);
+          overflow-y: auto;
+        ">
+            <!-- Información del empleado -->
+            <div class="detalle-asistencia-semana-seccion mb-3">
+                <div class="row align-items-center">
+                    <!-- Nombre y Legajo -->
+                    <div class="col-6 text-center">
+                        <h4 id="detalleNombreSemana"
+                            style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+                            
+                        </h4>
+                        <span id="detalleLegajoSemana" class="text-muted" style="font-size: 0.85rem">
+                            
+                        </span>
+                    </div>
+
+                    <!-- Semana -->
+                    <div class="col-6 text-center">
+                        <h5 id="detalleSemanaNumero" style="color: #212529; font-size: 1rem; margin-bottom: 0.1rem">
+                            Semana N° XX
+                        </h5>
+                        <span id="detalleRangoSemana" class="text-muted" style="font-size: 0.85rem">
+                            
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detalle-asistencia-semana-tarjeta mt-3">
+                <div class="detalle-asistencia-semana-seccion">
+                    <p class="detalle-asistencia-semana-titulo-seccion">INFORMACION</p>
+                    <div id="contenedorDiasSemana"></div>
+                </div>
+            </div>
+
+            <!-- Estado general -->
+            <div class="detalle-asistencia-semana-tarjeta mt-3">
+                <div class="detalle-asistencia-semana-seccion">
+                    <p class="detalle-asistencia-semana-titulo-seccion">ESTADO</p>
+                    <div class="detalle-asistencia-semana-fila text-center">
+                        <span class="detalle-asistencia-semana-valor" id="detalleEstadoSemana"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="../js/Vistas/asistencias.js"></script>
+</div>

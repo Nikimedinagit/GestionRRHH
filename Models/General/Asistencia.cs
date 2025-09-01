@@ -9,11 +9,11 @@ namespace API_RRHH_TESIS2025.Models.General
         [Key]
         public int Id { get; set; }
 
-      
+
         public int EmpleadoId { get; set; }
         public virtual Empleado Empleado { get; set; }
 
-       
+
         public int? HorarioId { get; set; }
         public virtual Horario Horario { get; set; }
 
@@ -27,19 +27,44 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public EstadoAsistencia Estado { get; set; }
 
-       
+        public string FotoRuta { get; set; }
+
+
         [NotMapped] public string EmpleadoString => Empleado?.NombreCompleto;
         [NotMapped] public string FechaString => Fecha.ToString("dd/MM/yyyy");
         [NotMapped] public string EstadoString => Estado.ToString();
+        [NotMapped] public string PrimerEntradaString => PrimerEntrada.HasValue ? PrimerEntrada.Value.ToString(@"hh\:mm") : null;
+        [NotMapped] public string PrimerSalidaString => PrimerSalida.HasValue ? PrimerSalida.Value.ToString(@"hh\:mm") : null;
+        [NotMapped] public string SegundaEntradaString => SegundaEntrada.HasValue ? SegundaEntrada.Value.ToString(@"hh\:mm") : null;
+        [NotMapped] public string SegundaSalidaString => SegundaSalida.HasValue ? SegundaSalida.Value.ToString(@"hh\:mm") : null;
+        
+
     }
 
     public enum EstadoAsistencia
     {
-        Completa = 1,
-        Incompleta,
-        Ausente,
-        Tarde,
-        FueraDeHorario
+        COMPLETA = 1,
+        INCOMPLETA,
+        AUSENTE,
+        TARDE,
+        FUERADEHORARIO
+    }
+
+    public class VistaAsistencia
+    {
+         public int Id { get; set; }
+        public string EmpleadoString { get; set; }
+        public string NroLegajo { get; set; }
+        public string TipoHorario { get; set; }
+        public string FechaString { get; set; }
+        public string DiaSemana { get; set; }
+        public string EstadoString { get; set; }
+        public string PrimerEntradaString { get; set; }
+        public string PrimerSalidaString { get; set; }
+        public string SegundaEntradaString { get; set; }
+        public string SegundaSalidaString { get; set; }   
+        public string FotoUrl { get; set; }
+
     }
 
 }

@@ -3,6 +3,7 @@ namespace API_RRHH_TESIS2025.Models.Dto
     public class FicharDto
     {
         public float[] FaceDescriptor { get; set; }
+        public string FotoBase64 { get; set; }
     }
 
     public class RegistrarRostroDto

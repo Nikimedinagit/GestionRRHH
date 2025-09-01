@@ -812,7 +812,8 @@ select.form-control:not([value=""])+label {
 
 /* Boton ver más un empleado */
 .iocno-ver-empleado,
-.iocno-ver-horario{
+.iocno-ver-horario,
+.iocno-ver-asistencia{
   font-size: 1.2rem !important;
   color: #ffc107 !important;
   font-weight: bold !important;
@@ -910,11 +911,15 @@ select.form-control:not([value=""])+label {
 
 
 
-/* INICIO PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION / PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL */
+/* INICIO PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / 
+PANEL DETALLE ACTIVACION / PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL /
+DETALLE ASISTENCIA DIAS/SEMANAL */
 #offcanvasDetalleEmpleado,
 #offcanvasDetalleLicenciaAprobadas,
 #offcanvasDetalleEmpleadoActivacion,
-#offcanvasDetalleHistorial {
+#offcanvasDetalleHistorial,
+#offcanvasDetalleAsistencia,
+#offcanvasDetalleAsistenciaSemana {
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
 }
@@ -923,7 +928,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-contenedor,
 .detalle-horario-contenedor,
 .detalle-activacion-contenedor,
-.detalle-cambio-laboral-contenedor {
+.detalle-cambio-laboral-contenedor,
+.detalle-asistencia-semana-contenedor, 
+.detalle-asistencia-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
   border-top-left-radius: 0.3rem;
@@ -935,7 +942,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-encabezado,
 .detalle-horario-encabezado,
 .detalle-activacion-encabezado,
-.detalle-cambio-laboral-encabezado {
+.detalle-cambio-laboral-encabezado,
+.detalle-asistencia-semana-encabezado,
+.detalle-asistencia-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
@@ -946,7 +955,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-tarjeta,
 .detalle-horario-tarjeta,
 .detalle-activacion-tarjeta,
-.detalle-cambio-laboral-tarjeta {
+.detalle-cambio-laboral-tarjeta,
+.detalle-asistencia-semana-tarjeta,
+.detalle-asistencia-tarjeta {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
@@ -959,7 +970,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-seccion,
 .detalle-horario-seccion,
 .detalle-activacion-seccion,
-.detalle-cambio-laboral-seccion {
+.detalle-cambio-laboral-seccion,
+.detalle-asistencia-semana-seccion,
+.detalle-asistencia-seccion {
   padding: 1rem 1rem;
 }
 
@@ -967,7 +980,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-fila,
 .detalle-horario-fila,
 .detalle-activacion-fila,
-.detalle-cambio-laboral-fila {
+.detalle-cambio-laboral-fila,
+.detalle-asistencia-semana-fila,
+.detalle-asistencia-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
@@ -977,19 +992,24 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-etiqueta,
 .detalle-horario-etiqueta,
 .detalle-activacion-etiqueta,
-.detalle-cambio-laboral-etiqueta {
+.detalle-cambio-laboral-etiqueta,
+.detalle-asistencia-semana-etiqueta,
+.detalle-asistencia-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
   flex-shrink: 0;
+  margin-right: 10px !important;
 }
 
 .detalle-empleado-valor,
 .detalle-licencia-valor,
 .detalle-horario-valor,
 .detalle-activacion-valor,
-.detalle-cambio-laboral-valor {
-  color: #212529;
+.detalle-cambio-laboral-valor,
+.detalle-asistencia-semana-valor,
+.detalle-asistencia-valor{
+  color: rgba(108, 117, 125, 0.9); 
   flex-grow: 1;
   word-break: break-word;
 }
@@ -998,7 +1018,9 @@ select.form-control:not([value=""])+label {
 .detalle-licencia-titulo-seccion,
 .detalle-horario-titulo-seccion,
 .detalle-activacion-titulo-seccion,
-.detalle-cambio-laboral-titulo-seccion {
+.detalle-cambio-laboral-titulo-seccion,
+.detalle-asistencia-semana-titulo-seccion,
+.detalle-asistencia-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -1007,23 +1029,8 @@ select.form-control:not([value=""])+label {
   letter-spacing: 0.5px;
 }
 
-.detalle-empleado-etiqueta,
-.detalle-licencia-etiqueta,
-.detalle-horario-etiqueta,
-.detalle-activacion-etiqueta,
-.detalle-cambio-laboral-etiqueta {
-   margin-right: 10px !important;
-  font-weight: 600 !important;
-}
-
-.detalle-empleado-valor,
-.detalle-licencia-valor,
-.detalle-horario-valor,
-.detalle-activacion-valor,
-.detalle-cambio-laboral-valor {
-  color: rgba(108, 117, 125, 0.9); 
-}
-/* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION / PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL */
+/* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION 
+/ PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL / DETALLE ASISTENCIA DIAS/SEMANAL */
 
 
 
@@ -1309,4 +1316,67 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
+/* INICIO BADGE PARA EL ESTADO DE ASITENCIA (TARDE) */
+.bg-orange {
+  background-color: #fd7e14 !important;
+  color: #ffffff !important;
+}
+/* FIN BADGE PARA EL ESTADO DE ASITENCIA (TARDE) */
 
+
+
+/* INICIO TITULO ARRIBA DE LKAS CARD DE ASITENCIAS FICHADAS */
+.titulo-asistencias {
+    font-size: 1rem;            
+    text-align: center;           
+    width: 100%;     
+    border: 1px solid #dee2e6; 
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
+
+.titulo-asistencias i {
+    font-size: 1.1rem;          
+    color: #0d6efd;               
+}
+/* FIN TITULO ARRIBA DE LKAS CARD DE ASITENCIAS FICHADAS */
+
+
+
+/*INICIO ESTILO CAR4D DE ASISTENCIA POR DIA */
+#asistenciasContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  transform: scale(1); 
+}
+
+#asistenciasContainer .card:hover {
+  transform: scale(1.03); 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); 
+  z-index: 2; 
+}
+/*FIN ESTILO CAR4D DE ASISTENCIA POR DIA */
+
+
+
+
+
+
+
+/* INICIO DE DETALLE ASISTENCIA POR SEMANA RESPONSIVO */
+#offcanvasDetalleAsistenciaSemana {
+    width: 100%;
+    max-width: 1110px;
+    min-width: 0; 
+}
+@media (min-width: 576px) { 
+    #offcanvasDetalleAsistenciaSemana {
+        min-width: 380px;
+    }
+}
+.detalle-asistencia-semana {
+  width: 100%;             
+  max-width: 100%;          
+  box-sizing: border-box;  
+}
+/* FIN DE DETALLE ASISTENCIA POR SEMANA RESPONSIVO */

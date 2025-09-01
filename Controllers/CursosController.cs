@@ -100,7 +100,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
             //Convertir a mayusculas las letras
             curso.Nombre = curso.Nombre.ToUpper();
-
+ 
             //Veificar si el curso ya existe
             var cursoExistente = await _context.Curso
             .FirstOrDefaultAsync(c => c.Nombre.ToLower() == curso.Nombre.ToLower() && c.Id != id);

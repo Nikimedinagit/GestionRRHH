@@ -27,6 +27,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // Inyección del servicio de asistencia
 builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
+builder.Services.AddHostedService<RegistrarAusentesBackgroundService>();
+
 
 // Configuración del formato de respuesta JSON
 builder.Services.AddControllers()

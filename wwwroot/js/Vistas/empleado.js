@@ -1,34 +1,31 @@
 // Función para abrir el panel lateral
 function AbrirPanelEmpleado() {
-let id = document.getElementById("IdEmpleado").value;
-console.log(id);
-if (!id) {
+  let id = document.getElementById("IdEmpleado").value;
+  console.log(id);
+  if (!id) {
     document.getElementById("EstadoCivilEmpleado").value = "0";
     document.getElementById("TipoSexoEmpleado").value = "0";
     document.getElementById("IdLocalidad").value = "0";
     document.getElementById("IdPuesto").value = "0";
-  
-  document.getElementById("panelEmpleado").classList.add("abierto");
-  const fondo = document.getElementById("fondoOscuro");
-  fondo.classList.add("visible");
 
-  setTimeout(() => {
-    const inputNombre = document.getElementById("NombreEmpleado");
-    if (inputNombre) inputNombre.focus();
-  }, 400);
-} else {
+    document.getElementById("panelEmpleado").classList.add("abierto");
+    const fondo = document.getElementById("fondoOscuro");
+    fondo.classList.add("visible");
 
-  document.getElementById("panelEmpleado").classList.add("abierto");
-  const fondo = document.getElementById("fondoOscuro");
-  fondo.classList.add("visible");
+    setTimeout(() => {
+      const inputNombre = document.getElementById("NombreEmpleado");
+      if (inputNombre) inputNombre.focus();
+    }, 400);
+  } else {
+    document.getElementById("panelEmpleado").classList.add("abierto");
+    const fondo = document.getElementById("fondoOscuro");
+    fondo.classList.add("visible");
 
-  setTimeout(() => {
-    const inputNombre = document.getElementById("NombreEmpleado");
-    if (inputNombre) inputNombre.focus();
-  }, 400);
-}
-
-
+    setTimeout(() => {
+      const inputNombre = document.getElementById("NombreEmpleado");
+      if (inputNombre) inputNombre.focus();
+    }, 400);
+  }
 }
 
 //Funcion para cerrar el panel lateral
@@ -39,7 +36,6 @@ function CerrarPanelEmpleado() {
 
   LimpiarFormularioEmpleado();
 }
-
 
 //INICIO ONCHANGE DE FILTROS//
 $(document).ready(function () {
@@ -72,7 +68,6 @@ $(document).ready(function () {
   $("#NroLegajoFiltro").on("input", function () {
     ObtenerEmpleados();
   });
-    
 });
 
 async function ComboParaFiltrarLocalidadPuesto() {
@@ -234,32 +229,32 @@ function MostrarEmpleados(data) {
             </div>
           </div>
 
-          <!-- Botones de acción -->
-<div class="d-flex justify-content-between mt-2 align-items-center">
-  <!-- Siempre mostrar historial, ver más y editar -->
-  <div>
-    <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${
-      item.id
-    })" data-tippy-content="Historial">
-      <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
-    </button>
-  </div>
-  <div>
-    <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${
-      item.id
-    })" data-tippy-content="Ver más">
-      <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
-    </button>
-    <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${
-      item.id
-    })" data-tippy-content="Editar">
-      <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
-    </button>
-  </div>
-</div>
+                  <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-2 align-items-center">
+          <!-- Siempre mostrar historial, ver más y editar -->
+          <div>
+            <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${
+              item.id
+            })" data-tippy-content="Historial">
+              <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
+            </button>
+          </div>
+          <div>
+            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${
+              item.id
+            })" data-tippy-content="Ver más">
+              <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+            </button>
+            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${
+              item.id
+            })" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+            </button>
+          </div>
+        </div>
 
   
-</div>
+        </div>
 
 
         </div>
@@ -466,18 +461,18 @@ function ValidarFormularioEmpleado() {
   }
 
   if (dni.length === 0) {
-  inputDni.classList.add("is-invalid");
-  inputErrorDni.textContent = "Campo obligatorio.";
-  inputErrorDni.style.display = "block";
-  esValido = false;
-} else if (!/^\d{8}$/.test(dni)) {
-  inputDni.classList.add("is-invalid");
-  inputErrorDni.textContent = "DNI inválido.";
-  inputErrorDni.style.display = "block";
-  esValido = false;
-} else {
-  inputDni.classList.add("is-valid");
-}
+    inputDni.classList.add("is-invalid");
+    inputErrorDni.textContent = "Campo obligatorio.";
+    inputErrorDni.style.display = "block";
+    esValido = false;
+  } else if (!/^\d{8}$/.test(dni)) {
+    inputDni.classList.add("is-invalid");
+    inputErrorDni.textContent = "DNI inválido.";
+    inputErrorDni.style.display = "block";
+    esValido = false;
+  } else {
+    inputDni.classList.add("is-valid");
+  }
 
   if (telefono.length === 0) {
     inputTelefono.classList.add("is-invalid");
@@ -502,54 +497,47 @@ function ValidarFormularioEmpleado() {
     inputDireccion.classList.add("is-valid");
   }
 
-if (fechaNacimiento.length === 0) {
-  inputFechaNacimiento.classList.add("is-invalid");
-  inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
-  inputErrorFechaNacimiento.style.display = "block";
-  esValido = false;
-
-} else if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
-  inputFechaNacimiento.classList.add("is-invalid");
-  inputErrorFechaNacimiento.textContent = "Formato inválido (YYYY-MM-DD).";
-  inputErrorFechaNacimiento.style.display = "block";
-  esValido = false;
-
-} else {
-  const hoy = new Date();
-  const fechaNac = new Date(fechaNacimiento);
-
-  let edad = hoy.getFullYear() - fechaNac.getFullYear();
-  const m = hoy.getMonth() - fechaNac.getMonth();
-  if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
-    edad--;
-  }
-
-  if (edad < 16) {
+  if (fechaNacimiento.length === 0) {
     inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "Mayor de 16 años.";
+    inputErrorFechaNacimiento.textContent = "Campo obligatorio.";
     inputErrorFechaNacimiento.style.display = "block";
     esValido = false;
-
-  } else if (edad > 80) {
+  } else if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
     inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "Menor de 80 años.";
+    inputErrorFechaNacimiento.textContent = "Formato inválido (YYYY-MM-DD).";
     inputErrorFechaNacimiento.style.display = "block";
     esValido = false;
-
-  } else if (fechaNac > hoy) {
-    inputFechaNacimiento.classList.add("is-invalid");
-    inputErrorFechaNacimiento.textContent = "No puede ser una fecha futura.";
-    inputErrorFechaNacimiento.style.display = "block";
-    esValido = false;
-
   } else {
-    inputFechaNacimiento.classList.remove("is-invalid");
-    inputErrorFechaNacimiento.style.display = "none";
-    inputFechaNacimiento.classList.add("is-valid");
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const m = hoy.getMonth() - fechaNac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+      edad--;
+    }
+
+    if (edad < 16) {
+      inputFechaNacimiento.classList.add("is-invalid");
+      inputErrorFechaNacimiento.textContent = "Mayor de 16 años.";
+      inputErrorFechaNacimiento.style.display = "block";
+      esValido = false;
+    } else if (edad > 80) {
+      inputFechaNacimiento.classList.add("is-invalid");
+      inputErrorFechaNacimiento.textContent = "Menor de 80 años.";
+      inputErrorFechaNacimiento.style.display = "block";
+      esValido = false;
+    } else if (fechaNac > hoy) {
+      inputFechaNacimiento.classList.add("is-invalid");
+      inputErrorFechaNacimiento.textContent = "No puede ser una fecha futura.";
+      inputErrorFechaNacimiento.style.display = "block";
+      esValido = false;
+    } else {
+      inputFechaNacimiento.classList.remove("is-invalid");
+      inputErrorFechaNacimiento.style.display = "none";
+      inputFechaNacimiento.classList.add("is-valid");
+    }
   }
-}
-
-
 
   if (parseInt(tipoSexo) === 0 || isNaN(parseInt(tipoSexo))) {
     inputTipoSexo.classList.add("is-invalid");
@@ -686,7 +674,6 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
   }
 });
 
-
 // TelefonoEmpleado
 document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
   const input = document.getElementById("TelefonoEmpleado");
@@ -724,12 +711,10 @@ document
       input.classList.add("is-invalid");
       error.style.display = "block";
       error.textContent = "Campo obligatorio.";
-
     } else if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
       input.classList.add("is-invalid");
       error.style.display = "block";
       error.textContent = "Formato inválido (00/00/0000).";
-
     } else {
       const hoy = new Date();
       const fechaNacimiento = new Date(valor);
@@ -742,25 +727,20 @@ document
         input.classList.add("is-invalid");
         error.style.display = "block";
         error.textContent = "Mayor de 16 años.";
-
       } else if (edad > 80) {
         input.classList.add("is-invalid");
         error.style.display = "block";
         error.textContent = "Menor de 80 años.";
-
       } else if (fechaNacimiento > hoy) {
         input.classList.add("is-invalid");
         error.style.display = "block";
         error.textContent = "Fecha invalida.";
-
       } else {
         input.classList.add("is-valid");
         error.style.display = "none";
       }
     }
   });
-
-
 
 // DireccionEmpleado
 document.getElementById("DireccionEmpleado").addEventListener("input", () => {
@@ -1249,7 +1229,6 @@ async function EditarEmpleado(id) {
     });
 }
 
-
 // Función para mostra el offcanvas de historial
 function VerHistorialEmpleado(empleadoId) {
   ObtenerHistorialEmpleados(empleadoId);
@@ -1358,7 +1337,5 @@ function MostrarDetalleHistorial(index) {
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
-
-
 
 ComboParaFiltrarLocalidadPuesto();
