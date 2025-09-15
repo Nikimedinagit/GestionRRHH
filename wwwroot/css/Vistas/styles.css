@@ -1332,13 +1332,66 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
     width: 100%;     
     border: 1px solid #dee2e6; 
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+    display: flex;
+    flex-direction: column; /* por defecto en móviles */
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
 }
 
+/* Ícono */
 .titulo-asistencias i {
-    font-size: 1.1rem;          
+    font-size: 1.2rem !important;          
     color: #0d6efd;               
 }
-/* FIN TITULO ARRIBA DE LKAS CARD DE ASITENCIAS FICHADAS */
+
+/* Texto */
+.titulo-asistencias span {
+    font-weight: bold;
+    font-size: 1.2rem !important;
+}
+
+.titulo-asistencias small {
+    font-size: 0.9rem !important;
+    color: #6c757d;
+}
+
+/* RESPONSIVO: pantallas más grandes */
+@media (min-width: 768px) {
+    .titulo-asistencias {
+        flex-direction: row; 
+        gap: 0.5rem;
+    }
+
+    .titulo-asistencias span {
+        font-size: 1.25rem;
+    }
+
+    .titulo-asistencias small {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .titulo-asistencias {
+        gap: 1rem;
+    }
+
+    .titulo-asistencias i {
+        font-size: 1.8rem;
+    }
+
+    .titulo-asistencias span {
+        font-size: 1.5rem;
+    }
+
+    .titulo-asistencias small {
+        font-size: 1.1rem;
+    }
+}
+/* FIN TITULO ARRIBA DE LAS CARD DE ASISTENCIAS FICHADAS */
+
 
 
 

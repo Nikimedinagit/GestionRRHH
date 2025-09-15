@@ -18,6 +18,17 @@ btnToggleSemana.addEventListener('click', () => {
 });
 
 
+$(document).ready(function() {
+    ObtenerAsistenciasHoy();
+    ObtenerAsistenciasSemana();
+
+    $("#EmpleadoIdBuscar").on ("input", ObtenerAsistenciasHoy);
+    $("#DniBuscar").on ("input", ObtenerAsistenciasHoy);
+    $("#NroLegajoBuscar").on ("input", ObtenerAsistenciasHoy);
+    $("#EstadoAsistenciaBuscar").on ("change", ObtenerAsistenciasHoy);
+});
+
+
 async function ObtenerAsistenciasHoy() {
   const hoy = new Date().toLocaleDateString("es-AR", {
     weekday: "long",
@@ -35,7 +46,29 @@ async function ObtenerAsistenciasHoy() {
   `);
 
   try {
-    const response = await authFetch("Asistencias/Hoy");
+
+    let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
+    if (estadoAsistencia === "0") estadoAsistencia = null;
+    else estadoAsistencia = Number(estadoAsistencia);
+
+
+    let dniEmpleado = document.getElementById("DniBuscar").value;
+    let nroLegajo = document.getElementById("NroLegajoBuscar").value;
+
+    const asistenciasFiltradas = {
+        nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+        dNI: dniEmpleado ? Number(dniEmpleado) : null,
+        nroLegajo: nroLegajo ? Number(nroLegajo) : null,
+        estadoAsistencia: estadoAsistencia
+    };
+
+    const response = await authFetch("Asistencias/FiltrarHoy",
+        { method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(asistenciasFiltradas) }
+    );
+
+    console.log (asistenciasFiltradas);
     const data = await response.json();
     MostrarAsistencias(data);
   } catch (error) {
@@ -158,21 +191,13 @@ function MostrarDetalleAsistencia(idAsistencia) {
 
 
 
-
-
-
-
-
-
-
-
 async function ObtenerAsistenciasSemana() {
   const hoy = new Date();
   const primerDia = new Date(hoy);
-  primerDia.setDate(hoy.getDate() - hoy.getDay() + 1); // lunes
+  primerDia.setDate(hoy.getDate() - hoy.getDay() + 1); 
   const ultimoDia = new Date(primerDia);
-  ultimoDia.setDate(primerDia.getDate() + 6); // domingo
-
+  ultimoDia.setDate(primerDia.getDate() + 6); 
+  
   const opciones = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
   const rangoSemana = `${primerDia.toLocaleDateString("es-AR", opciones)} - ${ultimoDia.toLocaleDateString("es-AR", opciones)}`;
 
@@ -186,7 +211,28 @@ async function ObtenerAsistenciasSemana() {
   `);
 
   try {
-    const response = await authFetch("Asistencias/Semana"); 
+
+     let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
+    if (estadoAsistencia === "0") estadoAsistencia = null;
+    else estadoAsistencia = Number(estadoAsistencia);
+
+
+    let dniEmpleado = document.getElementById("DniBuscar").value;
+    let nroLegajo = document.getElementById("NroLegajoBuscar").value;
+
+    const asistenciasFiltradas = {
+        nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+        dNI: dniEmpleado ? Number(dniEmpleado) : null,
+        nroLegajo: nroLegajo ? Number(nroLegajo) : null,
+        estadoAsistencia: estadoAsistencia
+    };
+
+
+    const response = await authFetch("Asistencias/FiltrarSemana",
+        { method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(asistenciasFiltradas)}
+    ); 
     const data = await response.json();
     asistenciasData = data;
     MostrarAsistenciasSemana(data);
@@ -258,13 +304,25 @@ function MostrarAsistenciasSemana(data) {
 }
 
 
+// asistenciasData = [
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "01/09/2025", primerEntradaString: "08:00", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "COMPLETA", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "02/09/2025", primerEntradaString: "08:05", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "TARDE", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "03/09/2025", primerEntradaString: "08:00", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "COMPLETA", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "04/09/2025", primerEntradaString: "08:00", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "COMPLETA", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "05/09/2025", primerEntradaString: "-", primerSalidaString: "-", segundaEntradaString: "-", segundaSalidaString: "-", estadoString: "AUSENTE", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "06/09/2025", primerEntradaString: "08:00", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "COMPLETA", FotoUrl: null },
+//     { empleadoString: "Juan Perez", nroLegajo: "101", fechaString: "07/09/2025", primerEntradaString: "08:00", primerSalidaString: "12:00", segundaEntradaString: "13:00", segundaSalidaString: "17:00", estadoString: "COMPLETA", FotoUrl: null },
+// ];
+
+// MostrarDetalleSemana("Juan Perez");
+
+
 
 
 function MostrarDetalleSemana(nombreEmpleado) {
     const registros = asistenciasData.filter(a => a.empleadoString === nombreEmpleado);
     if (!registros || registros.length === 0) return;
 
-    // Función para convertir "dd/MM/yyyy" a Date
     function parsearFecha(fechaString) {
         const partes = fechaString.split("/"); 
         const dia = parseInt(partes[0], 10);
@@ -273,21 +331,17 @@ function MostrarDetalleSemana(nombreEmpleado) {
         return new Date(anio, mes, dia);
     }
 
-    // Ordenar registros por fecha
     registros.sort((a, b) => parsearFecha(a.fechaString) - parsearFecha(b.fechaString));
 
-    // Datos del empleado
     $("#detalleNombreSemana").text(nombreEmpleado);
     $("#detalleLegajoSemana").text(registros[0].nroLegajo || "-");
 
     const contenedorDias = $("#contenedorDiasSemana");
     contenedorDias.empty();
 
-    // --- FECHA FIJA DE REFERENCIA ---
-    const fechaReferencia = new Date(2025, 8, 1); // 01/09/2025, mes 0-indexed
+    const fechaReferencia = new Date(2025, 8, 1); 
 
-    // Calcular lunes y domingo de la semana de referencia
-    const diaSemana = fechaReferencia.getDay() || 7; // domingo=7
+    const diaSemana = fechaReferencia.getDay() || 7; 
     const lunes = new Date(fechaReferencia);
     lunes.setDate(fechaReferencia.getDate() - diaSemana + 1);
     const domingo = new Date(lunes);
@@ -380,6 +434,7 @@ function MostrarDetalleSemana(nombreEmpleado) {
         `);
 
         row.append(col);
+        
     });
 
     contenedorDias.append(row);
@@ -408,12 +463,5 @@ function MostrarDetalleSemana(nombreEmpleado) {
 
 
 
-
-
-
-
-
-
-
-// ------------------- INICIALIZAR -------------------
 ObtenerAsistenciasHoy();
+ObtenerAsistenciasSemana();

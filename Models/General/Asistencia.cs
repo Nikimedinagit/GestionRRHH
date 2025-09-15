@@ -37,7 +37,7 @@ namespace API_RRHH_TESIS2025.Models.General
         [NotMapped] public string PrimerSalidaString => PrimerSalida.HasValue ? PrimerSalida.Value.ToString(@"hh\:mm") : null;
         [NotMapped] public string SegundaEntradaString => SegundaEntrada.HasValue ? SegundaEntrada.Value.ToString(@"hh\:mm") : null;
         [NotMapped] public string SegundaSalidaString => SegundaSalida.HasValue ? SegundaSalida.Value.ToString(@"hh\:mm") : null;
-        
+
 
     }
 
@@ -52,7 +52,7 @@ namespace API_RRHH_TESIS2025.Models.General
 
     public class VistaAsistencia
     {
-         public int Id { get; set; }
+        public int Id { get; set; }
         public string EmpleadoString { get; set; }
         public string NroLegajo { get; set; }
         public string TipoHorario { get; set; }
@@ -62,8 +62,18 @@ namespace API_RRHH_TESIS2025.Models.General
         public string PrimerEntradaString { get; set; }
         public string PrimerSalidaString { get; set; }
         public string SegundaEntradaString { get; set; }
-        public string SegundaSalidaString { get; set; }   
+        public string SegundaSalidaString { get; set; }
         public string FotoUrl { get; set; }
+
+    }
+
+
+    public class FiltrarAsistencia
+    {
+        public string NombreCompleto { get; set; }
+        public long? DNI { get; set; }
+        public int? NroLegajo { get; set; }
+        public int? EstadoAsistencia { get; set; }
 
     }
 

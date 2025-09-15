@@ -18,7 +18,7 @@ public class RegistrarAusentesBackgroundService : IHostedService, IDisposable
     {
         // Ejecutar todos los días a las 23:45
         var ahora = DateTime.Now;
-        var proximo = new DateTime(ahora.Year, ahora.Month, ahora.Day, 20, 30, 0);
+        var proximo = new DateTime(ahora.Year, ahora.Month, ahora.Day, 18, 38, 0);
         if (ahora > proximo) proximo = proximo.AddDays(1);
 
         var tiempoInicial = proximo - ahora;
