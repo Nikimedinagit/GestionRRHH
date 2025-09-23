@@ -20,23 +20,54 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
+        //Metodo privado para actualizar la finalizacin de un curso 
+        private async Task ActualizarCursosFinalizados()
+        {
+            //raemos todos los cursos que no estan finalizazos y cuya fecha y hora ya paso
+            var cursosActivos = await _context.Curso
+            .Where(c => c.Finalizado == false && c.FechaFinalizacion < DateTime.Now)
+            .ToListAsync();
+
+            if (cursosActivos.Any())
+            {
+
+                foreach (var curso in cursosActivos)
+                {
+                    curso.Finalizado = true;
+                }
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+
         // GET: api/Cursos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Curso>>> GetCurso()
         {
-            return await _context.Curso.ToListAsync();
+                await ActualizarCursosFinalizados();
+
+                var cursos = await _context.Curso
+                    .Select(c => new CursoVista
+                    {
+                        Id = c.Id,
+                        Nombre = c.Nombre,
+                        Descripcion = c.Descripcion,
+                        Modalidad = c.Modalidad,
+                        FechaInicio = c.FechaInicio,
+                        FechaFinalizacion = c.FechaFinalizacion,
+                        Finalizado = c.Finalizado
+                    })
+                    .ToListAsync();
+
+                return Ok(cursos);
         }
 
         // GET: api/Cursos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Curso>> GetCurso(int id)
         {
+            await ActualizarCursosFinalizados();
             var curso = await _context.Curso.FindAsync(id);
-
-            if (curso == null)
-            {
-                return NotFound();
-            }
 
             return curso;
         }
@@ -44,6 +75,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<CursoVista>>> FiltroCurso([FromBody] FiltroCurso filtro)
         {
+            await ActualizarCursosFinalizados();
             List<CursoVista> vista = new List<CursoVista>();
             var cursosFiltrados = _context.Curso.AsQueryable();
 
@@ -78,7 +110,9 @@ namespace API_NET_CORE8_RRHH.Controllers
                     FechaInicio = curso.FechaInicio,
                     Modalidad = curso.Modalidad,
                     Nombre = curso.Nombre,
-                    Descripcion = curso.Descripcion
+                    Descripcion = curso.Descripcion,
+                    FechaFinalizacion = curso.FechaFinalizacion,
+                    Finalizado = curso.Finalizado
                 };
                 vista.Add(vistaCurso);
             }
@@ -110,6 +144,12 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return Ok(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo mes" });
             }
 
+            //No se puede modificar un curso finalizado 
+            if (curso.Finalizado)
+            {
+                return Forbid("No se puede modificar un curso finalizado");
+            }
+
 
             _context.Entry(curso).State = EntityState.Modified;
 
@@ -137,22 +177,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Curso>> PostCurso(Curso curso)
         {
-            //Convertir a mayusculas las letras
-            curso.Nombre = curso.Nombre.ToUpper();
-
-            //Veificar si el curso ya existe
-            var cursoExistente = await _context.Curso
-            .Where(C => C.Nombre.ToLower() == curso.Nombre.ToLower()
-            && C.FechaCreacion.Month == DateTime.Now.Month
-            && C.FechaCreacion.Year == DateTime.Now.Year)
-            .FirstOrDefaultAsync();
-
-            if (cursoExistente != null)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo mes" });
-            }
-
-            
             curso.FechaInicio = new DateTime(
                 curso.FechaInicio.Year,
                 curso.FechaInicio.Month,
@@ -162,7 +186,40 @@ namespace API_NET_CORE8_RRHH.Controllers
                 0
             );
 
-            curso.FechaCreacion = DateTime.Now;
+            curso.FechaFinalizacion = new DateTime(
+                curso.FechaFinalizacion.Year,
+                curso.FechaFinalizacion.Month,
+                curso.FechaFinalizacion.Day,
+                curso.FechaFinalizacion.Hour,
+                curso.FechaFinalizacion.Minute,
+                0
+            );
+            //Convertir a mayusculas las letras
+            curso.Nombre = curso.Nombre.ToUpper();
+
+            //Verificar si ya existe un curso con mismo nombre en el mismo mes y año
+            var cursoExistenteMesAnio = await _context.Curso
+            .Where(C => C.Nombre == curso.Nombre
+            && C.FechaInicio.Month == curso.FechaInicio.Month
+            && C.FechaInicio.Year == curso.FechaInicio.Year)
+            .FirstOrDefaultAsync();
+
+            if (cursoExistenteMesAnio != null)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo mes" });
+            }
+
+            //Verificar si ya existe un curso con mismo nombre, fecha y hora exacta
+            var cursoExacto = await _context.Curso
+            .Where(c => c.Nombre == curso.Nombre
+            && c.FechaInicio == curso.FechaInicio)
+            .FirstOrDefaultAsync();
+
+            if (cursoExacto != null)
+            {
+                return BadRequest(new { codigo = 1, mensaje = "No se puede crear el mismo curso con fecha y hora exacta" });
+            }
+
             _context.Curso.Add(curso);
             await _context.SaveChangesAsync();
 

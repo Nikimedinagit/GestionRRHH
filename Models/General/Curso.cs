@@ -13,8 +13,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public string Nombre { get; set; }
         public Modalidades Modalidad { get; set; }
         public string Descripcion { get; set; }
-        public DateTime FechaCreacion { get; set; }
         public DateTime FechaInicio { get; set; }
+        public DateTime FechaFinalizacion { get; set; }
+        public bool Finalizado { get; set; }
         public virtual ICollection<AsistenciaCapacitacion> AsistenciaCapacitacion { get; set; }
         public virtual ICollection<Certificado> Certificado { get; set; }
     }
@@ -32,7 +33,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public DateTime FechaInicio { get; set; }
-        public  Modalidades Modalidad { get; set; }
+        public DateTime FechaFinalizacion { get; set; }
+        public Modalidades Modalidad { get; set; }
+        public bool Finalizado { get; set; }
     }
 
     public class FiltroCurso

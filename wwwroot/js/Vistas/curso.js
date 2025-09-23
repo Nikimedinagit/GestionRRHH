@@ -193,17 +193,22 @@ function MostrarCursosDesktop(data) {
     data.forEach(element => {
       const modalidadNombre = modalidades[element.modalidad];
       const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
-      const fecha = element.fechaInicio.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
-      const horaCompleta = element.fechaInicio.split("T")[1];
-      const hora = horaCompleta.substring(0, 5);
+      const fechaIni = new Date(element.fechaInicio);
+      const fechaFin = new Date(element.fechaFinalizacion);
+
+      const fechaInicioFormateada = fechaIni.toLocaleDateString("es-AR") + " " + fechaIni.toLocaleTimeString("es-AR", {hour: "2-digit", minute:"2-digit"});
+      const fechaFinalizacionFormateada = fechaFin.toLocaleDateString("es-AR") + " " + fechaFin.toLocaleTimeString("es-AR", {hour: "2-digit", minute:"2-digit"});
+
 
       const item = $(`
         <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center" style="gap: 20px;">
 
+          ${element.finalizado ? "" : `
             <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
               <i class="bi bi-pencil-square icono-editar"></i>
             </button>
+          `}
 
           <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.nombre || 'Sin nombre'}">
             ${element.nombre || 'Sin nombre'}
@@ -211,8 +216,8 @@ function MostrarCursosDesktop(data) {
           </div>
 
           <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
-            <span style="margin-right: 5px;">&bull;</span>
-            Comienza el ${fecha} a las ${hora}
+            <span style="margin-right: 5px;"></span>
+            ${fechaInicioFormateada} -- ${fechaFinalizacionFormateada}
           </div>
 
           <div class="d-flex align-items-center" style="gap: 20px;">
@@ -220,6 +225,7 @@ function MostrarCursosDesktop(data) {
               ${modalidadNombre}
             </div>
 
+            ${element.finalizado ? "" : `
             <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
               <i class="bi-calendar-check"></i>
             </button>
@@ -227,6 +233,7 @@ function MostrarCursosDesktop(data) {
             <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
               <i class="bi-award"></i>
             </button>
+            `}
 
             <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
               <i class="bi bi-chevron-down"></i>
@@ -460,6 +467,7 @@ function MostrarCursosMobile(data) {
 
         <div class="d-flex justify-content-between mt-2 align-items-center">
           <div>
+          ${element.finalizado ? "" : `
             <button class="btn-ver-asistencias icono-asistencia-mobile" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
               <i class="bi-calendar-check"></i>
             </button>
@@ -467,12 +475,15 @@ function MostrarCursosMobile(data) {
             <button class="btn-ver-certificados icono-certificado-mobile" style="background: none; border: none;" data-tippy-content="Ver Certificados">
               <i class="bi-award"></i>
             </button>
+          `}
             
           </div>
           <div>
+          ${element.finalizado ? "" : `
             <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
               <i class="bi bi-pencil-square icono-editar"></i>
             </button>
+          `}
             <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
               <i class="bi bi-chevron-down"></i>
             </button>
@@ -559,6 +570,7 @@ async function MostrarModalEditar(id) {
         document.getElementById("ModalidadCurso").value = data.modalidad;
         document.getElementById("DescripcionCurso").value = data.descripcion;
         document.getElementById("FechaInicioCurso").value = data.fechaInicio;
+        document.getElementById("FechaFinCurso").value = data.fechaFinalizacion;
 
         abrirPanelCursos();
     }))
@@ -587,12 +599,15 @@ function LimpiarModalCursos() {
     inputDescripcion.value = "";
     const inputFechaInicio = document.getElementById("FechaInicioCurso");
     inputFechaInicio.value = "";
+    const inputFechaFinalizacion = document.getElementById("FechaFinCurso");
+    inputFechaFinalizacion.value = "";
 
     //Limpia las validaciones
     inputNombre.classList.remove("is-invalid", "is-valid");
     selectModalidad.classList.remove("is-invalid", "is-valid");
     inputDescripcion.classList.remove("is-invalid", "is-valid");
     inputFechaInicio.classList.remove("is-invalid", "is-valid");
+    inputFechaFinalizacion.classList.remove("is-invalid", "is-valid");
 
     //Limpiar los mensajes de error
     const inputErrorNombre = document.getElementById("errorNombreCurso");
@@ -607,6 +622,9 @@ function LimpiarModalCursos() {
     const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
     inputErrorFechaInicio.textContent = "";
     inputErrorFechaInicio.style.display = "none";
+    const inputErrorFechaFinalizacion = document.getElementById("errorFechaFinCurso");
+    inputErrorFechaFinalizacion.textContent = ""; 
+    inputErrorFechaFinalizacion.style.display = "none";
 }
 
 //Funcion para validar el formulario de cursos
@@ -623,10 +641,14 @@ function ValidarFormularioCursos() {
     const inputFechaInicio = document.getElementById("FechaInicioCurso");
     const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
 
+    const inputFechaFinalizacion = document.getElementById("FechaFinCurso");
+    const inputErrorFechaFinalizacion = document.getElementById("errorFechaFinCurso");
+
     const nombre = inputNombre.value.trim();
     const modalidadSeleccionada = selectModalidad.value;
     const descripcion = inputDescripcion.value.trim();
     const fechaInicio = inputFechaInicio.value;
+    const fechaFinalizacion = inputFechaFinalizacion.value;
 
     //Limpiar errores previos
     inputErrorNombre.style.display = "none";
@@ -641,6 +663,9 @@ function ValidarFormularioCursos() {
     inputErrorFechaInicio.style.display = "none";
     inputErrorFechaInicio.textContent = "";
     inputFechaInicio.classList.remove("is-invalid", "is-valid");
+    inputErrorFechaFinalizacion.style.display = "none";
+    inputErrorFechaFinalizacion.textContent = "";
+    inputFechaFinalizacion.classList.remove("is-invalid", "is-valid");
   
     let esValid = true;
 
@@ -693,6 +718,16 @@ function ValidarFormularioCursos() {
     }else {
       inputNombre.classList.add("is-valid");
     }
+
+    // Validar Fecha Finalizacion
+    if (fechaFinalizacion.length === 0) {
+      inputFechaFinalizacion.classList.add("is-invalid");
+      inputErrorFechaFinalizacion.style.display = "block";
+      inputErrorFechaFinalizacion.textContent = "Seleccione una fecha.";
+      esValid = false;
+    }else {
+      inputNombre.classList.add("is-valid");
+    }
     return esValid;
 }
 
@@ -741,42 +776,44 @@ async function CrearCurso() {
     modalidad: parseInt(document.getElementById("ModalidadCurso").value),
     descripcion: document.getElementById("DescripcionCurso").value,
     fechaInicio: document.getElementById("FechaInicioCurso").value,
+    fechaFinalizacion: document.getElementById("FechaFinCurso").value,
   };
-console.log(curso);
-    const res = await authFetch("Cursos", {
-      method: 'POST',
-      body: JSON.stringify(curso),
-    })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarCursoExistente(response.mensaje);
-      } else {
-        cerrarPanelCursos();
-        ObtenerCursos();
-        // Mostrar alerta de éxito
-         Swal.fire({
-          title: "¡Curso Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-          });
-      }
-    })
-    .catch((error) => {;
-      MostrarErrorCatch();
+  console.log(curso);
+
+  try {
+      const res = await authFetch("Cursos", {
+        method: "POST",
+        body: JSON.stringify(curso),
       });
+
+      const data = await res.json();
+    if (data.codigo === 0 || data.codigo === 1) {
+      ValidarCursoExistente(data.mensaje);
+    } else {
+      cerrarPanelCursos();
+      ObtenerCursos();
+
+      Swal.fire({
+        title: "¡Curso Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
 
 //Funcion para editar un curso
@@ -791,6 +828,7 @@ async function EditarCurso(id) {
     modalidad: parseInt(document.getElementById("ModalidadCurso").value),
     descripcion: document.getElementById("DescripcionCurso").value,
     fechaInicio : document.getElementById("FechaInicioCurso").value,
+    fechaFinalizacion : document.getElementById("FechaFinCurso").value,
     };
     const res =  await authFetch(`Cursos/${id}`, {
       method: 'PUT',
