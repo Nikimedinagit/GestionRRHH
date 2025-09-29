@@ -546,21 +546,24 @@ textarea.form-control {
 
 /*BADGES DE JUSTIFICACION*/
 .badge-pendiente {
-  background-color: #ffc107ce;
+  background-color: #ffd000;
   color: #fff;
   font-size: 0.70rem;
+  font-weight: 700;
 }
 
 .badge-aprobada {
-  background-color: #28a746dc;
+  background-color: #52C41A;
   color: #fff;
   font-size: 0.70rem;
+  font-weight: 700;
 }
 
 .badge-rechazada {
-  background-color: #dc3546ab;
+  background-color: #ff0000;
   color: #fff;
   font-size: 0.70rem;
+  font-weight: 700;
 }
 
 
