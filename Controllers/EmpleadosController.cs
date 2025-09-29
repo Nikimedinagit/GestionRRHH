@@ -399,16 +399,18 @@ namespace API_RRHH_TESIS2025.Controllers
                 return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
 
 
-            //generar Numero Legajo automaticamnte de 6 digitos alatorio y que no se repita
-            var random = new Random();
-            bool legajoExistente;
+            // Obtener el último NroLegajo existente
+            int ultimoLegajo = await _context.Empleado
+                .MaxAsync(e => (int?)e.NroLegajo) ?? 0; // Si no hay registros, comienza en 0
 
-            do
-            {
-                empleado.NroLegajo = random.Next(100000, 999999);
-                legajoExistente = await _context.Empleado.AnyAsync(e => e.NroLegajo == empleado.NroLegajo);
-            }
-            while (legajoExistente);
+            // Generar el nuevo legajo
+            int nuevoLegajo = ultimoLegajo + 1;
+
+            // Guardar en la entidad como número
+            empleado.NroLegajo = nuevoLegajo;
+
+            // Opcional: si quieres mostrarlo o almacenarlo como string con ceros a la izquierda
+            string nroLegajoFormateado = nuevoLegajo.ToString("D6"); // ej: 000024
 
 
 
