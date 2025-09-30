@@ -37,7 +37,6 @@ async function ObtenerJustificaciones() {
     });
 }
 
-
 function MostrarJustificaciones(data) {
   if (window.innerWidth <= 880) {
     MostrarJustificacionesMobile(data);
@@ -72,10 +71,9 @@ function MostrarJustificacionesDesktop(data) {
 
   if (Array.isArray(data)) {
     data.forEach((element) => {
-
-    // Enlace de descarga usando el endpoint de la API
-    const documentoHtml = element.documentoNombre
-      ? `
+      // Enlace de descarga usando el endpoint de la API
+      const documentoHtml = element.documentoNombre
+        ? `
     <p class="text-muted d-flex align-items-center gap-2 mb-2">
         <button onclick="DescargarDocumento(${element.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
             <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
@@ -83,12 +81,41 @@ function MostrarJustificacionesDesktop(data) {
         </button>
     </p>
     `
-      : "";
+        : "";
 
       const justificacionNombre = tipoJustificacion[element.tipoJustificacion];
       const claseJustificacion =
         justificacionColor[justificacionNombre] || "bg-light text-dark";
-      const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
+      const fecha =
+        element.fecha.split("T")[0].split("-").reverse().join("/") ||
+        "Sin fecha";
+
+      // Mostrar botones solo si es PENDIENTE
+      const botonAccion =
+        justificacionNombre === "PENDIENTE"
+          ? `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div class="d-flex gap-1">
+            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+              data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
+            </button>
+          </div>
+        </div>
+      `
+          : "";
+
+      const botonEditar =
+        justificacionNombre === "PENDIENTE"
+          ? `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+        <div>
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+          </div>
+        </div>
+      `
+          : "";
 
       const item = $(`
         <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
@@ -97,10 +124,7 @@ function MostrarJustificacionesDesktop(data) {
             
             <!-- Nombre del empleado -->
             <div class="d-flex align-items-center" style="gap: 10px; flex: 1;">
-              <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${
-                element.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square icono-editar"></i>
-              </button>
+              ${botonEditar}
               <div class="fw-bold text-truncate" style="max-width: 200px;" title="${
                 element.empleado.nombreCompleto || "Sin nombre"
               }">
@@ -118,16 +142,12 @@ function MostrarJustificacionesDesktop(data) {
               <div class="badge ${claseJustificacion}" title="${justificacionNombre}">
                 ${justificacionNombre}
               </div>
-              <div>
-                <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-                    data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
-                </button>
-              </div>
-              <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-
+              ${botonAccion}
+            <div>
+            <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
           </div>
         </div>
       `);
@@ -180,7 +200,6 @@ function MostrarJustificacionesDesktop(data) {
   });
 }
 
-
 function MostrarJustificacionesMobile(data) {
   const contenedor = document.getElementById("contenedorJustificaciones");
   contenedor.innerHTML = "";
@@ -204,9 +223,13 @@ function MostrarJustificacionesMobile(data) {
   };
 
   data.forEach((element) => {
-    const justificacionNombre = tipoJustificacion[element.tipoJustificacion] || "SIN ESTADO";
-    const claseJustificacion = justificacionColor[justificacionNombre] || "bg-light text-dark";
-    const fecha = element.fecha ? element.fecha.split("T")[0].split("-").reverse().join("/") : "Sin fecha";
+    const justificacionNombre =
+      tipoJustificacion[element.tipoJustificacion] || "SIN ESTADO";
+    const claseJustificacion =
+      justificacionColor[justificacionNombre] || "bg-light text-dark";
+    const fecha = element.fecha
+      ? element.fecha.split("T")[0].split("-").reverse().join("/")
+      : "Sin fecha";
 
     // Documento adjunto
     const documentoHtml = element.documentoNombre
@@ -220,10 +243,28 @@ function MostrarJustificacionesMobile(data) {
       `
       : "No se adjuntó ningún documento";
 
+    // Mostrar botones solo si es PENDIENTE
+    const botonesHtml =
+      justificacionNombre === "PENDIENTE"
+        ? `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div>
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+              data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
+            </button>
+          </div>
+        </div>
+      `
+        : "";
+
     // Crear tarjeta Mobile
     const card = document.createElement("div");
-    card.className =
-      "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
+    card.className = "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
     card.innerHTML = `
       <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
         <div class="flex-grow-1 d-flex flex-column">
@@ -239,14 +280,7 @@ function MostrarJustificacionesMobile(data) {
         </div>
 
         <div class="d-flex justify-content-between mt-2 align-items-center">
-          <div>
-            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
-            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${element.id})" 
-              data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
-            </button>
-          </div>
+          ${botonesHtml}
           <div>
             <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
               <i class="bi bi-chevron-down"></i>
@@ -342,7 +376,10 @@ async function MostrarModalEditar(id) {
 
   const archivoAdjuntoDiv = document.getElementById("archivoAdjuntoActual");
 
-  if (justificacion.documentoAdjunto && justificacion.documentoAdjunto.length > 0) {
+  if (
+    justificacion.documentoAdjunto &&
+    justificacion.documentoAdjunto.length > 0
+  ) {
     //Convertit base64 a blob
     const byteCharacters = atob(justificacion.documentoAdjunto);
     const byteNumbers = new Array(byteCharacters.length);
@@ -350,7 +387,9 @@ async function MostrarModalEditar(id) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {type: justificacion.documentoMimeType});
+    const blob = new Blob([byteArray], {
+      type: justificacion.documentoMimeType,
+    });
     const url = URL.createObjectURL(blob);
 
     //Truncar nombre visualmente (solo para mostrar)
@@ -372,7 +411,6 @@ async function MostrarModalEditar(id) {
   }
 
   abrirPanelJustificacion();
-
 }
 
 //Funcion para buscar el id de la evaluacion y llamar a la función de edición o creación
@@ -387,102 +425,135 @@ function BuscarJustificacionId() {
 }
 
 function LimpiarModalJustificacion() {
-    //Limpiar el formulario
-    document.getElementById("IdJustificacion").value = "";
-    const inputMotivo = document.getElementById("MotivoJustificacion");
-    inputMotivo.value = "";
-    const fechaJustificacion = document.getElementById("FechaJustificacion");
-    fechaJustificacion.value = "";
-    const selectEmpleadoId = document.getElementById("EmpleadoId");
-    selectEmpleadoId.value = "";
-    const inputDocumento = document.getElementById("DocumentoAdjunto");
-    inputDocumento.value = "";
+  //Limpiar el formulario
+  document.getElementById("IdJustificacion").value = "";
+  const inputMotivo = document.getElementById("MotivoJustificacion");
+  inputMotivo.value = "";
+  const fechaJustificacion = document.getElementById("FechaJustificacion");
+  fechaJustificacion.value = "";
+  const selectEmpleadoId = document.getElementById("EmpleadoId");
+  selectEmpleadoId.value = "";
+  const inputDocumento = document.getElementById("DocumentoAdjunto");
+  inputDocumento.value = "";
 
-    //Limpia las validaciones
-    inputMotivo.classList.remove("is-invalid", "is-valid");
-    fechaJustificacion.classList.remove("is-invalid", "is-valid");
-    selectEmpleadoId.classList.remove("is-invalid", "is-valid");
-    inputDocumento.classList.remove("is-invalid", "is-valid");
+  //Limpia las validaciones
+  inputMotivo.classList.remove("is-invalid", "is-valid");
+  fechaJustificacion.classList.remove("is-invalid", "is-valid");
+  selectEmpleadoId.classList.remove("is-invalid", "is-valid");
+  inputDocumento.classList.remove("is-invalid", "is-valid");
 
-    //Limpiar los mensajes de error
-    const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
-    inputErrorMotivo.textContent = "";
-    inputErrorMotivo.style.display = "none";
-    const fechaErrorJustificacion = document.getElementById("errorFechaJustificacion");
-    fechaErrorJustificacion.textContent = "";
-    fechaErrorJustificacion.style.display = "none";
-    const selectErrorEmpleado = document.getElementById("errorEmpleadoIdJustificacion");
-    selectErrorEmpleado.textContent = "";
-    selectErrorEmpleado.style.display = "none"
+  //Limpiar los mensajes de error
+  const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
+  inputErrorMotivo.textContent = "";
+  inputErrorMotivo.style.display = "none";
+  const fechaErrorJustificacion = document.getElementById(
+    "errorFechaJustificacion"
+  );
+  fechaErrorJustificacion.textContent = "";
+  fechaErrorJustificacion.style.display = "none";
+  const selectErrorEmpleado = document.getElementById(
+    "errorEmpleadoIdJustificacion"
+  );
+  selectErrorEmpleado.textContent = "";
+  selectErrorEmpleado.style.display = "none";
 }
 
 //Funcion para validar el formulario de cursos
 function ValidarFormularioJustificacion() {
-    const inputMotivo = document.getElementById("MotivoJustificacion");
-    const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
+  const inputMotivo = document.getElementById("MotivoJustificacion");
+  const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
 
-    const fechaJustificacion = document.getElementById("FechaJustificacion");
-    const fechaErrorJustificacion = document.getElementById("errorFechaJustificacion");
+  const fechaJustificacion = document.getElementById("FechaJustificacion");
+  const fechaErrorJustificacion = document.getElementById("errorFechaJustificacion");
 
-    const selectEmpleado = document.getElementById("EmpleadoId");
-    const selectErrorEmpleado = document.getElementById("errorEmpleadoIdJustificacion");
+  const selectEmpleado = document.getElementById("EmpleadoId");
+  const selectErrorEmpleado = document.getElementById("errorEmpleadoIdJustificacion");
 
-    const motivo = inputMotivo.value.trim();
-    const fecha = fechaJustificacion.value;
-    const empleado = selectEmpleado.value;
+  const motivo = inputMotivo.value.trim();
+  const fecha = fechaJustificacion.value;
+  const empleado = selectEmpleado.value;
 
-    //Limpiar errores previos
-    inputErrorMotivo.style.display = "none";
-    inputErrorMotivo.textContent = "";
-    inputMotivo.classList.remove("is-invalid", "is-valid");
-    
-    fechaErrorJustificacion.style.display = "none";
-    fechaErrorJustificacion.textContent = "";
-    fechaJustificacion.classList.remove("is-invalid", "is-valid");
+  // Limpiar errores previos
+  inputErrorMotivo.style.display = "none";
+  inputErrorMotivo.textContent = "";
+  inputMotivo.classList.remove("is-invalid", "is-valid");
 
-    selectErrorEmpleado.style.display = "none";
-    selectErrorEmpleado.textContent = "";
-    selectEmpleado.classList.remove("is-invalid", "is-valid");
+  fechaErrorJustificacion.style.display = "none";
+  fechaErrorJustificacion.textContent = "";
+  fechaJustificacion.classList.remove("is-invalid", "is-valid");
 
-    let esValid = true;
+  selectErrorEmpleado.style.display = "none";
+  selectErrorEmpleado.textContent = "";
+  selectEmpleado.classList.remove("is-invalid", "is-valid");
 
-    // Validar motivo
-    if (motivo.length === 0) {
-      inputMotivo.classList.add("is-invalid");
-      inputErrorMotivo.style.display = "block";
-      inputErrorMotivo.textContent = "Campo obligatorio.";
-      esValid = false;
-    } else if (motivo.length < 3) {
-      inputMotivo.classList.add("is-invalid");
-      inputErrorMotivo.style.display = "block";
-      inputErrorMotivo.textContent = "Mínimo 3 caracteres.";
-      esValid = false;
-    } else {
-      inputMotivo.classList.add("is-valid");
-    }
+  let esValid = true;
 
-    // Validar Fecha 
-    if (fecha.length === 0) {
+  // Validar motivo
+  if (motivo.length === 0) {
+    inputMotivo.classList.add("is-invalid");
+    inputErrorMotivo.style.display = "block";
+    inputErrorMotivo.textContent = "Campo obligatorio.";
+    esValid = false;
+  } else if (motivo.length < 3) {
+    inputMotivo.classList.add("is-invalid");
+    inputErrorMotivo.style.display = "block";
+    inputErrorMotivo.textContent = "Mínimo 3 caracteres.";
+    esValid = false;
+  } else {
+    inputMotivo.classList.add("is-valid");
+  }
+
+  // Validar Fecha (plazo de 1 semana)
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (!fecha) {
+    fechaJustificacion.classList.add("is-invalid");
+    fechaJustificacion.classList.remove("is-valid");
+    fechaErrorJustificacion.style.display = "block";
+    fechaErrorJustificacion.textContent = "Campo obligatorio.";
+    esValid = false;
+  } else {
+    const fechaIngresada = new Date(fecha);
+    fechaIngresada.setHours(0, 0, 0, 0);
+
+    const plazoMaximo = new Date(fechaIngresada);
+    plazoMaximo.setDate(plazoMaximo.getDate() + 7);
+
+    if (hoy.getTime() > plazoMaximo.getTime()) {
       fechaJustificacion.classList.add("is-invalid");
+      fechaJustificacion.classList.remove("is-valid");
       fechaErrorJustificacion.style.display = "block";
-      fechaErrorJustificacion.textContent = "Seleccione una fecha.";
+      fechaErrorJustificacion.textContent =
+        "El plazo de 7 días para justificar ya venció.";
       esValid = false;
-    }else {
-      fechaJustificacion.classList.add("is-valid");
-    }
-
-    // Validar empleado
-    if (selectEmpleado.value === "") {
-      selectEmpleado.classList.add("is-invalid");
-      selectErrorEmpleado.style.display = "block";
-      selectErrorEmpleado.textContent = "Seleccione un empleado.";
+    } else if (fechaIngresada.getTime() > hoy.getTime()) {
+      fechaJustificacion.classList.add("is-invalid");
+      fechaJustificacion.classList.remove("is-valid");
+      fechaErrorJustificacion.style.display = "block";
+      fechaErrorJustificacion.textContent =
+        "La fecha del incidente no puede ser futura.";
       esValid = false;
     } else {
-      selectEmpleado.classList.remove("is-invalid");
-      selectEmpleado.classList.add("is-valid");
-      selectErrorEmpleado.style.display = "none";
+      fechaJustificacion.classList.remove("is-invalid");
+      fechaJustificacion.classList.add("is-valid");
+      fechaErrorJustificacion.style.display = "none";
     }
-    return esValid;
+  }
+
+  // Validar empleado
+  if (empleado === "") {
+    selectEmpleado.classList.add("is-invalid");
+    selectErrorEmpleado.style.display = "block";
+    selectErrorEmpleado.textContent = "Seleccione un empleado.";
+    esValid = false;
+  } else {
+    selectEmpleado.classList.remove("is-invalid");
+    selectEmpleado.classList.add("is-valid");
+    selectErrorEmpleado.style.display = "none";
+  }
+
+  return esValid;
 }
 
 document.getElementById("MotivoJustificacion").addEventListener("input", () => {
@@ -507,15 +578,83 @@ document.getElementById("MotivoJustificacion").addEventListener("input", () => {
     errorMotivo.textContent = "";
   }
 });
+document.getElementById("FechaJustificacion").addEventListener("input", () => {
+  const inputFecha = document.getElementById("FechaJustificacion");
+  const errorFecha = document.getElementById("errorFechaJustificacion");
+
+  // Limpiar cualquier estado previo
+  inputFecha.classList.remove("is-invalid", "is-valid");
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (!inputFecha.value) {
+    // Campo vacío
+    inputFecha.classList.add("is-invalid");
+    errorFecha.style.display = "block";
+    errorFecha.textContent = "Campo obligatorio.";
+  } else {
+    const fechaIngresada = new Date(inputFecha.value);
+    fechaIngresada.setHours(0, 0, 0, 0);
+
+    const plazoMaximo = new Date(fechaIngresada);
+    plazoMaximo.setDate(plazoMaximo.getDate() + 7);
+
+    if (hoy.getTime() > plazoMaximo.getTime()) {
+      // Pasó el plazo de 7 días
+      inputFecha.classList.add("is-invalid");
+      errorFecha.style.display = "block";
+      errorFecha.textContent = "El plazo de 7 días para justificar ya venció.";
+    } else if (fechaIngresada.getTime() > hoy.getTime()) {
+      // Fecha futura
+      inputFecha.classList.add("is-invalid");
+      errorFecha.style.display = "block";
+      errorFecha.textContent = "La fecha del incidente no puede ser futura.";
+    } else {
+      // Fecha válida
+      inputFecha.classList.add("is-valid");
+      errorFecha.style.display = "none";
+    }
+  }
+});
+document.getElementById("EmpleadoId").addEventListener("input", () => {
+  const input = document.getElementById("EmpleadoId");
+  const error = document.getElementById("errorEmpleadoIdJustificacion");
+  if (!input.value) {
+    input.classList.add("is-invalid");
+    input.classList.remove("is-valid");
+    error.style.display = "block";
+    error.textContent = "Campo obligatorio.";
+  } else {
+    input.classList.remove("is-invalid");
+    input.classList.add("is-valid");
+    error.style.display = "none";
+  }
+});
+
+// Función para validar si la justificacion existe o no
+function MostrarErrorJustificacionExistente(mensaje) {
+  const errorLicencia = document.getElementById("errorEmpleadoIdJustificacion");
+  if (mensaje) {
+    errorLicencia.textContent = mensaje;
+    errorLicencia.style.display = "block";
+  } else {
+    errorLicencia.textContent = "";
+    errorLicencia.style.display = "none";
+  }
+}
 
 //Funcion para crear una nueva justificación
 async function CrearJustificacion() {
-  if(!ValidarFormularioJustificacion()) {
+  if (!ValidarFormularioJustificacion()) {
     return;
   }
 
   const formData = new FormData();
-  formData.append("Motivo", document.getElementById("MotivoJustificacion").value);
+  formData.append(
+    "Motivo",
+    document.getElementById("MotivoJustificacion").value
+  );
   formData.append("Fecha", document.getElementById("FechaJustificacion").value);
   formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
 
@@ -533,29 +672,29 @@ async function CrearJustificacion() {
 
     const response = await res.json();
 
-    if (response.mensaje){
+    if (response.mensaje) {
       MostrarErrorJustificacionExistente(response.mensaje);
     } else {
       cerrarPanelJustificacion();
       ObtenerJustificaciones();
 
-        Swal.fire({
-          title: "¡Justificación Creada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
+      Swal.fire({
+        title: "¡Justificación Creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
     }
   } catch (error) {
     MostrarErrorCatch();
@@ -569,8 +708,14 @@ async function EditarJustificacion(id) {
   }
 
   const formData = new FormData();
-  formData.append("Id", parseInt(document.getElementById("IdJustificacion").value));
-  formData.append("Motivo", document.getElementById("MotivoJustificacion").value);
+  formData.append(
+    "Id",
+    parseInt(document.getElementById("IdJustificacion").value)
+  );
+  formData.append(
+    "Motivo",
+    document.getElementById("MotivoJustificacion").value
+  );
   formData.append("Fecha", document.getElementById("FechaJustificacion").value);
   formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
 
@@ -615,9 +760,7 @@ async function EditarJustificacion(id) {
     });
 }
 
-
-
-// Función para abrir el modal de acción sobre la licencia
+// Función para abrir el modal de acción sobre la justificacion
 function AbrirModalAccionJustificacion(id) {
   Swal.fire({
     title: "Acción sobre la justificacion",
@@ -669,14 +812,14 @@ function AbrirModalAccionJustificacion(id) {
   });
 }
 
-async function AprobarLicencia(id) {
-  const res = await authFetch(`Licencias/${id}/Aprobar`, {
+async function AprobarJustificacion(id) {
+  const res = await authFetch(`Justificaciones/${id}/Aprobar`, {
     method: "POST",
   })
     .then((response) => response.json())
     .then((data) => {
       Swal.fire({
-        title: "¡Licencia Aprobada!",
+        title: "¡Justificación Aprobada!",
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
@@ -692,7 +835,7 @@ async function AprobarLicencia(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerLicencias();
+      ObtenerJustificaciones();
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -700,13 +843,13 @@ async function AprobarLicencia(id) {
 }
 
 async function RechazarJustificacion(id) {
-  const res = await authFetch(`Licencias/${id}/Rechazar`, {
+  const res = await authFetch(`Justificaciones/${id}/Rechazar`, {
     method: "POST",
   })
     .then((response) => response.json())
     .then((data) => {
       Swal.fire({
-        title: "¡Licencia Rechazada!",
+        title: "¡Justificación Rechazada!",
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
@@ -723,37 +866,7 @@ async function RechazarJustificacion(id) {
         },
       });
 
-      ObtenerLicencias();
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
-}
-
-async function AprobarLicencia(id) {
-  const res = await authFetch(`Licencias/${id}/Aprobar`, {
-    method: "POST",
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      Swal.fire({
-        title: "¡Licencia Aprobada!",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#f4fff7",
-        color: "#1c3d26",
-        icon: "success",
-        iconColor: "#28a746d8",
-        customClass: {
-          popup: "swal2-toast-success",
-          title: "swal2-toast-success-title",
-          icon: "swal2-toast-success-icon",
-        },
-      });
-      ObtenerLicencias();
+      ObtenerJustificaciones();
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -778,6 +891,5 @@ function MostrarErrorCatch() {
     buttonsStyling: false,
   });
 }
-
 
 ObtenerJustificaciones();

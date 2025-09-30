@@ -245,7 +245,7 @@ function MostrarCursosDesktop(data) {
       const descripcionDetalle = $(`
         <div class="panelCriterios px-3 pb-2" style="display: none;">
           <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Descripción</h3>
+            <h3 class="titulo-sub-seccion">${element.nombre}</h3>
           </div>
           <hr style="margin-bottom: 1rem;" />
           <div class="table-responsive">
@@ -496,7 +496,7 @@ function MostrarCursosMobile(data) {
     const descripcionDetalle = $(`
       <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
         <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Descripción</h3>
+          <h3 class="titulo-sub-seccion">${element.nombre}</h3>
         </div>
         <hr style="margin-bottom: 1rem;" />
         <div class="table-responsive">

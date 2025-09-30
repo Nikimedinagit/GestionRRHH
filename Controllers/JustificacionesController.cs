@@ -164,26 +164,19 @@ namespace API_NET_CORE8_RRHH.Controllers
         {
             justificacion.TipoJustificacion = TipoJustificacion.PENDIENTE; //Guarda el estado de la justificacion como pendiente
 
-            //Que no haya justificacion pendiente para el mismo empleado
-            var justificacionPendieente = await _context.Justificacion
-                .AnyAsync(t => t.EmpleadoId == justificacion.EmpleadoId &&
-                     t.TipoJustificacion == TipoJustificacion.PENDIENTE);
-            if (justificacionPendieente)
-                return BadRequest("Ya hay una justificacion pendiente para este empleado.");
-
-            //Que no pueda crear una justificacion para el mismo dia 
             var fecha = justificacion.Fecha.Date;
 
+            //Verificar si ya existe una justificación pendiente para el mismo empleado en el mismo dí
             var justificacionExistente = await _context.Justificacion
-                .AnyAsync(t => t.Fecha.Date == fecha &&
-                            t.TipoJustificacion == TipoJustificacion.PENDIENTE &&
-                            t.EmpleadoId == justificacion.EmpleadoId);
-            if (justificacionExistente)
-                return BadRequest("Ya hay una justificacion pendiente para este día.");
+            .AnyAsync(t => t.EmpleadoId == justificacion.EmpleadoId &&
+                       t.Fecha.Date == fecha &&
+                       t.TipoJustificacion == TipoJustificacion.PENDIENTE);
 
-            //Que la fecha no sea una fecha futura
-            if (justificacion.Fecha > DateTime.Now.Date)
-                return BadRequest("La fecha no puede ser una fecha futura.");
+            if (justificacionExistente)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya hay una justificación pendiente para este empleado en este día." });
+            }
+
 
             //Guardar archivo en la base de datos
             if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
@@ -227,7 +220,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
 
         //APROBAR Y RECHAZAR JUSTIFICACIONES
-        
+
         [HttpPost("{id}/Aprobar")]
         public async Task<IActionResult> AprobarJustificacion(int id)
         {
@@ -238,11 +231,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (justificacion.TipoJustificacion != TipoJustificacion.PENDIENTE)
                 return BadRequest("Solo se pueden aprobar justificaciones pendientes.");
 
-            // Solo se pueden aprobar justificaciones pendientes.
-            if (justificacion.TipoJustificacion != TipoJustificacion.PENDIENTE)
-            {
-                    return BadRequest("Solo se pueden aprobar justificaciones pendientes.");
-                }
 
             justificacion.TipoJustificacion = TipoJustificacion.APROBADA;
             _context.Justificacion.Update(justificacion);
@@ -264,5 +252,25 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(justificacion);
         }
+
+        
+
+        [HttpPost("{id}/Rechazar")]
+        public async Task<IActionResult> RechazarJustificacion(int id)
+        {
+            var justificacion = await _context.Justificacion.FindAsync(id);
+            if (justificacion == null)
+                return NotFound();
+
+            if (justificacion.TipoJustificacion != TipoJustificacion.PENDIENTE)
+                return BadRequest("Solo se pueden rechazar justificaciones pendientes.");
+
+            justificacion.TipoJustificacion = TipoJustificacion.RECHAZADA;
+            _context.Justificacion.Update(justificacion);
+            await _context.SaveChangesAsync();
+
+            return Ok(justificacion);
+        }
+
     }
 }
