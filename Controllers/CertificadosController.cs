@@ -45,10 +45,24 @@ namespace API_NET_CORE8_RRHH.Controllers
             return certificado;
         }
 
+        [HttpGet("Documento/{id}")]
+        public async Task<IActionResult> DescargarDocumento(int id)
+        {
+            var certificado = await _context.Certificado.FindAsync(id);
+            if (certificado == null || certificado.DocumentoAdjunto == null)
+                return NotFound();
+
+            // Usar nombre y tipo original
+            var nombreArchivo = certificado.DocumentoNombre ?? $"Justificacion_{id}";
+            var mimeType = certificado.DocumentoMimeType ?? "application/octet-stream";
+
+            return File(certificado.DocumentoAdjunto, mimeType, nombreArchivo);
+        }
+
         // PUT: api/Certificados/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCertificado(int id, Certificado certificado)
+        public async Task<IActionResult> PutCertificado(int id, [FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
         {
             if (id != certificado.Id)
             {
@@ -61,6 +75,25 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (empleadoExistente)
             {
                 return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
+            }
+
+            //Buscar el certificado original 
+            var certificadoOriginal = await _context.Certificado.FindAsync(id);
+            if (certificadoOriginal == null)
+            {
+                return NotFound();
+            }
+
+            //Actualizar archivo si se proporciona uno nuevo
+            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    await DocumentoAdjunto.CopyToAsync(ms);
+                    certificadoOriginal.DocumentoAdjunto = ms.ToArray();
+                }
+                certificadoOriginal.DocumentoNombre = DocumentoAdjunto.FileName;
+                certificadoOriginal.DocumentoMimeType = DocumentoAdjunto.ContentType;
             }
 
             certificado.FechaEmision = DateTime.Now;
@@ -88,7 +121,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         // POST: api/Certificados
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Certificado>> PostCertificado(Certificado certificado)
+        public async Task<ActionResult<Certificado>> PostCertificado([FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
         {
             //Un certificado solo puede emitirse si el empleado asistió y aprobó el curso con nota mínima de 6.
             var asistenciaAprobada = await _context.AsistenciaCapacitacion
@@ -114,6 +147,18 @@ namespace API_NET_CORE8_RRHH.Controllers
                 return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
             }
             certificado.FechaEmision = DateTime.Now;
+
+            //Guardar archivo en la base de datos
+            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    await DocumentoAdjunto.CopyToAsync(ms);
+                    certificado.DocumentoAdjunto = ms.ToArray();
+                }
+                certificado.DocumentoNombre = DocumentoAdjunto.FileName;
+                certificado.DocumentoMimeType = DocumentoAdjunto.ContentType;
+            }
             _context.Certificado.Add(certificado);
             await _context.SaveChangesAsync();
 

@@ -1373,27 +1373,18 @@ function MostrarCertificados(cursoId, data) {
       return;
     }
 
-    const baseUrlArchivos = "/uploads/documentos/";
-
     data.forEach(item => {
-      let documentoUrl = "";
-      if (item.documentoDescargable) {
-        documentoUrl = item.documentoDescargable.startsWith("http")
-          ? item.documentoDescargable
-          : baseUrlArchivos + item.documentoDescargable;
-      }
-
-      const documentoHtml = item.documentoDescargable
-        ? `<a href="${documentoUrl}" target="_blank" download 
-              class="document-link d-flex align-items-center gap-1"
-              data-tippy-content="Descargar"
-              style="color: inherit; text-decoration: none; font-size: 0.9rem; white-space: nowrap;">
-              <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
-              Descargar
-          </a>`
-        : `<span class="text-muted">Sin documento</span>`;
-
-
+      // Enlace de descarga usando el endpoint de la API
+      const documentoHtml = item.documentoNombre
+        ? `
+    <p class="text-muted d-flex align-items-center gap-2 mb-2">
+        <button onclick="DescargarDocumento(${item.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+            <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+            <span>Descargar</span>
+        </button>
+    </p>
+    `
+        : "";
 
         const card = $(`
           <div class="col-12 mb-2">
@@ -1430,22 +1421,17 @@ function MostrarCertificados(cursoId, data) {
       return;
     }
 
-    const baseUrlArchivos = "/uploads/documentos/";
-
     $.each(data, function (index, item) {
-      let documentoUrl = "";
-      if (item.documentoDescargable) {
-        documentoUrl = item.documentoDescargable.startsWith("http")
-          ? item.documentoDescargable
-          : baseUrlArchivos + item.documentoDescargable;
-      }
-
-      const documentoHtml = item.documentoDescargable
-        ? `<a href="${documentoUrl}" target="_blank" download class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem;">
-             <i class="bi bi-file-earmark-text"></i> Descargar
-           </a>`
+      const documentoHtml = item.documentoNombre
+        ? `
+    <p class="text-muted d-flex align-items-center gap-2 mb-2">
+        <button onclick="DescargarDocumento(${item.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+            <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+            <span>Descargar</span>
+        </button>
+    </p>
+    `
         : "";
-
       tablaBody.append(`
         <tr>
           <td class='align-middle nombre-empleado'>${item.empleado.nombreCompleto}</td>
@@ -1470,6 +1456,37 @@ function MostrarCertificados(cursoId, data) {
   });
 }
 
+
+async function DescargarDocumento(id) {
+  try {
+    const response = await authFetch(`Certificados/Documento/${id}`);
+
+    const blob = await response.blob();
+
+    // Obtener el nombre del archivo desde el header "Content-Disposition"
+    const disposition = response.headers.get("Content-Disposition");
+    let filename = "archivo_descargado";
+
+    if (disposition) {
+      // Captura solo el primer filename válido antes de cualquier ;
+      const match = disposition.match(/filename\*?=(?:UTF-8'')?([^;\r\n]+)/i);
+      if (match && match[1]) {
+        filename = decodeURIComponent(match[1].replace(/['"]/g, ""));
+      }
+    }
+
+    // Crear enlace temporal para descargar
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename; // nombre limpio
+    link.click();
+
+    // Liberar memoria
+    window.URL.revokeObjectURL(link.href);
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
 
 function BuscarCertificadoId() {
   const id = parseInt(document.getElementById("IdCertificado").value);
@@ -1507,8 +1524,8 @@ function ValidarFormularioCertificado() {
     const selectEmpleadoId = document.getElementById("EmpleadoIdCertificado");
     const selectErrorEmpleadoId = document.getElementById("errorEmpleadoIdCertificado");
 
-    const inputDocumento = document.getElementById("DocumentoDescargable");
-    const inputErrorDocumento = document.getElementById("errorDocumentoDescargable");
+    const inputDocumento = document.getElementById("DocumentoAdjunto");
+    const inputErrorDocumento = document.getElementById("errorDocumentoAdjunto");
 
     const empleadoId = selectEmpleadoId.value;
     const documento = inputDocumento.value;
@@ -1550,48 +1567,57 @@ function ValidarCertificadoExistente(mensaje) {
 }
 
 async function CrearCertificado() {
-  if(!ValidarFormularioCertificado()){
+  if (!ValidarFormularioCertificado()) {
     return;
   }
 
-    const certificado = {
-      cursoId: cursoIdSeleccionado,
-      empleadoId: parseInt(document.getElementById("EmpleadoIdCertificado").value),
-      documentoDescargable: document.getElementById("DocumentoDescargable").value || "",
-    };
-    console.log(certificado);
+  const formData = new FormData();
+  formData.append("EmpleadoId", document.getElementById("EmpleadoIdCertificado").value);
+  formData.append("CursoId", cursoIdSeleccionado);
+
+  // Agregar archivo si hay
+  const archivo = document.getElementById("DocumentoAdjunto").files[0];
+  if (archivo) {
+    formData.append("DocumentoAdjunto", archivo);
+  }
+
+  try {
     const res = await authFetch("Certificados", {
-      method: 'POST',
-      body: JSON.stringify(certificado),
-    })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarCertificadoExistente(response.mensaje);
-      } else {
-        ObtenerCertificados(cursoIdSeleccionado); 
-        cerrarPanelCertificados();
-       
-        Swal.fire({
-          title: "¡Certificado Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
+      method: "POST",
+      body: formData,
     });
+
+    const response = await res.json();
+
+    if (response.mensaje) {
+      MostrarErrorCertificadoExistente(response.mensaje);
+    } else {
+      cerrarPanelCertificados();
+      ObtenerCertificados(cursoIdSeleccionado);
+
+      Swal.fire({
+        title: "¡Certificado Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
+
 
 function EliminarCertificado(id) {
     Swal.fire({

@@ -104,18 +104,29 @@ function MostrarJustificacionesDesktop(data) {
       `
           : "";
 
-      const botonEditar =
-        justificacionNombre === "PENDIENTE"
-          ? `
-        <div class="d-flex justify-content-between align-items-center mt-2">
-        <div>
-            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
-          </div>
-        </div>
-      `
-          : "";
+        // Validar de que si esta pendiente y ya pasaron más de 7 días no se muestre el botón de editar
+        let botonEditar = "";
+        if (justificacionNombre === "PENDIENTE") {
+          const fechaParts = fecha.split("/");
+          const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
+          const hoy = new Date();
+
+          const limite = new Date(fechaIncidente);
+          limite.setDate(limite.getDate() + 7);
+
+          if (hoy <= limite) {
+            botonEditar = `
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>
+                  <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                    <i class="bi bi-pencil-square icono-editar"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          }
+        }
+
 
       const item = $(`
         <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
@@ -243,24 +254,50 @@ function MostrarJustificacionesMobile(data) {
       `
       : "No se adjuntó ningún documento";
 
-    // Mostrar botones solo si es PENDIENTE
-    const botonesHtml =
-      justificacionNombre === "PENDIENTE"
-        ? `
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <div>
-            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
-          </div>
-          <div class="d-flex gap-1">
-            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-              data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
-            </button>
-          </div>
-        </div>
-      `
-        : "";
+    // Validar de que si esta pendiente y ya pasaron más de 7 días no se muestre el botón de editar
+    let botonesHtml = "";
+    if (justificacionNombre === "PENDIENTE") {
+      const fechaParts = fecha.split("/"); 
+      if (fechaParts.length === 3) {
+        const fechaIncidente = new Date(
+          fechaParts[2],
+          fechaParts[1] - 1,
+          fechaParts[0]
+        );
+        const hoy = new Date();
+
+        const limite = new Date(fechaIncidente);
+        limite.setDate(limite.getDate() + 7);
+
+        if (hoy <= limite) {
+          botonesHtml = `
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div>
+                <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                  <i class="bi bi-pencil-square icono-editar"></i>
+                </button>
+              </div>
+              <div class="d-flex gap-1">
+                <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+                  data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Pasaron más de 7 días → solo mostrar el botón de acción (sin editar)
+          botonesHtml = `
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div class="d-flex gap-1">
+                <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+                  data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
 
     // Crear tarjeta Mobile
     const card = document.createElement("div");
@@ -332,6 +369,7 @@ function MostrarJustificacionesMobile(data) {
     delay: [100, 0],
   });
 }
+
 
 async function DescargarDocumento(id) {
   try {
