@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize (Roles = "ADMINISTRADOR")]
+    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class PuestosController : ControllerBase
@@ -22,20 +22,148 @@ namespace API_RRHH_TESIS2025.Controllers
             _context = context;
         }
 
-        // GET: api/Puestos
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuesto()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaPuesto>>> PuestoFiltrar([FromBody] PuestoFiltrar filtro)
         {
-            var puestos = await _context.Puesto
-            .Include(x => x.Sector)
-            .Where(x => !x.Sector.Eliminado)
-            .OrderBy(p => p.Sector.Nombre)
-            .ThenBy(p => p.Descripcion)
-            .ToListAsync();
-            return puestos;
+            var query = _context.Puesto
+                .AsNoTracking()
+                .Include(p => p.Sector)
+                .Where(p => !p.Sector.Eliminado) 
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.Descripcion))
+                query = query.Where(p => p.Descripcion.Contains(filtro.Descripcion));
+
+            if (filtro.Eliminado.HasValue)
+            {
+                bool eliminado = filtro.Eliminado.Value == 1;
+                query = query.Where(p => p.Eliminado == eliminado);
+            }
+
+            if (filtro.SectorId > 0)
+            {
+                query = query.Where(p => p.SectorId == filtro.SectorId);
+            }
+
+            var vista = await query
+                .OrderBy(p => p.Eliminado)
+                .ThenBy(p => p.Sector.Nombre)
+                .ThenBy(p => p.Descripcion)
+                .Select(p => new VistaPuesto
+                {
+                    Id = p.Id,
+                    Descripcion = p.Descripcion,
+                    SectorString = p.SectorString,
+                    SectorId = p.SectorId,
+                    Eliminado = p.Eliminado
+                })
+                .ToListAsync();
+
+            return Ok(vista);
         }
 
-        // GET: api/Puestos/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN NUEVO PUESTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<Puesto>> PostPuesto([FromBody] Puesto puesto)
+        {
+            string descripcionNormalizada = puesto.Descripcion.Trim().ToUpper();
+
+            bool existe = await _context.Puesto
+                .AsNoTracking()
+                .AnyAsync(x => x.Descripcion == descripcionNormalizada &&
+                               x.SectorId == puesto.SectorId);
+
+            if (existe)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+
+            puesto.Descripcion = descripcionNormalizada;
+
+            _context.Puesto.Add(puesto);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(PostPuesto), new { id = puesto.Id }, puesto);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UN PUESTO ///////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPuesto(int id, [FromBody] Puesto puesto)
+        {
+            var puestoOriginal = await _context.Puesto.FindAsync(id);
+
+            string descripcionNormalizada = puesto.Descripcion.Trim().ToUpper();
+
+            bool existe = await _context.Puesto
+                .AsNoTracking()
+                .AnyAsync(x => x.Descripcion == descripcionNormalizada &&
+                               x.SectorId == puesto.SectorId &&
+                               x.Id != id);
+
+            if (existe)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+
+            puestoOriginal.Descripcion = descripcionNormalizada;
+            puestoOriginal.SectorId = puesto.SectorId;
+            puestoOriginal.Eliminado = puesto.Eliminado;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(puestoOriginal);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO APRA ALTERNAR EL ELIMINADO DE UN PUESTO ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePuesto(int id)
+        {
+            var puesto = await _context.Puesto.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (!puesto.Eliminado)
+            {
+                bool tieneEmpleados = await _context.Empleado
+                    .AsNoTracking()
+                    .AnyAsync(e => e.PuestoId == id);
+
+                if (tieneEmpleados)
+                    return BadRequest(new { mensaje = "No se puede desactivar el puesto porque tiene empleados asociados." });
+            }
+
+            puesto.Eliminado = !puesto.Eliminado;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = puesto.Eliminado ? "Puesto Desactivado" : "Puesto Activado" });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuestosActivos()
+        {
+            var puestosActivos = await _context.Puesto
+                .Where(p => !p.Eliminado)
+                .OrderBy(p => p.Descripcion)
+                .ToListAsync();
+            return puestosActivos;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN PUESTO POR ID /////////////////////////////////////////////////////// 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Puesto>> GetPuesto(int id)
         {
@@ -49,154 +177,7 @@ namespace API_RRHH_TESIS2025.Controllers
             return puesto;
         }
 
-        [HttpGet("Activos")]
-        public async Task<ActionResult<IEnumerable<Puesto>>> GetPuestosActivos()
-        {
-            var puestosActivos = await _context.Puesto
-                .Where(p => !p.Eliminado)
-                .OrderBy(p => p.Descripcion)
-                .ToListAsync();
-            return puestosActivos;
-        }
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaPuesto>>> PuestoFiltrar([FromBody] PuestoFiltrar filtro)
-        {
-            List<VistaPuesto> vista = new List<VistaPuesto>();
-            var puestosFiltro = _context.Puesto
-             .Where(x => !x.Sector.Eliminado)
-                .Include(x => x.Sector)
-                .AsQueryable();
-
-            if (filtro.Eliminado.HasValue)
-            {
-                puestosFiltro = puestosFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
-            }
-
-            if (filtro.SectorId > 0)
-            {
-                puestosFiltro = puestosFiltro.Where(t => t.SectorId == filtro.SectorId);
-            }
-
-
-            var listaFiltrada = await puestosFiltro
-                .OrderBy(p => p.Eliminado)
-                .ThenBy(p => p.Sector.Nombre)
-                .ThenBy(p => p.Descripcion)
-                .ToListAsync();
-            foreach (var puesto in listaFiltrada)
-                {
-                    var vistaPuesto = new VistaPuesto
-                    {
-                        Id = puesto.Id,
-                        Descripcion = puesto.Descripcion,
-                        SectorString = puesto.SectorString,
-                        SectorId = puesto.SectorId,
-                        Eliminado = puesto.Eliminado
-                    };
-                    vista.Add(vistaPuesto);
-                }
-            return vista;
-        }
-
-        // PUT: api/Puestos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPuesto(int id, Puesto puesto)
-        {
-            if (id != puesto.Id)
-            {
-                return BadRequest();
-            }
-
-            // Convertimos el nombre a minúsculas
-            puesto.Descripcion = puesto.Descripcion.ToUpper();
-
-            var puestoExistente = await _context.Puesto
-                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower() &&
-                x.SectorId == puesto.SectorId);
-            if (puestoExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe en este sector." });
-            }
-
-            _context.Entry(puesto).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PuestoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(puesto);
-        }
-
-        // POST: api/Puestos
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Puesto>> PostPuesto(Puesto puesto)
-        {
-            // Convertimos el nombre a minúsculas
-            puesto.Descripcion = puesto.Descripcion.ToUpper();
-
-            // Comprobamos si la puesto ya existe
-
-            var puestoExistente = await _context.Puesto
-                .AnyAsync(x => x.Descripcion.ToLower() == puesto.Descripcion.ToLower() &&
-                x.SectorId == puesto.SectorId);
-
-            if (puestoExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe en este sector." });
-            }
-
-
-            _context.Puesto.Add(puesto);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPuesto", new { id = puesto.Id }, puesto);
-        }
-
-        // DELETE: api/Puestos/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePuesto(int id)
-        {
-            var puesto = await _context.Puesto
-            .Include(p => p.Empleados)
-            .FirstOrDefaultAsync(p => p.Id == id);
-            if (puesto == null)
-            {
-                return NotFound();
-            }
-            // Si está activo y tiene empleados asociados, NO permitir desactivarlo
-            if (!puesto.Eliminado &&
-                puesto.Empleados != null &&
-                puesto.Empleados.Any())
-            {
-                return BadRequest(new { mensaje = "No se puede desactivar el puesto porque tiene empleados asociados." });
-            }
-
-            puesto.Eliminado = !puesto.Eliminado;
-            var mensaje = puesto.Eliminado ?
-                "Puesto Desactivado" :
-                "Puesto Activado";
-
-            _context.Puesto.Update(puesto);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje });
-        }
-
+  
         private bool PuestoExists(int id)
         {
             return _context.Puesto.Any(e => e.Id == id);

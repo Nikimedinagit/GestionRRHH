@@ -22,18 +22,24 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/AsistenciasCapacitacion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AsistenciaCapacitacion>>> GetAsistenciaCapacitacion()
         {
             return await _context.AsistenciaCapacitacion
-            .Include(a => a.Curso)
-            .Include(a => a.Empleado)
-            .Where(a => a.Empleado != null && !a.Empleado.Eliminado)
-            .ToListAsync();
+                .Include(a => a.Curso)
+                .Include(a => a.Empleado)
+                .Where(a => a.Empleado != null && !a.Empleado.Eliminado)
+                .ToListAsync();
         }
 
-        // GET: api/AsistenciasCapacitacion/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO POR ID ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<AsistenciaCapacitacion>> GetAsistenciaCapacitacion(int id)
         {
@@ -47,108 +53,65 @@ namespace API_NET_CORE8_RRHH.Controllers
             return asistenciaCapacitacion;
         }
 
-        // PUT: api/AsistenciasCapacitacion/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsistenciaCapacitacion(int id, AsistenciaCapacitacion asistenciaCapacitacion)
-        {
-            if (id != asistenciaCapacitacion.Id)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(asistenciaCapacitacion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AsistenciaCapacitacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/AsistenciasCapacitacion
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UNA NUEVA ASISTENCIA ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
         public async Task<ActionResult<AsistenciaCapacitacion>> PostAsistenciaCapacitacion(AsistenciaCapacitacion asistenciaCapacitacion)
         {
-            //No se puede registrar dos veces el mismo empleado 
             var empleadoExistente = await _context.AsistenciaCapacitacion
             .Where(c => c.EmpleadoId == asistenciaCapacitacion.EmpleadoId && c.CursoId == asistenciaCapacitacion.CursoId)
             .FirstOrDefaultAsync();
 
             if (empleadoExistente != null)
             {
-                return BadRequest(new {codigo = 0, campo = "empleado", mensaje = "Este empleado ya tiene una asistencia registrada para este curso"});
+                return BadRequest(new { codigo = 0, campo = "empleado", mensaje = "Este empleado ya tiene una asistencia." });
             }
 
             var curso = await _context.Curso.FindAsync(asistenciaCapacitacion.CursoId);
 
-
-            if (curso == null)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Seleccione un curso" });
-            }
-
-            //La fecha de asistencia no puede ser menor a la fecha de inicio del curso.
-            if (asistenciaCapacitacion.Fecha.Date < curso.FechaInicio.Date)
-            {
-                return BadRequest(new { codigo = 0, campo = "fecha", mensaje = "La fecha de asistencia no puede ser menor a la fecha de inicio del curso" });
-            }
             _context.AsistenciaCapacitacion.Add(asistenciaCapacitacion);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetAsistenciaCapacitacion", new { id = asistenciaCapacitacion.Id }, asistenciaCapacitacion);
         }
 
-        // DELETE: api/AsistenciasCapacitacion/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ELIMINAR UNA ASISTENCIA //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsistenciaCapacitacion(int id)
         {
             var asistenciaCapacitacion = await _context.AsistenciaCapacitacion.FindAsync(id);
-            if (asistenciaCapacitacion == null)
-            {
-                return NotFound();
-            }
+
+            var certificadoExistente = await _context.Certificado
+                .AnyAsync(c => c.EmpleadoId == asistenciaCapacitacion.EmpleadoId
+                            && c.CursoId == asistenciaCapacitacion.CursoId);
+
+            if (certificadoExistente)
+                return BadRequest(new { mensaje = "No se puede elimianr la asistencia porque tiene certificado asociados." });
 
             _context.AsistenciaCapacitacion.Remove(asistenciaCapacitacion);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(asistenciaCapacitacion);
         }
 
-        //PATCH: Vehiculos/Alquilar/{id}
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CAMBIAR EL ESTADO DE LA ASISTENCIA ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPatch("CambiarEstado/{id}")]
-        public async Task<IActionResult> CambiarEstado (int id, [FromBody] bool nuevoEstado)
+        public async Task<IActionResult> CambiarEstado(int id, [FromBody] bool nuevoEstado)
         {
             var asistencia = await _context.AsistenciaCapacitacion.FindAsync(id);
-            if(asistencia == null)
-            {
-                return NotFound();
-            }
 
-            //CAMBIAR EL ESTADO DELL VEHICULO
             asistencia.Asistencia = nuevoEstado;
-            
-            try 
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Hubo un error al actualizar el estado de la asistencia");
-            }
+
+            await _context.SaveChangesAsync();
 
             return Ok(asistencia);
         }

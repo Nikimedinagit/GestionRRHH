@@ -1,5 +1,7 @@
-//INICIO PANEL FORMUALRIO//
-//Función para abrir el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ABRIR EL PANEL DE EVALUACIONES //////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function abrirPanelEvaluaciones() {
   document.getElementById("panelEvaluaciones").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -11,18 +13,22 @@ function abrirPanelEvaluaciones() {
   }, 400);
 }
 
-//Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA CERRAR EL PANEL DE EVALUACIONES //////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelEvaluaciones() {
   document.getElementById("panelEvaluaciones").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.remove("visible");
 
-    LimpiarModalEvaluacion();
+  LimpiarModalEvaluacion();
 }
-//FIN PANEL FORMULARIO//
 
 
-//Inicio Panel Criterios//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ABRIR EL PANEL DE CRITERIOS //////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function abrirPanelCriterios() {
   document.getElementById("panelCriterios").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -34,33 +40,32 @@ function abrirPanelCriterios() {
   }, 400);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// AL HACER CLICK ABRIR PANEL CRITERIOS CON EL ID CORREPODNIENTE DE LA EVALUACION //////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).on("click", ".crearCriterio", function () {
   const idEvaluacion = $(this).data("evaluacion-id");
-  evaluacionIdSeleccionada = idEvaluacion; 
+  evaluacionIdSeleccionada = idEvaluacion;
   abrirPanelCriterios();
 });
 
-//Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA CERRAR EL PANEL DE CRITERIOS //////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelCriterios() {
   document.getElementById("panelCriterios").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.remove("visible");
 
-    LimpiarModalEvaluacion();
+  LimpiarModalEvaluacion();
 }
-//FIN PANEL CRITERIOS//
 
 
-
-  document.getElementById('filtrarFechaSelect').addEventListener('change', function () {
-    const mostrar = this.value === 'si';
-    document.getElementById('fechasInputs').classList.toggle('d-none', !mostrar);
-
-      // Opcional: limpiar valores al ocultar
-      document.getElementById("FechaEvalBuscar").value = "";
-  });
-
-//Onchange de filtro
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR LOS ONCHANGE DE FILTROS ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerEvaluaciones();
 
@@ -75,44 +80,36 @@ $(document).ready(function () {
   $("#CalificacionBuscar").on("input", function () {
     ObtenerEvaluaciones();
   });
-})
-// document.getElementById("EmpleadoIdBuscar").onchange = function () {
-//   ObtenerEvaluaciones();
-// }
+});
 
-// document.getElementById("FechaEvalBuscar").onchange = function () {
-//   ObtenerEvaluaciones();
-// }
 
-// document.getElementById("CalificacionBuscar").onchange = function () {
-//   ObtenerEvaluaciones();
-// }
-
-//Funcion para obtener las evaluaciones
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA EVALUACIONES ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerEvaluaciones() {
+
   let nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
   let fechaInput = document.getElementById("FechaEvalBuscar").value;
   let calificacionEvaluacion = document.getElementById("CalificacionBuscar").value;
-  let calificacion = calificacionEvaluacion !== "0" && calificacionEvaluacion !== "" ? calificacionEvaluacion: null;
-
+  let calificacion = calificacionEvaluacion !== "0" && calificacionEvaluacion !== "" ? calificacionEvaluacion : null;
 
   let filtro = {
     nombreEmpleado: nombreEmpleado,
     fecha: fechaInput ? fechaInput : null,
-    calificacion : calificacion,
+    calificacion: calificacion,
   }
-  console.log(filtro);
-    const res = await authFetch("Evaluaciones/Filtrar", {
-      method: "POST",
-      body: JSON.stringify(filtro),
-    })
+
+  const res = await authFetch("Evaluaciones/Filtrar", {
+    method: "POST",
+    body: JSON.stringify(filtro),
+  })
     .then(response => response.json())
     .then((data => {
-        MostrarEvaluaciones(data);
-        LimpiarModalEvaluacion();
-        cerrarPanelEvaluaciones();
+      MostrarEvaluaciones(data);
+      LimpiarModalEvaluacion();
+      cerrarPanelEvaluaciones();
     }))
-  
+
     .catch((error) => {
       MostrarErrorCatch();
     });
@@ -120,6 +117,9 @@ async function ObtenerEvaluaciones() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluaciones(data) {
   if (window.innerWidth <= 764) {
     MostrarEvaluacionesMobile(data);
@@ -128,6 +128,10 @@ function MostrarEvaluaciones(data) {
   }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES DESKTOP /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluacionesDesktop(data) {
   const contenedor = $("#contenedorEvaluaciones");
   contenedor.empty();
@@ -139,111 +143,119 @@ function MostrarEvaluacionesDesktop(data) {
     return;
   }
 
-  if(Array.isArray(data)){
-  data.forEach(element => {
-    const nota = Number(element.calificacion);
-    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
+  if (Array.isArray(data)) {
+    data.forEach(element => {
+      const nota = Number(element.calificacion);
+      const fecha = element.fecha
+        ? element.fecha.split("T")[0].split("-").reverse().join("/")
+        : "Sin fecha";
 
-    let etiqueta = "Regular";
-    let badgeClass = "badge-regular";
+      let etiqueta = "Regular";
+      let badgeClass = "badge-regular";
 
-    if (nota >= 9) {
-      etiqueta = "Excelente";
-      badgeClass = "badge-excelente";
-    } else if (nota >= 7) {
-      etiqueta = "Muy Buena";
-      badgeClass = "badge-muybuena";
-    } else if (nota >= 5) {
-      etiqueta = "Buena";
-      badgeClass = "badge-buena";
-    }
+      if (nota >= 9) {
+        etiqueta = "Excelente";
+        badgeClass = "badge-excelente";
+      } else if (nota >= 7) {
+        etiqueta = "Muy Buena";
+        badgeClass = "badge-muybuena";
+      } else if (nota >= 5) {
+        etiqueta = "Buena";
+        badgeClass = "badge-buena";
+      }
 
-    const item = $(`
-      <div class="evaluacion-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center" style="gap: 20px;">
-        <button class="btn-editar me-1" style="background: none; border: none;  data-action="edit" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-          <i class="bi bi-pencil-square icono-editar"></i>
-        </button>
+      const item = $(`
+        <div class="evaluacion-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center" style="gap: 20px;">
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
 
-        <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <div class="fw-bold" title="${element.empleadoNombre || 'Sin nombre'}">
-            ${element.empleadoNombre || 'Sin nombre'}
+            <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <div class="fw-bold" title="${element.empleadoNombre || 'Sin nombre'}">
+                ${element.empleadoNombre || 'Sin nombre'}
+              </div>
+              <div class="text-muted" style="opacity: 0.6;" title="${element.empleadoPuesto || 'Sin puesto'}">
+                ${element.empleadoPuesto || 'Sin puesto'}
+              </div>
+            </div>
           </div>
-          <div class="text-muted" style="opacity: 0.6;" title="${element.empleadoPuesto || 'Sin puesto'}">
-            ${element.empleadoPuesto || 'Sin puesto'}
-          </div>
-        </div>
-        </div>
-        <div class=" d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
-          <span style="margin-right: 5px;">&bull;</span>
-          Fue evaluado el ${fecha}
-        </div>
-        <div class="d-flex align-items-center" style="min-width: 220px; justify-content: flex-end; gap: 10px;">
-          <div class="d-flex align-items-center" style="margin-right: 20px;">
-            <div class="text-dark fw-bold" style="margin-right: 10px;">${nota}/10</div>
-            <div class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</div>
-          </div>
-          <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-        </div>
-      </div>
-    `);
 
-    const detalleHTML = $(`
-      <div class="panelCriterios collapse px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+          <div class="d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
+            <span style="margin-right: 5px;">&bull;</span>
+            Fue evaluado el ${fecha}
+          </div>
+
+          <div class="d-flex align-items-center" style="min-width: 220px; justify-content: flex-end; gap: 10px;">
+            <div class="d-flex align-items-center" style="margin-right: 20px;">
+              <div class="text-dark fw-bold" style="margin-right: 10px;">${nota}/10</div>
+              <div class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</div>
+            </div>
+            <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
         </div>
-        <hr style="margin-bottom: 1rem;"/>
-        <div class="criterios-panel mt-3">
-          <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
-            <span>Agregar Criterio</span>
-          </button>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-            <colgroup>
-              <col style="width: 25%" />
-              <col style="width: 65%" />
-              <col  style="width: 10%" />
-            </colgroup>
-              <thead>
-                <tr>
-                  <th class="text-start header-table">Criterio</th>
-                  <th class="text-start header-table">Descripción</th>
-                  <th class="text-center header-table">Acciones</th>
+      `);
+
+      const detalleHTML = $(`
+        <div class="panelCriterios px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;"/>
+          <div class="criterios-panel mt-3">
+            <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
+              <span>Agregar Criterio</span>
+            </button>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <colgroup>
+                  <col style="width: 25%" />
+                  <col style="width: 65%" />
+                  <col style="width: 10%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="text-start header-table">Criterio</th>
+                    <th class="text-start header-table">Descripción</th>
+                    <th class="text-center header-table">Acciones</th>
                   </tr>
-              </thead>
-              <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-                <!-- Se insertan dinámicamente -->
-              </tbody>
-            </table>
+                </thead>
+                <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                  <!-- Se insertan dinámicamente -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    `);
+      `);
 
-item.find(".toggle-detalle").on("click", function () {
-  const iconoChevron = $(this).find("i");
-  const panel = detalleHTML;
-  $(".panelCriterios.mostrar").not(panel).slideUp(200).removeClass("mostrar");
-  $(".toggle-detalle i").not(iconoChevron)
-    .removeClass("bi-chevron-up")
-    .addClass("bi-chevron-down");
+      item.find(".toggle-detalle").on("click", function () {
+        const iconoChevron = $(this).find("i");
 
-  panel.slideToggle(200, function () {
-    panel.toggleClass("mostrar", panel.is(":visible"));
-  });
-  iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
-});
+        contenedor.find(".panelCriterios:visible").not(detalleHTML).slideUp(200).removeClass("mostrar");
+        contenedor.find(".toggle-detalle i")
+          .not(iconoChevron)
+          .removeClass("bi-chevron-up")
+          .addClass("bi-chevron-down");
+        contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
 
+        detalleHTML.stop(true, true).slideToggle(200, function () {
+          detalleHTML.toggleClass("mostrar", detalleHTML.is(":visible"));
+        });
+        iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
+        const expanded = $(this).attr("aria-expanded") === "true";
+        $(this).attr("aria-expanded", !expanded);
+      });
 
- 
-    contenedor.append(item);
-    contenedor.append(detalleHTML);
-    ObtenerCriterioDeEvaluacion(element.id);
-  });
-}
+      contenedor.append(item);
+      contenedor.append(detalleHTML);
+
+      ObtenerCriterioDeEvaluacion(element.id);
+    });
+  }
+
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -251,6 +263,11 @@ item.find(".toggle-detalle").on("click", function () {
   });
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES MOBILE /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluacionesMobile(data) {
   const contenedor = document.getElementById("contenedorEvaluaciones");
   contenedor.innerHTML = "";
@@ -260,9 +277,11 @@ function MostrarEvaluacionesMobile(data) {
       "<div class='text-center text-muted py-3'>No hay evaluaciones para mostrar.</div>";
     return;
   }
-  data.forEach((element, item) => {
+
+  data.forEach((element) => {
     const nota = Number(element.calificacion);
     const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
+
     let etiqueta = "Regular";
     let badgeClass = "badge-regular";
 
@@ -296,53 +315,50 @@ function MostrarEvaluacionesMobile(data) {
             </span>
           </div>
           
-        <div class="d-flex justify-content-between mt-2 align-items-center">
-          <!-- Siempre mostrar historial, ver más y editar -->
-          <div>
-          <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
-            <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
-          </button>
+          <div class="d-flex justify-content-between mt-2 align-items-center">
+            <div>
+              <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
+                <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
+              </button>
+            </div>
+            <div>
+              <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+              </button>
+              <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
           </div>
-          <div>
-            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${
-              element.id
-            })" data-tippy-content="Editar" style="background: none; border: none;">
-              <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
-            </button>
-            <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+
+          <div class="panelCriterios mt-2" style="display:none;">
+            <div class="d-flex justify-content-end mb-2">
+              <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
+                <span>Agregar Criterio</span>
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover table-sm align-middle">
+                <colgroup>
+                  <col style="width: 70%" /> 
+                  <col style="width: 30%" /> 
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="text-start header-table">Criterio</th>
+                    <th class="text-center header-table">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-
-
-        <div class="panelCriterios mt-2" style="display:none;">
-          <div class="d-flex justify-content-end mb-2">
-            <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${ element.id}"> 
-            <span>Agregar Criterio</span>
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover table-sm align-middle">
-              <colgroup>
-                <col style="width: 70%" /> 
-                <col style="width: 30%" /> 
-              </colgroup>
-              <thead>
-                <tr>
-                  <th class="text-start header-table">Criterio</th>
-                  <th class="text-center header-table">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+      </div>
     `;
 
-      ObtenerCriterioDeEvaluacion(element.id);
+    ObtenerCriterioDeEvaluacion(element.id);
   });
 
   tippy("[data-tippy-content]", {
@@ -351,16 +367,25 @@ function MostrarEvaluacionesMobile(data) {
     delay: [100, 0],
   });
 
-  // Mostrar/ocultar tabla
   document.querySelectorAll(".toggle-detalle").forEach((btn) => {
     btn.addEventListener("click", function () {
       const card = this.closest(".card");
       const detalleTabla = card.querySelector(".panelCriterios");
       const icono = this.querySelector("i");
 
+      document.querySelectorAll(".panelCriterios").forEach((panel) => {
+        if (panel !== detalleTabla) {
+          panel.style.display = "none";
+          panel.closest(".card").querySelector(".toggle-detalle i").classList.replace("bi-chevron-up", "bi-chevron-down");
+        }
+      });
+
       if (detalleTabla.style.display === "none") {
         detalleTabla.style.display = "block";
         icono.classList.replace("bi-chevron-down", "bi-chevron-up");
+
+        const evaluacionId = detalleTabla.querySelector(".tabla-criterios-body").dataset.evaluacionId;
+        ObtenerCriterioDeEvaluacion(Number(evaluacionId));
       } else {
         detalleTabla.style.display = "none";
         icono.classList.replace("bi-chevron-up", "bi-chevron-down");
@@ -369,23 +394,29 @@ function MostrarEvaluacionesMobile(data) {
   });
 }
 
-// Funcion para mostrar el modal de edición de la evaluación   
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL MODAL DE EDICION DE LA EVALUACION ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
   const res = await authFetch(`Evaluaciones/${id}`,
     {
-        method: "GET"
+      method: "GET"
     })
     .then(response => response.json())
     .then((data => {
-        document.getElementById("IdEvaluacion").value = data.id;
-        document.getElementById("CalificacionEvaluacion").value = data.calificacion;
-        document.getElementById("EmpleadoId").value = data.empleadoId;
+      document.getElementById("IdEvaluacion").value = data.id;
+      document.getElementById("CalificacionEvaluacion").value = data.calificacion;
+      document.getElementById("EmpleadoId").value = data.empleadoId;
 
-        abrirPanelEvaluaciones();
+      abrirPanelEvaluaciones();
     }))
 }
 
-//Funcion para buscar el id de la evaluacion y llamar a la función de edición o creación
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA BUSCAR EL ID DE LA EVALUACION Y LLAMAR A LA FUNCION DE EDICION O CREACION /////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarEvaluacionId() {
   const id = parseInt(document.getElementById("IdEvaluacion").value);
 
@@ -396,135 +427,125 @@ function BuscarEvaluacionId() {
   }
 }
 
-//Funcion para limpiar el formulario de evaluacion
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA LIMPIAR EL FORMULARIO DE EVALUACION ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalEvaluacion() {
-    //Limpiar el formulario
-    document.getElementById("IdEvaluacion").value = "";
-    const inputCalificacion = document.getElementById("CalificacionEvaluacion");
-    inputCalificacion.value = "";
-    const inputEmpleado = document.getElementById("EmpleadoId");
-    inputEmpleado.value = "";
-    const selectTipoCriterio = document.getElementById("IdTipoCriterio");
-    selectTipoCriterio.value = "";
-    const inputDescripcion = document.getElementById("Descripcion");
-    inputDescripcion.value = "";
+  document.getElementById("IdEvaluacion").value = "";
+  const inputCalificacion = document.getElementById("CalificacionEvaluacion");
+  inputCalificacion.value = 0 ;
+  const inputEmpleado = document.getElementById("EmpleadoId");
+  inputEmpleado.value = "";
+  const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+  selectTipoCriterio.value = "";
+  const inputDescripcion = document.getElementById("Descripcion");
+  inputDescripcion.value = "";
 
-    //Limpia las validaciones
-    inputCalificacion.classList.remove("is-invalid", "is-valid");
-    inputEmpleado.classList.remove("is-invalid", "is-valid");
-    selectTipoCriterio.classList.remove("is-invalid", "is-valid");
-    inputDescripcion.classList.remove("is-invalid", "is-valid");
-
-    //Limpiar los mensajes de error
-    const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
-    inputErrorCalificacion.textContent = "";
-    inputErrorCalificacion.style.display = "none";
-    const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
-    inputErrorEmpleado.textContent = "";
-    inputErrorEmpleado.style.display = "none";
-    const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
-    selectErrorIdTipoCriterio.textContent = "";
-    selectErrorIdTipoCriterio.style.display = "none";
-    const inputErrorDescripcion = document.getElementById("errorDescripcion");
-    inputErrorDescripcion.textContent = "";
-    inputErrorDescripcion.style.display = "none";
-}
-
-//Funcion para validar el formulario de evaluacion
-function ValidarFormularioEvaluacion() {
-    const inputCalificacion = document.getElementById("CalificacionEvaluacion");
-    const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
-
-    const inputEmpleado = document.getElementById("EmpleadoId");
-    const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
-
-    const calificacion = parseFloat(inputCalificacion.value);
-    const empleadoId = inputEmpleado.value.trim();
-
-    //Limpiar errores previos
-    inputErrorCalificacion.style.display = "none";
-    inputErrorCalificacion.textContent = "";
-    inputCalificacion.classList.remove("is-invalid", "is-valid");
-    inputErrorEmpleado.style.display = "none";
-    inputErrorEmpleado.textContent = "";
-    inputEmpleado.classList.remove("is-invalid", "is-valid");
-  
-    let esValid = true;
-
-    if(isNaN(calificacion)){
-        inputCalificacion.classList.add("is-invalid");
-        inputErrorCalificacion.style.display = "block";
-        inputErrorCalificacion.textContent = "Campo obligatorio.";
-        esValid = false;
-    } else if(calificacion < 0 || calificacion > 10){
-        inputCalificacion.classList.add("is-invalid");
-        inputErrorCalificacion.style.display = "block";
-        inputErrorCalificacion.textContent = "Calificación debe estar entre 0 y 10.";
-        esValid = false;
-    }else {
-        inputCalificacion.classList.add("is-valid");
-    }
-
-    if(empleadoId === ""){
-        inputEmpleado.classList.add("is-invalid");
-        inputErrorEmpleado.style.display = "block";
-        inputErrorEmpleado.textContent = "Seleccione un empleado.";
-        esValid = false;
-    }
-    return esValid;
-}
-
-// Validación en vivo: cambia el color mientras el usuario escribe
-document.getElementById("CalificacionEvaluacion").addEventListener("input", () => {
-    const inputCalificacion = document.getElementById("CalificacionEvaluacion");
-    const errorCalificacion = document.getElementById("errorCalificacionEvaluacion");
-    const calificacion = parseFloat(inputCalificacion.value);
-
-  // Limpiar cualquier estado previo
   inputCalificacion.classList.remove("is-invalid", "is-valid");
+  inputEmpleado.classList.remove("is-invalid", "is-valid");
+  selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+  inputDescripcion.classList.remove("is-invalid", "is-valid");
 
-      let esValid = true;
+  const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
+  inputErrorCalificacion.textContent = "";
+  inputErrorCalificacion.style.display = "none";
+  const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
+  inputErrorEmpleado.textContent = "";
+  inputErrorEmpleado.style.display = "none";
+  const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
+  selectErrorIdTipoCriterio.textContent = "";
+  selectErrorIdTipoCriterio.style.display = "none";
+  const inputErrorDescripcion = document.getElementById("errorDescripcion");
+  inputErrorDescripcion.textContent = "";
+  inputErrorDescripcion.style.display = "none";
+}
 
-    if(isNaN(calificacion)){
-        inputCalificacion.classList.add("is-invalid");
-        errorCalificacion.style.display = "block";
-        errorCalificacion.textContent = "Campo obligatorio.";
-        esValid = false;
-    } else if(calificacion < 0 || calificacion > 10){
-        inputCalificacion.classList.add("is-invalid");
-        errorCalificacion.style.display = "block";
-        errorCalificacion.textContent = "Calificación debe estar entre 0 y 10.";
-        esValid = false;
-    } else {
-    inputCalificacion.classList.add("is-valid"); // Color verde cuando cumple
-    errorCalificacion.style.display = "none";
-  };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA VALIDAR EL FORMULARIO DE EVALUACION ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function ValidarFormularioEvaluacion() {
+  const inputCalificacion = document.getElementById("CalificacionEvaluacion");
+  const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
+
+  const inputEmpleado = document.getElementById("EmpleadoId");
+  const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
+
+  const calificacion = parseFloat(inputCalificacion.value);
+  const empleadoId = inputEmpleado.value.trim();
+
+  inputErrorCalificacion.style.display = "none";
+  inputErrorCalificacion.textContent = "";
+  inputCalificacion.classList.remove("is-invalid", "is-valid");
+  inputErrorEmpleado.style.display = "none";
+  inputErrorEmpleado.textContent = "";
+  inputEmpleado.classList.remove("is-invalid", "is-valid");
+
+  let esValid = true;
+
+  if (isNaN(calificacion) || calificacion === 0) {
+    inputCalificacion.classList.add("is-invalid");
+    inputErrorCalificacion.style.display = "block";
+    inputErrorCalificacion.textContent = "Campo obligatorio.";
+    esValid = false;
+  } 
+
+  if (empleadoId === "") {
+    inputEmpleado.classList.add("is-invalid");
+    inputErrorEmpleado.style.display = "block";
+    inputErrorEmpleado.textContent = "Campo obligatorio.";
+    esValid = false;
+  }
   return esValid;
-});
-document.getElementById("EmpleadoId").addEventListener("change", () => {
-    const input  = document.getElementById("EmpleadoId");
-    const error = document.getElementById("errorEmpleadoId");
-    const valor = input.value.trim();
+}
 
-  // Limpiar cualquier estado previo
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VALIDACION EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+document.getElementById("CalificacionEvaluacion").addEventListener("change", () => {
+  const selectCalificacion = document.getElementById("CalificacionEvaluacion");
+  const errorCalificacion = document.getElementById("errorCalificacionEvaluacion");
+  const calificacion = parseInt(selectCalificacion.value);
+
+  selectCalificacion.classList.remove("is-invalid", "is-valid");
+
+  if (isNaN(calificacion) || calificacion === 0) {
+    selectCalificacion.classList.add("is-invalid");
+    errorCalificacion.style.display = "block";
+    errorCalificacion.textContent = "Campo obligatorio.";
+  } else {
+    selectCalificacion.classList.add("is-valid");
+    errorCalificacion.style.display = "none";
+  }
+});
+
+document.getElementById("EmpleadoId").addEventListener("change", () => {
+  const input = document.getElementById("EmpleadoId");
+  const error = document.getElementById("errorEmpleadoId");
+  const valor = input.value.trim();
+
   input.classList.remove("is-invalid", "is-valid");
 
-    let esValid = true;
+  let esValid = true;
 
-    if(valor === "0"){
-        input.classList.add("is-invalid");
-        error.style.display = "block";
-        error.textContent = "Seleccione un empleado.";
-        esValid = false;
-    } else {
-    input.classList.add("is-valid"); // Color verde cuando cumple
+  if (valor === "0") {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "Seleccione un empleado.";
+    esValid = false;
+  } else {
+    input.classList.add("is-valid");
     error.style.display = "none";
   };
   return esValid;
-  });
+});
 
 
-//Funcion para evitar que se pueda evaluar el mismo empleado en el mismo mes
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VADIDAR DAROS DE EVALUACION EXISTENTE ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarEvaluacionExistente(mensaje) {
   const errorEmpleado = document.getElementById("errorEmpleadoId");
   const inputEmpleadoId = document.getElementById("EmpleadoId");
@@ -534,20 +555,23 @@ function ValidarEvaluacionExistente(mensaje) {
   inputEmpleadoId.classList.add("is-invalid");
 }
 
-//Funcion crear evaluacion
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION CREAR EVALUACION ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearEvaluacion() {
 
-    if(!ValidarFormularioEvaluacion())
-        return;
+  if (!ValidarFormularioEvaluacion())
+    return;
 
-const evaluacion = {
-  calificacion: document.getElementById("CalificacionEvaluacion").value,
-  empleadoId: document.getElementById("EmpleadoId").value,
-};
-    const res = await authFetch("Evaluaciones", {
-      method: 'POST',
-      body: JSON.stringify(evaluacion),
-    })
+  const evaluacion = {
+    calificacion: document.getElementById("CalificacionEvaluacion").value,
+    empleadoId: document.getElementById("EmpleadoId").value,
+  };
+  const res = await authFetch("Evaluaciones", {
+    method: 'POST',
+    body: JSON.stringify(evaluacion),
+  })
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
@@ -555,7 +579,7 @@ const evaluacion = {
       } else {
         cerrarPanelEvaluaciones();
         ObtenerEvaluaciones();
-        // Mostrar alerta de éxito
+
         Swal.fire({
           title: "¡Evaluacion Creada!",
           toast: true,
@@ -580,24 +604,27 @@ const evaluacion = {
     });
 }
 
-//Funcion para editar una evaluacion
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA EDITAR UNA EVALUACION //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarEvaluacion(id) {
 
-    if(!ValidarFormularioEvaluacion())
-        return;
+  if (!ValidarFormularioEvaluacion())
+    return;
 
-    const evaluacion = {
+  const evaluacion = {
     id: document.getElementById("IdEvaluacion").value,
     calificacion: document.getElementById("CalificacionEvaluacion").value,
     empleadoId: document.getElementById("EmpleadoId").value,
-    };
-    const res =  await authFetch(`Evaluaciones/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(evaluacion),
-    })
+  };
+  const res = await authFetch(`Evaluaciones/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(evaluacion),
+  })
     .then((response) => response.text())
     .then((response) => {
       if (response.mensaje) {
@@ -605,8 +632,8 @@ async function EditarEvaluacion(id) {
       } else {
         cerrarPanelEvaluaciones();
         ObtenerEvaluaciones();
-        // Mostrar alerta de éxito
-         Swal.fire({
+
+        Swal.fire({
           title: "¡Evaluacion Modificada!",
           toast: true,
           position: "bottom-end",
@@ -630,19 +657,17 @@ async function EditarEvaluacion(id) {
     });
 }
 
-ObtenerEvaluaciones();
 
-
-
-
-//FUNCIONES CRITERIOS DE EVALUACION
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS CRITERIOS DE EVALUACION ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////  
 async function ObtenerCriterioDeEvaluacion(evaluacionId) {
   const res = await authFetch("CriteriosDeEvaluacion", {
     method: "GET",
   })
     .then(response => response.json())
     .then(data => {
-      // Filtrar criterios por evaluación
+
       const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
       MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados);
     })
@@ -651,6 +676,11 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId) {
     });
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS CRITERIOS DE EVALUACION ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarCriterioDeEvaluacion(evaluacionId, data) {
   const tablaBody = $(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
   if (!tablaBody.length) return;
@@ -668,14 +698,14 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
 
   $.each(data, function (index, item) {
     if (enMovil) {
-    tablaBody.append(`
+      tablaBody.append(`
       <tr>
         <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
         <td class='d-flex justify-content-center align-items-center'>
-          <button class='btn-eliminar' style='background: none; border: none;' 
-            onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
-            <i class='bi bi-trash3 icono-elimina-detalle'></i>
-          </button>
+         <button class='btn-eliminar' style='background: none; border: none;' 
+          onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId})' data-tippy-content='Eliminar'>
+          <i class='bi bi-trash3 icono-elimina-detalle'></i>
+        </button>
         </td>
       </tr>
     `);
@@ -686,7 +716,7 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
           <td class='align-middle'>${item.descripcion}</td>
           <td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
-              onclick='EliminarCriterioDeEvaluacion(${item.id})' data-tippy-content='Eliminar'>
+              onclick='EliminarCriterioDeEvaluacion(${item.id} , ${evaluacionId})' data-tippy-content='Eliminar'>
               <i class='bi bi-trash3 icono-elimina-detalle'></i>
             </button>
           </td>
@@ -703,12 +733,16 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
 
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL DETALLE DE CRITERIOS DE EVALUACION ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarDetalleCriterios(evaluacionId) {
   const contenedor = document.getElementById("contenedorCriteriosOffcanvas");
 
-   const res = await authFetch("CriteriosDeEvaluacion", {
+  const res = await authFetch("CriteriosDeEvaluacion", {
     method: "GET",
-    })
+  })
     .then(response => response.json())
     .then(data => {
       const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
@@ -736,26 +770,19 @@ async function MostrarDetalleCriterios(evaluacionId) {
                 <span class="detalle-criterio-valor">${item.descripcion || "Sin descripción"}</span>
               </div>
 
-              <hr style="margin: 0.5rem 0;" />
-
-              <div style="display: flex; justify-content: center; align-items: center;">
-                <button class="btn-eliminar" onclick="EliminarCriterioDeEvaluacion(${item.id})" data-tippy-content="Eliminar" style="background: none; border: none;">
-                  <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
-                </button>
-              </div>
             </div>
           </div>
         `;
         contenedor.innerHTML += card;
       });
 
-  tippy("[data-tippy-content]", {
-    animation: "scale",
-    theme: "mi-tema",
-    delay: [100, 0],
-  });
+      tippy("[data-tippy-content]", {
+        animation: "scale",
+        theme: "mi-tema",
+        delay: [100, 0],
+      });
     })
-  // Mostrar el offcanvas
+
   const offcanvasElement = document.getElementById("offcanvasDetalleCriterios");
   if (offcanvasElement.parentNode !== document.body) {
     document.body.appendChild(offcanvasElement);
@@ -765,6 +792,10 @@ async function MostrarDetalleCriterios(evaluacionId) {
   offcanvas.show();
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA BUSCAR EL ID DE CRITERIO Y LLAMAR A LA FUNCION DE EDICION O CREACION ///////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarCriterioId() {
   const id = parseInt(document.getElementById("IdCriterio").value);
 
@@ -775,110 +806,139 @@ function BuscarCriterioId() {
   }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA VALDIAR EL FORMULARIO DE CRITERIO DE EVALUACION ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioCriterioDeEvaluacion() {
-    const selectTipoCriterio = document.getElementById("IdTipoCriterio");
-    const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
+  const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+  const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
 
-    const inputDescripcion = document.getElementById("Descripcion");
-    const inputErrorDescripcion = document.getElementById("errorDescripcion");
+  const inputDescripcion = document.getElementById("Descripcion");
+  const inputErrorDescripcion = document.getElementById("errorDescripcion");
 
-    const tipoDeCriterioId = selectTipoCriterio.value;
-    const descripcion = inputDescripcion.value.trim();
+  const tipoDeCriterioId = selectTipoCriterio.value;
+  const descripcion = inputDescripcion.value.trim();
 
-    //Limpiar errores previos
-    selectErrorIdTipoCriterio.style.display = "none";
-    selectErrorIdTipoCriterio.textContent = "";
-    selectTipoCriterio.classList.remove("is-invalid", "is-valid");
-    inputErrorDescripcion.style.display = "none";
-    inputErrorDescripcion.textContent = "";
-    inputDescripcion.classList.remove("is-invalid", "is-valid");
+  selectErrorIdTipoCriterio.style.display = "none";
+  selectErrorIdTipoCriterio.textContent = "";
+  selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+  inputErrorDescripcion.style.display = "none";
+  inputErrorDescripcion.textContent = "";
+  inputDescripcion.classList.remove("is-invalid", "is-valid");
 
-    let esValid = true;
+  let esValid = true;
 
-    if(tipoDeCriterioId === ""){
-        selectTipoCriterio.classList.add("is-invalid");
-        selectErrorIdTipoCriterio.style.display = "block";
-        selectErrorIdTipoCriterio.textContent = "Seleccione un criterio.";
-        esValid = false;
-    }
+  if (tipoDeCriterioId === "") {
+    selectTipoCriterio.classList.add("is-invalid");
+    selectErrorIdTipoCriterio.style.display = "block";
+    selectErrorIdTipoCriterio.textContent = "Campo obligatorio.";
+    esValid = false;
+  }
 
-    // Validar descripcion
-    if (descripcion.length === 0) {
-      inputDescripcion.classList.add("is-invalid");
-      inputErrorDescripcion.style.display = "block";
-      inputErrorDescripcion.textContent = "Campo obligatorio.";
-      esValid = false;
-    } else if (descripcion.length < 3) {
-      inputDescripcion.classList.add("is-invalid");
-      inputErrorDescripcion.style.display = "block";
-      inputErrorDescripcion.textContent = "Mínimo 3 caracteres.";
-      esValid = false;
-    } else {
-      inputDescripcion.classList.add("is-valid");
-    }
-    return esValid;
+  if (descripcion.length === 0) {
+    inputDescripcion.classList.add("is-invalid");
+    inputErrorDescripcion.style.display = "block";
+    inputErrorDescripcion.textContent = "Campo obligatorio.";
+    esValid = false;
+  } else if (descripcion.length < 3) {
+    inputDescripcion.classList.add("is-invalid");
+    inputErrorDescripcion.style.display = "block";
+    inputErrorDescripcion.textContent = "Mínimo 3 caracteres.";
+    esValid = false;
+  } else {
+    inputDescripcion.classList.add("is-valid");
+  }
+  return esValid;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA VALIDAR EL FORMULARIO EN VIVO DE CRITERIO DE EVALUACION ////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("Descripcion").addEventListener("input", () => {
-    const inputDescripcion = document.getElementById("Descripcion");
-    const errorDescripcion = document.getElementById("errorDescripcion");
-    const descripcion = inputDescripcion.value;
+  const inputDescripcion = document.getElementById("Descripcion");
+  const errorDescripcion = document.getElementById("errorDescripcion");
+  const descripcion = inputDescripcion.value;
 
-    // Limpiar cualquier estado previo
-    inputDescripcion.classList.remove("is-invalid", "is-valid");
+  inputDescripcion.classList.remove("is-invalid", "is-valid");
 
-    let esValid = true;
+  let esValid = true;
 
-    if(descripcion.length === 0){
-      inputDescripcion.classList.add("is-invalid");
-      errorDescripcion.style.display = "block";
-      errorDescripcion.textContent = "Campo obligatorio.";
-      esValid = false;
-    }
-    else if(descripcion.length < 3){
-      inputDescripcion.classList.add("is-invalid");
-      errorDescripcion.style.display = "block";
-      errorDescripcion.textContent = "Mínimo 3 caracteres.";
-      esValid = false;
-    } else {
-      inputDescripcion.classList.add("is-valid");
-      errorDescripcion.style.display = "none";
-      errorDescripcion.textContent = "";
-    }
-    return esValid;
+  if (descripcion.length === 0) {
+    inputDescripcion.classList.add("is-invalid");
+    errorDescripcion.style.display = "block";
+    errorDescripcion.textContent = "Campo obligatorio.";
+    esValid = false;
+  }
+  else if (descripcion.length < 3) {
+    inputDescripcion.classList.add("is-invalid");
+    errorDescripcion.style.display = "block";
+    errorDescripcion.textContent = "Mínimo 3 caracteres.";
+    esValid = false;
+  } else {
+    inputDescripcion.classList.add("is-valid");
+    errorDescripcion.style.display = "none";
+    errorDescripcion.textContent = "";
+  }
+  return esValid;
+});
+
+document.getElementById("IdTipoCriterio").addEventListener("change", () => {
+  const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+  const errorTipoCriterio = document.getElementById("errorIdTipoCriterio");
+  const valor = selectTipoCriterio.value;
+
+  selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+  errorTipoCriterio.style.display = "none";
+  errorTipoCriterio.textContent = "";
+
+  if (valor === "" || valor === "0") { 
+    selectTipoCriterio.classList.add("is-invalid");
+    errorTipoCriterio.style.display = "block";
+    errorTipoCriterio.textContent = "Campo obligatorio.";
+  } else {
+    selectTipoCriterio.classList.add("is-valid");
+  }
 });
 
 
 
-//Funcion para validar criterios de evaluacion existente 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VADIDAR DAROS DE CRITERIO DE EVALUACION EXISTENTE ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarCriterioDeEvaluacionExistente(mensaje) {
-    const errorCriterio = document.getElementById("errorIdTipoCriterio");
-    const inputCriterio = document.getElementById("IdTipoCriterio");
+  const errorCriterio = document.getElementById("errorIdTipoCriterio");
+  const inputCriterio = document.getElementById("IdTipoCriterio");
 
-    errorCriterio.textContent = mensaje;
-    errorCriterio.style.display = "block";
-    inputCriterio.classList.add("is-invalid");
+  errorCriterio.textContent = mensaje;
+  errorCriterio.style.display = "block";
+  inputCriterio.classList.add("is-invalid");
 }
 
-async function CrearCriterioDeEvaluacion() {
-    if(!ValidarFormularioCriterioDeEvaluacion())
-        return;
 
-const criterioEvaluacion = {
-  tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
-  descripcion: document.getElementById("Descripcion").value,
-  evaluacionId: evaluacionIdSeleccionada,
-};
-    const res = await authFetch("CriteriosDeEvaluacion", {
-      method: 'POST',
-      body: JSON.stringify(criterioEvaluacion),
-    })
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA CREAR CRITERIO DE EVALUACION ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+async function CrearCriterioDeEvaluacion() {
+  if (!ValidarFormularioCriterioDeEvaluacion())
+    return;
+
+  const criterioEvaluacion = {
+    tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
+    descripcion: document.getElementById("Descripcion").value,
+    evaluacionId: evaluacionIdSeleccionada,
+  };
+  const res = await authFetch("CriteriosDeEvaluacion", {
+    method: 'POST',
+    body: JSON.stringify(criterioEvaluacion),
+  })
     .then((response) => response.json())
     .then((response) => {
       if (response.mensaje) {
         ValidarCriterioDeEvaluacionExistente(response.mensaje);
       } else {
         cerrarPanelCriterios();
-        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);        
+        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
         Swal.fire({
           title: "¡Criterio Creado!",
           toast: true,
@@ -903,8 +963,12 @@ const criterioEvaluacion = {
     });
 }
 
-function EliminarCriterioDeEvaluacion(id) {
-    Swal.fire({
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL MODAL DE ELIMINAR CRITERIO DE EVALUACION ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function EliminarCriterioDeEvaluacion(id, evaluacionId) {
+  Swal.fire({
     title: "¿Desea eliminar este criterio?",
     html: `
       <div class="text-center">
@@ -925,12 +989,11 @@ function EliminarCriterioDeEvaluacion(id) {
     },
     background: "#fff",
     color: "#22223b",
-  })
-    .then((result) => {
-      if(result.isConfirmed) {
-            EliminarSiCriterio(id);
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-           Swal.fire({
+  }).then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiCriterio(id, evaluacionId);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
         title: "Acción Cancelada",
         text: "Permanece registrado.",
         toast: true,
@@ -948,45 +1011,52 @@ function EliminarCriterioDeEvaluacion(id) {
           content: "swal2-toast-content",
         },
       });
-        }
-      })
+    }
+  });
 }
 
-async function EliminarSiCriterio(id) {
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ELIMINAR SI CRITERIO ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+async function EliminarSiCriterio(id, evaluacionId) {
+  try {
     const res = await authFetch(`CriteriosDeEvaluacion/${id}`, {
       method: "DELETE",
-    })
+    });
 
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("No se pudo eliminar el criterio");
-      }
-      return response.text();
-    })
-    .then((data) => {
-         Swal.fire({
-        title: "¡Criterio Eliminado!",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#f4fff7",
-        color: "#1c3d26",
-        icon: "success",
-        iconColor: "#28a746d8",
-        customClass: {
-          popup: "swal2-toast-success",
-          title: "swal2-toast-success-title",
-          icon: "swal2-toast-success-icon",
-        },
-      });
-    ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+    if (!res.ok) throw new Error("No se pudo eliminar el criterio");
 
-    })
+    Swal.fire({
+      title: "¡Criterio Eliminado!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+
+    // Actualizamos la tabla correcta usando el evaluacionId que viene de la función
+    ObtenerCriterioDeEvaluacion(evaluacionId);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
 
 
-//Funcion para obtener los criterios de evaluacion de una evaluacion
-ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA EVALUACIONES ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ObtenerEvaluaciones();

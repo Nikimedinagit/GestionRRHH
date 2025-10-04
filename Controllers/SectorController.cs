@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace API_RRHH_TESIS2025.Controllers
 {
 
-    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class SectorController : ControllerBase
@@ -23,16 +22,108 @@ namespace API_RRHH_TESIS2025.Controllers
             _context = context;
         }
 
-        // GET: api/Sector
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sector>>> GetSector()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE SECTORES ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<Sector>>> GetSector([FromBody] FiltrarSectores filtro)
         {
-            return await _context.Sector
-            .Where(s => !s.Eliminado)
-            .OrderBy(s => s.Nombre)
-            .ToListAsync();
+            IQueryable<Sector> obtenerSectores = _context.Sector.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.Nombre))
+                obtenerSectores = obtenerSectores.Where(c => c.Nombre.Contains(filtro.Nombre));
+
+            if (filtro.Eliminado.HasValue)
+            {
+                bool eliminado = filtro.Eliminado.Value == 1;
+                obtenerSectores = obtenerSectores.Where(c => c.Eliminado == eliminado);
+            }
+
+            var sectores = await obtenerSectores
+                .OrderBy(c => c.Eliminado)
+                .ThenBy(c => c.Nombre)
+                .ToListAsync();
+
+            return Ok(sectores);
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO  PARA CREAR UN NUEVO SECTOR ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<Sector>> PostSector(Sector sector)
+        {
+            sector.Nombre = sector.Nombre.ToUpper();
+
+            var sectorExistente = await _context.Sector
+                .AsNoTracking()
+                .AnyAsync(x => x.Nombre == sector.Nombre);
+
+            if (sectorExistente)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+
+            _context.Sector.Add(sector);
+            await _context.SaveChangesAsync();
+            
+            return CreatedAtAction("GetSector", new { id = sector.Id }, sector);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UN SECTOR ///////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutSector(int id, Sector sector)
+        {
+            var sectorOriginal = await _context.Sector.FindAsync(id);
+
+            var sectorExistente = await _context.Sector
+                .AsNoTracking()
+                .AnyAsync(p => p.Nombre == sector.Nombre && p.Id != id);
+
+            if (sectorExistente)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+
+            sectorOriginal.Nombre = sector.Nombre.ToUpper();
+
+            await _context.SaveChangesAsync();
+
+            return Ok(sector);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ALTERNAR EL ELIMINADO DE UN SECTOR ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSector(int id)
+        {
+            var sector = await _context.Sector.FindAsync(id);
+
+            if (!sector.Eliminado)
+            {
+                bool tienePuestos = await _context.Puesto
+                    .AsNoTracking()
+                    .AnyAsync(p => p.SectorId == id);
+
+                if (tienePuestos)
+                    return BadRequest(new { mensaje = "No se puede desactivar el sector porque tiene puestos asociados." });
+            }
+
+            sector.Eliminado = !sector.Eliminado;
+
+            _context.Sector.Update(sector);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = sector.Eliminado ? "Sector Desactivado" : "Sector Activado" });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS DATOS DE LA API DE SECTORES ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Sector>>> GetSectorsActivos()
         {
@@ -43,7 +134,10 @@ namespace API_RRHH_TESIS2025.Controllers
             return sectoresActivos;
         }
 
-        // GET: api/Sector/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN SECTOR POR ID /////////////////////////////////////////////////////// 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Sector>> GetSector(int id)
         {
@@ -55,114 +149,6 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             return sector;
-        }
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<Sector>>> GetSector([FromBody] FiltrarSectores filtro)
-        {
-            var sectorFiltro = _context.Sector.AsQueryable();
-            if (filtro.Eliminado.HasValue)
-            {
-                sectorFiltro = sectorFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
-            }
-            var resultado = await sectorFiltro
-                            .OrderBy(c => c.Eliminado)
-                            .ThenBy(c => c.Nombre)
-                            .ToListAsync();
-            return resultado;
-        }
-
-        // PUT: api/Sector/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSector(int id, Sector sector)
-        {
-            if (id != sector.Id)
-            {
-                return BadRequest();
-            }
-
-            // Guardamos en mayúsculas
-            sector.Nombre = sector.Nombre.ToUpper();
-
-            var sectorExistente = await _context.Sector
-                .AnyAsync(x => x.Nombre.ToLower() == sector.Nombre.ToLower());
-            if (sectorExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
-
-
-
-            _context.Entry(sector).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SectorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(sector);
-        }
-
-        // POST: api/Sector
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Sector>> PostSector(Sector sector)
-        {
-
-            // Guardamos en mayúsculas
-            sector.Nombre = sector.Nombre.ToUpper();
-
-            var sectorExistente = await _context.Sector
-                .AnyAsync(x => x.Nombre.ToLower() == sector.Nombre.ToLower());
-            if (sectorExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
-            _context.Sector.Add(sector);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSector", new { id = sector.Id }, sector);
-        }
-
-        // DELETE: api/Sector/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSector(int id)
-        {
-            var sector = await _context.Sector
-            .Include(s => s.Puestos)
-            .FirstOrDefaultAsync(m => m.Id == id);
-            if (sector == null)
-            {
-                return NotFound();
-            }
-
-            // Si está visible y tiene puestos asociados, NO permitir desactivarlo
-            if (!sector.Eliminado && sector.Puestos != null && sector.Puestos.Any())
-            {
-                return BadRequest(new { mensaje = "No se puede desactivar el sector porque tiene puestos asociados." });
-            }
-
-            sector.Eliminado = !sector.Eliminado;
-            var mensaje = sector.Eliminado ?
-                "Sector Desactivado" :
-                "Sector Activado";
-
-            _context.Sector.Update(sector);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje });
         }
 
 

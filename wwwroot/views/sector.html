@@ -1,7 +1,6 @@
-
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-  <!-- Título -->
+
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Listado y Control de Sectores</h3>
     <p class="text-muted  mb-0">Panel para administrar y consultar sectores.</p>
@@ -9,20 +8,18 @@
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="CerrarPanelSector()"></div>
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Agregar -->
+
       <button class="btn btn-agregar" onclick="AbrirPanelSector()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Agregar Sector</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-button">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -32,13 +29,15 @@
     </div>
 
 
-
-
-
-
-    <!-- Contenedor Filtros-->
+    <!-- ======================================= Contenedor Filtros ====================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
+
+        <div class="col-12 col-md-3">
+          <label for="NombreSectorBuscar" class="form-label-fija">Nombre</label>
+          <input type="text" class="form-control filtro-select" id="NombreSectorBuscar" placeholder="Buscar..." />
+        </div>
+
         <div class="col-12 col-md-2">
           <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
           <select id="EstadoIdBuscar" class="form-control filtro-select">
@@ -50,7 +49,7 @@
       </div>
     </div>
 
-    <!-- Contenedor Generar-->
+    <!-- ======================================= Contenedor Generar ====================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -59,19 +58,11 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
 
-  <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-  <canvas id="graficoSectores" width="400" height="150"></canvas>
-</div>
-
-
-    <!-- Tabla de Datos -->
+    <!-- ======================================= Tabla de Datos ====================================== -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle">
         <colgroup>
@@ -92,37 +83,32 @@
   </div>
 
 
-  
 
-    <!-- Panel deslizante -->
-    <div id="panelSector" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
-      <div class="panel-header">
-        <h2 id="panelTitulo" class="panel-title">Formulario De Sector</h2>
-      </div>
-      <div class="panel-body">
-        <form id="formSector">
-          <input type="hidden" id="IdSector" />
 
-          <div class="form-grid">
-            <div class="form-group">
-              <input type="text" id="NombreSector" class="form-control" placeholder=" " />
-              <label for="NombreSector">Nombre</label>
-              <div class="invalid-feedback" id="errorNombreSector"></div>
-              
-
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="panel-footer mt-3">
-        <button class="btn btn-cancelar" onclick="CerrarPanelSector()">Cancelar</button>
-        <button  type="submit" class="btn btn-guardar" onclick="BuscarSectorId()">Guardar</button>
-      </div>
+  <!-- ======================================= Panel Deslizante Formulario de Sector ====================================== -->
+  <div id="panelSector" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Sector</h2>
     </div>
+    <div class="panel-body">
+      <form id="formSector">
+        <input type="hidden" id="IdSector" />
 
+        <div class="form-grid">
+          <div class="form-group">
+            <input type="text" id="NombreSector" class="form-control" placeholder=" " />
+            <label for="NombreSector">Nombre</label>
+            <div class="invalid-feedback" id="errorNombreSector"></div>
 
-  
-
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3">
+      <button class="btn btn-cancelar" onclick="CerrarPanelSector()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarSectorId()">Guardar</button>
+    </div>
+  </div>
 
 
 </div>

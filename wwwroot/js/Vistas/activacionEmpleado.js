@@ -1,10 +1,16 @@
-//INICIO ONCHANGE FILTROS//
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  // Filtrado en tiempo real
   $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", ObtenerEmpleadosActivacion);
   $("#FiltroActivo").on("change", ObtenerEmpleadosActivacion);
 });
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE ACTIVACIONES ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerEmpleadosActivacion() {
   const nombre = document.getElementById("FiltroNombre").value || "";
   const email = document.getElementById("FiltroEmail").value || "";
@@ -31,11 +37,15 @@ async function ObtenerEmpleadosActivacion() {
 }
 
 
-
-
-// funcion para mostar los datos en la tabala 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IICIALIZQMAOS LA VARIABLE GLOBAL ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 let empleadosActivacionGlobal = [];
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS DATOS EN LA TABALA ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEmpleadosActivacion(data) {
   empleadosActivacionGlobal = data; 
   const tbody = $("#tablaActivacionEmpleadosBody");
@@ -87,7 +97,6 @@ function MostrarEmpleadosActivacion(data) {
     `);
   });
 
-  // Inicializar tooltips
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -95,27 +104,30 @@ function MostrarEmpleadosActivacion(data) {
   });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL DETALLE DE UN EMPLEADO //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarDetalleEmpleadoActivacion(index) {
   const item = empleadosActivacionGlobal[index];
 
-  // Setear datos
   document.getElementById("detalleEmpleadoFecha").textContent = item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo";
-  document.getElementById("detalleEmpleadoNombre").textContent = item.nombreCompleto || "N/D";
-  document.getElementById("detalleEmpleadoEmail").textContent = item.email || "N/D";
-  document.getElementById("detalleEmpleadoDNI").textContent = item.dni || "N/D";
+  document.getElementById("detalleEmpleadoNombre").textContent = item.nombreCompleto || "-";
+  document.getElementById("detalleEmpleadoEmail").textContent = item.email || "-";
+  document.getElementById("detalleEmpleadoDNI").textContent = item.dni || "-";
   document.getElementById("detalleEmpleadoEstado").textContent = item.activo ? "Activo" : "Inactivo";
 
-  // Mostrar el offcanvas
   const offcanvasElement = document.getElementById("offcanvasDetalleEmpleadoActivacion");
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LA VENTANA DE TOGGLE DEL EMPLEADO /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarVentanaToggleEmpleado(empleadoId, activacionId, activo) {
   if (activo) {
-    // Si está activo, mostrar ventana para desactivar
     Swal.fire({
       title: "¿Desactivar empleado?",
       text: "Esta acción desactivará al empleado en el sistema.",
@@ -156,14 +168,20 @@ function MostrarVentanaToggleEmpleado(empleadoId, activacionId, activo) {
       }
     });
   } else {
-    // Si está desactivado, mostrar ventana para activar con selección de rol
     MostrarVentanaActivarEmpleado(empleadoId, activacionId, activo);
   }
 }
 
 
-let activacionIdGlobal = 0; // variable para guardar id activacion
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR LA VARIABLE GLOBAL ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+let activacionIdGlobal = 0; 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LA VENTANA DE TOGGLE DEL EMPLEADO /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarVentanaActivarEmpleado(empleadoId, activacionId, activo) {
   activacionIdGlobal = activacionId;
 
@@ -256,7 +274,9 @@ function MostrarVentanaActivarEmpleado(empleadoId, activacionId, activo) {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ACTIVAR UN EMPLEADO ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
   const body = {
     id: Number(activacionId),
@@ -277,7 +297,6 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
       throw new Error(errorData.title || 'Error al activar empleado');
     }
 
-    // Toast éxito personalizado
     Swal.fire({
       title: "¡Activado Correctamente!",
       toast: true,
@@ -296,7 +315,6 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
       },
     });
 
-    // Actualizar tabla
     ObtenerEmpleadosActivacion();
 
   } catch (error) {
@@ -306,12 +324,14 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA DESACTIVAR UN EMPLEADO ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function DesactivarEmpleado(empleadoId, activacionId) {
   const body = {
     id: activacionId,
     empleadoId: empleadoId,
-    activo: false  // o el campo que uses para marcar desactivado
+    activo: false  
   };
 
   try {
@@ -344,7 +364,6 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
       },
     });
 
-    // Refrescar la tabla
     ObtenerEmpleadosActivacion();
 
   } catch (error) {
@@ -353,28 +372,7 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
 }
 
 
-
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
-
- 
-
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerEmpleadosActivacion();

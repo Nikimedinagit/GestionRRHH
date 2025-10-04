@@ -21,17 +21,52 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/Justificaciones
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Justificacion>>> GetJustificacion()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER Y MOSTARR LOS DATOS DE LA JUSTIFICACION SEGUN SUS FILTROS /////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaJustificacion>>> JustificacionFiltrar([FromBody] JustificacionFiltrar filtro)
         {
-            return await _context.Justificacion
-            .Include(j => j.Empleado)
-            .Include(j => j.Empleado.Puesto)
-            .ToListAsync();
+            var obtenerJustificaciones = _context.Justificacion.Include(j => j.Empleado).AsQueryable();
+
+            if (filtro.EstadoJustificacion.HasValue)
+                obtenerJustificaciones = obtenerJustificaciones.Where(j => (int)j.Estados == filtro.EstadoJustificacion.Value);
+
+            if (filtro.FechaJustificacion.HasValue)
+            {
+                var fecha = filtro.FechaJustificacion.Value.Date;
+                obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Fecha.Date == fecha);
+            }
+
+            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+            {
+                var texto = filtro.EmpleadoTexto.ToLower();
+                obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Empleado.NombreCompleto.ToLower().Contains(texto));
+            }
+
+            var vista = await obtenerJustificaciones.OrderBy(J => J.Estados).ThenBy(J => J.Fecha)
+                .Select(j => new VistaJustificacion
+                {
+                    Id = j.Id,
+                    Motivo = j.Motivo,
+                    FechaString = j.Fecha.ToString("dd/MM/yyyy"),
+                    EstadoString = j.EstadoString.ToString(),
+                    EmpleadoString = j.Empleado.NombreCompleto,
+                    EmpleadoId = j.EmpleadoId,
+                    DocumentoAdjunto = j.DocumentoAdjunto,
+                    DocumentoNombre = j.DocumentoNombre,
+                    DocumentoMimeType = j.DocumentoMimeType
+                })
+                .ToListAsync();
+
+            return Ok(vista);
         }
 
-        // GET: api/Justificaciones/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN JUSTIFICACION POR ID ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Justificacion>> GetJustificacion(int id)
         {
@@ -45,6 +80,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             return justificacion;
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA DESCARGAR DOCUMENTO //////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("Documento/{id}")]
         public async Task<IActionResult> DescargarDocumento(int id)
         {
@@ -52,7 +91,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (justificacion == null || justificacion.DocumentoAdjunto == null)
                 return NotFound();
 
-            // Usar nombre y tipo original
             var nombreArchivo = justificacion.DocumentoNombre ?? $"Justificacion_{id}";
             var mimeType = justificacion.DocumentoMimeType ?? "application/octet-stream";
 
@@ -60,132 +98,35 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaJustificacion>>> JustificacionFiltrar([FromBody] JustificacionFiltrar filtro)
-        {
-            List<VistaJustificacion> vista = new List<VistaJustificacion>();
-
-            var justificacionesFiltradas = _context.Justificacion.AsQueryable();
-
-            if (filtro.TipoJustificacion.HasValue)
-                justificacionesFiltradas = justificacionesFiltradas.Where(t => (int)t.TipoJustificacion == filtro.TipoJustificacion);
-
-            if (filtro.FechaJustificacion.HasValue)
-            {
-                var fechaJustificacion = filtro.FechaJustificacion.Value.Date;
-                justificacionesFiltradas = justificacionesFiltradas.Where(t => t.Fecha.Date == fechaJustificacion);
-
-            }
-
-            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
-            {
-                justificacionesFiltradas = justificacionesFiltradas.Where(t =>
-                t.Empleado.NombreCompleto.Contains(filtro.EmpleadoTexto));
-            }
-
-            //Armar lista de respuesta
-            foreach (var justificacion in justificacionesFiltradas)
-            {
-                var vistaJustificacion = new VistaJustificacion
-                {
-                    Id = justificacion.Id,
-                    Motivo = justificacion.Motivo,
-                    FechaString = justificacion.Fecha.ToString("dd/MM/yyyy"),
-                    TipoJustificacionString = justificacion.TipoJustificacion.ToString(),
-                    EmpleadoString = justificacion.Empleado.NombreCompleto,
-                    EmpleadoId = justificacion.EmpleadoId,
-                    DocumentoAdjunto = justificacion.DocumentoAdjunto,
-                    DocumentoNombre = justificacion.DocumentoNombre,
-                    DocumentoMimeType = justificacion.DocumentoMimeType
-                };
-                vista.Add(vistaJustificacion);
-            }
-            return vista;
-        }
-
-
-        // PUT: api/Justificaciones/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutJustificacion(int id, [FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
-        {
-            if (id != justificacion.Id)
-            {
-                return BadRequest();
-            }
-
-            // Buscar la justificacion original
-            var justificacionOriginal = await _context.Justificacion.FindAsync(id);
-            if (justificacionOriginal == null)
-            {
-                return NotFound();
-            }
-
-            //Actualizar los campos permitidos
-            justificacionOriginal.Motivo = justificacion.Motivo;
-            justificacionOriginal.Fecha = justificacion.Fecha;
-            justificacionOriginal.TipoJustificacion = justificacion.TipoJustificacion;
-            justificacionOriginal.EmpleadoId = justificacion.EmpleadoId;
-
-            // Actualizar archivo si se proporciona uno nuevo
-            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    await DocumentoAdjunto.CopyToAsync(ms);
-                    justificacionOriginal.DocumentoAdjunto = ms.ToArray();
-                }
-                justificacionOriginal.DocumentoNombre = DocumentoAdjunto.FileName;
-                justificacionOriginal.DocumentoMimeType = DocumentoAdjunto.ContentType;
-            }
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!JustificacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Justificaciones
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UNA NUEVA JUSTIFICACION ////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
         public async Task<ActionResult<Justificacion>> PostJustificacion([FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
         {
-            justificacion.TipoJustificacion = TipoJustificacion.PENDIENTE; //Guarda el estado de la justificacion como pendiente
+            justificacion.Estados = EstadoJustificacion.PENDIENTE;
 
             var fecha = justificacion.Fecha.Date;
 
-            //Verificar si ya existe una justificación pendiente para el mismo empleado en el mismo dí
-            var justificacionExistente = await _context.Justificacion
-            .AnyAsync(t => t.EmpleadoId == justificacion.EmpleadoId &&
-                       t.Fecha.Date == fecha &&
-                       t.TipoJustificacion == TipoJustificacion.PENDIENTE);
+            bool existe = await _context.Justificacion
+                .AnyAsync(j => j.EmpleadoId == justificacion.EmpleadoId &&
+                               j.Fecha.Date == fecha &&
+                               j.Estados == EstadoJustificacion.PENDIENTE);
 
-            if (justificacionExistente)
+            if (existe)
             {
-                return BadRequest(new { codigo = 0, mensaje = "Ya hay una justificación pendiente para este empleado en este día." });
+                return BadRequest(new
+                {
+                    codigo = 0,
+                    mensaje = "Ya hay una justificación pendiente para este empleado en este día."
+                });
             }
 
-
-            //Guardar archivo en la base de datos
-            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+            if (DocumentoAdjunto?.Length > 0)
             {
-                using (var ms = new MemoryStream())
-                {
-                    await DocumentoAdjunto.CopyToAsync(ms);
-                    justificacion.DocumentoAdjunto = ms.ToArray();
-                }
+                using var ms = new MemoryStream();
+                await DocumentoAdjunto.CopyToAsync(ms);
+                justificacion.DocumentoAdjunto = ms.ToArray();
                 justificacion.DocumentoNombre = DocumentoAdjunto.FileName;
                 justificacion.DocumentoMimeType = DocumentoAdjunto.ContentType;
             }
@@ -193,83 +134,94 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Justificacion.Add(justificacion);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJustificacion", new { id = justificacion.Id }, justificacion);
+            return CreatedAtAction(nameof(GetJustificacion), new { id = justificacion.Id }, justificacion);
         }
 
-        // DELETE: api/Justificaciones/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutJustificacion(int id, [FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
+        {
+            var justificacionOriginal = await _context.Justificacion.FindAsync(id);
+
+            justificacionOriginal.Motivo = justificacion.Motivo;
+            justificacionOriginal.DocumentoAdjunto = justificacion.DocumentoAdjunto;
+
+            if (DocumentoAdjunto?.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                await DocumentoAdjunto.CopyToAsync(ms);
+                justificacionOriginal.DocumentoAdjunto = ms.ToArray();
+                justificacionOriginal.DocumentoNombre = DocumentoAdjunto.FileName;
+                justificacionOriginal.DocumentoMimeType = DocumentoAdjunto.ContentType;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(justificacionOriginal);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ELIMINAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-            if (justificacion == null)
-            {
-                return NotFound();
-            }
-
+            
             _context.Justificacion.Remove(justificacion);
             await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
-
-        private bool JustificacionExists(int id)
-        {
-            return _context.Justificacion.Any(e => e.Id == id);
+            return Ok(justificacion);
         }
 
 
-
-        //APROBAR Y RECHAZAR JUSTIFICACIONES
-
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA APROBAR UNA JUSTIFICACION /////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost("{id}/Aprobar")]
         public async Task<IActionResult> AprobarJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-            if (justificacion == null)
-                return NotFound();
-
-            if (justificacion.TipoJustificacion != TipoJustificacion.PENDIENTE)
+            
+            if (justificacion.Estados != EstadoJustificacion.PENDIENTE)
                 return BadRequest("Solo se pueden aprobar justificaciones pendientes.");
 
-
-            justificacion.TipoJustificacion = TipoJustificacion.APROBADA;
+            justificacion.Estados = EstadoJustificacion.APROBADA;
             _context.Justificacion.Update(justificacion);
-
-            var usuarioId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            // Crear historial en LicenciasAprobadas
-            // var licenciaAprobada = new AprobacionDeLicencia
-            // {
-            //     Estado = EstadoLicencia.APROBADA,
-            //     LicenciaId = licencia.Id,
-            //     FechDeAprobacion = DateTime.UtcNow,
-            //     UsuarioAprobador = usuarioId
-
-            // };
-            // _context.AprobacionDeLicencia.Add(licenciaAprobada);
 
             await _context.SaveChangesAsync();
 
             return Ok(justificacion);
         }
 
-        
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA RECHAZAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost("{id}/Rechazar")]
         public async Task<IActionResult> RechazarJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-            if (justificacion == null)
-                return NotFound();
-
-            if (justificacion.TipoJustificacion != TipoJustificacion.PENDIENTE)
+           
+            if (justificacion.Estados != EstadoJustificacion.PENDIENTE)
                 return BadRequest("Solo se pueden rechazar justificaciones pendientes.");
 
-            justificacion.TipoJustificacion = TipoJustificacion.RECHAZADA;
+            justificacion.Estados = EstadoJustificacion.RECHAZADA;
             _context.Justificacion.Update(justificacion);
+
             await _context.SaveChangesAsync();
 
             return Ok(justificacion);
+        }
+
+
+        private bool JustificacionExists(int id)
+        {
+            return _context.Justificacion.Any(e => e.Id == id);
         }
 
     }

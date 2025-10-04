@@ -1,29 +1,37 @@
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE TIPOS DE LICENCIAS ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTiposDeLicenciasDropDown() {
     const res = await authFetch("TipoDeLicencias/Activos", {
         method: "GET",
-      })
-        .then(response => response.json()) 
+    })
+        .then(response => response.json())
         .then(data => {
-            MostrarTiposDeLicenciasDropDown(data) 
+            MostrarTiposDeLicenciasDropDown(data)
         })
-        .catch(error => console.log("No se puede acceder al servicio.", error))  
-    }
+        .catch((error) => {
+            MostrarErrorCatch();
+        });
+}
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA MOSTRAR LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarTiposDeLicenciasDropDown(data) {
     const $dropdown = $('#IdTipoLicencia');
     $dropdown.empty();
 
-    // Agrega la opción por defecto
     $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
-    // Agrega los tipos de licencia activos
     $.each(data, function (index, item) {
         $dropdown.append(`<option value="${item.id}">${item.nombre}</option>`);
     });
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICILAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerTiposDeLicenciasDropDown();
-   

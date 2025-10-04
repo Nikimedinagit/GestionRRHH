@@ -1,6 +1,6 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-    <!-- Título -->
+
+    <!-- ======================================= Título ====================================== -->
     <div class="mb-3">
         <h3 class="titulo-seccion">Gestor de Licencias</h3>
         <p class="text-muted fs-6 mb-0">Visualizá, creá o gestioná licencias de los empleados de forma rápida.</p>
@@ -8,20 +8,18 @@
 
     <hr />
 
-    <!-- Contenedor de Botones y Tabla -->
+
+    <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
     <div style="background-color: white; border-radius: 5px; padding: 10px">
-        <!-- Fondo Oscuro al Abrir Panel -->
+
         <div id="fondoOscuro" onclick="CerrarPanelLicencia()"></div>
 
-        <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <!-- Botón Solicitar Licencias -->
             <button class="btn btn-agregar" onclick="AbrirPanelLicencia()">
                 <i class="fa-solid fa-square-plus me-1"></i>
                 <span>Solicitar Licencias</span>
             </button>
 
-            <!-- Botones Filtros y Informe -->
             <div class="d-flex gap-2 flex-wrap responsive-buttons">
                 <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
                     <i class="fa-solid fa-filter me-1"></i>
@@ -36,21 +34,16 @@
         </div>
 
 
-
-
-
-
-        <!-- Contenedor Filtros-->
+        <!-- ======================================= Contenedor Filtros ====================================== -->
         <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
             <div class="row g-3 align-items-end">
-                <!-- Empleado -->
                 <div class="col-12 col-md-3">
                     <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
-                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..."/>
-                 </div>   
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
+                        placeholder="Buscar..." />
+                </div>
 
-                <!-- Estado -->
-                <div class="col-12 col-md-2"> 
+                <div class="col-12 col-md-2">
                     <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
                     <select id="EstadoIdBuscar" class="form-control filtro-select">
                         <option value="0">[Todos]</option>
@@ -61,17 +54,14 @@
                     </select>
                 </div>
 
-                <!-- Tipo de Licencia -->
                 <div class="col-12 col-md-2">
                     <label for="TipoDeLicenciaIdBuscar" class="form-label-fija">Tipo de Licencia</label>
                     <select id="TipoDeLicenciaIdBuscar" class="form-control filtro-select">
                         <option value="0">[Todas]</option>
-                        <!-- Aquí se cargarán dinámicamente los tipos de licencias -->
                     </select>
-                 </div>  
-                 
-                <!-- Activar Fecha -->
-                 <div class="col-12 col-md-1">
+                </div>
+
+                <div class="col-12 col-md-1">
                     <label class="form-label-fija">Fecha</label>
                     <select id="filtrarFechaSelect" class="form-control filtro-select">
                         <option value="no" selected>No</option>
@@ -79,22 +69,20 @@
                     </select>
                 </div>
 
-                <!-- Fecha desde -->
                 <div id="fechasInputs" class="d-none col-12 col-md-2">
                     <label for="FechaInicioBuscar" class="form-label-fija">Desde</label>
                     <input type="date" class="form-control filtro-select" id="FechaInicioBuscar" />
                 </div>
 
-                <!-- Fecha hasta -->
                 <div id="fechasInputsFin" class="d-none col-12 col-md-2">
                     <label for="FechaFinBuscar" class="form-label-fija">Hasta</label>
                     <input type="date" class="form-control filtro-select" id="FechaFinBuscar" />
                 </div>
-              
+
             </div>
         </div>
 
-        <!-- Contenedor Generar-->
+        <!-- ======================================= Contenedor Generar ====================================== -->
         <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
             <div class="d-flex gap-2 flex-wrap">
                 <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -103,23 +91,14 @@
                 <button class="btn btn-generar-excel" onclick="GenerarExcel()">
                     <i class="fa-solid fa-file-excel me-1"></i> Excel
                 </button>
-                <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-                    <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-                </button>
+
             </div>
         </div>
 
-
-        <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-            <canvas id="graficoLicencias" width="400" height="150"></canvas>
-        </div>
-
-
-        <!-- Contenedor de tarjetas -->
+        <!-- ======================================= Tabla de Datos ====================================== -->
         <div>
             <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-                <!-- Tarjeta genérica -->
                 <div class="card p-3 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
@@ -133,7 +112,6 @@
                     </div>
                 </div>
 
-                <!-- Aprobadas -->
                 <div class="card p-3 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
@@ -147,7 +125,6 @@
                     </div>
                 </div>
 
-                <!-- Pendientes -->
                 <div class="card p-3 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
@@ -161,7 +138,6 @@
                     </div>
                 </div>
 
-                <!-- Rechazadas -->
                 <div class="card p-3 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
@@ -175,7 +151,6 @@
                     </div>
                 </div>
 
-                <!-- Expiradas -->
                 <div class="card p-3 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
@@ -192,16 +167,16 @@
             </div>
         </div>
 
-            <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
 
-        <!-- Cards de licencias -->
+        <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
+
+        <!-- ======================================= Tarjetas de licencias ====================================== -->
         <div id="licenciasContainer" class="row g-4"></div>
 
     </div>
 
 
-
-    <!-- Panel Deslizante Formulario de Licencia -->
+    <!-- ======================================= Panel Deslizante Formulario de Licencia ====================================== -->
     <div id="panelLicencia" aria-modal="true" role="dialog" aria-labelledby="panelTituloLicencia" tabindex="-1"
         class="w-30">
         <div class="panel-header">
@@ -212,9 +187,7 @@
             <form id="formLicencia">
                 <input type="hidden" id="IdLicencia" />
 
-                <!-- Tipo de Licencia y Empleado -->
                 <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                    <!-- Tipo de Licencia -->
                     <div class="form-group position-relative mb-3">
                         <select name="IdTipoLicencia" id="IdTipoLicencia" class="form-control" required>
                             <option value="" disabled selected>Seleccione</option>
@@ -223,7 +196,6 @@
                         <div class="invalid-feedback" id="errorIdTipoLicencia"></div>
                     </div>
 
-                    <!-- Empleado -->
                     <div class="form-group position-relative mb-3">
                         <select name="IdEmpleado" id="EmpleadoId" class="form-control" required>
                             <option value="" disabled selected>Seleccione</option>
@@ -233,16 +205,13 @@
                     </div>
                 </div>
 
-                <!-- Fecha Inicio y Fecha Fin -->
                 <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                    <!-- Fecha Inicio -->
                     <div class="form-group position-relative mb-3">
                         <input type="date" id="FechaInicio" class="form-control" />
                         <label for="FechaInicio">Fecha de Inicio</label>
                         <div class="invalid-feedback" id="errorFechaInicio"></div>
                     </div>
 
-                    <!-- Fecha Fin -->
                     <div class="form-group position-relative mb-3">
                         <input type="date" id="FechaFin" class="form-control" />
                         <label for="FechaFin">Fecha de Fin</label>
@@ -250,18 +219,16 @@
                     </div>
                 </div>
 
-                <!--Documento -->
                 <div class="form-grid" style="grid-template-columns: 1fr;">
-                    <!-- Documento Adjunto -->
                     <div class="form-group position-relative mb-3">
-                        <input type="file" id="DocumentoAdjunto" name="DocumentoAdjunto" class="form-control"/>
+                        <input type="file" id="DocumentoAdjunto" name="DocumentoAdjunto" class="form-control" />
                         <label for="DocumentoAdjunto">Documento Adjunto (opcional)</label>
                         <div class="invalid-feedback" id="errorDocumentoAdjunto"></div>
                         <div id="archivoAdjuntoActual" class="mt-1"></div>
                         <div class="invalid-feedback" id="errorArchivoAdjunto"></div>
                     </div>
                 </div>
-            </form> 
+            </form>
         </div>
 
         <div class="panel-footer">
@@ -270,11 +237,10 @@
         </div>
     </div>
 
-    <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
-    <script src="../js/Vistas/common/obtenerTiposDeLicencia.js"></script>
-    <script src="../js/Vistas/licencia.js"></script>
-    <script src="../js/Vistas/estadisticas/estadisticasLicencias.js"></script>
-
-
 
 </div>
+
+<script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+<script src="../js/Vistas/common/obtenerTiposDeLicencia.js"></script>
+<script src="../js/Vistas/licencia.js"></script>
+<!-- <script src="../js/Vistas/estadisticas/estadisticasLicencias.js"></script> -->

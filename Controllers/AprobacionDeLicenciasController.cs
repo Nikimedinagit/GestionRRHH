@@ -20,17 +20,61 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/AprobacionDeLicencias
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AprobacionDeLicencia>>> GetAprobacionDeLicencia()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE APROBACION DE LICENCIAS ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaAprobacionDeLicencia>>> FiltrarAprobacionDeLicencia([FromBody] FiltrarAprobacionDeLicencia filtro)
         {
-            return await _context.AprobacionDeLicencia
-            .Include(a => a.Licencia)
-            .ThenInclude(l => l.TipoDeLicencia)
-            .ToListAsync();
+            var obtenerLicenciasAprobadas = _context.AprobacionDeLicencia
+                .Include(a => a.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
+                .AsQueryable();
+
+            if (filtro.FechaAprobacion.HasValue)
+            {
+                var fechaInicio = filtro.FechaAprobacion.Value.Date;
+                var fechaFin = fechaInicio.AddDays(1);
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
+            }
+
+            if (filtro.TipoDeLicenciaId.HasValue)
+            {
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+            }
+
+            var vista = await obtenerLicenciasAprobadas
+                .Select(a => new
+                {
+                    a.Id,
+                    LicenciaString = a.Licencia.TipoDeLicencia.Nombre,
+                    a.LicenciaId,
+                    FechaDeAprobacion = a.FechDeAprobacion,
+                    a.Estado,
+                    a.UsuarioAprobador
+                })
+                .ToListAsync();
+
+            var resultado = vista.Select(a => new VistaAprobacionDeLicencia
+            {
+                Id = a.Id,
+                LicenciaString = a.LicenciaString,
+                LicenciaId = a.LicenciaId,
+                FechaDeAprobacion = a.FechaDeAprobacion.ToString("dd/MM/yyyy"),
+                EstadoString = a.Estado.ToString(),
+                Estado = a.Estado,
+                NombreUsuarioAprobador = _context.Users.FirstOrDefault(u => u.Id == a.UsuarioAprobador).NombreCompleto,
+                EmailUsuarioAprobador = _context.Users.FirstOrDefault(u => u.Id == a.UsuarioAprobador).Email
+            }).ToList();
+
+            return resultado;
         }
 
-        // GET: api/AprobacionDeLicencias/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN APROBACION DE LICENCIA POR ID ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<AprobacionDeLicencia>> GetAprobacionDeLicencia(int id)
         {
@@ -43,51 +87,6 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return aprobacionDeLicencia;
         }
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaAprobacionDeLicencia>>> FiltrarAprobacionDeLicencia([FromBody] FiltrarAprobacionDeLicencia filtro)
-        {
-            var aprobacionDeLicenciasFiltradas = _context.AprobacionDeLicencia
-                .Include(a => a.Licencia)
-                .ThenInclude(l => l.TipoDeLicencia)
-                .AsQueryable();
-
-            if (filtro.FechaAprobacion.HasValue)
-            {
-                var fechaInicio = filtro.FechaAprobacion.Value.Date;
-                var fechaFin = fechaInicio.AddDays(1);
-
-                aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
-            }
-
-            if (filtro.TipoDeLicenciaId.HasValue)
-            {
-                aprobacionDeLicenciasFiltradas = aprobacionDeLicenciasFiltradas
-                    .Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
-            }
-
-
-            var listaFiltrada = await aprobacionDeLicenciasFiltradas.ToListAsync();
-            var usuarios = await _context.Users
-                .Where(u => listaFiltrada.Select(t => t.UsuarioAprobador).Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id);
-
-            var vista = listaFiltrada.Select(a => new VistaAprobacionDeLicencia
-            {
-                Id = a.Id,
-                LicenciaString = a.Licencia?.TipoDeLicencia?.Nombre,
-                LicenciaId = a.LicenciaId,
-                FechaDeAprobacion = a.FechDeAprobacion.ToString("dd/MM/yyyy"),
-                EstadoString = a.Estado.ToString(),
-                Estado = a.Estado,
-                UsuarioAprobador = a.UsuarioAprobador,
-                NombreUsuarioAprobador = usuarios.ContainsKey(a.UsuarioAprobador) ? usuarios[a.UsuarioAprobador].NombreCompleto : "",
-                EmailUsuarioAprobador = usuarios.ContainsKey(a.UsuarioAprobador) ? usuarios[a.UsuarioAprobador].Email : ""
-            }).ToList();
-
-            return vista;
-        }
-
 
 
         private bool AprobacionDeLicenciaExists(int id)

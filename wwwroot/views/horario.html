@@ -1,7 +1,6 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
 
-  <!-- Título -->
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Asignación de Horarios</h3>
     <p class="text-muted mb-0" style="font-size: 0.95rem;">
@@ -9,24 +8,20 @@
     </p>
   </div>
 
-
-
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="cerrarPanelHorario()"></div>
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Asignar Horario -->
+
       <button class="btn btn-agregar" onclick="abrirPanelHorario()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Asignar Horario</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -42,16 +37,15 @@
 
 
 
-    <!-- Contenedor Filtros-->
+    <!-- ================================ Contenedor Filtros ===================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <!-- Empleado -->
+
         <div class="col-12 col-md-3">
           <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
           <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
 
-        <!-- Tipos de Horario -->
         <div class="col-12 col-md-3">
           <label for="TipoHorarioBuscar" class="form-label-fija">Tipo de Horario</label>
           <select id="TipoHorarioBuscar" class="form-control filtro-select">
@@ -61,7 +55,6 @@
           </select>
         </div>
 
-        <!-- Activar Horario -->
         <div class="col-12 col-md-1">
           <label class="form-label-fija">Horario</label>
           <select id="filtrarHorarioSelect" class="form-control filtro-select">
@@ -70,14 +63,12 @@
           </select>
         </div>
 
-        <!-- Horario Desde -->
         <div id="horariosInputs" class="d-none col-12 col-md-2">
           <label for="HorarioInicioBuscar" class="form-label-fija">Desde</label>
           <input type="time" class="form-control filtro-select" id="HorarioInicioBuscar" min="00:00" max="23:59" />
 
         </div>
 
-        <!-- Horario Hasta -->
         <div id="horariosInputsFin" class="d-none col-12 col-md-2">
           <label for="HorarioFinBuscar" class="form-label-fija">Hasta</label>
           <input type="time" class="form-control filtro-select" id="HorarioFinBuscar" min="00:00" max="23:59" />
@@ -87,7 +78,7 @@
     </div>
 
 
-    <!-- Contenedor Generar-->
+    <!-- ================================ Contenedor Generar ===================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -96,23 +87,16 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
 
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoHorario" width="400" height="150"></canvas>
-    </div>
 
 
-    <!-- Contenedor de tarjetas de resumen de horarios -->
+    <!-- ================================ Contenedor de tarjetas de resumen de horarios ===================================== -->
     <div>
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-        <!-- Total horarios asignados -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-primary bg-opacity-10 p-3 me-3">
@@ -125,7 +109,6 @@
           </div>
         </div>
 
-        <!-- Total horas semanales -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-info bg-opacity-10 p-3 me-3">
@@ -138,7 +121,6 @@
           </div>
         </div>
 
-        <!-- Empleados que trabajan fines de semana -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-warning bg-opacity-10 p-3 me-3">
@@ -155,18 +137,16 @@
     </div>
 
 
-    <hr style="margin-bottom: 1rem;" />
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
-    <!-- Contenedor de las horarios -->
+
     <div class="container-fluid">
       <div id="contenedorHorarios" class="row">
-        <!--Se cargarán dinámicamente-->
       </div>
     </div>
 
 
-
-    <!-- Panel Deslizante Formulario -->
+    <!-- ======================================= Panel Deslizante Formulario ====================================== -->
     <div id="panelHorario" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1">
       <div class="panel-header mb-3">
         <h2 id="panelTitulo" class="panel-title">Formulario de Horario</h2>
@@ -176,7 +156,6 @@
         <form id="formHorario" class="needs-validation" novalidate>
           <input type="hidden" id="IdHorario" />
 
-          <!-- Empleado -->
           <div class="form-group position-relative mb-3">
             <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
               <option value="" disabled selected>Seleccione un empleado</option>
@@ -185,7 +164,6 @@
             <div class="invalid-feedback" id="errorEmpleadoId"></div>
           </div>
 
-          <!-- Tipo de Horario -->
           <div class="form-group position-relative mb-3">
             <select id="TipoHorario" name="TipoHorario" class="form-control" required onchange="toggleHorarioInputs()">
               <option value="0" disabled selected>Seleccione tipo</option>
@@ -196,7 +174,6 @@
             <div class="invalid-feedback" id="errorTipoHorario"></div>
           </div>
 
-          <!-- Horario Continuo -->
           <div id="horarioContinuo" class="form-row mb-3 d-flex justify-content-between d-none">
             <div class="form-group position-relative" style="width: 48%;">
               <input type="time" id="HorarioInicio" name="HorarioInicio" class="form-control" min="00:00" max="23:59" />
@@ -211,7 +188,6 @@
             </div>
           </div>
 
-          <!-- Horario Alterno -->
           <div id="horarioAlterno" class="d-none">
             <div class="form-row mb-3 d-flex justify-content-between">
               <div class="form-group position-relative" style="width: 48%;">
@@ -244,10 +220,8 @@
             </div>
           </div>
 
-          <!-- Días de la Semana -->
           <div class="form-group mb-4 text-center">
             <div class="d-inline-flex flex-wrap justify-content-center gap-2 mb-3" id="diasSemana">
-              <!-- Checkbox como botón -->
               <div class="mt-3"><input type="checkbox" class="btn-check" id="lunes" /><label
                   class="btn btn-outline-primary btn-sm dia-btn" for="lunes">Lun</label></div>
               <div class="mt-3"><input type="checkbox" class="btn-check" id="martes" /><label
@@ -270,7 +244,6 @@
         </form>
       </div>
 
-
       <div class="panel-footer">
         <button class="btn btn-cancelar" onclick="cerrarPanelHorario()">
           Cancelar
@@ -282,7 +255,7 @@
     </div>
 
 
-    <!-- Offcanvs  detalle horario -->
+    <!--  ====================================== Offcanvas Detalle Horario ===================================== -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHorario"
       aria-labelledby="tituloDetalleHorario" style="
           width: 360px;
@@ -305,9 +278,7 @@
           </div>
         </div>
 
-
-            <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
-
+        <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
 
         <div class="offcanvas-body p-2" style="
       font-size: 0.75rem;
@@ -429,15 +400,8 @@
 
 
 
-
-
-
-
-
-
-
   </div>
-  <script src="../js/Vistas/estadisticas/estadisticasHorarios.js"></script>
+  <!-- <script src="../js/Vistas/estadisticas/estadisticasHorarios.js"></script> -->
   <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
   <script src="../js/Vistas/horario.js"></script>
 </div>

@@ -1,5 +1,7 @@
 <div class="px-3 py-3">
-  <!-- Título -->
+
+
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Registro de Personal</h3>
     <p class="text-muted fs-6 mb-0">
@@ -9,20 +11,19 @@
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+
+  <!--==================================== Contenedor de Botones y Tabla ===================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="CerrarPanelEmpleado()"></div>
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Agregar -->
+
       <button class="btn btn-agregar" onclick="AbrirPanelEmpleado()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Registrar Empleado</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -36,29 +37,26 @@
       </div>
     </div>
 
-    <!-- Contenedor Filtros-->
+
+    <!--================================ Contenedor Filtros ===================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <!-- Empleado -->
+
         <div class="col-12 col-md-3">
           <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
           <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
 
-        <!-- Legajo -->
         <div class="col-12 col-md-2">
           <label for="NroLegajoFiltro" class="form-label-fija">Legajo</label>
-          <input type="number" class="form-control filtro-select" id="NroLegajoFiltro" placeholder="Buscar..." />
+          <input type="text" class="form-control filtro-select" id="NroLegajoFiltro" placeholder="Buscar..." />
         </div>
 
-      
-        <!-- DNI -->
         <div class="col-12 col-md-2">
           <label for="DniEmpleadoFiltro" class="form-label-fija">DNI</label>
           <input type="number" class="form-control filtro-select" id="DniEmpleadoFiltro" placeholder="Buscar..." />
         </div>
 
-        <!-- Tipo de Sexo -->
         <div class="col-12 col-md-2">
           <label for="TipoSexoEmpleadoFiltro" class="form-label-fija">Tipo de Sexo</label>
           <select id="TipoSexoEmpleadoFiltro" class="form-control filtro-select">
@@ -70,7 +68,6 @@
           </select>
         </div>
 
-        <!-- Estado Civil -->
         <div class="col-12 col-md-2">
           <label for="EstadoCivilEmpleadoFiltro" class="form-label-fija">Estado Civil</label>
           <select id="EstadoCivilEmpleadoFiltro" class="form-control filtro-select">
@@ -82,27 +79,23 @@
           </select>
         </div>
 
-        <!-- Localidad -->
         <div class="col-12 col-md-2">
           <label for="IdLocalidadFiltro" class="form-label-fija">Localidad</label>
           <select id="IdLocalidadFiltro" class="form-control filtro-select">
             <option value="0">[Todas]</option>
-            <!-- Aquí se cargarán dinámicamente las localidades -->
           </select>
         </div>
 
-        <!-- Puesto -->
         <div class="col-12 col-md-3">
           <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
           <select id="IdPuestoFiltro" class="form-control filtro-select">
             <option value="0">[Todas]</option>
-            <!-- Aquí se cargarán dinámicamente los puestos -->
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Contenedor Generar-->
+    <!--================================ Contenedor Generar ===================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -111,20 +104,14 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoEmpleados" width="400" height="150"></canvas>
-    </div>
 
-    <!-- Contenedor de tarjetas de empleados -->
+    <!--================================ Contenedor de tarjetas de empleados ===================================== -->
     <div>
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
-        <!-- Total de empleados -->
+
         <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 180px;
@@ -141,7 +128,6 @@
           </div>
         </div>
 
-        <!-- Hombres -->
         <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 180px;
@@ -158,7 +144,6 @@
           </div>
         </div>
 
-        <!-- Mujeres -->
         <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 180px;
@@ -175,7 +160,6 @@
           </div>
         </div>
 
-        <!-- Otros -->
         <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 180px;
@@ -194,13 +178,15 @@
       </div>
     </div>
 
-    <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
-    <!-- Cards de Empleados -->
+
+    <!--================================ Cards de Empleados ===================================== -->
     <div id="empleadosContainer" class="row g-4"></div>
   </div>
 
-  <!-- Panel Deslizante Formulario de Empleado -->
+
+  <!--==================================== Panel Deslizante Formulario de Empleado ===================================== -->
   <div id="panelEmpleado" aria-modal="true" role="dialog" aria-labelledby="panelTituloEmpleado" tabindex="-1"
     class="w-30">
     <div class="panel-header">
@@ -218,56 +204,48 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
           ">
-          <!-- Nombre -->
           <div class="form-group position-relative mb-3">
             <input type="text" id="NombreEmpleado" class="form-control" placeholder=" " />
             <label for="NombreEmpleado">Nombre</label>
             <div class="invalid-feedback" id="errorNombreEmpleado"></div>
           </div>
 
-          <!-- DNI -->
           <div class="form-group position-relative mb-3">
             <input type="number" id="DniEmpleado" class="form-control" placeholder=" " />
             <label for="DniEmpleado">DNI</label>
             <div class="invalid-feedback" id="errorDniEmpleado"></div>
           </div>
 
-          <!-- CUIL -->
           <div class="form-group position-relative mb-3">
             <input type="number" id="CuilEmpleado" class="form-control" placeholder=" " />
             <label for="CuilEmpleado">CUIL</label>
             <div class="invalid-feedback" id="errorCuilEmpleado"></div>
           </div>
 
-          <!-- Teléfono -->
           <div class="form-group position-relative mb-3">
-            <input type="number" id="TelefonoEmpleado" class="form-control" placeholder=" " />
+            <input type="text" id="TelefonoEmpleado" class="form-control" placeholder=" " />
             <label for="TelefonoEmpleado">Teléfono</label>
             <div class="invalid-feedback" id="errorTelefonoEmpleado"></div>
           </div>
 
-          <!-- Email -->
           <div class="form-group position-relative mb-3">
             <input type="email" id="EmailEmpleado" class="form-control" placeholder=" " />
             <label for="EmailEmpleado">Email</label>
             <div class="invalid-feedback" id="errorEmailEmpleado"></div>
           </div>
 
-          <!-- Fecha Nacimiento -->
           <div class="form-group position-relative mb-3">
             <input type="date" id="FechaNacimientoEmpleado" class="form-control" placeholder=" " />
             <label for="FechaNacimientoEmpleado">Fecha Nacimiento</label>
             <div class="invalid-feedback" id="errorFechaNacimientoEmpleado"></div>
           </div>
 
-          <!-- Dirección -->
           <div class="form-group position-relative mb-3">
             <input type="text" id="DireccionEmpleado" class="form-control" placeholder=" " />
             <label for="DireccionEmpleado">Dirección</label>
             <div class="invalid-feedback" id="errorDireccionEmpleado"></div>
           </div>
 
-          <!-- Estado Civil -->
           <div class="form-group position-relative mb-3">
             <select id="EstadoCivilEmpleado" class="form-control" required>
               <option value="0" disabled selected hidden>
@@ -282,14 +260,12 @@
             <div class="invalid-feedback" id="errorEstadoCivilEmpleado"></div>
           </div>
 
-          <!-- Hijos -->
           <div class="form-group position-relative mb-3">
             <input type="number" id="CantidadHijosEmpleado" class="form-control" placeholder=" " />
             <label for="CantidadHijosEmpleado">Cantidad Hijos</label>
             <div class="invalid-feedback" id="errorCantidadHijosEmpleado"></div>
           </div>
 
-          <!-- Sexo -->
           <div class="form-group position-relative mb-3">
             <select id="TipoSexoEmpleado" class="form-control" required>
               <option value="0" disabled selected hidden>
@@ -304,25 +280,21 @@
             <div class="invalid-feedback" id="errorTipoSexoEmpleado"></div>
           </div>
 
-          <!-- Localidad -->
           <div class="form-group position-relative mb-3">
             <select id="IdLocalidad" class="form-control" required>
               <option value="" disabled selected hidden>
                 Seleccione
               </option>
-              <!-- opciones dinámicas -->
             </select>
             <label for="IdLocalidad">Localidad</label>
             <div class="invalid-feedback" id="errorIdLocalidad"></div>
           </div>
 
-          <!-- Puesto -->
           <div class="form-group position-relative mb-3">
             <select id="IdPuesto" class="form-control" required>
               <option value="0" disabled selected hidden>
                 Seleccione
               </option>
-              <!-- opciones dinámicas -->
             </select>
             <label for="IdPuesto">Puesto</label>
             <div class="invalid-feedback" id="errorIdPuesto"></div>
@@ -341,7 +313,8 @@
     </div>
   </div>
 
-  <!-- Offcanvas Detalle de Empleado -->
+
+  <!-- ======================================= Offcanvas Detalle de Empleado ====================================== -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado"
     aria-labelledby="tituloDetalleEmpleado" style="
       width: 380px;
@@ -350,7 +323,7 @@
     ">
     <div class="detalle-empleado-contenedor">
       <div class="detalle-empleado-encabezado row align-items-start">
-        
+
         <div class="col-10">
           <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
             Detalle del Empleado
@@ -360,13 +333,10 @@
           </p>
         </div>
 
-        <!-- Botón con línea divisoria -->
         <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
       </div>
-
-
 
       <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
@@ -461,14 +431,14 @@
     </div>
   </div>
 
-  <!-- Offcanvas Historial de Empleado -->
+
+  <!-- ======================================= Offcanvas Historial de Empleado ====================================== -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasHistorialEmpleado"
     aria-labelledby="tituloHistorialEmpleado">
     <div class="historial-empleado-contenedor">
 
-
       <div class="historial-empleado-encabezado row align-items-start">
-        
+
         <div class="col-10">
           <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
             Historial del Empleado
@@ -483,11 +453,8 @@
         </div>
       </div>
 
-
-
       <hr style="margin: 0 0 1rem 0; border-top: 1px solid #dee2e6" />
 
-      <!-- Tabla simple igual que tenías -->
       <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle w-100" id="tablaHistorialEmpleado"
           style="background: #fff">
@@ -510,14 +477,13 @@
   </div>
 
 
-
-  <!-- Offcanvas Detalle Historial Laboral -->
+  <!--==================================== Offcanvas Detalle Historial Laboral ===================================== -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHistorial"
     aria-labelledby="tituloDetalleHistorial"
     style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
     <div class="detalle-cambio-laboral-contenedor">
       <div class="detalle-cambio-laboral-encabezado row align-items-start">
-        
+
         <div class="col-10">
           <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
             Detalle del Cambio Laboral
@@ -584,9 +550,8 @@
   </div>
 
 
-
 </div>
 <script src="../js/Vistas/empleado.js"></script>
 <script src="../js/Vistas/common/obtenerLocalidad.js"></script>
 <script src="../js/Vistas/common/obtenerPuesto.js"></script>
-<script src="..//js/Vistas/estadisticas/estadisticasEmpleados.js"></script>
+<!-- <script src="..//js/Vistas/estadisticas/estadisticasEmpleados.js"></script> -->

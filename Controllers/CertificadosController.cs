@@ -20,7 +20,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/Certificados
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Certificado>>> GetCertificado()
         {
@@ -31,7 +34,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             .ToListAsync();
         }
 
-        // GET: api/Certificados/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN CERTIFICADO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Certificado>> GetCertificado(int id)
         {
@@ -45,127 +51,73 @@ namespace API_NET_CORE8_RRHH.Controllers
             return certificado;
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA DESCARGAR UN CERTIFICADO ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("Documento/{id}")]
         public async Task<IActionResult> DescargarDocumento(int id)
         {
             var certificado = await _context.Certificado.FindAsync(id);
-            if (certificado == null || certificado.DocumentoAdjunto == null)
-                return NotFound();
 
-            // Usar nombre y tipo original
             var nombreArchivo = certificado.DocumentoNombre ?? $"Justificacion_{id}";
             var mimeType = certificado.DocumentoMimeType ?? "application/octet-stream";
 
             return File(certificado.DocumentoAdjunto, mimeType, nombreArchivo);
         }
 
-        // PUT: api/Certificados/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCertificado(int id, [FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
-        {
-            if (id != certificado.Id)
-            {
-                return BadRequest();
-            }
-            var empleadoExistente = await _context.Certificado
-            .Where(c => c.EmpleadoId == certificado.EmpleadoId)
-            .AnyAsync();
 
-            if (empleadoExistente)
-            {
-                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
-            }
-
-            //Buscar el certificado original 
-            var certificadoOriginal = await _context.Certificado.FindAsync(id);
-            if (certificadoOriginal == null)
-            {
-                return NotFound();
-            }
-
-            //Actualizar archivo si se proporciona uno nuevo
-            if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    await DocumentoAdjunto.CopyToAsync(ms);
-                    certificadoOriginal.DocumentoAdjunto = ms.ToArray();
-                }
-                certificadoOriginal.DocumentoNombre = DocumentoAdjunto.FileName;
-                certificadoOriginal.DocumentoMimeType = DocumentoAdjunto.ContentType;
-            }
-
-            certificado.FechaEmision = DateTime.Now;
-            _context.Entry(certificado).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CertificadoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Certificados
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN CERTIFICADO ////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
-        public async Task<ActionResult<Certificado>> PostCertificado([FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
+        public async Task<ActionResult> PostCertificado([FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
         {
-            //Un certificado solo puede emitirse si el empleado asistió y aprobó el curso con nota mínima de 6.
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { codigo = -1, mensaje = "Datos inválidos en el modelo." });
+            }
+
+            Console.WriteLine($"EmpleadoId: {certificado.EmpleadoId}, CursoId: {certificado.CursoId}");
+
             var asistenciaAprobada = await _context.AsistenciaCapacitacion
-            .Where(
-                a => a.EmpleadoId == certificado.EmpleadoId //Se busca que el empleado si hay un registro para ese empleado
-                && a.CursoId == certificado.CursoId //Se busca si hay un registro para ese curso
-                && a.Asistencia == true //Se busca si asistio
-                && a.Resultado >= 6) //Se busca si la nota es mayor o igual a 6
-            .FirstOrDefaultAsync();
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a =>
+                    a.EmpleadoId == certificado.EmpleadoId &&
+                    a.CursoId == certificado.CursoId &&
+                    a.Asistencia &&
+                    a.Resultado >= 6);
+
             if (asistenciaAprobada == null)
-            {
-                return BadRequest(new {codigo = 0, mensaje = "El empleado no ha aprobado este curso o no tiene asistencia registrada."});
-            }
-            
+                return BadRequest(new { codigo = 0, mensaje = "El empleado no ha aprobado este curso." });
 
-            //No se puede registrar dos veces el mismo empleado 
-            var empleadoExistente = await _context.Certificado
-            .Where(c => c.EmpleadoId == certificado.EmpleadoId && c.CursoId == certificado.CursoId)
-            .FirstOrDefaultAsync();
+            bool existeCertificado = await _context.Certificado
+                .AsNoTracking()
+                .AnyAsync(c => c.EmpleadoId == certificado.EmpleadoId && c.CursoId == certificado.CursoId);
 
-            if (empleadoExistente != null)
-            {
-                return BadRequest(new {codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado para este curso"});
-            }
-            certificado.FechaEmision = DateTime.Now;
+            if (existeCertificado)
+                return BadRequest(new { codigo = 0, mensaje = "Este empleado ya tiene un certificado registrado." });
 
-            //Guardar archivo en la base de datos
             if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
             {
-                using (var ms = new MemoryStream())
-                {
-                    await DocumentoAdjunto.CopyToAsync(ms);
-                    certificado.DocumentoAdjunto = ms.ToArray();
-                }
+                using var ms = new MemoryStream();
+                await DocumentoAdjunto.CopyToAsync(ms);
+
+                certificado.DocumentoAdjunto = ms.ToArray();
                 certificado.DocumentoNombre = DocumentoAdjunto.FileName;
                 certificado.DocumentoMimeType = DocumentoAdjunto.ContentType;
             }
+
             _context.Certificado.Add(certificado);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCertificado", new { id = certificado.Id }, certificado);
+            return Ok(certificado);
         }
 
-        // DELETE: api/Certificados/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ELIMINAR UN CERTIFICADO ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCertificado(int id)
         {
@@ -178,8 +130,9 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Certificado.Remove(certificado);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(certificado);
         }
+
 
         private bool CertificadoExists(int id)
         {

@@ -1,4 +1,7 @@
-// Función para abrir el panel lateral
+
+/////////////////////////////////////////////////////////////
+//Funcion para abrir el panel de empleado ///////////////////
+/////////////////////////////////////////////////////////////
 function AbrirPanelEmpleado() {
   let id = document.getElementById("IdEmpleado").value;
   console.log(id);
@@ -28,7 +31,10 @@ function AbrirPanelEmpleado() {
   }
 }
 
-//Funcion para cerrar el panel lateral
+
+/////////////////////////////////////////////////////////////
+//Funcion para cerrar el panel de empleado ///////////////////
+/////////////////////////////////////////////////////////////
 function CerrarPanelEmpleado() {
   document.getElementById("panelEmpleado").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -37,7 +43,10 @@ function CerrarPanelEmpleado() {
   LimpiarFormularioEmpleado();
 }
 
-//INICIO ONCHANGE DE FILTROS//
+
+/////////////////////////////////////////////////////////////
+//INICIO ONCHANGE DE FILTROS ////////////////////////////////
+/////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerEmpleados();
 
@@ -70,9 +79,12 @@ $(document).ready(function () {
   });
 });
 
+
+/////////////////////////////////////////////////////////////
+// COMPLETAR SELECT LOCALDIADES Y PUESTOS //////////////////
+/////////////////////////////////////////////////////////////
 async function ComboParaFiltrarLocalidadPuesto() {
-  // Obtener localidades
-  const resLocalidades = await authFetch("Localidades", {
+  const resLocalidades = await authFetch("Localidades/Activos", {
     method: "GET",
   });
   const localidades = await resLocalidades.json();
@@ -86,8 +98,7 @@ async function ComboParaFiltrarLocalidadPuesto() {
   });
   $comboLocalidad.html(opciones);
 
-  // Obtener puestos
-  const resPuestos = await authFetch("Puestos", {
+  const resPuestos = await authFetch("Puestos/Activos", {
     method: "GET",
   });
   const puestos = await resPuestos.json();
@@ -101,11 +112,13 @@ async function ComboParaFiltrarLocalidadPuesto() {
   });
   $comboPuesto.html(opcionesPuesto);
 
-  // Obtener empleados con filtros vacíos por defecto
   ObtenerEmpleados();
 }
 
-// Función Para Obtener los empelados
+
+/////////////////////////////////////////////////////////////
+// OBTENER DATOS DE LA API /////////////////////////////////////
+/////////////////////////////////////////////////////////////
 async function ObtenerEmpleados() {
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
 
@@ -133,7 +146,7 @@ async function ObtenerEmpleados() {
   let filtro = {
     nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
     dNI: dniEmpleado ? Number(dniEmpleado) : null,
-    nroLegajo: nroLegajo ? Number(nroLegajo) : null,
+    nroLegajo: nroLegajo,
     estadoCiviles: estadoCivil,
     tipoSexo: tipoSexo,
     localidadId: localidadFiltro === "0" ? null : Number(localidadFiltro),
@@ -155,7 +168,10 @@ async function ObtenerEmpleados() {
     });
 }
 
-// Funcion para mostrar todos los empleados
+
+/////////////////////////////////////////////////////////////
+// FUNCIONES PARA MOSTRAR LOS DATOS DE LA API ///////////////
+/////////////////////////////////////////////////////////////
 function MostrarEmpleados(data) {
   const contenedor = $("#empleadosContainer");
   contenedor.empty();
@@ -252,17 +268,12 @@ function MostrarEmpleados(data) {
             </button>
           </div>
         </div>
-
-  
         </div>
-
-
         </div>
       </div>
     `);
   });
 
-  // Inicializar tooltips
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -270,7 +281,10 @@ function MostrarEmpleados(data) {
   });
 }
 
-//Funcion para mostrar todo el detalle del empleado
+
+/////////////////////////////////////////////////////////////
+// MOSTRAR DETALLE DE LOS EMPLEADO POR ID ////////////////////
+/////////////////////////////////////////////////////////////
 function MostrarDetalleEmpleado(id) {
   const empleado = empleadosData.find((e) => e.id === id);
   if (!empleado) return;
@@ -303,43 +317,49 @@ function MostrarDetalleEmpleado(id) {
   document.getElementById("detalleEmailCreador").textContent =
     empleado.usuarioEmailCreador || "";
 
-  // Mostrar el offcanvas
   const offcanvas = new bootstrap.Offcanvas("#offcanvasDetalleEmpleado");
   offcanvas.show();
 }
 
-// Función para mostrar el modal de editar empleado
+
+///////////////////////////////////////////////////////////////////////////////
+// MOSTRAR DAATOS EN EL MODAL DE EDITAR EMPLEADO //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditarEmpleado(id) {
   const res = await authFetch(`Empleados/${id}`);
   const empleado = await res.json();
 
-  console.log(empleado);
   const fecha = new Date(empleado.fechaNacimiento);
   const fechaFormateada = fecha.toISOString().slice(0, 10);
 
   document.getElementById("IdEmpleado").value = empleado.id;
   document.getElementById("NombreEmpleado").value = empleado.nombreCompleto;
   document.getElementById("DniEmpleado").value = empleado.dni;
-  document.getElementById("CuilEmpleado").value = empleado.cuil;
+  document.getElementById("CuilEmpleado").value = empleado.cuil || "";
   document.getElementById("TelefonoEmpleado").value = empleado.telefono;
   document.getElementById("EmailEmpleado").value = empleado.email;
   document.getElementById("FechaNacimientoEmpleado").value = fechaFormateada;
   document.getElementById("DireccionEmpleado").value = empleado.direccion;
   document.getElementById("EstadoCivilEmpleado").value = empleado.estadoCiviles;
-  document.getElementById("CantidadHijosEmpleado").value =
-    empleado.cantidadHijos;
+  document.getElementById("CantidadHijosEmpleado").value = empleado.cantidadHijos;
   document.getElementById("TipoSexoEmpleado").value = empleado.tipoSexo;
   document.getElementById("IdLocalidad").value = empleado.localidadId;
   document.getElementById("IdPuesto").value = empleado.puestoId;
 
+  document.getElementById("DniEmpleado").disabled = true;
+  document.getElementById("EmailEmpleado").disabled = true;
+  document.getElementById("FechaNacimientoEmpleado").disabled = true;
+  document.getElementById("TipoSexoEmpleado").disabled = true;
+
   AbrirPanelEmpleado();
 }
 
-// Función para buscar empleado por id
+
+///////////////////////////////////////////////////////////////////////////////
+// BUSCAMOS EL ID PAR AVER SI ES NUEVO O EXISTE //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 function BuscarEmpleadoId() {
   const id = parseInt(document.getElementById("IdEmpleado").value);
-
-  // Si el id no existe o es 0, entonces es una nueva empleado y llamamos a la función para crear
   if (!id || id === 0) {
     CrearEmpleado();
   } else {
@@ -347,8 +367,10 @@ function BuscarEmpleadoId() {
   }
 }
 
-// Funcion para validar el formulario de empleado
 
+///////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA VALIDAR EL FORMULARIO DE EMPLEADO /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioEmpleado() {
   const inputNombre = document.getElementById("NombreEmpleado");
   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
@@ -381,7 +403,6 @@ function ValidarFormularioEmpleado() {
   const inputGmail = document.getElementById("EmailEmpleado");
   const inputErrorGmail = document.getElementById("errorEmailEmpleado");
 
-  // Opcionales
   const inputCantidadHijos = document.getElementById("CantidadHijosEmpleado");
   const inputErrorCantidadHijos = document.getElementById(
     "errorCantidadHijosEmpleado"
@@ -395,7 +416,6 @@ function ValidarFormularioEmpleado() {
     "errorEstadoCivilEmpleado"
   );
 
-  // Obtener valores
   const nombre = inputNombre.value.trim();
   const dni = inputDni.value.trim();
   const telefono = inputTelefono.value.trim();
@@ -410,7 +430,6 @@ function ValidarFormularioEmpleado() {
   const cuil = inputCuil.value.trim();
   const estadoCivil = inputEstadoCivil.value.trim();
 
-  // Limpiar estado previo
   const inputs = [
     inputNombre,
     inputDni,
@@ -443,8 +462,6 @@ function ValidarFormularioEmpleado() {
   errores.forEach((error) => (error.style.display = "none"));
 
   let esValido = true;
-
-  // Validación campos obligatorios
 
   if (nombre.length === 0) {
     inputNombre.classList.add("is-invalid");
@@ -575,9 +592,6 @@ function ValidarFormularioEmpleado() {
     inputGmail.classList.add("is-valid");
   }
 
-  // Validación opcionales, sólo si tienen valor
-
-  // CantidadHijos (solo valida si tiene algo)
   if (cantidadHijos.length > 0) {
     if (!/^\d+$/.test(cantidadHijos)) {
       inputCantidadHijos.classList.add("is-invalid");
@@ -588,12 +602,10 @@ function ValidarFormularioEmpleado() {
       inputCantidadHijos.classList.add("is-valid");
     }
   } else {
-    // Si está vacío, limpiamos cualquier validación previa
     inputCantidadHijos.classList.remove("is-invalid", "is-valid");
     inputErrorCantidadHijos.style.display = "none";
   }
 
-  // Cuil (solo valida si tiene algo)
   if (cuil.length > 0) {
     if (!/^\d{11}$/.test(cuil)) {
       inputCuil.classList.add("is-invalid");
@@ -608,8 +620,6 @@ function ValidarFormularioEmpleado() {
     inputErrorCuil.style.display = "none";
   }
 
-  /// EstadoCivil (solo valida si tiene algo)
-  // EstadoCivilEmpleado (solo valida si tiene algo distinto a "0")
   if (estadoCivil !== "0") {
     const valoresValidos = ["1", "2", "3", "4"];
 
@@ -630,7 +640,11 @@ function ValidarFormularioEmpleado() {
   return esValido;
 }
 
-// NombreEmpleado
+
+
+///////////////////////////////////////////////////////////////////////////////
+// VALIDACIONES EN VIVO PARA ELFORMUALRIO DE EMPLEADO /////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombreEmpleado").addEventListener("input", () => {
   const input = document.getElementById("NombreEmpleado");
   const error = document.getElementById("errorNombreEmpleado");
@@ -652,7 +666,6 @@ document.getElementById("NombreEmpleado").addEventListener("input", () => {
   }
 });
 
-// DniEmpleado
 document.getElementById("DniEmpleado").addEventListener("input", () => {
   const input = document.getElementById("DniEmpleado");
   const error = document.getElementById("errorDniEmpleado");
@@ -674,7 +687,6 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
   }
 });
 
-// TelefonoEmpleado
 document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
   const input = document.getElementById("TelefonoEmpleado");
   const error = document.getElementById("errorTelefonoEmpleado");
@@ -696,7 +708,6 @@ document.getElementById("TelefonoEmpleado").addEventListener("input", () => {
   }
 });
 
-// FechaNacimientoEmpleado
 document
   .getElementById("FechaNacimientoEmpleado")
   .addEventListener("input", () => {
@@ -704,7 +715,6 @@ document
     const error = document.getElementById("errorFechaNacimientoEmpleado");
     const valor = input.value.trim();
 
-    // Limpiar clases
     input.classList.remove("is-invalid", "is-valid");
 
     if (valor.length === 0) {
@@ -742,7 +752,6 @@ document
     }
   });
 
-// DireccionEmpleado
 document.getElementById("DireccionEmpleado").addEventListener("input", () => {
   const input = document.getElementById("DireccionEmpleado");
   const error = document.getElementById("errorDireccionEmpleado");
@@ -764,7 +773,6 @@ document.getElementById("DireccionEmpleado").addEventListener("input", () => {
   }
 });
 
-// IdLocalidad (select)
 document.getElementById("IdLocalidad").addEventListener("change", () => {
   const input = document.getElementById("IdLocalidad");
   const error = document.getElementById("errorIdLocalidad");
@@ -782,7 +790,6 @@ document.getElementById("IdLocalidad").addEventListener("change", () => {
   }
 });
 
-//TipoSexoEmpleado (select)
 document.getElementById("TipoSexoEmpleado").addEventListener("change", () => {
   const input = document.getElementById("TipoSexoEmpleado");
   const error = document.getElementById("errorTipoSexoEmpleado");
@@ -800,7 +807,6 @@ document.getElementById("TipoSexoEmpleado").addEventListener("change", () => {
   }
 });
 
-// IdPuesto (select)
 document.getElementById("IdPuesto").addEventListener("change", () => {
   const input = document.getElementById("IdPuesto");
   const error = document.getElementById("errorIdPuesto");
@@ -818,7 +824,6 @@ document.getElementById("IdPuesto").addEventListener("change", () => {
   }
 });
 
-// CuilEmpleado (input)
 document.getElementById("CuilEmpleado").addEventListener("input", () => {
   const input = document.getElementById("CuilEmpleado");
   const error = document.getElementById("errorCuilEmpleado");
@@ -839,7 +844,6 @@ document.getElementById("CuilEmpleado").addEventListener("input", () => {
   }
 });
 
-// CantidadHijosEmpleado (input)
 document
   .getElementById("CantidadHijosEmpleado")
   .addEventListener("input", () => {
@@ -862,7 +866,6 @@ document
     }
   });
 
-// EstadoCivilEmpleado (select)
 document
   .getElementById("EstadoCivilEmpleado")
   .addEventListener("change", () => {
@@ -883,13 +886,11 @@ document
         error.style.display = "none";
       }
     } else {
-      // Si es la opción por defecto, limpiamos validación
       input.classList.remove("is-invalid", "is-valid");
       error.style.display = "none";
     }
   });
 
-//EmailEmpleado(input)
 document.getElementById("EmailEmpleado").addEventListener("input", () => {
   const input = document.getElementById("EmailEmpleado");
   const error = document.getElementById("errorEmailEmpleado");
@@ -910,7 +911,10 @@ document.getElementById("EmailEmpleado").addEventListener("input", () => {
   }
 });
 
-// Funcion limpiar formulario de empleado
+
+////////////////////////////////////////////////////////////////////////////////
+// LIMPIAR EL FORMULARIO  ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 function LimpiarFormularioEmpleado() {
   document.getElementById("IdEmpleado").value = "";
 
@@ -955,7 +959,6 @@ function LimpiarFormularioEmpleado() {
   const inputGmail = document.getElementById("EmailEmpleado");
   inputGmail.value = "";
 
-  // Limpia los estilos de validación
   inputNombre.classList.remove("is-invalid");
   inputNombre.classList.remove("is-valid");
 
@@ -992,7 +995,6 @@ function LimpiarFormularioEmpleado() {
   inputCantidadHijos.classList.remove("is-invalid");
   inputCantidadHijos.classList.remove("is-valid");
 
-  // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
   inputErrorNombre.textContent = "";
   inputErrorNombre.style.display = "none";
@@ -1030,9 +1032,17 @@ function LimpiarFormularioEmpleado() {
   const inputErrorGmail = document.getElementById("errorEmailEmpleado");
   inputErrorGmail.textContent = "";
   inputErrorGmail.style.display = "none";
+
+  document.getElementById("DniEmpleado").disabled = false;
+  document.getElementById("EmailEmpleado").disabled = false;
+  document.getElementById("FechaNacimientoEmpleado").disabled = false;
+  document.getElementById("TipoSexoEmpleado").disabled = false;
 }
 
-//Funcion para mostrar los errores de un empleado existente
+
+////////////////////////////////////////////////////////////////////////////////
+// VALIDACION DE UN EMPLEADO EXISTENTE /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorEmpleadoExistente(mensajes) {
   const errorDniEmpleado = document.getElementById("errorDniEmpleado");
   const inputDniEmpleado = document.getElementById("DniEmpleado");
@@ -1048,7 +1058,6 @@ function MostrarErrorEmpleadoExistente(mensajes) {
   const errorEmailEmpleado = document.getElementById("errorEmailEmpleado");
   const inputEmailEmpleado = document.getElementById("EmailEmpleado");
 
-  // Limpiar mensajes y estilos previos
   errorDniEmpleado.textContent = "";
   errorDniEmpleado.style.display = "none";
   errorDniEmpleado.classList.remove("shake");
@@ -1069,7 +1078,6 @@ function MostrarErrorEmpleadoExistente(mensajes) {
   errorEmailEmpleado.classList.remove("shake");
   inputEmailEmpleado.classList.remove("is-invalid");
 
-  // Mostrar errores según el mensaje
   mensajes.forEach((mensaje) => {
     const msgLower = mensaje.toLowerCase();
     if (msgLower.includes("dni")) {
@@ -1106,21 +1114,24 @@ function MostrarErrorEmpleadoExistente(mensajes) {
   });
 }
 
-// Función para crear empleado
+
+////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA CREAR EMPLEADO ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 async function CrearEmpleado() {
   if (!ValidarFormularioEmpleado()) return;
 
   const empleado = {
     nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
     dni: Number(document.getElementById("DniEmpleado").value.trim()),
-    cuil: Number(document.getElementById("CuilEmpleado").value.trim()),
+    cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
     telefono: document.getElementById("TelefonoEmpleado").value.trim(),
     email: document.getElementById("EmailEmpleado").value.trim(),
     fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
     direccion: document.getElementById("DireccionEmpleado").value.trim(),
     estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
     cantidadHijos: Number(
-      document.getElementById("CantidadHijosEmpleado").value.trim()
+      document.getElementById("CantidadHijosEmpleado").value.trim() || null
     ),
     tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
     localidadId: Number(document.getElementById("IdLocalidad").value),
@@ -1140,11 +1151,9 @@ async function CrearEmpleado() {
         return;
       }
 
-      // Éxito
       ObtenerEmpleados();
       CerrarPanelEmpleado();
 
-      // Mostrar alerta de éxito
       Swal.fire({
         title: "¡Empleado Creado!",
         toast: true,
@@ -1168,7 +1177,10 @@ async function CrearEmpleado() {
     });
 }
 
-// Función para editar empleado
+
+//////////////////////////////////////////////////////////////////////////////////////
+// EDITAR EMPLEADO //////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 async function EditarEmpleado(id) {
   if (!ValidarFormularioEmpleado()) return;
 
@@ -1178,14 +1190,14 @@ async function EditarEmpleado(id) {
     id: empleadoId,
     nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
     dni: Number(document.getElementById("DniEmpleado").value.trim()),
-    cuil: Number(document.getElementById("CuilEmpleado").value.trim()),
+    cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
     telefono: document.getElementById("TelefonoEmpleado").value.trim(),
     email: document.getElementById("EmailEmpleado").value.trim(),
     fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
     direccion: document.getElementById("DireccionEmpleado").value.trim(),
     estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
     cantidadHijos: Number(
-      document.getElementById("CantidadHijosEmpleado").value.trim()
+      document.getElementById("CantidadHijosEmpleado").value.trim() || null
     ),
     tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
     localidadId: Number(document.getElementById("IdLocalidad").value),
@@ -1205,7 +1217,7 @@ async function EditarEmpleado(id) {
       }
       CerrarPanelEmpleado();
       ObtenerEmpleados();
-      // Mostrar alerta de éxito
+
       Swal.fire({
         title: "¡Empleado Modificado!",
         toast: true,
@@ -1229,7 +1241,10 @@ async function EditarEmpleado(id) {
     });
 }
 
-// Función para mostra el offcanvas de historial
+
+//////////////////////////////////////////////////////////////////////////////////////
+// VER HISTORIAL EMPLEADO ///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 function VerHistorialEmpleado(empleadoId) {
   ObtenerHistorialEmpleados(empleadoId);
 
@@ -1242,7 +1257,10 @@ function VerHistorialEmpleado(empleadoId) {
   offcanvas.show();
 }
 
-// Función para obtener el historial de empleados
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA OBTENER LOS DATOS DEL HISTORIAL DE EMPLEADOS ////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerHistorialEmpleados(empleadoId) {
   const res = await authFetch(`HistorialLaboral/empleado/${empleadoId}`, {
     method: "GET",
@@ -1256,9 +1274,12 @@ async function ObtenerHistorialEmpleados(empleadoId) {
     });
 }
 
-// Función para mostrar el historial de empleados
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA MOSTRAR EL HISTORIAL DE EMPLEADOS ////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHistorialEmpleado(data) {
-  historialGlobal = data; // Guardar para acceder luego
+  historialGlobal = data; 
   $("#tablaHistorialEmpleadoBody").empty();
 
   if (!data || data.length === 0) {
@@ -1305,7 +1326,6 @@ function MostrarHistorialEmpleado(data) {
     );
   });
 
-  // Inicializar tooltips
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -1313,10 +1333,13 @@ function MostrarHistorialEmpleado(data) {
   });
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// MOSTRAR DETALLE DE UN HISTORIAL DE EMPLEADO ////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 function MostrarDetalleHistorial(index) {
   const item = historialGlobal[index];
 
-  // Setear valores en el offcanvas
   document.getElementById("detalleFechaModificacion").textContent =
     item.fechaModificacionString || "N/D";
   document.getElementById("detallePuestoAnterior").textContent =
@@ -1332,10 +1355,13 @@ function MostrarDetalleHistorial(index) {
   document.getElementById("detalleResponsableEmail").textContent =
     item.usuarioModificadorEmail || "N/D";
 
-  // Mostrar offcanvas
   const offcanvasElement = document.getElementById("offcanvasDetalleHistorial");
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 ComboParaFiltrarLocalidadPuesto();

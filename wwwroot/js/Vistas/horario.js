@@ -1,5 +1,7 @@
-//INICIO PANEL FORMUALRIO//
-//Función para abrir el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIONES PARA EL PANEL DE HORARIOS ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function abrirPanelHorario() {
   document.getElementById("panelHorario").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -11,7 +13,10 @@ function abrirPanelHorario() {
   }, 400);
 }
 
-//Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION ARA CERRAR EL PANEL DE HORARIOS ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelHorario() {
   document.getElementById("panelHorario").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -20,6 +25,10 @@ function cerrarPanelHorario() {
   LimpiarModalHorario();
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION ARA TOGGLE LOS INPUTS DEL PANEL DE HORARIOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function toggleHorarioInputs() {
   const tipo = document.getElementById("TipoHorario").value;
   const continuoDiv = document.getElementById("horarioContinuo");
@@ -46,11 +55,10 @@ function toggleHorarioInputs() {
   }
 }
 
-//FIN PANEL FORMULARIO//
 
-
-
-// Mostrar/ocultar fechas
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ALTERNAR SEGUN SELCCION SELEC TIPO DE HORARIO /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document
   .getElementById("filtrarHorarioSelect")
   .addEventListener("change", function () {
@@ -62,32 +70,67 @@ document
       .getElementById("horariosInputsFin")
       .classList.toggle("d-none", !mostrar);
 
-    // Opcional: limpiar valores al ocultar
     document.getElementById("HorarioInicioBuscar").value = "";
     document.getElementById("HorarioFinBuscar").value = "";
   });
 
-//Onchange de filtro
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR LOS FILTROS DE BUSQUEDA ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerHorarios();
-  $(
-    "#EmpleadoIdBuscar, #TipoHorarioBuscar, #HorarioInicioBuscar, #HorarioFinBuscar"
-  ).on("input", function () {
+
+  // Filtros principales
+  $("#EmpleadoIdBuscar, #TipoHorarioBuscar").on("input change", function () {
+    ObtenerHorarios();
+  });
+
+  // Filtros por horario
+  $("#HorarioInicioBuscar, #HorarioFinBuscar").on("input change", function () {
+    let inicio = $("#HorarioInicioBuscar").val();
+    let fin = $("#HorarioFinBuscar").val();
+
+    if (inicio && fin) {
+      const fechaInicio = new Date(inicio);
+      const fechaFin = new Date(fin);
+
+      if (fechaFin < fechaInicio) {
+        $("#HorarioFinBuscar").val(inicio);
+      }
+    }
+
+    if ($("#filtrarHorarioSelect").val() === "si") {
+      ObtenerHorarios();
+    }
+  });
+
+  $("#filtrarHorarioSelect").on("change", function () {
+    const filtrar = $(this).val() === "si";
+
+    $("#divFechas").toggle(filtrar);
+
+    if (!filtrar) {
+      $("#HorarioInicioBuscar, #HorarioFinBuscar").val("");
+    }
+
     ObtenerHorarios();
   });
 });
 
-//Funcion para obtener los horarios
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA OBTENER LOS HORARIOS ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerHorarios() {
   let tipoHorario = document.getElementById("TipoHorarioBuscar").value;
   let tipo =
     tipoHorario !== "0" && tipoHorario !== "" ? parseInt(tipoHorario) : null;
 
-  // Obtener las horas y, si no están vacías, agrego fecha fija para que sea un ISO válido
   let horarioInicioRaw = document.getElementById("HorarioInicioBuscar").value;
   let horarioFinRaw = document.getElementById("HorarioFinBuscar").value;
 
-  // Formateo horas con fecha fija para mandar al backend
   let horarioInicio = horarioInicioRaw ? `${horarioInicioRaw}:00` : null;
   let horarioFin = horarioFinRaw ? `${horarioFinRaw}:00` : null;
 
@@ -114,6 +157,10 @@ async function ObtenerHorarios() {
     });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS HORARIOS ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHorarios(data) {
   if (window.innerWidth <= 764) {
     MostrarHorariosMobile(data);
@@ -122,6 +169,10 @@ function MostrarHorarios(data) {
   }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS HORARIOS DESKTOP ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHorariosDesktop(data) {
   const contenedor = $("#contenedorHorarios");
   contenedor.empty();
@@ -141,16 +192,14 @@ function MostrarHorariosDesktop(data) {
   data.forEach((horario) => {
     const tipoStr = horario.tipoHorarioString
       ? horario.tipoHorarioString.charAt(0).toUpperCase() +
-        horario.tipoHorarioString.slice(1).toLowerCase()
+      horario.tipoHorarioString.slice(1).toLowerCase()
       : "";
 
     const tipoClase = tipoColor[tipoStr] || "";
 
     const item = $(`
       <div class="horarios-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between flex-wrap">
-        <button class="btn-editar me-2" style="background: none; border: none;" onclick="MostrarModalEditar(${
-          horario.id
-        })" data-tippy-content="Editar">
+        <button class="btn-editar me-2" style="background: none; border: none;" onclick="MostrarModalEditar(${horario.id})" data-tippy-content="Editar">
           <i class="bi bi-pencil-square icono-editar"></i>
         </button>
 
@@ -177,7 +226,6 @@ function MostrarHorariosDesktop(data) {
       </div>
     `);
 
-    // Días y labels
     const diasNombres = [
       { key: "lunes", label: "Lunes" },
       { key: "martes", label: "Martes" },
@@ -202,12 +250,8 @@ function MostrarHorariosDesktop(data) {
               <td>${dia.label}</td>
               <td class="text-center">${horario.horarioInicioString || "-"}</td>
               <td class="text-center">${horario.horarioFinString || "-"}</td>
-              <td class="text-center">${
-                horario.segundoHorarioInicioString || "-"
-              }</td>
-              <td class="text-center">${
-                horario.segundoHorarioFinString || "-"
-              }</td>
+              <td class="text-center">${horario.segundoHorarioInicioString || "-"}</td>
+              <td class="text-center">${horario.segundoHorarioFinString || "-"}</td>
             </tr>
           `;
         } else {
@@ -223,7 +267,7 @@ function MostrarHorariosDesktop(data) {
     });
 
     const detalleHTML = $(`
-      <div class="panelHorarios collapse px-3 pb-2" style="display: none;">
+      <div class="panelHorarios px-3 pb-2" style="display: none;">
         <h3 class="titulo-sub-seccion mb-3" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Detalle de Horarios y Días</h3>
         <div class="table-responsive">
           <table class="table table-bordered table-hover">
@@ -231,31 +275,26 @@ function MostrarHorariosDesktop(data) {
               <col style="width: 25%" />
               <col style="width: 18%" />
               <col style="width: 18%" />
-              ${
-                esSeparado
-                  ? `<col style="width: 18%" /><col style="width: 21%" />`
-                  : ""
-              }
+              ${esSeparado
+        ? `<col style="width: 18%" /><col style="width: 21%" />`
+        : ""
+      }
             </colgroup>
             <thead>
               <tr>
                 <th class="text-start header-table">Días</th>  
                 <th class="text-center header-table">Inicio °1</th>
                 <th class="text-center header-table">Fin °1</th>
-                ${
-                  esSeparado
-                    ? `<th class="text-center header-table">Inicio °2</th><th class="text-center header-table">Fin °2</th>`
-                    : ""
-                }
+                ${esSeparado
+        ? `<th class="text-center header-table">Inicio °2</th><th class="text-center header-table">Fin °2</th>`
+        : ""
+      }
               </tr>
             </thead>
             <tbody>
-              ${
-                filasHorario ||
-                `<tr><td colspan="${
-                  esSeparado ? 5 : 3
-                }" class="tabla-horarios-body text-center text-muted">Sin días activos</td></tr>`
-              }
+              ${filasHorario ||
+      `<tr><td colspan="${esSeparado ? 5 : 3}" class="tabla-horarios-body text-center text-muted">Sin días activos</td></tr>`
+      }
             </tbody>
           </table>
         </div>
@@ -264,9 +303,14 @@ function MostrarHorariosDesktop(data) {
 
     item.find(".toggle-detalle").on("click", function () {
       const iconoChevron = $(this).find("i");
-      detalleHTML.slideToggle(200, function () {
-        detalleHTML.toggleClass("mostrar", detalleHTML.is(":visible"));
-      });
+
+      contenedor.find(".panelHorarios:visible").not(detalleHTML).slideUp(200);
+      contenedor.find(".toggle-detalle i")
+        .removeClass("bi-chevron-up")
+        .addClass("bi-chevron-down");
+      contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
+
+      detalleHTML.stop(true, true).slideToggle(200);
       iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
       const expanded = $(this).attr("aria-expanded") === "true";
       $(this).attr("aria-expanded", !expanded);
@@ -283,6 +327,10 @@ function MostrarHorariosDesktop(data) {
   });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// MOSTRAR HORARIOS MOVILES ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHorariosMobile(data) {
   const contenedor = document.getElementById("contenedorHorarios");
   contenedor.innerHTML = "";
@@ -293,7 +341,6 @@ function MostrarHorariosMobile(data) {
     return;
   }
 
-  // Clase de color según tipo de horario
   const tipoColor = {
     Alterno: "bg-alterno",
     Continuo: "bg-continuo",
@@ -305,7 +352,7 @@ function MostrarHorariosMobile(data) {
 
     const tipoStr = tipoHorarioString
       ? tipoHorarioString.charAt(0).toUpperCase() +
-        tipoHorarioString.slice(1).toLowerCase()
+      tipoHorarioString.slice(1).toLowerCase()
       : "-";
 
     const tipoClase = tipoColor[tipoStr] || "bg-light text-dark";
@@ -316,9 +363,8 @@ function MostrarHorariosMobile(data) {
           <div class="flex-grow-1 d-flex flex-column">
 
             <!-- Nombre del empleado -->
-            <h5 class=text-start fw-bold mb-2" style="font-size: 1.2rem;">${
-              empleadoString || "Sin nombre"
-            }</h5>
+            <h5 class=text-start fw-bold mb-2" style="font-size: 1.2rem;">${empleadoString || "Sin nombre"
+      }</h5>
 
             <!-- Puesto -->
             <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
@@ -361,6 +407,10 @@ function MostrarHorariosMobile(data) {
   });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// MOSTRAR DETALLE DE HORARIO //////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarDetalleHorario(id) {
   const horario = horariosData.find((e) => e.id === id);
   if (!horario) return;
@@ -384,36 +434,34 @@ function MostrarDetalleHorario(id) {
     const fin2Elem = document.getElementById(`detalleFin${dia}2`);
     const turno2Div = document.getElementById(`turno${dia}2`);
 
-    // Primer horario
     inicio1Elem.textContent = horario.horarioInicioString || "-";
     fin1Elem.textContent = horario.horarioFinString || "-";
 
-    // Segundo horario
     if (
       esSeparado &&
       horario.segundoHorarioInicioString &&
       horario.segundoHorarioFinString
     ) {
-      turno2Div.style.display = "block"; // Mostrar el segundo bloque
+      turno2Div.style.display = "block";
       inicio2Elem.textContent = horario.segundoHorarioInicioString;
       fin2Elem.textContent = horario.segundoHorarioFinString;
     } else {
-      turno2Div.style.display = "none"; // Ocultar si no aplica
+      turno2Div.style.display = "none";
       inicio2Elem.textContent = "";
       fin2Elem.textContent = "";
     }
   });
 
-  // Mostrar offcanvas
   const offcanvasElement = document.getElementById("offcanvasDetalleHorario");
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
 
 
-// funcion para limpiar el formulario de horario
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// LIMPIAR FORMULARIO DE HORARIO ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalHorario() {
-  // Limpia el formulario
   document.getElementById("IdHorario").value = "";
   const inputEmpleado = document.getElementById("EmpleadoId");
   inputEmpleado.value = "";
@@ -436,7 +484,6 @@ function LimpiarModalHorario() {
     checkbox.checked = false;
   });
 
-  // Limpia los estilos de validación
   inputEmpleado.classList.remove("is-invalid", "is-valid");
   selectTipoHorario.classList.remove("is-invalid", "is-valid");
   inputHorarioInicio.classList.remove("is-invalid", "is-valid");
@@ -446,7 +493,6 @@ function LimpiarModalHorario() {
   inputSegundoHorarioInicio.classList.remove("is-invalid", "is-valid");
   inputSegundoHorarioFin.classList.remove("is-invalid", "is-valid");
 
-  // Limpia el mensaje de error
   const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
   inputErrorEmpleado.textContent = "";
   inputErrorEmpleado.style.display = "none";
@@ -469,8 +515,8 @@ function LimpiarModalHorario() {
   inputErrorSegundoHorarioInicio.textContent = "";
   inputErrorSegundoHorarioInicio.style.display = "none";
   const inputErrorSegundoHorarioFin = document.getElementById("errorSegundoHorarioFin");
-  inputErrorSegundoHorarioFin.textContent = ""; 
-  inputErrorSegundoHorarioFin.style.display = "none"; 
+  inputErrorSegundoHorarioFin.textContent = "";
+  inputErrorSegundoHorarioFin.style.display = "none";
   const errorDiasSemana = document.getElementById("errorDiasSemana");
   errorDiasSemana.textContent = "";
   errorDiasSemana.style.display = "none";
@@ -478,8 +524,14 @@ function LimpiarModalHorario() {
   document.getElementById("horarioContinuo").classList.add("d-none");
   document.getElementById("horarioAlterno").classList.add("d-none");
 
+  document.getElementById("EmpleadoId").disabled = false;
+  document.getElementById("TipoHorario").disabled = false;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BUSCAMOS POR ID SI EXISTE ESPARAEDITAR SINO EXISTE PARA CREAR //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarHorarioId() {
   const id = document.getElementById("IdHorario").value;
   if (!id || id === 0) {
@@ -490,18 +542,18 @@ function BuscarHorarioId() {
 }
 
 
-// funcion para mostar datos en el modal de edicion
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR DATOS EN EL MODAL DE EDICION /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
   try {
     const response = await authFetch(`Horarios/${id}`);
 
     const data = await response.json();
 
-    // Asignar valores al formulario
     document.getElementById("IdHorario").value = data.id;
     document.getElementById("TipoHorario").value = data.tipoHorario;
 
-    // Días seleccionados
     document.getElementById("lunes").checked = data.lunes;
     document.getElementById("martes").checked = data.martes;
     document.getElementById("miercoles").checked = data.miercoles;
@@ -510,10 +562,11 @@ async function MostrarModalEditar(id) {
     document.getElementById("sabado").checked = data.sabado;
     document.getElementById("domingo").checked = data.domingo;
 
-    // Empleado
     document.getElementById("EmpleadoId").value = data.empleadoId;
 
-    // Mostrar campos según el tipo de horario
+    document.getElementById("EmpleadoId").disabled = true;
+    document.getElementById("TipoHorario").disabled = true;
+
     if (data.tipoHorario === 1) {
       document.getElementById("horarioContinuo").classList.remove("d-none");
       document.getElementById("horarioAlterno").classList.add("d-none");
@@ -532,13 +585,17 @@ async function MostrarModalEditar(id) {
         data.segundoHorarioFin;
     }
 
+
     abrirPanelHorario();
   } catch (error) {
     MostrarErrorCatch();
   }
 }
 
-// funcion para validar formualrio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA VALIDAR FORMULARIO ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioHorario() {
   const selectEmpleado = document.getElementById("EmpleadoId");
   const selectTipoHorario = document.getElementById("TipoHorario");
@@ -562,7 +619,7 @@ function ValidarFormularioHorario() {
   const errorSegundoHorarioInicio = document.getElementById("errorSegundoHorarioInicio");
   const errorSegundoHorarioFin = document.getElementById("errorSegundoHorarioFin");
 
-  // Limpiar errores
+  // Limpiar errores previos
   [
     errorEmpleado, errorTipoHorario, errorHorarioInicio, errorHorarioFin, errorDiasSemana,
     errorPrimerHorarioInicio, errorPrimerHorarioFin, errorSegundoHorarioInicio, errorSegundoHorarioFin
@@ -572,40 +629,52 @@ function ValidarFormularioHorario() {
   });
 
   [
+    selectEmpleado, selectTipoHorario,
     inputHorarioInicio, inputHorarioFin,
     primerHorarioInicio, primerHorarioFin,
     segundoHorarioInicio, segundoHorarioFin
-  ].forEach(input => input.classList.remove("is-invalid"));
+  ].forEach(input => input.classList.remove("is-invalid", "is-valid"));
 
   let esValido = true;
 
-  // Validar Empleado
+  // Validar empleado
   if (!selectEmpleado.value.trim()) {
     errorEmpleado.textContent = "Campo obligatorio.";
     errorEmpleado.style.display = "block";
+    selectEmpleado.classList.add("is-invalid");
     esValido = false;
+  } else {
+    selectEmpleado.classList.add("is-valid");
   }
 
-  // Validar Tipo de Horario
+  // Validar tipo de horario
   if (!selectTipoHorario.value.trim() || selectTipoHorario.value === "0") {
     errorTipoHorario.textContent = "Campo obligatorio.";
     errorTipoHorario.style.display = "block";
+    selectTipoHorario.classList.add("is-invalid");
     esValido = false;
+  } else {
+    selectTipoHorario.classList.add("is-valid");
   }
 
-  // Validar Horario Continuo
+  // Horario continuo
   if (selectTipoHorario.value === "1") {
     if (!inputHorarioInicio.value) {
-      errorHorarioInicio.textContent = "Ingrese hora de inicio.";
+      errorHorarioInicio.textContent = "Campo obligatorio.";
       errorHorarioInicio.style.display = "block";
       inputHorarioInicio.classList.add("is-invalid");
       esValido = false;
+    } else {
+      inputHorarioInicio.classList.add("is-valid");
     }
+
     if (!inputHorarioFin.value) {
-      errorHorarioFin.textContent = "Ingrese hora de fin.";
+      errorHorarioFin.textContent = "Campo obligatorio.";
       errorHorarioFin.style.display = "block";
       inputHorarioFin.classList.add("is-invalid");
       esValido = false;
+    } else {
+      inputHorarioFin.classList.add("is-valid");
     }
 
     if (inputHorarioInicio.value && inputHorarioFin.value) {
@@ -622,7 +691,7 @@ function ValidarFormularioHorario() {
     }
   }
 
-  // Validar Horario Alterno
+  // Horario alterno
   if (selectTipoHorario.value === "2") {
     const horarios = [
       { inicio: primerHorarioInicio, fin: primerHorarioFin, errorIni: errorPrimerHorarioInicio, errorFin: errorPrimerHorarioFin },
@@ -631,16 +700,21 @@ function ValidarFormularioHorario() {
 
     horarios.forEach(horario => {
       if (!horario.inicio.value) {
-        horario.errorIni.textContent = "Ingrese hora de inicio.";
+        horario.errorIni.textContent = "Campo obligatorio.";
         horario.errorIni.style.display = "block";
         horario.inicio.classList.add("is-invalid");
         esValido = false;
+      } else {
+        horario.inicio.classList.add("is-valid");
       }
+
       if (!horario.fin.value) {
-        horario.errorFin.textContent = "Ingrese hora de fin.";
+        horario.errorFin.textContent = "Campo obligatorio.";
         horario.errorFin.style.display = "block";
         horario.fin.classList.add("is-invalid");
         esValido = false;
+      } else {
+        horario.fin.classList.add("is-valid");
       }
 
       if (horario.inicio.value && horario.fin.value) {
@@ -657,7 +731,6 @@ function ValidarFormularioHorario() {
       }
     });
 
-    // Validar que el segundo horario empiece después del primero
     if (primerHorarioFin.value && segundoHorarioInicio.value) {
       const [pfH, pfM] = primerHorarioFin.value.split(":").map(Number);
       const [siH, siM] = segundoHorarioInicio.value.split(":").map(Number);
@@ -687,10 +760,9 @@ function ValidarFormularioHorario() {
 }
 
 
-
-
-// validacion en vivo: cambia el color mientras el usuario escribe
-// Validación Empleado
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VAIDACION EN VIVO PARA ELFORMUALRIO DE HORARIOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("EmpleadoId").addEventListener("input", () => {
   const inputEmpleado = document.getElementById("EmpleadoId");
   const errorEmpleado = document.getElementById("errorEmpleadoId");
@@ -703,12 +775,11 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
     errorEmpleado.style.display = "block";
     errorEmpleado.textContent = "Campo obligatorio.";
   } else {
-    inputEmpleado.classList.add("is-valid"); 
+    inputEmpleado.classList.add("is-valid");
     errorEmpleado.style.display = "none";
   }
 });
 
-// Validación Tipo de Horario
 document.getElementById("TipoHorario").addEventListener("input", () => {
   const inputTipoHorario = document.getElementById("TipoHorario");
   const errorTipoHorario = document.getElementById("errorTipoHorario");
@@ -721,12 +792,11 @@ document.getElementById("TipoHorario").addEventListener("input", () => {
     errorTipoHorario.style.display = "block";
     errorTipoHorario.textContent = "Campo obligatorio.";
   } else {
-    inputTipoHorario.classList.add("is-valid"); 
+    inputTipoHorario.classList.add("is-valid");
     errorTipoHorario.style.display = "none";
   }
 });
 
-// Validación Horario Continuo (24h)
 document.getElementById("horarioContinuo").addEventListener("input", () => {
   const inputHorarioInicio = document.getElementById("HorarioInicio");
   const errorHorarioInicio = document.getElementById("errorHorarioInicio");
@@ -759,7 +829,6 @@ document.getElementById("horarioContinuo").addEventListener("input", () => {
   }
 });
 
-// Validación Horario Alterno (24h)
 document.getElementById("horarioAlterno").addEventListener("input", () => {
   const inputs = [
     { id: "PrimerHorarioInicio", error: "errorPrimerHorarioInicio", mensaje: "Ingrese hora de inicio." },
@@ -778,7 +847,6 @@ document.getElementById("horarioAlterno").addEventListener("input", () => {
     valores[item.id] = input.value;
   });
 
-  // Primer Horario
   if (!valores.PrimerHorarioInicio) {
     document.getElementById("PrimerHorarioInicio").classList.add("is-invalid");
     document.getElementById("errorPrimerHorarioInicio").textContent = "Ingrese hora de inicio.";
@@ -799,7 +867,6 @@ document.getElementById("horarioAlterno").addEventListener("input", () => {
     document.getElementById("PrimerHorarioFin").classList.add("is-valid");
   }
 
-  // Segundo Horario
   if (!valores.SegundoHorarioInicio) {
     document.getElementById("SegundoHorarioInicio").classList.add("is-invalid");
     document.getElementById("errorSegundoHorarioInicio").textContent = "Ingrese hora de inicio.";
@@ -825,8 +892,6 @@ document.getElementById("horarioAlterno").addEventListener("input", () => {
   }
 });
 
-
-
 document.getElementById("diasSemana").addEventListener("input", () => {
   const diasIds = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
   const errorDiasSemana = document.getElementById("errorDiasSemana");
@@ -842,9 +907,9 @@ document.getElementById("diasSemana").addEventListener("input", () => {
 });
 
 
-
-
-// funcion para validar datos existentes empleado
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIONES PARA VALIDAR DATOS EXISTENTES ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorHorarioExistente(mensaje) {
   const errorEmpleado = document.getElementById("errorEmpleadoId");
   const inputEmpleado = document.getElementById("EmpleadoId");
@@ -854,13 +919,18 @@ function MostrarErrorHorarioExistente(mensaje) {
   inputEmpleado.classList.add("is-invalid");
 }
 
-//funcion para formatear hora
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION ARA FORMAR HORA ///////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function formatearHora(hora) {
-  // Si está vacío o null devuelve "00:00:00", si no agrega ":00"
   return hora && hora !== "" ? `${hora}:00` : "00:00:00";
 }
 
-//funcion para crear un nuevo horario
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA CREAR HORARIO ///////////////////////////////////////////////////////////////////////  
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearHorario() {
 
   if (!ValidarFormularioHorario()) return;
@@ -885,7 +955,6 @@ async function CrearHorario() {
   };
 
   if (tipoHorario === 1) {
-    // CONTINUO
     horario.horarioInicio = formatearHora(
       document.getElementById("HorarioInicio").value
     );
@@ -893,7 +962,6 @@ async function CrearHorario() {
       document.getElementById("HorarioFin").value
     );
   } else if (tipoHorario === 2) {
-    // ALTERNO
     horario.horarioInicio = formatearHora(
       document.getElementById("PrimerHorarioInicio").value
     );
@@ -909,17 +977,17 @@ async function CrearHorario() {
   }
 
   const res = await authFetch("Horarios", {
-  method: "POST",
-  body: JSON.stringify(horario),
-})
-  .then((response) => response.json())
-  .then((response) => {
-    if(response.mensaje){
-      MostrarErrorHorarioExistente(response.mensaje);
-    } else {
-      cerrarPanelHorario();
-      ObtenerHorarios();
-      Swal.fire({
+    method: "POST",
+    body: JSON.stringify(horario),
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.mensaje) {
+        MostrarErrorHorarioExistente(response.mensaje);
+      } else {
+        cerrarPanelHorario();
+        ObtenerHorarios();
+        Swal.fire({
           title: "¡Horario Creado!",
           toast: true,
           position: "bottom-end",
@@ -936,17 +1004,19 @@ async function CrearHorario() {
             icon: "swal2-toast-success-icon",
           },
         });
-        }
-  })
+      }
+    })
 
-  .catch((error) => {
-    MostrarErrorCatch();
-  });
+    .catch((error) => {
+      MostrarErrorCatch();
+    });
 
 }
 
 
-// funcion para editar un horario
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA EDITAR HORARIO ///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarHorario(id) {
   if (!ValidarFormularioHorario()) return;
 
@@ -971,11 +1041,9 @@ async function EditarHorario(id) {
   };
 
   if (tipoHorario === 1) {
-    // Continuo
     horarioEditar.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
     horarioEditar.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
   } else if (tipoHorario === 2) {
-    // Alterno
     horarioEditar.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
     horarioEditar.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
     horarioEditar.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
@@ -1020,7 +1088,9 @@ async function EditarHorario(id) {
   }
 }
 
-// funcion para eliminar un horario
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MODALCONFRIMAR ELIMIANR HORARIO /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarHorarioId(id) {
   Swal.fire({
     title: "¿Desea eliminar este horario?",
@@ -1071,7 +1141,9 @@ async function EliminarHorarioId(id) {
 }
 
 
-//funcion para eliminar un horario
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION APRA ELIMINAR HORARIO /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiHorario(id) {
   try {
     const response = await authFetch(`Horarios/${id}`, {
@@ -1099,13 +1171,17 @@ async function EliminarSiHorario(id) {
         },
       });
       ObtenerHorarios();
-    } 
+    }
   } catch (error) {
     MostrarErrorCatch();
   }
 }
 
 
-//funcion
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//INICIALIZAR AL CARGAR LA VISTA /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerHorarios();
+
+

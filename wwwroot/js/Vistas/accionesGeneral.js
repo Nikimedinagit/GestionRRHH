@@ -1,5 +1,6 @@
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ABRIR CONTENEDOR DE  FILTROS /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrilPanelFiltros(idPanel) {
   const panel = document.getElementById(idPanel);
   if (!panel) return;
@@ -11,13 +12,15 @@ function AbrilPanelFiltros(idPanel) {
   } else {
     panel.classList.remove("d-none");
     setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
     setTimeout(() => {
       document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
     }, 20);
   }
 
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // FUNCION SI EL CLICK FUERA DEL CONTENEDOR DEL FILTRO LO CIERRA /////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
   function DetectarClickFueraDeFiltro(event) {
     if (
       !panel.contains(event.target) &&
@@ -29,10 +32,11 @@ function AbrilPanelFiltros(idPanel) {
     }
   }
 }
-//FIN PANEL FILTROS//
 
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ABRIR CONTENEDOR DE  GENERAR /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrilPanelGenerar(idPanel) {
   const panel = document.getElementById(idPanel);
   if (!panel) return;
@@ -44,13 +48,15 @@ function AbrilPanelGenerar(idPanel) {
   } else {
     panel.classList.remove("d-none");
     setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
     setTimeout(() => {
       document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
     }, 20);
   }
 
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // FUNCION SI EL CLICK FUERA DEL CONTENEDOR DEL GENERAL LO CIERRA /////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
   function DetectarClickFueraDeGenerar(event) {
     if (
       !panel.contains(event.target) &&
@@ -62,9 +68,11 @@ function AbrilPanelGenerar(idPanel) {
     }
   }
 }
-//FIN PANEL GENERAR//
 
-//INICIO FUNCION PARA MOSTRAR ERRORES DE CATCH EN LAS URL/PETICIONES //
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL ERROR DE CATCH ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorCatch() {
   Swal.fire({
     title: "¡Error!",
@@ -83,4 +91,3 @@ function MostrarErrorCatch() {
     buttonsStyling: false,
   });
 }
-// FIN FUNCION PARA MOSTRAR ERRORES DE CATCH EN LAS URL/PETICIONES //

@@ -1,6 +1,6 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-  <!-- Título -->
+
+  <!--==================================== Título ===================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Seguimiento de Evaluaciones</h3>
     <p class="text-muted mb-0" style="font-size: 0.95rem;">
@@ -11,20 +11,18 @@
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="cerrarPanelEvaluaciones()"></div>
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Nueva Evaluación -->
+
       <button class="btn btn-agregar" onclick="abrirPanelEvaluaciones()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Nueva Evaluación</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -40,17 +38,15 @@
 
 
 
-    <!-- Contenedor Filtros-->
+    <!-- ================================ Contenedor Filtros ===================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end justify-content-start">
-        
-        <!-- Empleado -->
+
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
           <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
           <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
 
-        <!-- Calificacion -->
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label for="CalificacionBuscar" class="form-label-fija">Calificación</label>
           <select id="CalificacionBuscar" class="form-control filtro-select">
@@ -62,18 +58,9 @@
           </select>
         </div>
 
-        <!-- Activar Fecha -->
-        <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-          <label class="form-label-fija">Fecha</label>
-          <select id="filtrarFechaSelect" class="form-control filtro-select">
-            <option value="no" selected>No</option>
-            <option value="si">Sí</option>
-          </select>
-        </div>
 
-        <!-- Fecha de Evaluacion -->
-        <div id="fechasInputs" class="d-none col-12 col-sm-6 col-md-4 col-lg-3">
-          <label for="FechaEvalBuscar" class="form-label-fija">Fecha de Evaluación</label>
+        <div id="fechasInputs" class="col-12 col-sm-6 col-md-4 col-lg-2">
+          <label for="FechaEvalBuscar" class="form-label-fija">Fecha</label>
           <input type="date" class="form-control filtro-select" id="FechaEvalBuscar" />
         </div>
 
@@ -81,9 +68,7 @@
     </div>
 
 
-
-
-    <!-- Contenedor Generar-->
+    <!-- ================================ Contenedor Generar ===================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -92,23 +77,14 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
 
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoEvalauciones" style="width: 100%; height: auto;"></canvas>
-    </div>
-
-
-    <!-- Contenedor de tarjetas de resumen de evaluaciones -->
+    <!-- ================================ Contenedor de tarjetas de resumen de evaluaciones ===================================== -->
     <div>
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-        <!-- Total de evaluaciones -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-primary bg-opacity-10 p-3 me-3">
@@ -121,7 +97,6 @@
           </div>
         </div>
 
-        <!-- Promedio general -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-info bg-opacity-10 p-3 me-3">
@@ -134,7 +109,6 @@
           </div>
         </div>
 
-        <!-- Total empleados evaluados -->
         <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-success bg-opacity-10 p-3 me-3">
@@ -150,18 +124,17 @@
       </div>
     </div>
 
-        <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
-
-    <!-- Contenedor de las evaluaciones -->
+    <!-- ================================ Contenedor de las evaluaciones ===================================== -->
     <div class="container-fluid">
       <div id="contenedorEvaluaciones" class="row ">
-        <!--Se cargarán dinámicamente-->
       </div>
     </div>
 
-    <!-- Panel Deslizante Formulario -->
-    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTituloCriterio" tabindex="-1" class="w-30">
+    <!-- ================================ Panel Deslizante Formulario ===================================== -->
+    <div id="panelCriterios" aria-modal="true" role="dialog" aria-labelledby="panelTituloCriterio" tabindex="-1"
+      class="w-30">
       <div class="panel-header">
         <h2 id="panelTitulo" class="panel-title">Formulario De Criterios de Evaluación</h2>
       </div>
@@ -178,7 +151,6 @@
               <div class="invalid-feedback" id="errorIdTipoCriterio"></div>
             </div>
 
-            <!-- Descripcion -->
             <div class="form-group position-relative mb-3">
               <input type="text" id="Descripcion" class="form-control" placeholder=" " />
               <label for="Descripcion">Descripcion</label>
@@ -197,7 +169,8 @@
       </div>
     </div>
 
-    <!-- Panel Deslizante Formulario -->
+
+    <!-- ================================ Panel Deslizante Formulario ===================================== -->
     <div id="panelEvaluaciones" aria-modal="true" role="dialog" aria-labelledby="panelTituloEvaluacion" tabindex="-1"
       class="w-30">
       <div class="panel-header">
@@ -208,7 +181,6 @@
           <input type="hidden" id="IdEvaluacion" />
           <div class="form-grid">
 
-             <!-- Empleado -->
             <div class="form-group position-relative mb-3">
               <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
                 <option value="EmpleadoId" disabled selected>Seleccione un empleado</option>
@@ -217,13 +189,23 @@
               <div class="invalid-feedback" id="errorEmpleadoId"></div>
             </div>
 
-            <!-- Calificacion -->
             <div class="form-group position-relative mb-3">
-              <input type="number" id="CalificacionEvaluacion" class="form-control" placeholder=" " />
+              <select id="CalificacionEvaluacion" class="form-control">
+                <option value="0" selected disabled>Seleccione</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
               <label for="CalificacionEvaluacion">Calificación</label>
               <div class="invalid-feedback" id="errorCalificacionEvaluacion"></div>
             </div>
-
         </form>
       </div>
       <div class="panel-footer">
@@ -237,46 +219,40 @@
     </div>
 
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleCriterios" aria-labelledby="tituloDetalleHorario"
-  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  <div class="detalle-criterio-contenedor">
-    <div class="detalle-criterio-encabezado row align-items-start">
-      <div class="col-10">
-        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
-          Detalle de Criterios de Evaluacion
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.85rem;" >
-          Información detallada de los criterios de evaluacion .
-        </p>
+
+    <!-- ================================ Offcanvas Detalle Criterios ===================================== -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleCriterios"
+      aria-labelledby="tituloDetalleHorario"
+      style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+      <div class="detalle-criterio-contenedor">
+        <div class="detalle-criterio-encabezado row align-items-start">
+          <div class="col-10">
+            <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+              Detalle de Criterios de Evaluacion
+            </h5>
+            <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+              Información detallada de los criterios de evaluacion .
+            </p>
+          </div>
+          <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+          </div>
+
+        </div>
+        <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+        <div class="offcanvas-body" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px);
+      overflow-y: auto;" id="contenedorCriteriosOffcanvas">
+        </div>
       </div>
-        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-    </div>
 
     </div>
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
-
-    <div class="offcanvas-body" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px);
-      overflow-y: auto;" id="contenedorCriteriosOffcanvas" >
-      <!-- Aquí se insertan las cards -->
-    </div>
-  </div>
-
-</div>
-
-
-
-
-
-    
-
-    <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
-    <script src="../js/Vistas/common/obtenetTiposDeCriterios.js"></script>
-    <script src="../js/Vistas/evaluacion.js"></script>
-    <script src="../js/Vistas/estadisticas/estadisticasEvaluaciones.js"></script>
-    
-
-
 
 
   </div>
+
+
+  <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+  <script src="../js/Vistas/common/obtenetTiposDeCriterios.js"></script>
+  <script src="../js/Vistas/evaluacion.js"></script>
+  <!-- <script src="../js/Vistas/estadisticas/estadisticasEvaluaciones.js"></script> -->

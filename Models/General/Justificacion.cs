@@ -6,10 +6,12 @@ using NuGet.Common;
 
 namespace API_RRHH_TESIS2025.Models.General
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// TABLA PARA JUSTIFICACIONES ///////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class Justificacion
     {
         [Key]
-
         public int Id { get; set; }
         public string Motivo { get; set; }
         [NotMapped]
@@ -19,8 +21,8 @@ namespace API_RRHH_TESIS2025.Models.General
         public string DocumentoNombre { get; set; }
         public string DocumentoMimeType { get; set; }
         [NotMapped]
-        public string TipoJustificacionString { get { return TipoJustificacion.ToString(); } }
-        public TipoJustificacion TipoJustificacion { get; set; }
+        public string EstadoString { get { return Estados.ToString(); } }
+        public EstadoJustificacion Estados { get; set; }
         [NotMapped]
         public string EmpleadoString { get { return Empleado?.NombreCompleto; } }
         public int EmpleadoId { get; set; }
@@ -28,19 +30,23 @@ namespace API_RRHH_TESIS2025.Models.General
 
     }
 
-    public enum TipoJustificacion
+    public enum EstadoJustificacion
     {
         PENDIENTE = 1,
         APROBADA = 2,
         RECHAZADA = 3,
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// VISTA DE TABLA PARA JUSTIFICACIONES ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class VistaJustificacion
     {
         public int Id { get; set; }
         public string Motivo { get; set; }
         public string FechaString { get; set; }
-        public string TipoJustificacionString { get; set; }
+        public string EstadoString { get; set; }
         public string EmpleadoString { get; set; }
         public int EmpleadoId { get; set; }
         public byte[] DocumentoAdjunto { get; set; }
@@ -48,10 +54,14 @@ namespace API_RRHH_TESIS2025.Models.General
         public string DocumentoMimeType { get; set; }
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// TABLA PARA FILTRO ///////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class JustificacionFiltrar
     {
         public string EmpleadoTexto { get; set; }
-        public int? TipoJustificacion { get; set; }
+        public int? EstadoJustificacion { get; set; }
         public DateTime? FechaJustificacion { get; set; }
     }
 

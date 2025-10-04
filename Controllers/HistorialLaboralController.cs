@@ -20,7 +20,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/HistorialLaboral/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTEENR LOS DATOS DEL HISTORIAL DE LABORAL POR EMPLEADO //////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("empleado/{empleadoId}")]
         public async Task<ActionResult<IEnumerable<VistaHistorialLaboral>>> GetHistorialPorEmpleado(int empleadoId)
         {
@@ -48,7 +51,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                 .Where(u => usuarioIds.Contains(u.Id))
                 .ToDictionaryAsync(u => u.Id, u => new { u.NombreCompleto, u.Email });
 
-            // Buscar todos los nombres de puestos actuales
             var puestos = await _context.Puesto
                 .Include(p => p.Sector)
                 .ToListAsync();
@@ -70,9 +72,6 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return lista;
         }
-
-
-
 
 
         private bool HistorialLaboralExists(int id)

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250826123157_ModeloEmpleadoAgregados")]
-    partial class ModeloEmpleadoAgregados
+    [Migration("20251004225932_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,9 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FotoRuta")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("HorarioId")
                         .HasColumnType("int");
 
@@ -144,9 +147,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Resultado")
                         .HasColumnType("int");
 
@@ -170,14 +170,17 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("CursoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DocumentoDescargable")
+                    b.Property<byte[]>("DocumentoAdjunto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DocumentoMimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("FechaEmision")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -225,11 +228,14 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("FechaCreacion")
+                    b.Property<DateTime>("FechaFinalizacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Finalizado")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Modalidad")
                         .HasColumnType("int");
@@ -283,8 +289,8 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<string>("NombreCompleto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NroLegajo")
-                        .HasColumnType("int");
+                    b.Property<string>("NroLegajo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PuestoId")
                         .HasColumnType("int");
@@ -393,10 +399,19 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DocumentoAdjunto")
+                    b.Property<byte[]>("DocumentoAdjunto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DocumentoMimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Estados")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
@@ -404,9 +419,6 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     b.Property<string>("Motivo")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TipoJustificacion")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

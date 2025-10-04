@@ -336,7 +336,7 @@ table tbody tr {
   z-index: 1100;
   transform: translate(100%, -50%);
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-  overflow-y: auto;
+   overflow-y: auto; 
 }
 
 /* Estado abierto*/
@@ -513,7 +513,6 @@ select.form-control:not([value=""])+label {
 }
 
 @media (max-width: 480px) {
-
   #panelProvincia,
   #panelLocalidad,
   #panelSector,
@@ -528,6 +527,7 @@ select.form-control:not([value=""])+label {
     border-radius: 15px 0 0 15px;
   }
 }
+
 /* FIN PANEL DESLIZANTE BASE */
 
 
@@ -562,8 +562,6 @@ select.form-control:not([value=""])+label {
 
 
 
-
-
 /* INICIO RESPONSIVO PARA LICENCIAS */
 @media (max-width: 400px) {
   #panelLicencia .form-grid {
@@ -571,41 +569,6 @@ select.form-control:not([value=""])+label {
 }
 }
 /* FIN RESPONSIVO PARA LICENCIAS */
-
-
-
-
-/* INICIO RESPONSIVO PARA HORARIOS */
-/* #panelHorario .form-group {
-  width: 100%;
-}
-
-#panelHorario .form-row {
-  display: flex;
-  gap: 12px;
-}
-
-#panelHorario .form-row .form-group {
-  flex: 1;
-}
-
-@media (max-width: 1024px) {
-  #panelHorario {
-    max-width: 70vw;
-  }
-}
-
-@media (max-width: 768px) {
-  #panelHorario .form-row {
-    flex-direction: column;
-  }
-
-  #panelHorario .form-row .form-group {
-    width: 100% !important;
-  }
-
-} */
-/* FIN RESPONSIVO PARA HORARIOS */
 
 
 

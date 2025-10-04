@@ -1,4 +1,7 @@
-// Función para abrir el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA ABRIR EL PANEL DE PUESTO ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrirPanelPuesto() {
   document.getElementById("panelPuesto").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -10,8 +13,11 @@ function AbrirPanelPuesto() {
   }, 400);
 }
 
-  //Funcion para cerrar el formulario lateral
-  function CerrarPanelPuesto() {
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA CERRAR EL PANEL DE PUESTO ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function CerrarPanelPuesto() {
     document.getElementById("panelPuesto").classList.remove("abierto");
     const fondo = document.getElementById("fondoOscuro");
     fondo.classList.remove("visible");
@@ -21,86 +27,23 @@ function AbrirPanelPuesto() {
 }
 
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
-
-//ONCHANGE DE FILTROS//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerPuestos();
 
-  $("#EstadoIdBuscar, #SectorIdBuscar").on("change", function () {
+  $("#EstadoIdBuscar, #SectorIdBuscar, #DescripcionPuestoBuscar").on("input", function () {
     ObtenerPuestos();
   });
 });
-//FIN ONCHANGE DE FILTROS//
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA FILTRAR LOS SECTORES /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ComboParaFiltrarSectores() {
-    const res = await authFetch("Sector", {
+    const res = await authFetch("Sector/Activos", {
         method: "GET",
       })
 
@@ -119,12 +62,16 @@ async function ComboParaFiltrarSectores() {
 }
 
 
-// Obtener Puestos
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA OBTENER LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerPuestos() {
     let estadoId = document.getElementById("EstadoIdBuscar").value;
     let sectorId = document.getElementById("SectorIdBuscar").value;
+    let descripcion = document.getElementById("DescripcionPuestoBuscar").value;
 
     let filtro = {
+        descripcion: descripcion !== "" ? descripcion : null,
         eliminado: estadoId !== "" ? parseInt(estadoId) : null,
         sectorId: sectorId !== "" ? parseInt(sectorId) : null,
     };
@@ -145,7 +92,9 @@ async function ObtenerPuestos() {
 }
 
 
-// Funcion Para Mostrar Las Puestos
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarPuestos(data) {
   window.listaPuestos = data;
   $("#tablaPuestosBody").empty();
@@ -164,7 +113,6 @@ function MostrarPuestos(data) {
 
     $("#tablaPuestosBody").append(
       "<tr>" +
-        // Columna Activo (toggle)
         "<td class='text-center align-middle'>" +
         "<button class='btn-editar' type='button' class='btn btn-sm " +
         (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
@@ -182,14 +130,10 @@ function MostrarPuestos(data) {
         "'></i>" +
         "</button>" +
         "</td>" +
-        // columna Puesto (nombre)
        "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
-
-        // Columna Sector (nombre)
         "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
         (item.sectorString || "Sin sector") +
         "</td>" +
-        // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +
         "<button class='btn-editar' data-action='edit' style='" +
         visibleBotones +
@@ -203,7 +147,6 @@ function MostrarPuestos(data) {
     );
   });
 
-  // Inicializar tooltips de Tippy
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -211,14 +154,10 @@ function MostrarPuestos(data) {
   });
 }
 
-function toggleDetalle(id) {
-    const fila = document.getElementById(`detalle-${id}`);
-    fila.style.display = fila.style.display === 'none' ? 'table-row' : 'none';
-}
 
-
-
-// Funcion para mostar el modal de edición de la puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR EL MODAL DE EDICIÓN DE LA PUESTO /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditarPuesto(id) {
 
     const res = await authFetch(`Puestos/${id}`);
@@ -232,13 +171,13 @@ async function MostrarModalEditarPuesto(id) {
 }   
 
 
-// Funcion para buscar el id de la puesto y llamar a la función de edición o creación
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA BUSCAR EL ID DE LA PUESTO Y LLAMAR A LA FUNCIÓN DE EDICIÓN O CREACIÓN //////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarPuestosId() { 
     
     const id = parseInt(document.getElementById("IdPuesto").value); 
 
-
-    //Si el id no existe o es 0, entonces es una nueva puesto y llamamos a la función para crear
     if (!id || id === 0) {
         CrearPuesto();
     } else {
@@ -247,9 +186,10 @@ function BuscarPuestosId() {
 }
 
 
-// Funcion para limpiar el formulario de la puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA LIMPIAR EL FORMULARIO DE LA PUESTO //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalPuesto() {
-  // Limpia el formulario
   document.getElementById('IdPuesto').value = '';
   const inputNombre = document.getElementById('NombrePuesto');
   inputNombre.value = '';
@@ -257,14 +197,11 @@ function LimpiarModalPuesto() {
   const inputIdSector = document.getElementById('IdSector');
   inputIdSector.value = '';
 
-
-  // Limpia los estilos de validación
   inputNombre.classList.remove('is-invalid');
   inputNombre.classList.remove('is-valid');
   inputIdSector.classList.remove('is-invalid');
   inputIdSector.classList.remove('is-valid');
 
-  // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById('errorNombrePuesto');
   inputErrorNombre.textContent = '';
   inputErrorNombre.style.display = 'none';
@@ -275,7 +212,9 @@ function LimpiarModalPuesto() {
 }   
 
 
-// Función para validar el formulario de puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA VALIDAR EL FORMULARIO DE PUESTO //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioPuesto() {
     const inputNombre = document.getElementById("NombrePuesto");
     const inputErrorNombre = document.getElementById("errorNombrePuesto");
@@ -284,7 +223,6 @@ function ValidarFormularioPuesto() {
     const nombre = inputNombre.value.trim();
     const sectorSeleccionada = selectSector.value;
 
-    // Limpiar errores previos
     inputErrorNombre.style.display = 'none';
     inputErrorNombre.textContent = '';
     inputNombre.classList.remove("is-invalid", "is-valid");
@@ -295,7 +233,6 @@ function ValidarFormularioPuesto() {
 
     let esValido = true;
 
-    // Validar nombre
     if (nombre.length === 0) {
         inputNombre.classList.add("is-invalid");
         inputErrorNombre.style.display = "block";
@@ -312,7 +249,6 @@ function ValidarFormularioPuesto() {
         inputErrorNombre.textContent = "";
     }
 
-    // Validar sector
     if (!sectorSeleccionada) {
         selectSector.classList.add("is-invalid");
         inputErrorSector.style.display = "block";
@@ -328,14 +264,14 @@ function ValidarFormularioPuesto() {
 }
 
 
-
-//Validación en vivo: cambia el color mientras el usuario escribe
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// VALIDACIÓN EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombrePuesto").addEventListener("input", () => {
     const inputNombre = document.getElementById("NombrePuesto");
     const errorNombre = document.getElementById("errorNombrePuesto");
     const nombre = inputNombre.value.trim();
 
-    // Limpiar cualquier estado previo
     inputNombre.classList.remove("is-invalid", "is-valid");
 
     if (nombre.length === 0) {
@@ -347,12 +283,32 @@ document.getElementById("NombrePuesto").addEventListener("input", () => {
         errorNombre.style.display = "block";
         errorNombre.textContent = "Mínimo 3 caracteres.";
     } else {
-        inputNombre.classList.add("is-valid"); // Aplica color verde cuando es válido
+        inputNombre.classList.add("is-valid"); 
         errorNombre.style.display = "none";
     }
 });
 
+document.getElementById("IdSector").addEventListener("change", () => {
+  const input = document.getElementById("IdSector");
+  const error = document.getElementById("errorIdSector");
+  const valor = input.value.trim();
 
+  input.classList.remove("is-invalid", "is-valid");
+
+  if (valor.length === 0) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "Campo obligatorio.";
+  } else {
+    input.classList.add("is-valid");
+    error.style.display = "none";
+  }
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR EL ERROR DE PUESTO EXISTENTE ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorPuestoExistente(mensaje) {
     const errorPuesto = document.getElementById("errorNombrePuesto");
     const inputNombrePuesto = document.getElementById("NombrePuesto");
@@ -363,7 +319,9 @@ function MostrarErrorPuestoExistente(mensaje) {
 }
 
 
-// Función para crear una puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA CREAR UNA PUESTO ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearPuesto() {
 
     if (!ValidarFormularioPuesto()) return;
@@ -384,8 +342,8 @@ async function CrearPuesto() {
         } else {
             CerrarPanelPuesto();
             ObtenerPuestos();
-            // Mostrar alerta de éxito
-        Swal.fire({
+
+            Swal.fire({
           title: "¡Puesto Creado!",
           toast: true,
           position: "bottom-end",
@@ -410,7 +368,9 @@ async function CrearPuesto() {
 } 
 
 
-// Funcion para editar una puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA EDITAR UNA PUESTO ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarPuesto(id) {
     if (!ValidarFormularioPuesto()) return;
 
@@ -431,8 +391,8 @@ async function EditarPuesto(id) {
             MostrarErrorPuestoExistente(response.mensaje);
         } else {
             ObtenerPuestos();
-            // Mostrar alerta de éxito
-        Swal.fire({
+
+            Swal.fire({
           title: "¡Puesto Modificado!",
           toast: true,
           position: "bottom-end",
@@ -457,7 +417,9 @@ async function EditarPuesto(id) {
 } 
 
 
-// Función para eliminar una puesto
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PAR AMOSTRAR EL MODAL DE ELIMINAR PUESTO ////////////////////////////////////////////////  
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EliminarPuestoId(id, eliminado) {
   Swal.fire({
     title: eliminado
@@ -506,7 +468,10 @@ function EliminarPuestoId(id, eliminado) {
   });
 }
 
-// Función para eliminar una puesto
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA ELIMINAR SI PUESTO /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiPuesto(id) {
     try {
     const response = await authFetch(`Puestos/${id}`, {
@@ -535,7 +500,7 @@ async function EliminarSiPuesto(id) {
       });
       ObtenerPuestos();
     } else {
-      // Error controlado desde el backend
+
       Swal.fire({
         title: "Acción no permitida",
         html: `
@@ -559,25 +524,8 @@ async function EliminarSiPuesto(id) {
   }
 }   
 
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
 
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICILZIAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ComboParaFiltrarSectores();

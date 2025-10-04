@@ -1,6 +1,6 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-    <!-- Título -->
+
+    <!--==================================== Título ===================================== -->
     <div class="mb-3">
         <h3 class="titulo-seccion">Control De Asistencias</h3>
         <p class="text-muted mb-0" style="font-size: 0.95rem">
@@ -11,16 +11,10 @@
 
     <hr />
 
-    <!-- Contenedor de Botones y Tabla -->
+    <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
     <div style="background-color: white; border-radius: 5px; padding: 10px">
-        <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <button class="btn btn-agregar" id="btnToggleSemana">
-                <i class="fa-solid fa-calendar-day me-1"></i>
-                <span id="textToggleSemana">Ver Semana</span>
-            </button>
 
-            <!-- Botones Filtros y Informe -->
+        <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
             <div class="d-flex gap-2 flex-wrap responsive-buttons">
                 <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
                     <i class="fa-solid fa-filter me-1"></i>
@@ -34,31 +28,33 @@
             </div>
         </div>
 
-        <!-- Contenedor Filtros-->
+
+        <!-- ================================ Contenedor Filtros ===================================== -->
         <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
             <div class="row g-3 align-items-end">
-                <!-- Empleado -->
                 <div class="col-12 col-md-3">
+
                     <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
                     <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
                         placeholder="Buscar..." />
                 </div>
 
-                <!-- Nro Legajo -->
                 <div class="col-12 col-md-2">
                     <label for="NroLegajoBuscar" class="form-label-fija">Nro Legajo</label>
-                    <input type="number" class="form-control filtro-select" id="NroLegajoBuscar"
+                    <input type="text" class="form-control filtro-select" id="NroLegajoBuscar"
                         placeholder="Buscar..." />
                 </div>
 
-                <!-- Dni -->
                 <div class="col-12 col-md-2">
                     <label for="DniBuscar" class="form-label-fija">DNI</label>
-                    <input type="number" class="form-control filtro-select" id="DniBuscar"
-                        placeholder="Buscar..." />
+                    <input type="number" class="form-control filtro-select" id="DniBuscar" placeholder="Buscar..." />
                 </div>
 
-                <!-- Estado de Asistencia -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+                    <label for="FechaBuscar" class="form-label-fija">Fecha</label>
+                    <input type="date" class="form-control filtro-select" id="FechaBuscar" />
+                </div>
+
                 <div class="col-12 col-md-3">
                     <label for="EstadoAsistenciaBuscar" class="form-label-fija">Estado</label>
                     <select id="EstadoAsistenciaBuscar" class="form-control filtro-select">
@@ -71,11 +67,11 @@
                     </select>
                 </div>
 
-
             </div>
         </div>
 
-        <!-- Contenedor Generar-->
+
+        <!-- ================================ Contenedor Generar ===================================== -->
         <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
             <div class="d-flex gap-2 flex-wrap">
                 <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -84,20 +80,15 @@
                 <button class="btn btn-generar-excel" onclick="GenerarExcel()">
                     <i class="fa-solid fa-file-excel me-1"></i> Excel
                 </button>
-                <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-                    <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-                </button>
             </div>
         </div>
 
-        <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-            <canvas id="graficoHorario" width="400" height="150"></canvas>
-        </div>
 
-        <!-- Contenedor de tarjetas de resumen de asistncias -->
+
+
+        <!-- ================================ Contenedor de tarjetas de resumen de asistncias ===================================== -->
         <div>
             <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
-                <!-- Total asistencias fichadas -->
                 <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 200px;
@@ -114,7 +105,6 @@
                     </div>
                 </div>
 
-                <!-- Total horas trabajadas -->
                 <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 200px;
@@ -131,7 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Empleados ausentes -->
                 <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 200px;
@@ -148,7 +137,6 @@
                     </div>
                 </div>
 
-                <!-- Empleados tardanzas o llegadas tardes -->
                 <div class="card p-3 border-0" style="
             background-color: #f3f4f6;
             min-width: 200px;
@@ -167,7 +155,7 @@
             </div>
         </div>
 
-        <hr style="margin-bottom: 1rem" />
+        <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
         <h3 id="tituloAsistencias"
             class="shadow-sm p-2 rounded-3 d-flex align-items-center justify-content-center gap-2 mb-3 mt-3 titulo-asistencias">
@@ -176,7 +164,8 @@
         <div id="asistenciasContainer" class="row g-4"></div>
     </div>
 
-    <!-- Detallle Asistencia Por Dia -->
+
+    <!-- ======================================= Detallle Asistencia Por Dia ====================================== -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistencia"
         aria-labelledby="tituloDetalleAsistencia" style="
       width: 380px;
@@ -256,81 +245,6 @@
         </div>
     </div>
 
-    <!-- Offcanvas Detalle Semana -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistenciaSemana"
-        aria-labelledby="tituloDetalleSemana">
-        <div class="detalle-asistencia-semana-contenedor">
-            <!-- Encabezado -->
-            <div class="detalle-asistencia-semana-encabezado row align-items-start">
-                <div class="col-10">
-                    <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529">
-                        Detalle de Asistencia Semanal
-                    </h5>
-                    <p class="mb-0 text-muted" style="font-size: 0.85rem">
-                        Información de cada día trabajado y estado general del empleado.
-                    </p>
-                </div>
-                <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-                </div>
-            </div>
-
-            <hr style="margin: 0; border-top: 1px solid #dee2e6" />
-
-            <div class="offcanvas-body p-2" style="
-           font-size: 0.75rem;
-    line-height: 1.1;
-    max-height: calc(100vh - 140px);    
-    overflow-y: auto;         
-    box-sizing: border-box; 
-        ">
-                <!-- Información del empleado -->
-                <div class="detalle-asistencia-semana-seccion mb-3">
-                    <div class="row align-items-center">
-                        <!-- Nombre y Legajo -->
-                        <div class="col-6 text-center">
-                            <h4 id="detalleNombreSemana"
-                                style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
-
-                            </h4>
-                            <span id="detalleLegajoSemana" class="text-muted" style="font-size: 0.85rem">
-
-                            </span>
-                        </div>
-
-                        <!-- Semana -->
-                        <div class="col-6 text-center">
-                            <h5 id="detalleSemanaNumero" style="color: #212529; font-size: 1rem; margin-bottom: 0.1rem">
-                                Semana N° XX
-                            </h5>
-                            <span id="detalleRangoSemana" class="text-muted" style="font-size: 0.85rem">
-
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detalle-asistencia-semana-tarjeta mt-3">
-                    <div class="detalle-asistencia-semana-seccion">
-                        <p class="detalle-asistencia-semana-titulo-seccion">INFORMACION</p>
-                        <div id="contenedorDiasSemana"></div>
-                    </div>
-                </div>
-
-                <!-- Estado general -->
-                <div class="detalle-asistencia-semana-tarjeta mt-3">
-                    <div class="detalle-asistencia-semana-seccion">
-                        <p class="detalle-asistencia-semana-titulo-seccion">ESTADO</p>
-                        <div class="detalle-asistencia-semana-fila text-center">
-                            <span class="detalle-asistencia-semana-valor" id="detalleEstadoSemana"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <script src="../js/Vistas/asistencias.js"></script>
 </div>
+
+<script src="../js/Vistas/asistencias.js"></script>

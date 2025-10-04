@@ -20,42 +20,32 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/CriteriosDeEvaluacion
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS CRITERIOS DE EVALUACION ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CriterioDeEvaluacion>>> GetCriterioDeEvaluacion()
         {
-            return await _context.CriterioDeEvaluacion
+            var criteriosDeEvaluacion = await _context.CriterioDeEvaluacion
             .Include(e => e.TipoDeCriterio)
             .ToListAsync();
-        }
 
-        // GET: api/CriteriosDeEvaluacion/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CriterioDeEvaluacion>> GetCriterioDeEvaluacion(int id)
-        {
-            var criterioDeEvaluacion = await _context.CriterioDeEvaluacion.FindAsync(id);
-
-            if (criterioDeEvaluacion == null)
-            {
-                return NotFound();
-            }
-
-            return criterioDeEvaluacion;
+            return Ok(criteriosDeEvaluacion);
         }
 
 
-        // POST: api/CriteriosDeEvaluacion
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// MERODO PARA CREAR UN CRITERIO DE EVALUACION //////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
         public async Task<ActionResult<CriterioDeEvaluacion>> PostCriterioDeEvaluacion(CriterioDeEvaluacion criterioDeEvaluacion)
         {
             criterioDeEvaluacion.Descripcion = criterioDeEvaluacion.Descripcion.ToUpper();
 
-            // Validar si ya existe un criterio con el mismo TipoDeCriterioId
             var existeCriterio = await _context.CriterioDeEvaluacion
                 .AnyAsync(c => c.TipoDeCriterioId == criterioDeEvaluacion.TipoDeCriterioId
                 && c.EvaluacionId == criterioDeEvaluacion.EvaluacionId);
-
 
             if (existeCriterio)
             {
@@ -63,27 +53,27 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
 
             _context.CriterioDeEvaluacion.Add(criterioDeEvaluacion);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCriterioDeEvaluacion", new { id = criterioDeEvaluacion.Id }, criterioDeEvaluacion);
         }
 
-
-        // DELETE: api/CriteriosDeEvaluacion/5
+        
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ELIMIANR UN CRITERIO DE EVALUACION ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCriterioDeEvaluacion(int id)
         {
             var criterioDeEvaluacion = await _context.CriterioDeEvaluacion.FindAsync(id);
-            if (criterioDeEvaluacion == null)
-            {
-                return NotFound();
-            }
-
+            
             _context.CriterioDeEvaluacion.Remove(criterioDeEvaluacion);
             await _context.SaveChangesAsync();
 
             return Ok(criterioDeEvaluacion);
         }
+
 
         private bool CriterioDeEvaluacionExists(int id)
         {

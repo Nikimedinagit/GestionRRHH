@@ -1,5 +1,7 @@
-//INICIO PANEL FORMUALRIO//
-//Función para abrir el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ABRIR PANEL DE TIPO DE LICENCIA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrirPanelTipoDeLicencia() {
   document.getElementById("panelTipoDeLicencia").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -11,7 +13,10 @@ function AbrirPanelTipoDeLicencia() {
   }, 400);
 }
 
-//Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CERRAR PANEL DE TIPO DE LICENCIA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function CerrarPanelTipoDeLicencia() {
   document.getElementById("panelTipoDeLicencia").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -19,93 +24,28 @@ function CerrarPanelTipoDeLicencia() {
 
   LimpiarModalTipoDeLicencia();
 }
-//FIN PANEL FORMULARIO//
 
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
-
-// INICIO ONCHANGE DE FILTROS//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICILIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerTiposDeLicencias();
 
-  $("#EstadoIdBuscar").on("change", function () {
+  $("#EstadoIdBuscar, #NombreTipoLicenciaBuscar").on("input", function () {
     ObtenerTiposDeLicencias();
   });
 });
-//FIN ONCHANGE DE FILTROS//
 
 
-// Funcion para obtener los tipos de licencias
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTiposDeLicencias() {
 
   let estado = document.getElementById("EstadoIdBuscar").value;
   let filtro = {
+    nombre: document.getElementById("NombreTipoLicenciaBuscar").value,
     eliminado: estado !== "" ? parseInt(estado) : null,
   };
 
@@ -125,8 +65,9 @@ async function ObtenerTiposDeLicencias() {
 }
 
 
-
-// Funcion Para Mostrar los tipos de licencias en la tabla
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS TIPOS DE LICENCIAS ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarTiposDeLicencias(data) {
     window.listaTiposDeLicencias = data;
 
@@ -146,7 +87,6 @@ function MostrarTiposDeLicencias(data) {
 
     $("#tablaTiposLicenciaBody").append(
       "<tr>" +
-        // Columna Activo (toggle)
         "<td class='text-center align-middle'>" +
         "<button class='btn-editar' type='button' class='btn btn-sm " +
         (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
@@ -164,13 +104,11 @@ function MostrarTiposDeLicencias(data) {
         "'></i>" +
         "</button>" +
         "</td>" +
-        // Columna Tipo de Licencia (nombre)
         "<td class='align-middle " +
         filaClass +
         " tipo-de-licencia-truncado'>" +
         item.nombre +
         "</td>" +
-        // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +
         "<button class='btn-editar' data-action='edit' style='" +
         visibleBotones +
@@ -183,7 +121,6 @@ function MostrarTiposDeLicencias(data) {
     );
   });
 
-  // Inicializar tooltips de Tippy
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -192,7 +129,9 @@ function MostrarTiposDeLicencias(data) {
 }
 
 
-// Funcion para mostrar el modal de edición de la tipo de licencia
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL MODAL DE EDICION DE LA TIPO DE LICENCIA ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
   const res = await authFetch(`TipoDeLicencias/${id}`);
   const tipoDeLicencia = await res.json();
@@ -203,7 +142,10 @@ async function MostrarModalEditar(id) {
   AbrirPanelTipoDeLicencia();
 }
 
-// Funcion para buscar el id de la tipo de licencia y llamar a la función de edición o creación
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA BUSCAR EL ID DE LA TIPO DE LICENCIA Y LLAMAR A LA FUNCIÓN DE EDICION O CREACIÓN ////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarTipoDeLicenciaId() {
   const id = parseInt(document.getElementById("IdTipoDeLicencia").value);
 
@@ -214,30 +156,33 @@ function BuscarTipoDeLicenciaId() {
   }
 }
 
-// Funcion para limpiar el modal de tipo de licencia
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA LIMPIAR EL MODAL DE TIPO DE LICENCIA //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalTipoDeLicencia() {
-  // Limpia el formulario
+
   document.getElementById("IdTipoDeLicencia").value = "";
   const inputNombre = document.getElementById("NombreTipoDeLicencia");
   inputNombre.value = "";
 
-  // Limpia los estilos de validación
   inputNombre.classList.remove("is-invalid");
   inputNombre.classList.remove("is-valid");
 
-  // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById("errorNombreTipoDeLicencia");
   inputErrorNombre.textContent = "";
   inputErrorNombre.style.display = "none";
 }
 
-// Función para validar el formulario de tipo de licencia
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA VALIDAR EL FORMULARIO DE TIPO DE LICENCIA ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioTipoDeLicencia() {
   const inputNombre = document.getElementById("NombreTipoDeLicencia");
   const inputErrorNombre = document.getElementById("errorNombreTipoDeLicencia");
   const nombre = inputNombre.value.trim();
 
-  // Limpiar errores previos
   inputErrorNombre.style.display = "none";
   inputErrorNombre.textContent = "";
   inputNombre.classList.remove("is-invalid", "is-valid");
@@ -256,18 +201,20 @@ function ValidarFormularioTipoDeLicencia() {
     return false;
   }
 
-  inputNombre.classList.add("is-valid"); // Aplica color verde cuando es válido
+  inputNombre.classList.add("is-valid"); 
   inputErrorNombre.style.display = "none";
   return true;
 }
 
-// Validación en vivo: cambia el color mientras el usuario escribe
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VALIDACION EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombreTipoDeLicencia").addEventListener("input", () => {
   const inputNombre = document.getElementById("NombreTipoDeLicencia");
   const errorNombre = document.getElementById("errorNombreTipoDeLicencia");
   const nombre = inputNombre.value.trim();
 
-  // Limpiar cualquier estado previo
   inputNombre.classList.remove("is-invalid", "is-valid");
 
   if (nombre.length === 0) {
@@ -284,6 +231,10 @@ document.getElementById("NombreTipoDeLicencia").addEventListener("input", () => 
   }
 });
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA MOSTRAR EL ERROR DE TIPO DE LICENCIA EXISTENTE /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorTipoDeLicenciaExistente(mensaje) {
   const errorTipoDeLicencia = document.getElementById("errorNombreTipoDeLicencia");
   const inputNombreTipoDeLicencia = document.getElementById("NombreTipoDeLicencia");
@@ -293,7 +244,10 @@ function MostrarErrorTipoDeLicenciaExistente(mensaje) {
   inputNombreTipoDeLicencia.classList.add("is-invalid");
 }
 
-// Función para crear una tipo de licencia
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA CREAR UNA TIPO DE LICENCIA ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearTipoDeLicencia() {
   if (!ValidarFormularioTipoDeLicencia()) return;
 
@@ -311,8 +265,8 @@ async function CrearTipoDeLicencia() {
       } else {
         CerrarPanelTipoDeLicencia();
         ObtenerTiposDeLicencias(); 
-        // Mostrar alerta de éxito
-         Swal.fire({
+
+        Swal.fire({
           title: "¡Licencia Creada!",
           toast: true,
           position: "bottom-end",
@@ -336,7 +290,10 @@ async function CrearTipoDeLicencia() {
     });
 }
 
-// Función para editar una tipo de licencia
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA EDITAR UNA TIPO DE LICENCIA //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarTipoDeLicencia(id) {
 
   if (!ValidarFormularioTipoDeLicencia()) return;
@@ -355,8 +312,8 @@ async function EditarTipoDeLicencia(id) {
         MostrarErrorTipoDeLicenciaExistente(response.mensaje);
       } else {
         ObtenerTiposDeLicencias(); 
-        // Mostrar alerta de éxito
-       Swal.fire({
+
+        Swal.fire({
           title: "¡Licencia Modificada!",
           toast: true,
           position: "bottom-end",
@@ -381,8 +338,9 @@ async function EditarTipoDeLicencia(id) {
 }
 
 
-
-// Función para eliminar una tipo de licencia
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION MOSTRAR MODAL DE ELIMINAR TIPO DE LICENCIA ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EliminarTipoDeLicenciaId(id, eliminado) {
    Swal.fire({
     title: eliminado
@@ -431,7 +389,10 @@ function EliminarTipoDeLicenciaId(id, eliminado) {
   });
 }
 
-// Función para eliminar una tipo de licencia
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA ELIMINAR SI TIPO DE LICENCIA ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiTipoDeLicencia(id) {
  try {
     const response = await authFetch(`TipoDeLicencias/${id}`, {
@@ -460,7 +421,6 @@ async function EliminarSiTipoDeLicencia(id) {
       });
       ObtenerTiposDeLicencias();
     } else {
-      // Error controlado desde el backend
       Swal.fire({
         title: "Acción no permitida",
         html: `
@@ -484,23 +444,8 @@ async function EliminarSiTipoDeLicencia(id) {
   }
 }
 
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerTiposDeLicencias();

@@ -1,27 +1,26 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-  <!-- Título -->
+
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Gestor de Ausencias-Tardanzas</h3>
+    <p class="text-muted fs-6 mb-0">Visualiza y gestiona las justificaciones de los empleados.</p>
   </div>
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!--==================================== Contenedor de Botones y Tabla ===================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="cerrarPanelJustificacion()"></div>
 
-    <!-- Contenedor de Acciones (Agregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Nueva Justificación -->
+
       <button class="btn btn-agregar" onclick="abrirPanelJustificacion()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Nueva Justificación</span>
       </button>
 
-      <!-- Botones Filtros e Informe -->
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
           <span>Filtros</span>
@@ -34,7 +33,8 @@
       </div>
     </div>
 
-    <!-- Contenedor Generar -->
+
+    <!-- ================================ Contenedor Generar ===================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -43,20 +43,40 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
-    <!-- Gráfico -->
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoJustificacion" width="400" height="150"></canvas>
+
+    <!-- ================================ Contenedor Filtros ===================================== -->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+
+        <div class="col-12 col-md-3">
+          <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+          <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label for="EstadoJustificacionBuscar" class="form-label-fija">Estado</label>
+          <select id="EstadoJustificacionBuscar" class="form-control filtro-select">
+            <option value="0">[Todos]</option>
+            <option value="1">PENDIENTE</option>
+            <option value="2">ABROBADA</option>
+            <option value="3">RECHAZADA</option>
+          </select>
+        </div>
+
+        <div id="horariosInputs" class="col-12 col-md-2">
+          <label for="FechaBuscar" class="form-label-fija">Fecha</label>
+          <input type="date" class="form-control filtro-select" id="FechaBuscar" />
+        </div>
+
+      </div>
     </div>
 
-    <!-- Tarjetas resumen -->
+
+    <!-- ================================ Tarjetas resumen ===================================== -->
     <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
-      <!-- Total Justificaciones -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-primary bg-opacity-10 p-3 me-3">
@@ -69,7 +89,6 @@
         </div>
       </div>
 
-      <!-- Justificaciones pendientes -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-warning bg-opacity-10 p-3 me-3">
@@ -82,7 +101,6 @@
         </div>
       </div>
 
-      <!-- Justificaciones aprobadas -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-info bg-opacity-10 p-3 me-3">
@@ -95,7 +113,6 @@
         </div>
       </div>
 
-      <!-- Justificaciones rechazadas -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-danger bg-opacity-10 p-3 me-3">
@@ -110,17 +127,18 @@
 
     </div>
 
-    <hr style="margin-bottom: 1rem;" />
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
-    <!-- Contenedor de justificaciones -->
+
+    <!-- ================================ Contenedor de justificaciones ===================================== -->
     <div class="container-fluid">
       <div id="contenedorJustificaciones" class="row">
-        <!-- Se cargan dinámicamente -->
       </div>
     </div>
-  </div> <!-- ← cierre correcto del contenedor blanco -->
+  </div>
 
-  <!-- Panel Justificacion -->
+
+  <!--==================================== Panel Justificacion ===================================== -->
   <div id="panelJustificacion" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
     <div class="panel-header">
       <h2 id="panelTitulo" class="panel-title">Formulario De Justificaciones</h2>
@@ -129,21 +147,19 @@
       <form id="formJustificacion">
         <input type="hidden" id="IdJustificacion" />
         <div class="form-grid">
-          <!-- Nombre -->
           <div class="form-group position-relative mb-3">
-            <textarea name="MotivoJustificacion" id="MotivoJustificacion" class="form-control" rows="1" placeholder=" "></textarea>
+            <textarea name="MotivoJustificacion" id="MotivoJustificacion" class="form-control" rows="1"
+              placeholder=" "></textarea>
             <label for="MotivoJustificacion">Motivo</label>
             <div class="invalid-feedback" id="errorMotivoJustificacion"></div>
           </div>
 
-          <!-- Fecha -->
           <div class="form-group position-relative mb-3">
             <input type="date" id="FechaJustificacion" class="form-control" placeholder=" " />
             <label for="FechaJustificacion">Fecha</label>
             <div class="invalid-feedback" id="errorFechaJustificacion"></div>
           </div>
 
-          <!-- Empleado -->
           <div class="form-group position-relative mb-3">
             <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
               <option value="" disabled selected>Seleccione</option>
@@ -152,7 +168,6 @@
             <div class="invalid-feedback" id="errorEmpleadoIdJustificacion"></div>
           </div>
 
-          <!-- Documento Adjunto -->
           <div class="form-grid" style="grid-template-columns: 1fr;">
             <div class="form-group position-relative mb-3">
               <input type="file" id="DocumentoAdjunto" class="form-control" name="DocumentoAdjunto" />
@@ -172,7 +187,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+
   <script src="../js/Vistas/justificacion.js"></script>
   <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
 </div>

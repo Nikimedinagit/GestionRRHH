@@ -1,30 +1,26 @@
-
-  <div class="px-3 py-3">
-      <!-- Título -->
-<div class="mb-3">
-  <h3 class="titulo-seccion mb-1">Listado y Control de Localidades</h3>
-  <p class="text-muted  mb-0">Panel para administrar y consultar localidades.</p>
-</div>
+<div class="px-3 py-3">
 
 
+  <!-- ======================================= Título ====================================== -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion mb-1">Listado y Control de Localidades</h3>
+    <p class="text-muted  mb-0">Panel para administrar y consultar localidades.</p>
+  </div>
 
   <hr />
 
 
-    <!-- Contenedor de Botones y Tabla -->
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-     <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="CerrarPanelLocalidad()"></div>
 
-     <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Agregar -->
       <button class="btn btn-agregar" onclick="AbrirPanelLocalidad()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Agregar Localidad</span>
       </button>
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-button">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -33,10 +29,16 @@
       </div>
     </div>
 
-        <!-- Contenedor Filtros-->
+
+    <!-- ======================================= Contenedor Filtros ====================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <!-- Por Estado -->
+
+          <div class="col-12 col-md-3">
+          <label for="NombreLocalidadBuscar" class="form-label-fija">Nombre</label>
+          <input type="text" class="form-control filtro-select" id="NombreLocalidadBuscar" placeholder="Buscar..." />
+        </div>
+
         <div class="col-12 col-md-2">
           <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
           <select id="EstadoIdBuscar" class="form-control filtro-select">
@@ -46,21 +48,18 @@
           </select>
         </div>
 
-        <!-- Por Provincia -->
         <div class="col-12 col-md-2">
           <label for="ProvinciaIdBuscar" class="form-label-fija">Provincia</label>
           <select id="ProvinciaIdBuscar" class="form-control filtro-select">
             <option value="">[Todas]</option>
-            <!-- Aquí se cargarán dinámicamente las provincias -->
           </select>
 
-
+        </div>
       </div>
     </div>
-    </div>
 
 
-    <!-- Contenedor Generar-->
+    <!-- ======================================= Contenedor Generar ====================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -69,74 +68,66 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
 
-  <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-  <canvas id="graficoProvincias" width="400" height="150"></canvas>
-</div>
+    <!-- ======================================= Tabla de Datos ====================================== -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle w-100" id="tablaLocalidades">
+        <colgroup>
+          <col style="width: 5%" />
+          <col style="width: 45%" />
+          <col style="width: 45%" />
+          <col style="width: 5%" />
+        </colgroup>
+        <thead class="table-localidades">
+          <tr>
+            <th class="text-center">Activo</th>
+            <th class="text-start">Localidad</th>
+            <th class="text-start d-none d-md-table-cell">Provincia</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaLocalidadesBody"></tbody>
+      </table>
+    </div>
 
-    <!-- Tabla de Datos -->
-<div class="table-responsive">
-  <table class="table table-bordered table-hover align-middle w-100" id="tablaLocalidades">
-    <colgroup>
-      <col style="width: 5%" />
-      <col style="width: 45%" />
-      <col  style="width: 45%" />
-      <col style="width: 5%" />
-    </colgroup>
-    <thead class="table-localidades">
-      <tr>
-        <th class="text-center">Activo</th>
-        <th class="text-start">Localidad</th>
-        <th class="text-start d-none d-md-table-cell">Provincia</th>
-        <th class="text-center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="tablaLocalidadesBody"></tbody>
-  </table>
-</div>
+  </div>
 
 
-</div>
+  <!-- ======================================= Panel Deslizante Formulario de Localidad ====================================== -->
+  <div id="panelLocalidad" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Localidad</h2>
+    </div>
+    <div class="panel-body">
+      <form id="formLocalidad">
+        <input type="hidden" id="IdLocalidad" />
 
-      <!-- Panel Deslizante Formulario -->
-    <div id="panelLocalidad" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
-      <div class="panel-header">
-        <h2 id="panelTitulo" class="panel-title">Formulario De Localidad</h2>
-      </div>
-      <div class="panel-body">
-        <form id="formLocalidad">
-          <input type="hidden" id="IdLocalidad" />
+        <div class="form-grid">
+          <div class="form-group">
+            <input type="text" id="NombreLocalidad" class="form-control" placeholder=" " />
+            <label for="NombreLocalidad">Nombre</label>
+            <div class="invalid-feedback" id="errorNombreLocalidad"></div>
+          </div>
 
-          <div class="form-grid">
-            <div class="form-group">
-              <input type="text" id="NombreLocalidad" class="form-control" placeholder=" " />
-              <label for="NombreLocalidad">Nombre</label>
-              <div class="invalid-feedback" id="errorNombreLocalidad"></div>
-            </div>
-
-            <div class="form-group">   
-                <select name="IdProvincia" id="IdProvincia" class="form-control" required>
-                  <!-- Aquí se cargarán dinámicamente las provincias -->
-                </select>
-                <label for="IdProvincia">Provincia</label>
-                <div class="invalid-feedback" id="errorIdProvincia"></div>
-
-            </div>
+          <div class="form-group">
+            <select name="IdProvincia" id="IdProvincia" class="form-control" required>
+            </select>
+            <label for="IdProvincia">Provincia</label>
+            <div class="invalid-feedback" id="errorIdProvincia"></div>
 
           </div>
-        </form>
-      </div>
-      <div class="panel-footer mt-3">
-        <button class="btn btn-cancelar" onclick="CerrarPanelLocalidad()">Cancelar</button>
-        <button  type="submit" class="btn btn-guardar" onclick="BuscarLocalidadId()">Guardar</button>
-      </div>
+
+        </div>
+      </form>
     </div>
+    <div class="panel-footer mt-3">
+      <button class="btn btn-cancelar" onclick="CerrarPanelLocalidad()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarLocalidadId()">Guardar</button>
+    </div>
+  </div>
 
 
 </div>

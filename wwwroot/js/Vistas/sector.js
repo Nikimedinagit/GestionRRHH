@@ -1,4 +1,7 @@
-// Función para abrir el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA ABRIR EL PANEL DE SECTOR ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrirPanelSector() {
   document.getElementById("panelSector").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -10,104 +13,38 @@ function AbrirPanelSector() {
   }, 400);
 }
 
-  //Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA CERRAR EL PANEL DE SECTOR ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
   function CerrarPanelSector() {
     document.getElementById("panelSector").classList.remove("abierto");
     const fondo = document.getElementById("fondoOscuro");
     fondo.classList.remove("visible");
 
     LimpiarModalSector();
-
 }
 
 
-
-
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
-
-
-
-// INICIO ONCHANGE DE FILTROS//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIXAR LOS ONCHANGES DEL FILTRO //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerSectores();
 
-  $("#EstadoIdBuscar").on("change", function () {
+  $("#EstadoIdBuscar, #NombreSectorBuscar").on("input", function () {
     ObtenerSectores();
   });
 });
-//FIN ONCHANGE DE FILTROS//
 
 
-// Obtener Sectores
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA OBTENER LOS DATOS DE LA API DE SECTORES ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerSectores() {
     let estadoId = document.getElementById("EstadoIdBuscar").value;
     let filtro = {
+        nombre: document.getElementById("NombreSectorBuscar").value.trim(),
         eliminado: estadoId !== "" ? parseInt(estadoId) : null,
     }
     const res = await authFetch("Sector/Filtrar", {
@@ -126,7 +63,9 @@ async function ObtenerSectores() {
 }
 
 
-// Funcion Para Mostrar Las Sectores
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR LOS DATOS DE LA API DE SECTORES ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarSectores(data) {
     window.listaSectores = data;
 
@@ -146,7 +85,6 @@ function MostrarSectores(data) {
 
     $("#tablaSectoresBody").append(
       "<tr>" +
-        // Columna Activo (toggle)
         "<td class='text-center align-middle'>" +
         "<button class='btn-editar' type='button' class='btn btn-sm " +
         (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
@@ -164,13 +102,11 @@ function MostrarSectores(data) {
         "'></i>" +
         "</button>" +
         "</td>" +
-        // Columna Provincia (nombre)
         "<td class='align-middle " +
         filaClass + 
         " sector-truncado'>" +
         item.nombre +
         "</td>" +
-        // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +
         "<button class='btn-editar' data-action='edit' style='" +
         visibleBotones +
@@ -183,7 +119,6 @@ function MostrarSectores(data) {
     );
   });
 
-  // Inicializar tooltips de Tippy
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -191,7 +126,10 @@ function MostrarSectores(data) {
   });
 }
 
-// Funcion para mostar el modal de edición de la sector
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR EL MODAL DE EDICIÓN DE LA SECTOR ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
 
     const res = await authFetch(`Sector/${id}`);
@@ -204,12 +142,12 @@ async function MostrarModalEditar(id) {
 }   
 
 
-// Funcion para buscar el id de la sector y llamar a la función de edición o creación
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA BUSCAR EL ID DE LA SECTOR Y LLAMAR A LA FUNCIÓN DE EDICIÓN O CREACIÓN //////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarSectorId() { 
     
     const id = parseInt(document.getElementById("IdSector").value); 
-    const nombre = document.getElementById("NombreSector").value.trim();
-    //Si el id no existe o es 0, entonces es una nueva sector y llamamos a la función para crear
     if (!id || id === 0) {
         CrearSector();
     }
@@ -219,31 +157,31 @@ function BuscarSectorId() {
 }
 
 
-// Funcion para limpiar el formulario de la sector
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA LIMPIAR EL FORMULARIO DE LA SECTOR ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalSector() {
-  // Limpia el formulario
   document.getElementById('IdSector').value = '';
   const inputNombre = document.getElementById('NombreSector');
   inputNombre.value = '';
 
-  // Limpia los estilos de validación
   inputNombre.classList.remove('is-invalid');
   inputNombre.classList.remove('is-valid');
 
-  // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById('errorNombreSector');
   inputErrorNombre.textContent = '';
   inputErrorNombre.style.display = 'none';
 }
 
 
-// Función para validar el formulario de sector
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA VALIDAR EL FORMULARIO DE SECTOR //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioSector() {
     const inputNombre = document.getElementById("NombreSector");
     const inputErrorNombre = document.getElementById("errorNombreSector");
     const nombre = inputNombre.value.trim();
 
-    // Limpiar errores previos
     inputErrorNombre.style.display = 'none';
     inputErrorNombre.textContent = '';
     inputNombre.classList.remove("is-invalid", "is-valid");
@@ -262,18 +200,20 @@ function ValidarFormularioSector() {
         return false;
     }
 
-    inputNombre.classList.add("is-valid"); // Aplica color verde cuando es válido
+    inputNombre.classList.add("is-valid"); 
     inputErrorNombre.style.display = "none";
     return true;
 }
 
-// Validación en vivo: cambia el color mientras el usuario escribe
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// VALIDACIÓN EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombreSector").addEventListener("input", () => {
     const inputNombre = document.getElementById("NombreSector");
     const errorNombre = document.getElementById("errorNombreSector");
     const nombre = inputNombre.value.trim();
 
-    // Limpiar cualquier estado previo
     inputNombre.classList.remove("is-invalid", "is-valid");
 
     if (nombre.length === 0) {
@@ -285,14 +225,17 @@ document.getElementById("NombreSector").addEventListener("input", () => {
         errorNombre.style.display = "block";
         errorNombre.textContent = "Mínimo 3 caracteres.";
     } else {
-        inputNombre.classList.add("is-valid"); // Color verde cuando cumple
+        inputNombre.classList.add("is-valid"); 
         errorNombre.style.display = "none";
     }
 });
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA MOSTRAR EL ERROR DE SECTOR EXISTENTE ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorSectorExistente(mensaje) {
-    const errorSector = document.getElementById("errorEmpleadoId");
+    const errorSector = document.getElementById("errorNombreSector");
     const inputNombreSector = document.getElementById("NombreSector");
 
     errorSector.textContent = mensaje;
@@ -301,8 +244,9 @@ function MostrarErrorSectorExistente(mensaje) {
 }
 
 
-
-// Funcion para crear una sector
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA CREAR UNA SECTOR ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearSector() {
 
     if (!ValidarFormularioSector()) return;
@@ -316,14 +260,13 @@ async function CrearSector() {
     })
     .then((response) => response.json())
     .then(response => {
-
         if (response.mensaje){
             MostrarErrorSectorExistente(response.mensaje);
         } else {
             CerrarPanelSector();
             ObtenerSectores();
-            // Mostrar alerta de éxito
-        Swal.fire({
+
+            Swal.fire({
           title: "¡Sector Creado!",
           toast: true,
           position: "bottom-end",
@@ -348,7 +291,9 @@ async function CrearSector() {
 } 
 
 
-// Funcion para editar una sector
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA EDITAR UNA SECTOR ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EditarSector(id) {
 
     if (!ValidarFormularioSector()) return;
@@ -368,8 +313,8 @@ function EditarSector(id) {
             MostrarErrorSectorExistente(response.mensaje);
         } else {
             ObtenerSectores();
-            // Mostrar alerta de éxito
-        Swal.fire({
+
+            Swal.fire({
           title: "¡Sector Modificado!",
           toast: true,
           position: "bottom-end",
@@ -394,7 +339,9 @@ function EditarSector(id) {
 } 
 
 
-// Función para eliminar una sector
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION APRA MOSTRAR EL MODAL DE ELIMINAR SECTOR ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EliminarSectorId(id, eliminado) {
    Swal.fire({
     title: eliminado
@@ -443,7 +390,10 @@ function EliminarSectorId(id, eliminado) {
   });
 }
 
-// Función para eliminar una sector
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PARA ELIMINAR SI SECTOR /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiSector(id) {
    try {
     const response = await authFetch(`Sector/${id}`, {
@@ -472,7 +422,6 @@ async function EliminarSiSector(id) {
       });
       ObtenerSectores();
     } else {
-      // Error controlado desde el backend
       Swal.fire({
         title: "Acción no permitida",
         html: `
@@ -496,26 +445,10 @@ async function EliminarSiSector(id) {
   }
 }
 
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerSectores();
 
 

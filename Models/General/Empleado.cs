@@ -1,12 +1,13 @@
-    using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 using WorkSync.Models.General;
 
 namespace API_RRHH_TESIS2025.Models.General
 {
-
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// TABLA PARA EMPLEADOS ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class Empleado
     {
         [Key]
@@ -16,7 +17,7 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public long DNI { get; set; }
 
-        public int NroLegajo { get; set; }
+        public string NroLegajo { get; set; }
 
         public string Direccion { get; set; }
 
@@ -38,7 +39,6 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public byte[]? FaceDescriptor { get; set; }
 
-
         [NotMapped]
         public string TipoSexoString { get { return TipoSexo.ToString(); } }
         public TipoSexo TipoSexo { get; set; }
@@ -48,8 +48,6 @@ namespace API_RRHH_TESIS2025.Models.General
         public int LocalidadId { get; set; }
         public virtual Localidad Localidad { get; set; }
 
-
-
         [NotMapped]
         public string PuestoIdString { get { return Puesto?.Descripcion; } }
         public int PuestoId { get; set; }
@@ -58,7 +56,6 @@ namespace API_RRHH_TESIS2025.Models.General
         public string UsuarioId { get; set; }
 
         public bool Eliminado { get; set; }
-
 
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
         public virtual ICollection<Licencia> Licencia { get; set; }
@@ -71,7 +68,6 @@ namespace API_RRHH_TESIS2025.Models.General
 
     }
 
-
     public enum EstadoCivil
     {
         SOLTERO = 1,
@@ -79,8 +75,6 @@ namespace API_RRHH_TESIS2025.Models.General
         DIVORCIADO,
         VIUDO
     }
-
-
     public enum TipoSexo
     {
         MASCULINO = 1,
@@ -89,6 +83,10 @@ namespace API_RRHH_TESIS2025.Models.General
         OTRO
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// VISTA DE TABLA PARA EMPLEADOS ///////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class VistaEmpleado
     {
         public int Id { get; set; }
@@ -111,17 +109,19 @@ namespace API_RRHH_TESIS2025.Models.General
         public string UsuarioId { get; set; }
         public string UsuarioNombreCreador { get; set; }
         public string UsuarioEmailCreador { get; set; }
-        public int NroLegajo { get; set; }
+        public string NroLegajo { get; set; }
         public bool Eliminado { get; set; }
-
     }
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// FILTRAR EMPLEADOS  EN LA VISTA ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class FiltrarEmpleado
     {
         public string NombreCompleto { get; set; }
         public long? DNI { get; set; }
-        public int? NroLegajo { get; set; }
+        public string NroLegajo { get; set; }
         public int? EstadoCiviles { get; set; }
 
         public int? TipoSexo { get; set; }
@@ -129,6 +129,5 @@ namespace API_RRHH_TESIS2025.Models.General
         public int? LocalidadId { get; set; }
         public int? PuestoId { get; set; }
     }
-        
 
- } 
+}

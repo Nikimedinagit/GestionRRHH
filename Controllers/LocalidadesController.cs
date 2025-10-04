@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class LocalidadesController : ControllerBase
@@ -22,19 +21,119 @@ namespace API_RRHH_TESIS2025.Controllers
             _context = context;
         }
 
-        // GET: api/Localidades
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidad()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE LOCALIDADES ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<LocalidadVista>>> FiltrarLocalidades([FromBody] FiltrarLocalidades filtro)
         {
-            var localidades = await _context.Localidad
-            .Include(x => x.Provincia)
-            .Where(l => !l.Eliminado && !l.Provincia.Eliminado)
-            .OrderBy(l => l.Provincia.Nombre)
-            .ThenBy(l => l.Nombre)
-            .ToListAsync();
-            return localidades;
+            var obtenerLocaldiades = _context.Localidad
+                .Include(x => x.Provincia)
+                .Where(x => !x.Provincia.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.Nombre))
+                obtenerLocaldiades = obtenerLocaldiades.Where(c => c.Nombre.Contains(filtro.Nombre));
+
+            if (filtro.Eliminado.HasValue)
+                obtenerLocaldiades = obtenerLocaldiades.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+
+            if (filtro.ProvinciaId > 0)
+                obtenerLocaldiades = obtenerLocaldiades.Where(t => t.ProvinciaId == filtro.ProvinciaId);
+
+            var listaFiltrada = await obtenerLocaldiades
+                .OrderBy(l => l.Eliminado)
+                .ThenBy(l => l.Provincia.Nombre)
+                .ThenBy(l => l.Nombre)
+                .Select(localidad => new LocalidadVista
+                {
+                    Id = localidad.Id,
+                    Nombre = localidad.Nombre,
+                    ProvinciaString = localidad.Provincia.Nombre,
+                    ProvinciaId = localidad.ProvinciaId,
+                    Eliminado = localidad.Eliminado
+                })
+                .ToListAsync();
+
+            return listaFiltrada;
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN LOCALIDAD ////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<Localidad>> PostLocalidad(Localidad localidad)
+        {
+            localidad.Nombre = localidad.Nombre.Trim().ToUpper();
+
+            bool localidadExistente = await _context.Localidad
+                .AnyAsync(x => x.Nombre == localidad.Nombre && x.ProvinciaId == localidad.ProvinciaId);
+
+            if (localidadExistente)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+
+            _context.Localidad.Add(localidad);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetLocalidad", new { id = localidad.Id }, localidad);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UN LOCALIDAD ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutLocalidad(int id, Localidad localidad)
+        {
+            var nombreNormalizado = localidad.Nombre.Trim().ToUpper();
+
+            bool existe = await _context.Localidad
+                .AsNoTracking()
+                .AnyAsync(x => x.Id != id && x.Nombre == nombreNormalizado && x.ProvinciaId == localidad.ProvinciaId);
+
+            if (existe)
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
+
+            var localidadOriginal = await _context.Localidad.FindAsync(id);
+          
+            localidadOriginal.Nombre = nombreNormalizado;
+            localidadOriginal.ProvinciaId = localidad.ProvinciaId;
+
+            _context.Localidad.Update(localidadOriginal);
+            await _context.SaveChangesAsync();
+
+            return Ok(localidadOriginal);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ALTERNAR EL ELIMINADO DE UN LOCALIDAD ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLocalidad(int id)
+        {
+            var localidad = await _context.Localidad
+                .Include(l => l.Empleados)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (!localidad.Eliminado && localidad.Empleados.Any())
+            {
+                return BadRequest(new { mensaje = "No se puede desactivar la localidad porque tiene empleados asociados." });
+            }
+
+            localidad.Eliminado = !localidad.Eliminado;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = localidad.Eliminado ? "Localidad Desactivada" : "Localidad Activada" });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS DATOS DE LA API DE LOCALIDADES ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Localidad>>> GetLocalidadesActivos()
         {
@@ -45,7 +144,10 @@ namespace API_RRHH_TESIS2025.Controllers
             return localidadesActivos;
         }
 
-        // GET: api/Localidades/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN LOCALIDAD POR ID /////////////////////////////////////////////////////// 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Localidad>> GetLocalidad(int id)
         {
@@ -57,153 +159,6 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             return localidad;
-        }
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<LocalidadVista>>> FiltrarLocalidades([FromBody] FiltrarLocalidades filtro)
-        {
-            List<LocalidadVista> vista = new List<LocalidadVista>();
-
-            var localidadesFiltro = _context.Localidad
-                .Include(x => x.Provincia)
-                .Where(x => !x.Provincia.Eliminado)
-                .AsQueryable();
-
-            if (filtro.Eliminado.HasValue)
-            {
-                localidadesFiltro = localidadesFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
-            }
-
-            if (filtro.ProvinciaId > 0)
-            {
-                localidadesFiltro = localidadesFiltro.Where(t => t.ProvinciaId == filtro.ProvinciaId);
-            }
-
-            var listaFiltrada = await localidadesFiltro
-                .OrderBy(l => l.Eliminado)
-                .ThenBy(l => l.Provincia.Nombre)
-                .ThenBy(l => l.Nombre)
-                .ToListAsync(); 
-
-            foreach (var localidad in listaFiltrada)
-            {
-                var vistaLocalidad = new LocalidadVista
-                {
-                    Id = localidad.Id,
-                    Nombre = localidad.Nombre,
-                    ProvinciaString = localidad.Provincia.Nombre,
-                    ProvinciaId = localidad.ProvinciaId,
-                    Eliminado = localidad.Eliminado
-                };
-                vista.Add(vistaLocalidad);
-            }
-
-            return vista;
-        }
-
-
-        // PUT: api/Localidades/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLocalidad(int id, Localidad localidad)
-        {
-
-            // Guardamos en mayúsculas
-            localidad.Nombre = localidad.Nombre.ToUpper();
-
-            var localidadExistente = await _context.Localidad
-                .AnyAsync(x =>
-                    x.Nombre.ToLower() == localidad.Nombre.ToLower() &&
-                    x.ProvinciaId == localidad.ProvinciaId
-                );
-
-            if (localidadExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
-            }
-
-
-
-            if (id != localidad.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(localidad).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LocalidadExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(localidad);
-        }
-
-        // POST: api/Localidades
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Localidad>> PostLocalidad(Localidad localidad)
-        {
-            // Guardamos en mayúsculas
-            localidad.Nombre = localidad.Nombre.ToUpper();
-
-            var localidadExistente = await _context.Localidad
-                .AnyAsync(x =>
-                    x.Nombre.ToLower() == localidad.Nombre.ToLower() &&
-                    x.ProvinciaId == localidad.ProvinciaId
-                );
-
-            if (localidadExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
-            }
-
-            _context.Localidad.Add(localidad);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetLocalidad", new { id = localidad.Id }, localidad);
-        }
-
-
-        // DELETE: api/Localidades/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLocalidad(int id)
-        {
-            var localidad = await _context.Localidad
-            .Include(l => l.Empleados)
-            .FirstOrDefaultAsync(l => l.Id == id);
-            if (localidad == null)
-            {
-                return NotFound();
-            }
-
-            // Si está activo y tiene empleados asociados, NO permitir desactivarlo
-            if (!localidad.Eliminado &&
-                localidad.Empleados != null &&
-                localidad.Empleados.Any())
-            {
-                return BadRequest(new { mensaje = "No se puede desactivar la localidad porque tiene empleados asociados." });
-            }
-
-            localidad.Eliminado = !localidad.Eliminado;
-            var mensaje = localidad.Eliminado ?
-                "Localidad Desactivada" :
-                "Localidad Activada";
-
-            _context.Localidad.Update(localidad);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje });
         }
 
         private bool LocalidadExists(int id)

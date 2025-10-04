@@ -1,30 +1,30 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-  <!-- Título -->
+
+
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Seguimiento de Cursos</h3>
     <p class="text-muted mb-0" style="font-size: 0.95rem;">
-      Visualizá la información de los cursos, controlá la asistencia de los participantes, 
+      Visualizá la información de los cursos, controlá la asistencia de los participantes,
       emití certificados y accedé al detalle de cada capacitación.
     </p>
   </div>
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
-    <!-- Fondo Oscuro al Abrir Panel -->
+
     <div id="fondoOscuro" onclick="cerrarPanelCursos()"></div>
 
-    <!-- Contenedor de Acciones (Agregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <!-- Botón Nuevo Curso -->
+
       <button class="btn btn-agregar" onclick="abrirPanelCursos()">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Nuevo Curso</span>
       </button>
 
-      <!-- Botones Filtros e Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -38,47 +38,36 @@
       </div>
     </div>
 
-    <!-- Contenedor Filtros-->
-  <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
-    <div class="row g-3 align-items-end">
 
-      <!-- Curso -->
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <label for="NombreCursoBuscar" class="form-label-fija">Nombre Curso</label>
-        <input type="text" class="form-control filtro-select" id="NombreCursoBuscar" placeholder="Buscar..." />
+    <!-- ================================ Contenedor Filtros ===================================== -->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <label for="NombreCursoBuscar" class="form-label-fija">Nombre Curso</label>
+          <input type="text" class="form-control filtro-select" id="NombreCursoBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+          <label for="ModalidadBuscar" class="form-label-fija">Modalidad</label>
+          <select id="ModalidadBuscar" class="form-control filtro-select">
+            <option value="">[Todas]</option>
+            <option value="1">PRESENCIAL</option>
+            <option value="2">VIRTUAL</option>
+            <option value="3">MIXTO</option>
+          </select>
+        </div>
+
+        <div id="fechasInputs" class="col-12 col-sm-6 col-md-4 col-lg-2">
+          <label for="FechaCursoBuscar" class="form-label-fija">Fecha</label>
+          <input type="date" class="form-control filtro-select" id="FechaCursoBuscar" />
+        </div>
+
       </div>
-
-      <!-- Modalidad -->
-      <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-        <label for="ModalidadBuscar" class="form-label-fija">Modalidad</label>
-        <select id="ModalidadBuscar" class="form-control filtro-select">
-          <option value="">[Todas]</option>
-          <option value="1">PRESENCIAL</option>
-          <option value="2">VIRTUAL</option>
-          <option value="3">MIXTO</option>
-        </select>
-      </div>
-
-      <!-- Activar Fecha -->
-      <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-        <label class="form-label-fija">Fecha</label>
-        <select id="filtrarFechaSelect" class="form-control filtro-select">
-          <option value="no" selected>No</option>
-          <option value="si">Sí</option>
-        </select>
-      </div>
-
-      <!-- Fecha del Curso -->
-      <div id="fechasInputs" class="d-none col-12 col-sm-6 col-md-4 col-lg-3">
-        <label for="FechaCursoBuscar" class="form-label-fija">Fecha del Curso</label>
-        <input type="date" class="form-control filtro-select" id="FechaCursoBuscar" />
-      </div>
-
     </div>
-  </div>
 
 
-    <!-- Contenedor Generar -->
+    <!-- ================================ Contenedor Generar ===================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -87,20 +76,13 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
-    <!-- Gráfico -->
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoCursos" width="400" height="150"></canvas>
-    </div>
 
-    <!-- Tarjetas resumen -->
+    <!-- ================================ Contenedor de tarjetas de cursos ===================================== -->
     <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
-      <!-- Total Cursos -->
+
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-primary bg-opacity-10 p-3 me-3">
@@ -113,7 +95,6 @@
         </div>
       </div>
 
-      <!-- Participaciones -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-info bg-opacity-10 p-3 me-3">
@@ -126,7 +107,6 @@
         </div>
       </div>
 
-      <!-- Certificados emitidos -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-success bg-opacity-10 p-3 me-3">
@@ -139,7 +119,6 @@
         </div>
       </div>
 
-      <!-- Certificados pendientes -->
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-warning bg-opacity-10 p-3 me-3">
@@ -153,17 +132,18 @@
       </div>
     </div>
 
-    <hr style="margin-bottom: 1rem;" />
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
-    <!-- Contenedor de cursos -->
+
+    <!-- ================================ Contenedor de cursos ===================================== -->
     <div class="container-fluid">
       <div id="contenedorCursos" class="row">
-        <!-- Se cargan dinámicamente -->
       </div>
     </div>
-  </div> <!-- ← cierre correcto del contenedor blanco -->
+  </div>
 
-  <!-- Panel Curso -->
+
+  <!--  ====================================== Panel Curso ===================================== -->
   <div id="panelCursos" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
     <div class="panel-header">
       <h2 id="panelTitulo" class="panel-title">Formulario De Cursos</h2>
@@ -172,17 +152,16 @@
       <form id="formCursos">
         <input type="hidden" id="IdCurso" />
         <div class="form-grid">
-          <!-- Nombre -->
+
           <div class="form-group position-relative mb-3">
             <input type="text" id="NombreCurso" class="form-control" placeholder=" " />
             <label for="NombreCurso">Nombre</label>
             <div class="invalid-feedback" id="errorNombreCurso"></div>
           </div>
 
-          <!-- Modalidad -->
           <div class="form-group position-relative mb-3">
             <select name="ModalidadCurso" id="ModalidadCurso" class="form-control" required>
-              <option value="" disabled selected>Seleccione una Modalidad</option>
+              <option value="" disabled selected>Seleccione</option>
               <option value="1">PRESENCIAL</option>
               <option value="2">VIRTUAL</option>
               <option value="3">MIXTO</option>
@@ -191,21 +170,18 @@
             <div class="invalid-feedback" id="errorModalidadCurso"></div>
           </div>
 
-          <!-- Descripción -->
           <div class="form-group position-relative mb-3">
             <textarea id="DescripcionCurso" class="form-control" rows="1" placeholder=" "></textarea>
             <label for="DescripcionCurso">Descripción</label>
             <div class="invalid-feedback" id="errorDescripcionCurso"></div>
           </div>
 
-          <!-- Fecha -->
           <div class="form-group position-relative mb-3">
             <input type="datetime-local" id="FechaInicioCurso" class="form-control" placeholder=" " />
             <label for="FechaInicioCurso">Fecha Inicio</label>
             <div class="invalid-feedback" id="errorFechaInicioCurso"></div>
           </div>
 
-          <!-- Fecha Finalización -->
           <div class="form-group position-relative mb-3">
             <input type="datetime-local" id="FechaFinCurso" class="form-control" placeholder=" " />
             <label for="FechaFinCurso">Fecha Fin</label>
@@ -220,7 +196,8 @@
     </div>
   </div>
 
-  <!-- Panel Asistencia -->
+
+  <!-- ================================ Panel Asistencia ===================================== -->
   <div id="panelAsistencias" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
     <div class="panel-header">
       <h2 id="panelTitulo" class="panel-title">Formulario De Asistencia</h2>
@@ -238,13 +215,19 @@
           </div>
 
           <div class="form-group position-relative mb-3">
-            <input type="date" id="FechaAsistencia" class="form-control" placeholder=" " />
-            <label for="FechaAsistencia">Fecha</label>
-            <div class="invalid-feedback" id="errorFechaAsistencia"></div>
-          </div>
-
-          <div class="form-group position-relative mb-3">
-            <input type="number" id="ResultadoAsistencia" class="form-control" placeholder=" " />
+            <select name="ResultadoAsistencia" id="ResultadoAsistencia" class="form-control" required>
+              <option value="0" disabled selected>Seleccione</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
             <label for="ResultadoAsistencia">Resultado</label>
             <div class="invalid-feedback" id="errorResultadoAsistencia"></div>
           </div>
@@ -253,11 +236,11 @@
     </div>
     <div class="panel-footer">
       <button class="btn btn-cancelar" onclick="cerrarPanelAsistencias()">Cancelar</button>
-      <button type="submit" class="btn btn-guardar" onclick="BuscarAsistenciaId()">Guardar</button>
+      <button type="submit" class="btn btn-guardar" onclick="CrearAsistencia()">Guardar</button>
     </div>
   </div>
 
-  <!-- Panel Certificados -->
+  <!-- ================================= PANEL CERTIFICADOS ================================= -->
   <div id="panelCertificados" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
     <div class="panel-header">
       <h2 id="panelTitulo" class="panel-title">Formulario De Certificados</h2>
@@ -266,7 +249,7 @@
       <form id="formCertificado">
         <input type="hidden" id="IdCertificado" />
         <div class="form-grid">
-          
+
           <div class="form-group position-relative mb-3">
             <select name="EmpleadoIdCertificado" id="EmpleadoIdCertificado" class="form-control" required>
               <option value="" disabled selected>Seleccione</option>
@@ -275,7 +258,6 @@
             <div class="invalid-feedback" id="errorEmpleadoIdCertificado"></div>
           </div>
 
-          <!-- Documento Adjunto -->
           <div class="form-grid" style="grid-template-columns: 1fr;">
             <div class="form-group position-relative mb-3">
               <input type="file" id="DocumentoAdjunto" class="form-control" name="DocumentoAdjunto" />
@@ -285,88 +267,85 @@
               <div class="invalid-feedback" id="errorArchivoAdjunto"></div>
             </div>
           </div>
-          
+
         </div>
       </form>
     </div>
     <div class="panel-footer">
-      <button class="btn btn-cancelar" onclick="cerrarPanelCertificados()">Cancelar</button>
-      <button type="submit" class="btn btn-guardar" onclick="BuscarCertificadoId()">Guardar</button>
+      <button class="btn btn-cancelar" onclick="cerrarPanelCertificados(); LimpiarModalCertificado()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="CrearCertificado()">Guardar</button>
     </div>
   </div>
 
 
-<!-- CONTENEDDOR PARA CERTIFICADOS -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCertificados" aria-labelledby="tituloDetalleCurso"
-  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  <div class="detalle-certificado-contenedor">
-    <div class="detalle-certificado-encabezado d-flex justify-content-between align-items-start">
-      <div>
-        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
-          Detalle de Cursos
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
-          Información detallada de los cursos
-        </p>
-      </div>
-        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  <!-- ================================= CONTENEDOR PARA CERTIFICADOS ================================= -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCertificados" aria-labelledby="tituloDetalleCurso"
+    style="width: 380px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+    <div class="detalle-certificado-contenedor">
+      <div class="detalle-certificado-encabezado d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+            Detalle de Cursos
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Información detallada de los cursos
+          </p>
         </div>
-    </div>
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
-    <div class="offcanvas-body" 
-        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;" 
-        id="contenedorCursosOffcanvas">
-
-      <!-- Botón para crear certificado -->
-      <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelCertificados()">
-        <i class="fa-solid fa-square-plus me-1"></i>
-        <span>Carga de Certificados</span>
-      </button>
-
-      <!-- 🔹 Aquí se insertan los certificados -->
-      <div id="contenedorCertificadosOffcanvas" class="mt-3 row"></div>
-    </div>
-  </div>
-</div>
-
-
-<!-- CONTENEDOR PARA ASISTENCIAS -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAsistencias" aria-labelledby="tituloDetalleCurso"
-  style="width: 380px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  <div class="detalle-asistencia-contenedor">
-    <div class="detalle-asistencia-encabezado row align-items-start">
-      <div class="col-10">
-        <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
-          Detalle de Asistencias
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
-          Información detallada de las asistencias
-        </p>
-      </div>
         <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
       </div>
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
-    <div class="offcanvas-body" 
-        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;" 
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+      <div class="offcanvas-body"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;"
         id="contenedorCursosOffcanvas">
 
-      <!-- Botón para crear asistencia -->
-      <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelAsistencias()">
-        <i class="fa-solid fa-square-plus me-1"></i>
-        <span>Registrar Asistencia</span>
-      </button>
+        <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelCertificados()">
+          <i class="fa-solid fa-square-plus me-1"></i>
+          <span>Carga de Certificados</span>
+        </button>
 
-      <div id="contenedorAsistenciasOffcanvas" class="mt-3 row"></div>
-
+        <div id="contenedorCertificadosOffcanvas" class="mt-3 row"></div>
+      </div>
     </div>
   </div>
+
+
+  <!--  ==================================== CONTENEDOR PARA ASISTENCIAS =================================== -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAsistencias" aria-labelledby="tituloDetalleCurso"
+    style="width: 380px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+    <div class="detalle-asistencia-contenedor">
+      <div class="detalle-asistencia-encabezado row align-items-start">
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
+            Detalle de Asistencias
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Información detallada de las asistencias
+          </p>
+        </div>
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+      </div>
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+      <div class="offcanvas-body"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;"
+        id="contenedorCursosOffcanvas">
+
+        <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelAsistencias()">
+          <i class="fa-solid fa-square-plus me-1"></i>
+          <span>Registrar Asistencia</span>
+        </button>
+
+        <div id="contenedorAsistenciasOffcanvas" class="mt-3 row"></div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
 
 
-  <!-- Scripts -->
-  <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
-  <script src="../js/Vistas/curso.js"></script>
-</div>
+<script src="../js/Vistas/common/obtenerEmpleado.js"></script>
+<script src="../js/Vistas/curso.js"></script>

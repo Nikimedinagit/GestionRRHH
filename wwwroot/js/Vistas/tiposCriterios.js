@@ -1,5 +1,6 @@
-//INICIO PANEL FORMUALRIO//
-//Función para abrir el formulario lateral
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ABRIR PANEL DE TIPO DE CRITERIO ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function AbrirPanelTipoDeCriterio() {
   document.getElementById("panelTipoDeCriterio").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -11,7 +12,10 @@ function AbrirPanelTipoDeCriterio() {
   }, 400);
 }
 
-//Funcion para cerrar el formulario lateral
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CERRAR PANEL DE TIPO DE CRITERIO ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function CerrarPanelTipoDeCriterio() {
   document.getElementById("panelTipoDeCriterio").classList.remove("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -19,92 +23,28 @@ function CerrarPanelTipoDeCriterio() {
 
   LimpiarModalTipoDeCriterio();
 }
-//FIN PANEL FORMULARIO//
 
 
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
-
-// INICIO ONCHANGE DE FILTROS//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICILIAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerTiposDeCriterios();
 
-  $("#EstadoIdBuscar").on("change", function () {
+  $("#EstadoIdBuscar, #NombreTipoDeCriterioBuscar").on("input", function () {
     ObtenerTiposDeCriterios();
   });
 });
-//FIN ONCHANGE DE FILTROS//
 
 
-// Funcion para obtener los tipos de criterios
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE TIPOS DE CRITERIOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTiposDeCriterios() {
 
   let estado = document.getElementById("EstadoIdBuscar").value;
   let filtro = {
+    nombre: document.getElementById("NombreTipoDeCriterioBuscar").value,
     eliminado: estado !== "" ? parseInt(estado) : null,
   };
 
@@ -125,7 +65,9 @@ async function ObtenerTiposDeCriterios() {
 }
 
 
-// Funcion Para Mostrar los tipos de criterios en la tabla
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MOSTRAR LOS DATOS DE LA API DE TIPOS DE CRITERIOS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarTiposDeCriterios(data) {
     window.listaTiposDeCriterios= data;
 
@@ -145,7 +87,6 @@ function MostrarTiposDeCriterios(data) {
 
     $("#tablaTiposCriterioBody").append(
       "<tr>" +
-        // Columna Activo (toggle)
         "<td class='text-center align-middle'>" +
         "<button class='btn-editar' type='button' class='btn btn-sm " +
         (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
@@ -163,13 +104,11 @@ function MostrarTiposDeCriterios(data) {
         "'></i>" +
         "</button>" +
         "</td>" +
-        // Columna Tipo de criterio(nombre)
         "<td class='align-middle " +
         filaClass +
         " tipo-de-criterio-truncado'>" +
         item.nombre +
         "</td>" +
-        // Columna Acciones (editar)
         "<td class='d-flex justify-content-center align-items-center'>" +
         "<button class='btn-editar' data-action='edit' style='" +
         visibleBotones +
@@ -182,7 +121,6 @@ function MostrarTiposDeCriterios(data) {
     );
   });
 
-  // Inicializar tooltips de Tippy
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -190,7 +128,10 @@ function MostrarTiposDeCriterios(data) {
   });
 }
 
-// Funcion para mostrar el modal de edición de la tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MOSTRAR MODAL DE EDICION DE LA TIPO DE CRITERIO //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
   const res = await authFetch(`TiposDeCriterios/${id}`);
   const tipoDeCriterio = await res.json();
@@ -201,7 +142,10 @@ async function MostrarModalEditar(id) {
   AbrirPanelTipoDeCriterio();
 }
 
-// Funcion para buscar el id de la tipo de criterio y llamar a la función de edición o creación
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BUSCAR EL ID DE LA TIPO DE CRITERIO Y LLAMAR A LA FUNCIÓN DE EDICION O CREACIÓN ////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function BuscarTipoDeCriterioId() {
   const id = parseInt(document.getElementById("IdTipoDeCriterio").value);
 
@@ -212,7 +156,10 @@ function BuscarTipoDeCriterioId() {
   }
 }
 
-// Función para crear una tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA CREAR UNA TIPO DE CRITERIO ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearTipoDeCriterio() {
 if (!ValidarFormularioTipoDeCriterio()) return;
 
@@ -230,7 +177,7 @@ if (!ValidarFormularioTipoDeCriterio()) return;
       } else {
         CerrarPanelTipoDeCriterio();
         ObtenerTiposDeCriterios(); 
-        // Mostrar alerta de éxito
+
         Swal.fire({
           title: "¡Criterio Creado!",
           toast: true,
@@ -255,7 +202,10 @@ if (!ValidarFormularioTipoDeCriterio()) return;
     });
 }
 
-// Función para editar una tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA EDITAR UNA TIPO DE CRITERIO //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarTipoDeCriterio(id) {
 
 if (!ValidarFormularioTipoDeCriterio()) return;
@@ -274,8 +224,8 @@ if (!ValidarFormularioTipoDeCriterio()) return;
         MostrarErrorTipoDeCriterioExistente(response.mensaje);
       } else {
         ObtenerTiposDeCriterios(); 
-        // Mostrar alerta de éxito
-       Swal.fire({
+
+        Swal.fire({
           title: "¡Criterio Modificado!",
           toast: true,
           position: "bottom-end",
@@ -300,30 +250,32 @@ if (!ValidarFormularioTipoDeCriterio()) return;
 }
 
 
-// Funcion para limpiar el modal de tipo de criterio
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// LIMPIAR EL MODAL DE TIPO DE CRITERIO /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalTipoDeCriterio() {
-  // Limpia el formulario
+
   document.getElementById("IdTipoDeCriterio").value = "";
   const inputNombre = document.getElementById("NombreTipoDeCriterio");
   inputNombre.value = "";
 
-  // Limpia los estilos de validación
   inputNombre.classList.remove("is-invalid");
   inputNombre.classList.remove("is-valid");
 
-  // Limpia el mensaje de error
   const inputErrorNombre = document.getElementById("errorNombreTipoDeCriterio");
   inputErrorNombre.textContent = "";
   inputErrorNombre.style.display = "none";
 }
 
-// Función para validar el formulario de tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA VALIDAR EL FORMULARIO DE TIPO DE CRITERIO /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioTipoDeCriterio() {
   const inputNombre = document.getElementById("NombreTipoDeCriterio");
   const inputErrorNombre = document.getElementById("errorNombreTipoDeCriterio");
   const nombre = inputNombre.value.trim();
 
-  // Limpiar errores previos
   inputErrorNombre.style.display = "none";
   inputErrorNombre.textContent = "";
   inputNombre.classList.remove("is-invalid", "is-valid");
@@ -342,18 +294,20 @@ function ValidarFormularioTipoDeCriterio() {
     return false;
   }
 
-  inputNombre.classList.add("is-valid"); // Aplica color verde cuando es válido
+  inputNombre.classList.add("is-valid"); 
   inputErrorNombre.style.display = "none";
   return true;
 }
 
-// Validación en vivo: cambia el color mientras el usuario escribe
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VALIDACION EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombreTipoDeCriterio").addEventListener("input", () => {
   const inputNombre = document.getElementById("NombreTipoDeCriterio");
   const errorNombre = document.getElementById("errorNombreTipoDeCriterio");
   const nombre = inputNombre.value.trim();
 
-  // Limpiar cualquier estado previo
   inputNombre.classList.remove("is-invalid", "is-valid");
 
   if (nombre.length === 0) {
@@ -370,6 +324,10 @@ document.getElementById("NombreTipoDeCriterio").addEventListener("input", () => 
   }
 });
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA MOSTRAR EL ERROR DE TIPO DE CRITERIO EXISTENTE ////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorTipoDeCriterioExistente(mensaje) {
   const errorTipoDeCriterio = document.getElementById("errorNombreTipoDeCriterio");
   const inputNombreTipoDeCriterio = document.getElementById("NombreTipoDeCriterio");
@@ -379,7 +337,10 @@ function MostrarErrorTipoDeCriterioExistente(mensaje) {
   inputNombreTipoDeCriterio.classList.add("is-invalid");
 }
 
-// Función para eliminar una tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA MOSTRAR EL MODAL DE ELIMINAR UN TIPO DE CRITERIO //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EliminarTipoDeCriterioId(id, eliminado) {
   Swal.fire({
     title: eliminado
@@ -428,7 +389,10 @@ function EliminarTipoDeCriterioId(id, eliminado) {
   });
 }
 
-// Función para eliminar un tipo de criterio
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCIÓN PARA ELIMINAR UN TIPO DE CRITERIO //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiTipoDeCriterio(id) {
  try {
     const response = await authFetch(`TiposDeCriterios/${id}`, {
@@ -457,7 +421,7 @@ async function EliminarSiTipoDeCriterio(id) {
       });
       ObtenerTiposDeCriterios();
     } else {
-      // Error controlado desde el backend
+
       Swal.fire({
         title: "Acción no permitida",
         html: `
@@ -481,23 +445,8 @@ async function EliminarSiTipoDeCriterio(id) {
   }
 }
 
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerTiposDeCriterios()

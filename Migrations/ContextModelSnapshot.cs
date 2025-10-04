@@ -144,9 +144,6 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Resultado")
                         .HasColumnType("int");
 
@@ -181,9 +178,6 @@ namespace API_NET_CORE8_RRHH.Migrations
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("FechaEmision")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -292,8 +286,8 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<string>("NombreCompleto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NroLegajo")
-                        .HasColumnType("int");
+                    b.Property<string>("NroLegajo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PuestoId")
                         .HasColumnType("int");
@@ -414,14 +408,14 @@ namespace API_NET_CORE8_RRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Estados")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Motivo")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TipoJustificacion")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

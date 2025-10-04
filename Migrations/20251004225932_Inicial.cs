@@ -52,6 +52,24 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Curso",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modalidad = table.Column<int>(type: "int", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaFinalizacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Finalizado = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Curso", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Provincia",
                 columns: table => new
                 {
@@ -263,6 +281,7 @@ namespace API_NET_CORE8_RRHH.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DNI = table.Column<long>(type: "bigint", nullable: false),
+                    NroLegajo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EstadoCiviles = table.Column<int>(type: "int", nullable: false),
@@ -270,9 +289,12 @@ namespace API_NET_CORE8_RRHH.Migrations
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Cuil = table.Column<long>(type: "bigint", nullable: false),
                     CantidadHijos = table.Column<int>(type: "int", nullable: false),
+                    FaceDescriptor = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     TipoSexo = table.Column<int>(type: "int", nullable: false),
                     LocalidadId = table.Column<int>(type: "int", nullable: false),
-                    PuestoId = table.Column<int>(type: "int", nullable: false)
+                    PuestoId = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Eliminado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -287,6 +309,84 @@ namespace API_NET_CORE8_RRHH.Migrations
                         name: "FK_Empleado_Puesto_PuestoId",
                         column: x => x.PuestoId,
                         principalTable: "Puesto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActivacionEmpleado",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaActivacion = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActivacionEmpleado", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ActivacionEmpleado_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AsistenciaCapacitacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Resultado = table.Column<int>(type: "int", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false),
+                    CursoId = table.Column<int>(type: "int", nullable: false),
+                    Asistencia = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AsistenciaCapacitacion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AsistenciaCapacitacion_Curso_CursoId",
+                        column: x => x.CursoId,
+                        principalTable: "Curso",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AsistenciaCapacitacion_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificado",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CursoId = table.Column<int>(type: "int", nullable: false),
+                    DocumentoAdjunto = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    DocumentoNombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentoMimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificado", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Certificado_Curso_CursoId",
+                        column: x => x.CursoId,
+                        principalTable: "Curso",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Certificado_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -313,6 +413,85 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HistorialLaboral",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false),
+                    PuestoActual = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PuestoAnterior = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioModificador = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistorialLaboral", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HistorialLaboral_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Horario",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    HorarioInicio = table.Column<TimeSpan>(type: "time", nullable: false),
+                    HorarioFin = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SegundoHorarioInicio = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SegundoHorarioFin = table.Column<TimeSpan>(type: "time", nullable: false),
+                    TipoHorario = table.Column<int>(type: "int", nullable: false),
+                    Lunes = table.Column<bool>(type: "bit", nullable: false),
+                    Martes = table.Column<bool>(type: "bit", nullable: false),
+                    Miercoles = table.Column<bool>(type: "bit", nullable: false),
+                    Jueves = table.Column<bool>(type: "bit", nullable: false),
+                    Viernes = table.Column<bool>(type: "bit", nullable: false),
+                    Sabado = table.Column<bool>(type: "bit", nullable: false),
+                    Domingo = table.Column<bool>(type: "bit", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Horario", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Horario_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Justificacion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DocumentoAdjunto = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    DocumentoNombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentoMimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Estados = table.Column<int>(type: "int", nullable: false),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Justificacion", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Justificacion_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Licencia",
                 columns: table => new
                 {
@@ -322,7 +501,9 @@ namespace API_NET_CORE8_RRHH.Migrations
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Estado = table.Column<int>(type: "int", nullable: false),
-                    DocumentoAdjunto = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentoAdjunto = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    DocumentoNombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentoMimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmpleadoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -370,6 +551,51 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Asistencia",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false),
+                    HorarioId = table.Column<int>(type: "int", nullable: true),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PrimerEntrada = table.Column<TimeSpan>(type: "time", nullable: true),
+                    PrimerSalida = table.Column<TimeSpan>(type: "time", nullable: true),
+                    SegundaEntrada = table.Column<TimeSpan>(type: "time", nullable: true),
+                    SegundaSalida = table.Column<TimeSpan>(type: "time", nullable: true),
+                    Estado = table.Column<int>(type: "int", nullable: false),
+                    FotoRuta = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmpleadoId1 = table.Column<int>(type: "int", nullable: true),
+                    HorarioId1 = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Asistencia", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Asistencia_Empleado_EmpleadoId",
+                        column: x => x.EmpleadoId,
+                        principalTable: "Empleado",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Asistencia_Empleado_EmpleadoId1",
+                        column: x => x.EmpleadoId1,
+                        principalTable: "Empleado",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Asistencia_Horario_HorarioId",
+                        column: x => x.HorarioId,
+                        principalTable: "Horario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Asistencia_Horario_HorarioId1",
+                        column: x => x.HorarioId1,
+                        principalTable: "Horario",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AprobacionDeLicencia",
                 columns: table => new
                 {
@@ -392,10 +618,45 @@ namespace API_NET_CORE8_RRHH.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ActivacionEmpleado_EmpleadoId",
+                table: "ActivacionEmpleado",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AprobacionDeLicencia_LicenciaId",
                 table: "AprobacionDeLicencia",
                 column: "LicenciaId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Asistencia_EmpleadoId",
+                table: "Asistencia",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Asistencia_EmpleadoId1",
+                table: "Asistencia",
+                column: "EmpleadoId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Asistencia_HorarioId",
+                table: "Asistencia",
+                column: "HorarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Asistencia_HorarioId1",
+                table: "Asistencia",
+                column: "HorarioId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AsistenciaCapacitacion_CursoId",
+                table: "AsistenciaCapacitacion",
+                column: "CursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AsistenciaCapacitacion_EmpleadoId",
+                table: "AsistenciaCapacitacion",
+                column: "EmpleadoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -437,6 +698,16 @@ namespace API_NET_CORE8_RRHH.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Certificado_CursoId",
+                table: "Certificado",
+                column: "CursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Certificado_EmpleadoId",
+                table: "Certificado",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CriterioDeEvaluacion_EvaluacionId",
                 table: "CriterioDeEvaluacion",
                 column: "EvaluacionId");
@@ -459,6 +730,21 @@ namespace API_NET_CORE8_RRHH.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Evaluacion_EmpleadoId",
                 table: "Evaluacion",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HistorialLaboral_EmpleadoId",
+                table: "HistorialLaboral",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Horario_EmpleadoId",
+                table: "Horario",
+                column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Justificacion_EmpleadoId",
+                table: "Justificacion",
                 column: "EmpleadoId");
 
             migrationBuilder.CreateIndex(
@@ -486,7 +772,16 @@ namespace API_NET_CORE8_RRHH.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ActivacionEmpleado");
+
+            migrationBuilder.DropTable(
                 name: "AprobacionDeLicencia");
+
+            migrationBuilder.DropTable(
+                name: "Asistencia");
+
+            migrationBuilder.DropTable(
+                name: "AsistenciaCapacitacion");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -504,16 +799,31 @@ namespace API_NET_CORE8_RRHH.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Certificado");
+
+            migrationBuilder.DropTable(
                 name: "CriterioDeEvaluacion");
 
             migrationBuilder.DropTable(
+                name: "HistorialLaboral");
+
+            migrationBuilder.DropTable(
+                name: "Justificacion");
+
+            migrationBuilder.DropTable(
                 name: "Licencia");
+
+            migrationBuilder.DropTable(
+                name: "Horario");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Curso");
 
             migrationBuilder.DropTable(
                 name: "Evaluacion");

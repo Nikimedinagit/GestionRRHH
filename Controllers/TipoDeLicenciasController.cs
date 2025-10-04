@@ -22,15 +22,110 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/TipoDeLicencias
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> GetTipoDeLicencia()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> FiltrarTipoDeLicencia(TipoDeLicenciaFiltrar filtro)
         {
-            return await _context.TipoDeLicencia
-            .OrderBy(t => t.Nombre)
+            var tipoDeLicenciasFiltro = _context.TipoDeLicencia.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filtro.Nombre))
+            {
+                tipoDeLicenciasFiltro = tipoDeLicenciasFiltro.Where(c => EF.Functions.Like(c.Nombre, $"%{filtro.Nombre}%"));
+            }
+
+            if (filtro.Eliminado.HasValue)
+            {
+                tipoDeLicenciasFiltro = tipoDeLicenciasFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
+            }
+
+            var resultado = await tipoDeLicenciasFiltro
+            .OrderBy(c => c.Eliminado)
+            .ThenBy(c => c.Nombre)
             .ToListAsync();
+
+            return resultado;
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN TIPO DE LICENCIA ///////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<TipoDeLicencia>> PostTipoDeLicencia(TipoDeLicencia tipoDeLicencia)
+        {
+            var tipoDeLicenciaExistente = await _context.TipoDeLicencia
+                .AnyAsync(x => x.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower());
+
+            if (tipoDeLicenciaExistente)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+            }
+
+            tipoDeLicencia.Nombre = tipoDeLicencia.Nombre.ToUpper();
+
+            _context.TipoDeLicencia.Add(tipoDeLicencia);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(tipoDeLicencia);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UN TIPO DE LICENCIA ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTipoDeLicencia(int id, TipoDeLicencia tipoDeLicencia)
+        {
+            var tipoDeLicencias = await _context.TipoDeLicencia.FindAsync(id);
+
+            var tipoDeLicenciaExistente = await _context.TipoDeLicencia.FirstOrDefaultAsync(t => t.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower() && t.Id != id);
+
+            if (tipoDeLicenciaExistente != null)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
+            }
+
+            tipoDeLicencias.Nombre = tipoDeLicencia.Nombre.ToUpper();
+
+            await _context.SaveChangesAsync();
+
+            return Ok(tipoDeLicencia);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA ALTERNAR EL ELIMINADO DE UN TIPO DE LICENCIA ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTipoDeLicencia(int id)
+        {
+            var tipoDeLicencia = await _context.TipoDeLicencia.FindAsync(id);
+
+            if (!tipoDeLicencia.Eliminado)
+            {
+                bool tieneLicenciasActivas = await _context.Licencia
+                    .AnyAsync(l => l.TipoDeLicenciaId == id &&
+                                   (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+                                   l.FechaFin > DateTime.Now);
+
+                if (tieneLicenciasActivas)
+                    return BadRequest(new { mensaje = "No se puede desactivar el tipo de licencia porque tiene licencias activas o pendientes vigentes asociadas." });
+            }
+
+            tipoDeLicencia.Eliminado = !tipoDeLicencia.Eliminado;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = tipoDeLicencia.Eliminado ? "Licencia Desactivada" : "Licencia Activada" });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> GetTipoDeLicenciasActivos()
         {
@@ -41,7 +136,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             return tipoDeLicenciasActivos;
         }
 
-        // GET: api/TipoDeLicencias/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN TIPO DE LICENCIA POR ID ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<TipoDeLicencia>> GetTipoDeLicencia(int id)
         {
@@ -55,122 +153,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             return tipoDeLicencia;
         }
 
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> FiltrarTipoDeLicencia(TipoDeLicenciaFiltrar filtro)
-        {
-            var tipoDeLicenciasFiltro = _context.TipoDeLicencia.AsQueryable();
-
-            if (filtro.Eliminado.HasValue)
-            {
-                tipoDeLicenciasFiltro = tipoDeLicenciasFiltro.Where(c => c.Eliminado == (filtro.Eliminado.Value == 1));
-            }
-            var resultado = await tipoDeLicenciasFiltro
-            .OrderBy(c => c.Eliminado)
-            .ThenBy(c => c.Nombre)
-            .ToListAsync();
-            return resultado;
-        }
-
-        // PUT: api/TipoDeLicencias/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTipoDeLicencia(int id, TipoDeLicencia tipoDeLicencia)
-        {
-
-
-
-            if (id != tipoDeLicencia.Id)
-            {
-                return BadRequest();
-            }
-
-            // Convertimos a mayuscula
-            tipoDeLicencia.Nombre = tipoDeLicencia.Nombre.ToUpper();
-
-            var tipoDeLicenciaExistente = await _context.TipoDeLicencia.FirstOrDefaultAsync(t => t.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower() && t.Id != id);
-
-            if (tipoDeLicenciaExistente != null)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
-
-
-            _context.Entry(tipoDeLicencia).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TipoDeLicenciaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(tipoDeLicencia);
-        }
-
-        // POST: api/TipoDeLicencias
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TipoDeLicencia>> PostTipoDeLicencia(TipoDeLicencia tipoDeLicencia)
-        {
-            // Convertimos a mayuscula
-            tipoDeLicencia.Nombre = tipoDeLicencia.Nombre.ToUpper();
-
-            // Comprobamos si la tipo de licencia ya existe
-            var tipoDeLicenciaExistente = await _context.TipoDeLicencia
-                .AnyAsync(x => x.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower());
-
-            if (tipoDeLicenciaExistente)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
-            _context.TipoDeLicencia.Add(tipoDeLicencia);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTipoDeLicencia", new { id = tipoDeLicencia.Id }, tipoDeLicencia);
-        }
-
-        // DELETE: api/TipoDeLicencias/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTipoDeLicencia(int id)
-        {
-            var tipoDeLicencia = await _context.TipoDeLicencia
-            .Include(t => t.Licencias)
-            .FirstOrDefaultAsync(t => t.Id == id);
-            if (tipoDeLicencia == null)
-            {
-                return NotFound();
-            }
-
-            // Si está activo y tiene licencias asociadas, NO permitir desactivarlo, pero si estan expiradas si pueden borrarse
-            if (!tipoDeLicencia.Eliminado &&
-                tipoDeLicencia.Licencias != null &&
-                tipoDeLicencia.Licencias.Any(l =>
-                (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
-                l.FechaFin > DateTime.Now))
-            {
-                return BadRequest(new { mensaje = "No se puede desactivar el tipo de licencia porque tiene licencias activas o pendientes vigentes asociadas." });
-            }
-
-
-            tipoDeLicencia.Eliminado = !tipoDeLicencia.Eliminado;
-            var mensaje = tipoDeLicencia.Eliminado ?
-            "Licencia Desactivada" :
-            "Licencia Activada";
-
-            _context.TipoDeLicencia.Update(tipoDeLicencia);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje });
-        }
 
         private bool TipoDeLicenciaExists(int id)
         {

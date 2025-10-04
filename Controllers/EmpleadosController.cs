@@ -26,49 +26,248 @@ namespace API_RRHH_TESIS2025.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/Empleados
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> GetEmpleado()
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA BTENER LOS EMPELADOS SEGUN SU FILTRO Y MOSTRAR EN LAS VISTAS /////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
         {
-            var empleados = await _context.Empleado
+            var obtenerEmpleados = _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+
+            if (filtro.DNI.HasValue)
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
+
+            if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            {
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.NroLegajo.StartsWith(filtro.NroLegajo));
+            }
+
+            if (filtro.EstadoCiviles.HasValue)
+                obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+
+            if (filtro.TipoSexo.HasValue)
+                obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.TipoSexo == filtro.TipoSexo);
+
+            if (filtro.LocalidadId.HasValue)
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.LocalidadId == filtro.LocalidadId.Value);
+
+            if (filtro.PuestoId.HasValue)
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
+
+            var empleados = await obtenerEmpleados
+                .OrderBy(e => e.Eliminado)
+                .ThenBy(e => e.NombreCompleto)
+                .Select(e => new VistaEmpleado
+                {
+                    Id = e.Id,
+                    NombreCompleto = e.NombreCompleto,
+                    DNI = e.DNI,
+                    NroLegajo = e.NroLegajo,
+                    Direccion = e.Direccion,
+                    FechaNacimientoString = e.FechaNacimiento.ToString("dd/MM/yyyy"),
+                    EstadoCivilesString = e.EstadoCiviles.ToString(),
+                    EstadoCiviles = e.EstadoCiviles,
+                    Email = e.Email,
+                    Telefono = e.Telefono,
+                    Cuil = e.Cuil,
+                    CantidadHijos = e.CantidadHijos,
+                    TipoSexoString = e.TipoSexo.ToString(),
+                    TipoSexo = e.TipoSexo,
+                    LocalidadIdString = e.Localidad.Nombre,
+                    LocalidadId = e.LocalidadId,
+                    PuestoIdString = e.Puesto.Descripcion,
+                    PuestoId = e.PuestoId,
+                    UsuarioNombreCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).NombreCompleto,
+                    UsuarioEmailCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).Email,
+                    Eliminado = e.Eliminado
+                })
                 .ToListAsync();
 
-            var usuarioIds = empleados
-                .Where(e => e.UsuarioId != null)
-                .Select(e => e.UsuarioId)
-                .Distinct()
-                .ToList();
-
-            var usuarios = await _context.Users
-                .Where(u => usuarioIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id);
-
-            var vista = empleados.Select(e => new VistaEmpleado
-            {
-                Id = e.Id,
-                NombreCompleto = e.NombreCompleto,
-                DNI = e.DNI,
-                NroLegajo = e.NroLegajo,
-                Direccion = e.Direccion,
-                FechaNacimientoString = e.FechaNacimientoString,
-                EstadoCivilesString = e.EstadoCivilesString,
-                Email = e.Email,
-                Telefono = e.Telefono,
-                Cuil = e.Cuil,
-                CantidadHijos = e.CantidadHijos,
-                TipoSexoString = e.TipoSexoString,
-                LocalidadIdString = e.LocalidadIdString,
-                PuestoIdString = e.PuestoIdString,
-                UsuarioId = e.UsuarioId,
-                UsuarioNombreCreador = usuarios.ContainsKey(e.UsuarioId) ? usuarios[e.UsuarioId].NombreCompleto : null,
-                UsuarioEmailCreador = usuarios.ContainsKey(e.UsuarioId) ? usuarios[e.UsuarioId].Email : null,
-                Eliminado = e.Eliminado
-            }).ToList();
-
-            return vista;
+            return empleados;
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN EMPLEADO POR ID ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Empleado>> GetEmpleado(int id)
+        {
+            var empleado = await _context.Empleado.FindAsync(id);
+
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            return empleado;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN EMPLEADO ////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            empleado.NombreCompleto = empleado.NombreCompleto?.ToUpper();
+            empleado.Direccion = empleado.Direccion?.ToUpper();
+            empleado.Email = empleado.Email?.ToLower();
+            empleado.Telefono = empleado.Telefono?.ToLower();
+            empleado.UsuarioId = userId;
+            empleado.Eliminado = true;
+
+            var duplicado = await _context.Empleado.FirstOrDefaultAsync(e =>
+                e.Id != empleado.Id &&
+                (e.DNI == empleado.DNI ||
+                 e.Cuil == empleado.Cuil ||
+                 e.Email.ToLower() == empleado.Email.ToLower() ||
+                 e.Telefono.ToLower() == empleado.Telefono.ToLower())
+            );
+
+            var errores = new List<string>();
+            if (duplicado != null)
+            {
+                if (duplicado.DNI == empleado.DNI) errores.Add("El DNI ya existe.");
+                if (duplicado.Cuil == empleado.Cuil) errores.Add("El CUIL ya existe.");
+                if (duplicado.Email.ToLower() == empleado.Email.ToLower()) errores.Add("El Email ya existe.");
+                if (duplicado.Telefono.ToLower() == empleado.Telefono.ToLower()) errores.Add("El Teléfono ya existe.");
+            }
+
+            if (errores.Any())
+                return BadRequest(new { codigo = 0, mensaje = errores });
+
+            int ultimoLegajo = await _context.Empleado
+                .MaxAsync(e => (int?)Convert.ToInt32(e.NroLegajo)) ?? 0;
+
+            int nuevoLegajo = ultimoLegajo + 1;
+            empleado.NroLegajo = nuevoLegajo.ToString("D6");
+
+            _context.Empleado.Add(empleado);
+            await _context.SaveChangesAsync();
+
+            var activacion = new ActivacionEmpleado
+            {
+                FechaActivacion = null,
+                Activo = false,
+                EmpleadoId = empleado.Id,
+            };
+
+            _context.ActivacionEmpleado.Add(activacion);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetEmpleado", new { id = empleado.Id }, empleado);
+        }
+
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UN EMPLEADO ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Sistema";
+
+            var empelados = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            empleado.NombreCompleto = empleado.NombreCompleto?.ToUpper();
+            empleado.Direccion = empleado.Direccion?.ToUpper();
+            empleado.Email = empleado.Email?.ToLower();
+            empleado.Telefono = empleado.Telefono?.ToLower();
+
+            var errores = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(empleado.Telefono) &&
+                await _context.Empleado.AnyAsync(e => e.Id != id && e.Telefono.ToLower() == empleado.Telefono.ToLower()))
+                errores.Add("El Teléfono ya existe.");
+
+            if (await _context.Empleado.AnyAsync(e => e.Id != id && e.Cuil == empleado.Cuil))
+                errores.Add("El CUIL ya existe.");
+
+            if (errores.Any())
+                return BadRequest(new { codigo = 0, mensaje = errores });
+
+            var puestoAnterior = empelados.Puesto?.Descripcion ?? "Desconocido";
+            var puestoNuevo = (await _context.Puesto.FindAsync(empleado.PuestoId))?.Descripcion ?? "Desconocido";
+
+            if (puestoAnterior != puestoNuevo)
+            {
+                _context.HistorialLaboral.Add(new HistorialLaboral
+                {
+                    FechaModificacion = DateTime.Now,
+                    EmpleadoId = empelados.Id,
+                    PuestoAnterior = puestoAnterior,
+                    PuestoActual = puestoNuevo,
+                    UsuarioModificador = userId
+                });
+            }
+
+            empelados.NombreCompleto = empleado.NombreCompleto;
+            empelados.Direccion = empleado.Direccion;
+            empelados.Telefono = empleado.Telefono;
+            empelados.Cuil = empleado.Cuil;
+            empelados.EstadoCiviles = empleado.EstadoCiviles;
+            empelados.CantidadHijos = empleado.CantidadHijos;
+            empelados.LocalidadId = empleado.LocalidadId;
+            empelados.PuestoId = empleado.PuestoId;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(empelados);
+        }
+
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///  METDO APRA ALTERNAR EL ELIMINADO DE UN EMPLEADO /////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEmpleado(int id)
+        {
+            var empleado = await _context.Empleado.FindAsync(id);
+            empleado.Eliminado = !empleado.Eliminado;
+            var mensaje = empleado.Eliminado ?
+                "Empleado Desactivado" :
+                "Empleado Activado";
+
+            _context.Empleado.Update(empleado);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpGet("Activos")]
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
+        {
+            var empleadosActivos = await _context.Empleado
+                .Where(e => !e.Eliminado)
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+            return empleadosActivos;
+        }
+
+
+
+
 
 
         [HttpGet("Buscar")]
@@ -79,8 +278,6 @@ namespace API_RRHH_TESIS2025.Controllers
                 .Include(e => e.Puesto)
                 .FirstOrDefaultAsync(e => e.DNI == dni && !e.Eliminado);
 
-            if (empleado == null)
-                return NotFound(new { Mensaje = "Empleado no encontrado." });
 
             var vista = new VistaEmpleado
             {
@@ -107,408 +304,6 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
 
-        [HttpGet("Activos")]
-        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
-        {
-            var empleadosActivos = await _context.Empleado
-                .Where(e => !e.Eliminado)
-                .OrderBy(e => e.NombreCompleto)
-                .ToListAsync();
-            return empleadosActivos;
-        }
-
-
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
-        {
-            List<VistaEmpleado> vista = new List<VistaEmpleado>();
-            var empleadosFiltrados = _context.Empleado.AsQueryable();
-
-            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-            {
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
-            }
-
-            if (filtro.DNI.HasValue)
-            {
-                string dniFiltro = filtro.DNI.Value.ToString();
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.DNI.ToString().StartsWith(dniFiltro));
-            }
-
-            if (!string.IsNullOrEmpty(filtro.NroLegajo.ToString()))
-            {
-                string legajoFiltro = filtro.NroLegajo.Value.ToString();
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.NroLegajo.ToString().StartsWith(legajoFiltro));
-            }
-
-            if (filtro.EstadoCiviles.HasValue)
-            {
-                empleadosFiltrados = empleadosFiltrados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
-            }
-
-            if (filtro.TipoSexo.HasValue)
-                empleadosFiltrados = empleadosFiltrados.Where(t => (int)t.TipoSexo == filtro.TipoSexo);
-
-            if (filtro.LocalidadId.HasValue)
-            {
-                int localidadId = filtro.LocalidadId.Value;
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.LocalidadId == localidadId);
-            }
-
-            if (filtro.PuestoId.HasValue)
-            {
-                int puestoId = filtro.PuestoId.Value;
-                empleadosFiltrados = empleadosFiltrados.Where(e => e.PuestoId == puestoId);
-            }
-
-            var listaFiltrada = await empleadosFiltrados
-                .Include(e => e.Localidad)
-                .Include(e => e.Puesto)
-                .OrderBy(e => e.Eliminado)
-                .ThenBy(e => e.NombreCompleto)
-                .ToListAsync();
-
-            var usuarios = await _context.Users
-                .Where(u => empleadosFiltrados.Select(t => t.UsuarioId).Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id);
-
-            foreach (var empleado in listaFiltrada)
-            {
-                var usuarioId = empleado.UsuarioId;
-
-                var vistaEmpleado = new VistaEmpleado
-                {
-                    Id = empleado.Id,
-                    NombreCompleto = empleado.NombreCompleto,
-                    DNI = empleado.DNI,
-                    NroLegajo = empleado.NroLegajo,
-                    Direccion = empleado.Direccion,
-                    FechaNacimientoString = empleado.FechaNacimientoString,
-                    EstadoCivilesString = empleado.EstadoCivilesString,
-                    Email = empleado.Email,
-                    Telefono = empleado.Telefono,
-                    Cuil = empleado.Cuil,
-                    CantidadHijos = empleado.CantidadHijos,
-                    TipoSexoString = empleado.TipoSexoString,
-                    LocalidadIdString = empleado.LocalidadIdString,
-                    PuestoIdString = empleado.PuestoIdString,
-                    UsuarioId = usuarioId,
-                    UsuarioNombreCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].NombreCompleto : null,
-                    UsuarioEmailCreador = !string.IsNullOrEmpty(usuarioId) && usuarios.ContainsKey(usuarioId) ? usuarios[usuarioId].Email : null,
-                    Eliminado = empleado.Eliminado
-                };
-                vista.Add(vistaEmpleado);
-            }
-            return vista;
-        }
-
-
-        // GET: api/Empleados/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Empleado>> GetEmpleado(int id)
-        {
-            var empleado = await _context.Empleado.FindAsync(id);
-
-            if (empleado == null)
-            {
-                return NotFound();
-            }
-
-            return empleado;
-        }
-
-        // PUT: api/Empleados/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
-        {
-            if (id != empleado.Id)
-                return BadRequest();
-
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Sistema";
-
-            // Obtener empleado original con puesto incluido
-            var empleadoOriginal = await _context.Empleado
-                .Include(e => e.Puesto)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (empleadoOriginal == null)
-                return NotFound();
-
-            // Formateo
-            empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
-            empleado.Direccion = empleado.Direccion.ToUpper();
-            empleado.Email = empleado.Email.ToLower();
-            empleado.UsuarioId = userId;
-
-            // Validaciones
-            var erroresExistentes = new List<string>();
-
-            if (!string.IsNullOrWhiteSpace(empleado.DNI.ToString()))
-            {
-                var dniExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
-                if (dniExistente != null)
-                    erroresExistentes.Add("El DNI ya existe.");
-            }
-
-            if (empleado.Cuil != 0)
-            {
-                var cuilExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
-                if (cuilExistente != null)
-                    erroresExistentes.Add("El CUIL ya existe.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(empleado.Email))
-            {
-                var emailExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
-                if (emailExistente != null)
-                    erroresExistentes.Add("El Email ya existe.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(empleado.Telefono))
-            {
-                var telefonoExistente = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
-                if (telefonoExistente != null)
-                    erroresExistentes.Add("El Teléfono ya existe.");
-            }
-
-            if (erroresExistentes.Any())
-                return BadRequest(new { codigo = 0, mensaje = erroresExistentes });
-
-            // Historial laboral si cambió el puesto
-            var puestoNuevo = await _context.Puesto.FindAsync(empleado.PuestoId);
-            var puestoAnterior = empleadoOriginal.Puesto?.Descripcion ?? "Desconocido";
-            var puestoActual = puestoNuevo?.Descripcion ?? "Desconocido";
-
-            if (puestoAnterior != puestoActual)
-            {
-                var historial = new HistorialLaboral
-                {
-                    FechaModificacion = DateTime.Now,
-                    EmpleadoId = empleado.Id,
-                    PuestoAnterior = puestoAnterior,
-                    PuestoActual = puestoActual,
-                    UsuarioModificador = userId
-                };
-                _context.HistorialLaboral.Add(historial);
-            }
-
-            // Actualizar ApplicationUser
-            var usuario = await _userManager.FindByEmailAsync(empleadoOriginal.Email);
-            if (usuario != null)
-            {
-                bool cambio = false;
-
-                // Actualizar Email y UserName si cambió
-                if (usuario.Email != empleado.Email)
-                {
-                    usuario.Email = empleado.Email;
-                    usuario.UserName = empleado.Email;
-                    cambio = true;
-                }
-
-                // Actualizar NombreCompleto si cambió
-                if (usuario.NombreCompleto != empleado.NombreCompleto)
-                {
-                    usuario.NombreCompleto = empleado.NombreCompleto;
-                    cambio = true;
-                }
-
-                // Actualizar contraseña si cambió el DNI
-                if (empleado.DNI != empleadoOriginal.DNI)
-                {
-                    var token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
-                    var resultadoPass = await _userManager.ResetPasswordAsync(usuario, token, empleado.DNI.ToString());
-                    if (!resultadoPass.Succeeded)
-                        return BadRequest(resultadoPass.Errors);
-                }
-
-                // Guardar cambios en Identity
-                if (cambio)
-                {
-                    var resultadoUpdate = await _userManager.UpdateAsync(usuario);
-                    if (!resultadoUpdate.Succeeded)
-                        return BadRequest(resultadoUpdate.Errors);
-                }
-            }
-
-            // Guardar cambios en Empleado
-            _context.Entry(empleado).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmpleadoExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return Ok(empleado);
-        }
-
-
-
-        [HttpPost]
-        public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
-        {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            // Formateo
-            empleado.NombreCompleto = empleado.NombreCompleto.ToUpper();
-            empleado.Direccion = empleado.Direccion.ToUpper();
-            empleado.Email = empleado.Email.ToLower();
-
-            // Valores por defecto
-            empleado.UsuarioId = userId;
-            empleado.Eliminado = true;
-
-            // Validaciones
-            var errroresExistentes = new List<string>();
-
-            var dniExistente = await _context.Empleado
-                .FirstOrDefaultAsync(e => e.DNI == empleado.DNI && e.Id != empleado.Id);
-            if (dniExistente != null)
-                errroresExistentes.Add("El DNI ya existe.");
-
-            var cuilExistente = await _context.Empleado
-                .FirstOrDefaultAsync(e => e.Cuil == empleado.Cuil && e.Id != empleado.Id);
-            if (cuilExistente != null)
-                errroresExistentes.Add("El CUIL ya existe.");
-
-            var emailExistente = await _context.Empleado
-                .FirstOrDefaultAsync(e => e.Email.ToLower() == empleado.Email.ToLower() && e.Id != empleado.Id);
-            if (emailExistente != null)
-                errroresExistentes.Add("El Email ya existe.");
-
-            var telefonoExistente = await _context.Empleado
-                .FirstOrDefaultAsync(e => e.Telefono.ToLower() == empleado.Telefono.ToLower() && e.Id != empleado.Id);
-            if (telefonoExistente != null)
-                errroresExistentes.Add("El Teléfono ya existe.");
-
-            if (errroresExistentes.Any())
-                return BadRequest(new { codigo = 0, mensaje = errroresExistentes });
-
-
-            // Obtener el último NroLegajo existente
-            int ultimoLegajo = await _context.Empleado
-                .MaxAsync(e => (int?)e.NroLegajo) ?? 0; // Si no hay registros, comienza en 0
-
-            // Generar el nuevo legajo
-            int nuevoLegajo = ultimoLegajo + 1;
-
-            // Guardar en la entidad como número
-            empleado.NroLegajo = nuevoLegajo;
-
-            // Opcional: si quieres mostrarlo o almacenarlo como string con ceros a la izquierda
-            string nroLegajoFormateado = nuevoLegajo.ToString("D6"); // ej: 000024
-
-
-
-            // Guardamos el empleado
-            _context.Empleado.Add(empleado);
-            await _context.SaveChangesAsync();
-
-            // También creamos el registro en ActivacionEmpleado
-            var activacion = new ActivacionEmpleado
-            {
-                FechaActivacion = null,
-                Activo = false,
-                EmpleadoId = empleado.Id,
-            };
-
-            _context.ActivacionEmpleado.Add(activacion);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEmpleado", new { id = empleado.Id }, empleado);
-        }
-
-
-        // DELETE: api/Empleados/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmpleado(int id)
-        {
-            var empleado = await _context.Empleado.FindAsync(id);
-            if (empleado == null)
-            {
-                return NotFound();
-            }
-
-
-            empleado.Eliminado = !empleado.Eliminado;
-            var mensaje = empleado.Eliminado ?
-                "Empleado Desactivado" :
-                "Empleado Activado";
-
-            _context.Empleado.Update(empleado);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje });
-        }
-
-
-        //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
-        //Total de empleados
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Total")]
-        public async Task<ActionResult<int>> GetTotalEmpleados()
-        {
-            // Consultar todos los empleados no eliminados
-            var total = await _context.Empleado
-                .Where(e => !e.Eliminado)
-                .CountAsync();
-
-            return Ok(new { total });
-        }
-
-        //Empleados Masculinos
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Masculinos")]
-        public async Task<ActionResult<int>> GetMasculinosEmpleados()
-        {
-            // Obtener el total de empleados masculinos
-            var total = await _context.Empleado
-                .Where(e => !e.Eliminado && e.TipoSexo == TipoSexo.MASCULINO)
-                .CountAsync();
-
-            return Ok(new { total });
-        }
-
-        //Empleados Femeninos
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Femeninos")]
-        public async Task<ActionResult<int>> GetFemeninosEmpleados()
-        {
-            // Obtener el total de empleados femeninos
-            var total = await _context.Empleado
-                .Where(e => !e.Eliminado && e.TipoSexo == TipoSexo.FEMENINO)
-                .CountAsync();
-
-            return Ok(new { total });
-        }
-
-        //Empleados Otros/No binarios
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Otros")]
-        public async Task<ActionResult<int>> GetOtrosEmpleados()
-        {
-
-            var total = await _context.Empleado
-                .Where(e => !e.Eliminado &&
-                       (e.TipoSexo == TipoSexo.OTRO || e.TipoSexo == TipoSexo.NO_BINARIO))
-                .CountAsync();
-
-            return Ok(new { total });
-        }
 
 
         private bool EmpleadoExists(int id)

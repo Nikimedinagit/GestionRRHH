@@ -21,41 +21,64 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-        // GET: api/Horarios
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<VistaHorario>>> GetHorario()
-        {
-            var horarios = await _context.Horario
-                .Include(h => h.Empleado)
-                    .ThenInclude(e => e.Puesto)
-                .ToListAsync();
 
-            var vista = horarios.Select(h => new VistaHorario
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DEL HORARIO SEGUN SUS FILTROS //////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<VistaHorario>>> FiltrarHorario([FromBody] FiltrarHorario filtro)
+        {
+            var obtenerHorarios = _context.Horario
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .AsQueryable();
+
+            if (filtro.TipoHorario.HasValue)
+                obtenerHorarios = obtenerHorarios.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
+
+            if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
+                obtenerHorarios = obtenerHorarios.Where(h => h.HorarioInicio >= horarioInicioTs);
+
+            if (!string.IsNullOrEmpty(filtro.HorarioFin) && TimeSpan.TryParse(filtro.HorarioFin, out var horarioFinTs))
+                obtenerHorarios = obtenerHorarios.Where(h => h.HorarioFin <= horarioFinTs);
+
+            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
             {
-                Id = h.Id,
-                HorarioInicioString = h.HorarioInicio.ToString(@"hh\:mm"),
-                HorarioFinString = h.HorarioFin.ToString(@"hh\:mm"),
-                SegundoHorarioInicioString = h.SegundoHorarioInicio.ToString(@"hh\:mm"),
-                SegundoHorarioFinString = h.SegundoHorarioFin.ToString(@"hh\:mm"),
-                TipoHorario = h.TipoHorario,
-                TipoHorarioString = h.TipoHorario.ToString(),
-                Lunes = h.Lunes,
-                Martes = h.Martes,
-                Miercoles = h.Miercoles,
-                Jueves = h.Jueves,
-                Viernes = h.Viernes,
-                Sabado = h.Sabado,
-                Domingo = h.Domingo,
-                EmpleadoString = h.Empleado != null ? h.Empleado.NombreCompleto : "",
-                EmpleadoId = h.EmpleadoId,
-                PuestoEmpleado = h.Empleado?.Puesto?.Descripcion ?? "Sin puesto"
-            }).ToList();
+                var texto = filtro.EmpleadoTexto.ToLower();
+                obtenerHorarios = obtenerHorarios.Where(h => h.Empleado.NombreCompleto.ToLower().Contains(texto));
+            }
+
+            var vista = await obtenerHorarios
+                .OrderBy(h => h.Empleado.NombreCompleto)
+                .ThenBy(h => h.HorarioInicio)
+                .Select(h => new VistaHorario
+                {
+                    Id = h.Id,
+                    HorarioInicioString = h.HorarioInicioString,
+                    HorarioFinString = h.HorarioFinString,
+                    SegundoHorarioInicioString = h.SegundoHorarioInicioString,
+                    SegundoHorarioFinString = h.SegundoHorarioFinString,
+                    TipoHorario = h.TipoHorario,
+                    TipoHorarioString = h.TipoHorarioString,
+                    Lunes = h.Lunes,
+                    Martes = h.Martes,
+                    Miercoles = h.Miercoles,
+                    Jueves = h.Jueves,
+                    Viernes = h.Viernes,
+                    Sabado = h.Sabado,
+                    Domingo = h.Domingo,
+                    EmpleadoString = h.Empleado.NombreCompleto,
+                    EmpleadoId = h.EmpleadoId,
+                    PuestoEmpleado = h.Empleado.Puesto != null ? h.Empleado.Puesto.Descripcion : "Sin puesto"
+                })
+                .ToListAsync();
 
             return Ok(vista);
         }
 
 
-        // GET: api/Horarios/5
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UN HORARIO POR ID ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult> GetHorario(int id)
         {
@@ -83,132 +106,20 @@ namespace API_NET_CORE8_RRHH.Controllers
                 })
                 .FirstOrDefaultAsync();
 
-            if (horario == null)
-                return NotFound();
-
             return Ok(horario);
         }
 
 
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaHorario>>> FiltrarHorario([FromBody] FiltrarHorario filtro)
-        {
-            var query = _context.Horario
-                .Include(h => h.Empleado)
-                    .ThenInclude(e => e.Puesto)
-                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
-                .OrderBy(h => h.Empleado.NombreCompleto)
-                .AsQueryable();
-
-            if (filtro.TipoHorario.HasValue)
-                query = query.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
-
-            if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
-                query = query.Where(h => h.HorarioInicio >= horarioInicioTs);
-
-            if (!string.IsNullOrEmpty(filtro.HorarioFin) && TimeSpan.TryParse(filtro.HorarioFin, out var horarioFinTs))
-                query = query.Where(h => h.HorarioFin <= horarioFinTs);
-
-            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
-            {
-                query = query.Where(x =>
-                    x.Empleado.NombreCompleto.Contains(filtro.EmpleadoTexto));
-            }
-
-            var lista = await query.OrderBy(h => h.HorarioInicio).ToListAsync();
-
-            var vista = lista.Select(h => new VistaHorario
-            {
-                Id = h.Id,
-                HorarioInicioString = h.HorarioInicioString,
-                HorarioFinString = h.HorarioFinString,
-                SegundoHorarioInicioString = h.SegundoHorarioInicioString,
-                SegundoHorarioFinString = h.SegundoHorarioFinString,
-                TipoHorario = h.TipoHorario,
-                TipoHorarioString = h.TipoHorarioString,
-                Lunes = h.Lunes,
-                Martes = h.Martes,
-                Miercoles = h.Miercoles,
-                Jueves = h.Jueves,
-                Viernes = h.Viernes,
-                Sabado = h.Sabado,
-                Domingo = h.Domingo,
-                EmpleadoString = h.Empleado.NombreCompleto,
-                EmpleadoId = h.EmpleadoId,
-                PuestoEmpleado = h.Empleado?.Puesto?.Descripcion ?? "Sin puesto"
-            }).ToList();
-
-
-            return Ok(vista);
-        }
-
-
-
-
-
-        // PUT: api/Horarios/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutHorario(int id, Horario horario)
-        {
-            if (id != horario.Id)
-            {
-                return BadRequest();
-            }
-
-            // verificar si ya tiene un horario
-            var horarioExistente = await _context.Horario
-            .AnyAsync(h => h.EmpleadoId == horario.EmpleadoId && h.TipoHorario == horario.TipoHorario && h.Id != id);
-
-            if (horarioExistente)
-                return BadRequest(new { mensaje = "Ya existe." });
-
-
-            if (horario.TipoHorario == TipoHorario.CONTINUO)
-            {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
-                    return BadRequest("Debe completar el horario de inicio y fin.");
-            }
-            else if (horario.TipoHorario == TipoHorario.ALTERNO)
-            {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
-                    horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
-                    return BadRequest("Debe completar ambos horarios.");
-            }
-
-            _context.Entry(horario).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HorarioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(horario);
-        }
-
-        // POST: api/Horarios
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UN HORARIO ////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
         public async Task<ActionResult<Horario>> PostHorario([FromBody] Horario horario)
         {
-            // verificar si ya tiene un horario
-            var horarioExistente = await _context.Horario
+            bool existe = await _context.Horario
                 .AnyAsync(h => h.EmpleadoId == horario.EmpleadoId && h.TipoHorario == horario.TipoHorario);
 
-            if (horarioExistente)
+            if (existe)
                 return BadRequest(new { mensaje = "Ya existe." });
 
             if (horario.TipoHorario == TipoHorario.CONTINUO)
@@ -223,10 +134,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                     return BadRequest("Debe completar ambos horarios.");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             _context.Horario.Add(horario);
             await _context.SaveChangesAsync();
 
@@ -234,87 +141,56 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
-        // DELETE: api/Horarios/5
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// MODIFICACION DE HORARIO ///////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHorario(int id, Horario horario)
+        {
+            var horarioDb = await _context.Horario.FindAsync(id);
+
+            if (horarioDb.TipoHorario == TipoHorario.CONTINUO)
+            {
+                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
+                    return BadRequest("Debe completar el horario de inicio y fin.");
+            }
+            else if (horarioDb.TipoHorario == TipoHorario.ALTERNO)
+            {
+                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
+                    horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
+                    return BadRequest("Debe completar ambos horarios.");
+            }
+
+            horarioDb.HorarioInicio = horario.HorarioInicio;
+            horarioDb.HorarioFin = horario.HorarioFin;
+            horarioDb.SegundoHorarioInicio = horario.SegundoHorarioInicio;
+            horarioDb.SegundoHorarioFin = horario.SegundoHorarioFin;
+            horarioDb.Lunes = horario.Lunes;
+            horarioDb.Martes = horario.Martes;
+            horarioDb.Miercoles = horario.Miercoles;
+            horarioDb.Jueves = horario.Jueves;
+            horarioDb.Viernes = horario.Viernes;
+            horarioDb.Sabado = horario.Sabado;
+            horarioDb.Domingo = horario.Domingo;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(horarioDb);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METOD PAR AELIMIANR UN HORARIO ////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHorario(int id)
         {
             var horario = await _context.Horario.FindAsync(id);
-            if (horario == null)
-            {
-                return NotFound();
-            }
 
             _context.Horario.Remove(horario);
             await _context.SaveChangesAsync();
 
             return Ok(horario);
-        }
-
-
-
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Total")]
-        public async Task<ActionResult<int>> GetTotalHorarios()
-        {
-            // Obtener el total de horarios asignados
-            var total = await _context.Horario
-                .Include(h => h.Empleado)
-                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
-                .CountAsync();
-
-            return Ok(new { total });
-        }
-
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("HorasSemanales")]
-        public async Task<ActionResult> GetTotalHorasSemanales()
-        {
-            var horarios = await _context.Horario
-                .Include(h => h.Empleado)
-                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
-                .ToListAsync();
-
-            double totalMinutos = 0;
-
-            foreach (var h in horarios)
-            {
-                // Calcular duración del primer horario
-                double minutosTurno1 = (h.HorarioFin > h.HorarioInicio)
-                    ? (h.HorarioFin - h.HorarioInicio).TotalMinutes
-                    : 0;
-
-                // Calcular duración del segundo horario (si existe)
-                double minutosTurno2 = (h.SegundoHorarioFin > h.SegundoHorarioInicio)
-                    ? (h.SegundoHorarioFin - h.SegundoHorarioInicio).TotalMinutes
-                    : 0;
-
-                // Sumar minutos solo para los días activos
-                if (h.Lunes) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Martes) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Miercoles) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Jueves) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Viernes) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Sabado) totalMinutos += minutosTurno1 + minutosTurno2;
-                if (h.Domingo) totalMinutos += minutosTurno1 + minutosTurno2;
-            }
-
-            var totalHoras = Math.Floor(totalMinutos / 60);
-            var minutosRestantes = totalMinutos % 60;
-
-            return Ok(new { totalHorasSemanales = $"{totalHoras}h {minutosRestantes}m" });
-        }
-
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("FindesDeSemana")]
-        public async Task<ActionResult<int>> GetEmpleadosQueTrabajanFinesDeSemana()
-        {
-            // Obtener el total de horarios asignados
-            var total = await _context.Horario
-                .Include(h => h.Empleado)
-                .Where(h => h.Empleado != null && !h.Empleado.Eliminado && h.Sabado || h.Domingo)
-                .CountAsync();
-
-            return Ok(new { empleadosFindes = total });
         }
 
 

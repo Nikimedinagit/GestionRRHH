@@ -25,23 +25,117 @@ namespace API_NET_CORE8_RRHH.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/Evaluaciones
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Evaluacion>>> GetEvaluacion()
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS DATOS DE LA EVALUACIONES SEGUN SUS FILTROS /////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("Filtrar")]
+        public async Task<ActionResult<IEnumerable<EvaluacionVista>>> EvaluacionFiltro([FromBody] EvaluacionFiltro filtro)
         {
-            return await _context.Evaluacion
+            var obtenerEvaluaciones = _context.Evaluacion
                 .Include(e => e.Empleado)
-                .Include(e => e.Empleado.Puesto)
+                    .ThenInclude(emp => emp.Puesto)
                 .Include(e => e.CriterioDeEvaluacion)
                     .ThenInclude(ce => ce.TipoDeCriterio)
-                .Where(e => e.Empleado != null && !e.Empleado.Eliminado)
-                .OrderByDescending(e => e.Fecha)
-                .ThenBy(e => e.Calificacion)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
+                obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
+
+            if (filtro.Fecha.HasValue)
+            {
+                var fecha = filtro.Fecha.Value.Date;
+                var fechaSiguiente = fecha.AddDays(1);
+                obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Fecha >= fecha && e.Fecha < fechaSiguiente);
+            }
+
+            if (filtro.Calificacion.HasValue)
+            {
+                switch (filtro.Calificacion.Value)
+                {
+                    case 1: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion < 5); break;
+                    case 2: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 5 && e.Calificacion < 7); break;
+                    case 3: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 7 && e.Calificacion < 9); break;
+                    case 4: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 9); break;
+                }
+            }
+
+            var listaVista = await obtenerEvaluaciones
+                .OrderBy(e => e.Fecha)
+                .ThenByDescending(e => e.Calificacion)
+                .ThenByDescending(e => e.Empleado.NombreCompleto)
+                .Select(e => new EvaluacionVista
+                {
+                    Id = e.Id,
+                    Fecha = e.Fecha,
+                    Calificacion = e.Calificacion,
+                    EmpleadoId = e.EmpleadoId.ToString(),
+                    EmpleadoNombre = e.Empleado.NombreCompleto,
+                    EmpleadoPuesto = e.Empleado.Puesto.Descripcion
+                })
                 .ToListAsync();
 
+            return Ok(listaVista);
         }
 
-        // GET: api/Evaluaciones/5
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA CREAR UNA NUEVA EVALUACION ////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public async Task<ActionResult<Evaluacion>> PostEvaluacion(Evaluacion evaluacion)
+        {
+            bool evaluacionExistente = await _context.Evaluacion
+                .AnyAsync(e => e.EmpleadoId == evaluacion.EmpleadoId
+                            && e.Fecha.Month == DateTime.Now.Month
+                            && e.Fecha.Year == DateTime.Now.Year);
+
+            if (evaluacionExistente)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
+            }
+
+            evaluacion.Fecha = DateTime.Now;
+
+            _context.Evaluacion.Add(evaluacion);
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MODIFICAR UNA EVALUACION ////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutEvaluacion(int id, Evaluacion evaluacion)
+        {
+            var evaluacionOriginal = await _context.Evaluacion.FindAsync(id);
+
+            var existeOtraEvaluacion = await _context.Evaluacion
+                .AnyAsync(e => e.EmpleadoId == evaluacion.EmpleadoId
+                               && e.Fecha.Month == DateTime.Now.Month
+                               && e.Fecha.Year == DateTime.Now.Year
+                               && e.Id != id);
+
+            if (existeOtraEvaluacion)
+            {
+                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
+            }
+
+            evaluacionOriginal.Calificacion = evaluacion.Calificacion;
+            evaluacionOriginal.EmpleadoId = evaluacion.EmpleadoId;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(evaluacionOriginal);
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER UNA EVALUACION POR ID ///////////////////////////////////////////////////////   
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         public async Task<ActionResult<Evaluacion>> GetEvaluacion(int id)
         {
@@ -54,196 +148,6 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return evaluacion;
         }
-
-        [HttpPost("Filtrar")]
-        public async Task<ActionResult<IEnumerable<EvaluacionVista>>> EvaluacionFiltro([FromBody] EvaluacionFiltro filtro)
-        {
-
-            List<EvaluacionVista> vista = new List<EvaluacionVista>();
-
-            var evaluacionFiltrar = _context.Evaluacion.AsQueryable();
-
-            if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
-            {
-                evaluacionFiltrar = evaluacionFiltrar
-                .Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
-            }
-
-            if (filtro.Fecha.HasValue)
-            {
-                var fechaEvaluacion = filtro.Fecha.Value.Date;
-                var fechaLimite = fechaEvaluacion.AddDays(1);
-
-                evaluacionFiltrar = evaluacionFiltrar
-                .Where(t => t.Fecha >= fechaEvaluacion && t.Fecha < fechaLimite);
-                // .Where(t => t.FechaInicio <= fechaFin && t.FechaFin >= fechaInicio);    
-            }
-
-            if (filtro.Calificacion.HasValue)
-            {
-                if (filtro.Calificacion.Value == 1)
-                {
-                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion < 5);
-                }
-                if (filtro.Calificacion.Value == 2)
-                {
-                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 5 && t.Calificacion < 7);
-                }
-                if (filtro.Calificacion.Value == 3)
-                {
-                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 7 && t.Calificacion < 9);
-                }
-                if (filtro.Calificacion.Value == 4)
-                {
-                    evaluacionFiltrar = evaluacionFiltrar.Where(t => t.Calificacion >= 9);
-                }
-
-            }
-            // ordenar por empleado, después por fecha más reciente y por nota más alta
-            var listaFiltrada = await evaluacionFiltrar
-                .Include(e => e.Empleado)
-                .Include(e => e.Empleado.Puesto)
-                .Include(e => e.CriterioDeEvaluacion)
-                    .ThenInclude(ce => ce.TipoDeCriterio)
-                .Where(e => e.Empleado != null && !e.Empleado.Eliminado)
-                .OrderBy(e => e.Empleado.NombreCompleto)
-                .ThenByDescending(e => e.Fecha)
-                .ThenByDescending(e => e.Calificacion)
-                .ToListAsync();
-
-            foreach (var evaluacion in listaFiltrada)
-            {
-                var vistaEvaluacion = new EvaluacionVista
-                {
-                    Id = evaluacion.Id,
-                    Fecha = evaluacion.Fecha,
-                    Calificacion = evaluacion.Calificacion,
-                    EmpleadoId = evaluacion.EmpleadoId.ToString(),
-                    EmpleadoNombre = evaluacion.Empleado.NombreCompleto,
-                    EmpleadoPuesto = evaluacion.Empleado.Puesto.Descripcion
-                };
-                vista.Add(vistaEvaluacion);
-            }
-            return vista;
-        }
-        // PUT: api/Evaluaciones/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvaluacion(int id, Evaluacion evaluacion)
-        {
-            if (id != evaluacion.Id)
-            {
-                return BadRequest();
-            }
-
-            //Campos que pueden editarse
-            evaluacion.Calificacion = evaluacion.Calificacion;
-            evaluacion.EmpleadoId = evaluacion.EmpleadoId;
-
-            //Fecha de evaluacion valor fijo
-            evaluacion.Fecha = DateTime.Now;
-
-            _context.Entry(evaluacion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EvaluacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Evaluaciones
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Evaluacion>> PostEvaluacion(Evaluacion evaluacion)
-        {
-            //Por empleado se puede evaluar solo una vez al mes
-            var evaluacionExistente = await _context.Evaluacion
-            .Where(e => e.EmpleadoId == evaluacion.EmpleadoId
-            && e.Fecha.Month == DateTime.Now.Month
-            && e.Fecha.Year == DateTime.Now.Year)
-            .FirstOrDefaultAsync();
-
-            if (evaluacionExistente != null)
-            {
-                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
-            }
-
-
-            //Fecha de evaluacion valor fijo
-            evaluacion.Fecha = DateTime.Now;
-            _context.Evaluacion.Add(evaluacion);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
-        }
-
-
-
-
-
-
-        //METODOS PARA FILTRAR EN LAS CARD DE ESTADISTICAS
-        //Total de evaluaciones
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Total")]
-        public async Task<ActionResult<int>> GetTotalEvaluaciones()
-        {
-           
-            var total = await _context.Evaluacion
-                .Include(e => e.Empleado)
-                .Where(e => !e.Empleado.Eliminado)
-                .CountAsync();
-
-            return Ok(new { total });
-        }
-
-
-        //Evaluacion promedio general
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("PromedioGeneral")]
-        public async Task<ActionResult<double>> GetPromedioGeneral()
-        {
-            // Consultar todas las evaluaciones de empleados no eliminados
-            var promedio = await _context.Evaluacion
-                .Include(e => e.Empleado)
-                .Where(e => !e.Empleado.Eliminado)
-                .Select(e => e.Calificacion)
-                .AverageAsync();
-
-            return Ok(new { promedio });
-        }
-
-
-        //Empleados evaluados
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
-        [HttpGet("Empleados")]
-        public async Task<ActionResult<int>> GetEmpleadosEvaluados()
-        {
-            // Obtener el total de empleados distintos evaluados que no están eliminados
-            var totalEmpleadosEvaluados = await _context.Evaluacion
-                .Where(e => !e.Empleado.Eliminado)
-                .Select(e => e.EmpleadoId)
-                .Distinct()
-                .CountAsync();
-
-            return Ok(new { totalEmpleadosEvaluados });
-        }
-
-
-
 
 
         private bool EvaluacionExists(int id)

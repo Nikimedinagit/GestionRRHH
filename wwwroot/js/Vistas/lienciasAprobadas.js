@@ -1,93 +1,16 @@
-//PANEL FILTROS//
-//Funcion para abrir panel de filtros
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir del filtro lo cierra
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }
-  }
-}
-//FIN PANEL FILTROS//
-
-
-//INICIO PANEL GENERAR//
-//Funcion para abrir panel de genera
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    // Agrega el listener para cerrar al hacer clic fuera
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-  // Funcion sid etecta un clcik fuera del contenedir de generar lo cierra
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-//FIN PANEL GENERAR//
-
-// INICIO ONCHANGE DE FILTROS//
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ComboParaFiltrarPorLicencia();
-
-  $("#TipoDeLicenciaIdBuscar").on("change", ObtenerLicenciasAprobadas);
-  $("#FechaAprobacionBuscar").on("change", ObtenerLicenciasAprobadas);
-  $("#filtrarFechaSelect").on("change", function () {
-    const filtrarFecha = $(this).val() === "si";
-    $("#fechasInputs").toggle(filtrarFecha);
-
-    if (!filtrarFecha) {
-      $("#FechaAprobacionBuscar").val('');
-    }
-
-    ObtenerLicenciasAprobadas();
-  });
+  $("#TipoDeLicenciaIdBuscar, #FechaAprobacionBuscar").on("input", ObtenerLicenciasAprobadas);
 });
 
 
-//FIN ONCHANGE DE FILTROS//
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// COMBO PARA FILTRAR POR TIPO DE LICENCIA //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ComboParaFiltrarPorLicencia() {
-  const res = await authFetch("TipoDeLicencias", {
+  const res = await authFetch("TipoDeLicencias/Activos", {
     method: "GET",
   });
 
@@ -106,6 +29,9 @@ async function ComboParaFiltrarPorLicencia() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE APROBACION DE LICENCIAS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerLicenciasAprobadas() {
 
     let tipoDeLicenciaId = document.getElementById("TipoDeLicenciaIdBuscar").value;
@@ -133,6 +59,9 @@ async function ObtenerLicenciasAprobadas() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS DATOS DE LA API DE APROBACION DE LICENCIAS ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarLicenciasAprobadas(data) {
   licenciaAprobadasGlobal = data;
   $("#tablaLicenciasAprobadasBody").empty();
@@ -165,7 +94,6 @@ function MostrarLicenciasAprobadas(data) {
     );
   });
 
-  // Inicializar tooltips
   tippy("[data-tippy-content]", {
     animation: "scale",
     theme: "mi-tema",
@@ -173,25 +101,26 @@ function MostrarLicenciasAprobadas(data) {
   });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL DETALLE DE LA APROBACION DE LICENCIA /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarDetalleLicenciaAprobada(index) {
   const item = licenciaAprobadasGlobal[index];
 
-  // Setear valores en el offcanvas
   document.getElementById("detalleFechaAprobacion").textContent = item.fechaDeAprobacion || 'N/D';
   document.getElementById("detalleEstadoAprobacion").textContent = item.estadoString || 'N/D';
   document.getElementById("detalleLicenciaAprobacion").textContent = item.licenciaString || 'N/D';
   document.getElementById("detalleResponsableNombre").textContent = item.nombreUsuarioAprobador || 'N/D';
   document.getElementById("detalleResponsableEmail").textContent = item.emailUsuarioAprobador || 'N/D';
 
-  // Mostrar offcanvas
   const offcanvasElement = document.getElementById("offcanvasDetalleLicenciaAprobadas");
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
 
 
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ComboParaFiltrarPorLicencia();

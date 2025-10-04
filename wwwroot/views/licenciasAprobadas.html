@@ -1,6 +1,7 @@
-<!-- Contenedor Principal -->
 <div class="px-3 py-3">
-  <!-- Título -->
+
+
+  <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Historial de Licencias Aprobadas</h3>
     <p class="text-muted mb-3">Panel para administrar y consultar licencias aprobadas por empleado.</p>
@@ -8,13 +9,11 @@
 
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
 
-    <!-- Contenedor de Acciones (Aregar, Filtrar y Generar Informe) -->
     <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -29,37 +28,26 @@
     </div>
 
 
-
-    <!-- Contenedor Filtros-->
+    <!-- ======================================= Contenedor Filtros ====================================== -->
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
-        <!-- Tipo de Licencia -->
-        <div class="col-12 col-md-2">
+        <div class="col-12 col-md-3">
           <label for="TipoDeLicenciaIdBuscar" class="form-label-fija">Tipo de Licencia</label>
           <select id="TipoDeLicenciaIdBuscar" class="form-control filtro-select">
             <option value="0">[Todas]</option>
-            <!-- Aquí se cargarán dinámicamente los tipos de licencias -->
           </select>
         </div>
 
-        <!-- Activar Fecha -->
-        <div class="col-12 col-md-1">
-          <label class="form-label-fija">Fecha</label>
-          <select id="filtrarFechaSelect" class="form-control filtro-select">
-            <option value="no" selected>No</option>
-            <option value="si">Sí</option>
-          </select>
-        </div>
-
-        <div class="col-12 col-md-2" id="fechasInputs" style="display: none;">
-          <label for="FechaAprobacionBuscar" class="form-label-fija">Fecha de Aprobación</label>
+        <div class="col-12 col-md-2" id="fechasInputs">
+          <label for="FechaAprobacionBuscar" class="form-label-fija">Fecha</label>
           <input type="date" id="FechaAprobacionBuscar" class="form-control filtro-select" />
         </div>
 
       </div>
     </div>
 
-    <!-- Contenedor Generar-->
+
+    <!-- ======================================= Contenedor Generar ====================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
@@ -68,18 +56,11 @@
         <button class="btn btn-generar-excel" onclick="GenerarExcel()">
           <i class="fa-solid fa-file-excel me-1"></i> Excel
         </button>
-        <button class="btn btn-generar-grafico" onclick="GenerarGrafico()">
-          <i class="fa-solid fa-chart-column me-1"></i> Gráfico
-        </button>
       </div>
     </div>
 
 
-    <div id="contenedorGrafico" class="mb-3 mt-3 d-none">
-      <canvas id="graficoCriterios" width="400" height="150"></canvas>
-    </div>
-
-    <!-- Tabla de Datos -->
+    <!-- ======================================= Tabla de Datos ====================================== -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle w-100">
         <thead class="table-licencias-aprobadas">
@@ -89,13 +70,14 @@
             <th class="text-center columna-licencia" style="width: 25%">Licencia</th>
             <th class="text-center columna-responsable" style="width: 25%">Responsable</th>
             <th class="text-center columna-accion d-md-none" style="width: 5%">Acción</th>
-            <!-- d-md-none = solo en móvil y tablet -->
           </tr>
         </thead>
         <tbody id="tablaLicenciasAprobadasBody"></tbody>
       </table>
     </div>
 
+
+    <!-- ======================================= Panel Detalle Licencia Aprobada ====================================== -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleLicenciaAprobadas"
       aria-labelledby="tituloLicenciaAprobadas"
       style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
@@ -155,13 +137,9 @@
       </div>
     </div>
 
-
   </div>
 
 
+</div>
 
   <script src="../js/Vistas/lienciasAprobadas.js"></script>
-
-
-
-</div>
