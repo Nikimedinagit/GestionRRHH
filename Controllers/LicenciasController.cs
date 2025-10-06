@@ -131,7 +131,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // Para SUPERVISOR o EMPLEADO, siempre usar su propio EmpleadoId
             if (rol == "SUPERVISOR" || rol == "EMPLEADO")
             {
                 var usuario = await _context.Users.FindAsync(userId);
@@ -172,37 +171,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             return CreatedAtAction(nameof(GetLicencia), new { id = licencia.Id }, licencia);
         }
 
-        // [HttpPost]
-        // public async Task<ActionResult<Licencia>> PostLicencia([FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
-        // {
-        //     bool existeLicencia = await _context.Licencia
-        //         .AnyAsync(l =>
-        //             l.EmpleadoId == licencia.EmpleadoId &&
-        //             (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
-        //             l.FechaInicio <= licencia.FechaFin &&
-        //             l.FechaFin >= licencia.FechaInicio
-        //         );
-
-        //     if (existeLicencia)
-        //         return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
-
-        //     licencia.Estado = EstadoLicencia.PENDIENTE;
-
-        //     if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
-        //     {
-        //         using var ms = new MemoryStream();
-        //         await DocumentoAdjunto.CopyToAsync(ms);
-        //         licencia.DocumentoAdjunto = ms.ToArray();
-        //         licencia.DocumentoNombre = DocumentoAdjunto.FileName;
-        //         licencia.DocumentoMimeType = DocumentoAdjunto.ContentType;
-        //     }
-
-        //     _context.Licencia.Add(licencia);
-        //     await _context.SaveChangesAsync();
-
-        //     return CreatedAtAction(nameof(GetLicencia), new { id = licencia.Id }, licencia);
-        // }
-
+      
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UNA LICENCIA ////////////////////////////////////////////////////////////
@@ -213,6 +182,20 @@ namespace API_NET_CORE8_RRHH.Controllers
         {
             var licencia = await _context.Licencia.FindAsync(id);
 
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+                var empleado = await _context.Empleado
+                    .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+                    .FirstOrDefaultAsync();
+
+                licencia.EmpleadoId = empleado.Id;
+            }
 
             if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
             {
@@ -227,6 +210,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(licencia);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

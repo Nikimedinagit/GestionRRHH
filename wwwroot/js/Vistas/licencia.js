@@ -204,7 +204,7 @@ function MostrarLicencias(data) {
     `
       : "";
 
-    const rol = getRol()?.toUpperCase(); 
+    const rol = getRol()?.toUpperCase();
 
     const botonesHtml =
       estado === "PENDIENTE"
@@ -227,7 +227,7 @@ function MostrarLicencias(data) {
       </div>
     </div>
   `
-        : ""; 
+        : "";
 
 
     const cardHtml = `
@@ -715,7 +715,11 @@ async function EditarLicencia(id) {
   );
   formData.append("FechaInicio", document.getElementById("FechaInicio").value);
   formData.append("FechaFin", document.getElementById("FechaFin").value);
-  formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+
+  const rol = getRol()?.toUpperCase();
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+  }
 
   const archivo = document.getElementById("DocumentoAdjunto").files[0];
   if (archivo) {
