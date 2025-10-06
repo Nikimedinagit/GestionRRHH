@@ -3,7 +3,7 @@
     <!-- ======================================= Título ====================================== -->
     <div class="mb-3">
         <h3 class="titulo-seccion">Gestor de Licencias</h3>
-        <p class="text-muted fs-6 mb-0">Visualizá, creá o gestioná licencias de los empleados de forma rápida.</p>
+        <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá, creá o gestioná licencias de los empleados de forma rápida.</p>
     </div>
 
     <hr />
@@ -20,7 +20,7 @@
                 <span>Solicitar Licencias</span>
             </button>
 
-            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+            <div class="d-flex gap-2 flex-wrap responsive-buttons d-none" id = "contenedorFiltrosLicencias">
                 <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
                     <i class="fa-solid fa-filter me-1"></i>
                     <span>Filtros</span>
@@ -95,8 +95,9 @@
             </div>
         </div>
 
-        <!-- ======================================= Tabla de Datos ====================================== -->
-        <div>
+
+        <!-- ======================================= Card Estadisticas Licencias ====================================== -->
+        <div class="d-none" id = "cardEstadisticasLicencias">
             <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
                 <div class="card p-3 border-0"
@@ -196,7 +197,7 @@
                         <div class="invalid-feedback" id="errorIdTipoLicencia"></div>
                     </div>
 
-                    <div class="form-group position-relative mb-3">
+                    <div class="form-group position-relative mb-3 d-none" id="seleccionEmpleadoLicencia">
                         <select name="IdEmpleado" id="EmpleadoId" class="form-control" required>
                             <option value="" disabled selected>Seleccione</option>
                         </select>

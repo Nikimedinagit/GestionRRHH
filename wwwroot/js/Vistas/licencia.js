@@ -24,7 +24,7 @@ function CerrarPanelLicencia() {
 
   LimpiarModalLicencia();
 }
-  
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // INICILIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
@@ -204,37 +204,40 @@ function MostrarLicencias(data) {
     `
       : "";
 
+    const rol = getRol()?.toUpperCase(); 
+
     const botonesHtml =
       estado === "PENDIENTE"
         ? `
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <div>
-            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
-              <i class="bi bi-sliders icono-accion-licencia"></i>
-            </button>
-          </div>
-          <div class="d-flex gap-1">
-            <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
-            </button>
-            <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
-              <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
-            </button>
-          </div>
-        </div>
-      `
-        : "";
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <div>
+        ${(rol === "ADMINISTRADOR" || rol === "RRHH") ? `
+          <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
+            <i class="bi bi-sliders icono-accion-licencia"></i>
+          </button>
+        ` : ""}
+      </div>
+      <div class="d-flex gap-1">
+        <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
+          <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
+        </button>
+        <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
+          <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
+        </button>
+      </div>
+    </div>
+  `
+        : ""; 
+
 
     const cardHtml = `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${
-        item.id
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${item.id
       }">
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${colorBorde}; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${
-                item.tipoDeLicenciaString || "-"
-              }</h5>
+              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicenciaString || "-"
+      }</h5>
               <span class="badge ${claseEstado}" style="font-size: 0.75rem; padding: 0.25em 0.5em;">${estado}</span>
             </div>
             <p class="mb-1 text-muted d-flex align-items-start" style="font-size: 0.9rem;">
@@ -284,7 +287,7 @@ async function DescargarDocumento(id) {
 
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(blob);
-    link.download = filename; 
+    link.download = filename;
     link.click();
 
     window.URL.revokeObjectURL(link.href);
@@ -299,7 +302,7 @@ async function DescargarDocumento(id) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function formatearFecha(fechaStr) {
   const [dia, mes, anio] = fechaStr.split("/");
-  const fecha = new Date(anio, mes - 1, dia); 
+  const fecha = new Date(anio, mes - 1, dia);
   return fecha.toLocaleDateString("es-AR", {
     day: "numeric",
     month: "short",
@@ -341,7 +344,7 @@ async function MostrarModalEditar(id) {
 
     let nombreArchivo = licencia.documentoNombre;
     if (nombreArchivo) {
-      nombreArchivo = nombreArchivo.split("\\").pop().split("/").pop(); 
+      nombreArchivo = nombreArchivo.split("\\").pop().split("/").pop();
       if (nombreArchivo.length > 40) {
         nombreArchivo = nombreArchivo.substring(0, 40) + "...";
       }
@@ -380,7 +383,7 @@ function BuscarLicenciaId() {
 function LimpiarModalLicencia() {
   document.getElementById("IdLicencia").value = "";
 
-   document.getElementById("IdTipoLicencia").disabled = false;
+  document.getElementById("IdTipoLicencia").disabled = false;
   document.getElementById("FechaInicio").disabled = false;
   document.getElementById("FechaFin").disabled = false;
   document.getElementById("EmpleadoId").disabled = false;
@@ -448,6 +451,8 @@ function ValidarFormularioLicencia() {
   const inputFechaFin = document.getElementById("FechaFin");
   const inputErrorFechaFin = document.getElementById("errorFechaFin");
 
+  const rol = getRol()?.toUpperCase();
+
   [inputErrorTipoLicencia, inputErrorEmpleado, inputErrorFechaInicio, inputErrorFechaFin].forEach(e => {
     e.style.display = "none";
     e.textContent = "";
@@ -468,13 +473,15 @@ function ValidarFormularioLicencia() {
     inputTipoLicencia.classList.add("is-valid");
   }
 
-  if (!inputEmpleado.value) {
-    inputErrorEmpleado.style.display = "block";
-    inputErrorEmpleado.textContent = "Campo obligatorio.";
-    inputEmpleado.classList.add("is-invalid");
-    valido = false;
-  } else {
-    inputEmpleado.classList.add("is-valid");
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    if (!inputEmpleado.value) {
+      inputErrorEmpleado.style.display = "block";
+      inputErrorEmpleado.textContent = "Campo obligatorio.";
+      inputEmpleado.classList.add("is-invalid");
+      valido = false;
+    } else {
+      inputEmpleado.classList.add("is-valid");
+    }
   }
 
   let fechaInicioValida = null;
@@ -633,18 +640,21 @@ function MostrarErrorLicenciaExistente(mensaje) {
 // FUNCIÓN PARA CREAR UNA NUEVA LICENCIA ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearLicencia() {
-  if (!ValidarFormularioLicencia()) {
-    return;
-  }
+  if (!ValidarFormularioLicencia()) return;
 
   const formData = new FormData();
+
   formData.append(
     "TipoDeLicenciaId",
     parseInt(document.getElementById("IdTipoLicencia").value)
   );
   formData.append("FechaInicio", document.getElementById("FechaInicio").value);
   formData.append("FechaFin", document.getElementById("FechaFin").value);
-  formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+
+  const rol = getRol()?.toUpperCase();
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+  }
 
   const archivo = document.getElementById("DocumentoAdjunto").files[0];
   if (archivo) {
@@ -687,6 +697,7 @@ async function CrearLicencia() {
     MostrarErrorCatch();
   }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -858,9 +869,9 @@ function AbrirModalAccionLicencia(id) {
     focusCancel: true,
     customClass: {
       popup: "swal2-custom-popup",
-      confirmButton: "swal2-btn-activar", 
-      denyButton: "swal2-btn-desactivar", 
-      cancelButton: "swal2-btn-cancelar", 
+      confirmButton: "swal2-btn-activar",
+      denyButton: "swal2-btn-desactivar",
+      cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
       htmlContainer: "swal2-content-center",
     },
@@ -965,6 +976,36 @@ async function AprobarLicencia(id) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LAS OPCIONES DE LICENCIAS POR ROL /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MostrarOpcionesLicenciasPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+  const estadisticasYFiltros = $("#cardEstadisticasLicencias, #contenedorFiltrosLicencias");
+  const seleccionEmpleado = $("#seleccionEmpleadoLicencia");
+  const titulo = $("#tituloLicencia");
+  const tipoLicenciaGroup = $("#IdTipoLicencia").closest(".form-group");
+
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    estadisticasYFiltros.removeClass("d-none");
+    seleccionEmpleado.removeClass("d-none");
+    titulo.text("Formulario de Licencia");
+    tipoLicenciaGroup.css("grid-column", "span 1");
+  } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+    estadisticasYFiltros.addClass("d-none");
+    seleccionEmpleado.addClass("d-none");
+    titulo.text("Solicitá tu licencia o consultá el estado de tus solicitudes.");
+    tipoLicenciaGroup.css("grid-column", "span 2");
+  }
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+MostrarOpcionesLicenciasPorRol();
 ComboParaFiltrarTiposDeLicencia();
+

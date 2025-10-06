@@ -64,23 +64,22 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("usuarioRol").textContent = rol;
   }
 
-  // MostrarOpcionesPorRol(); // Si querés activarlo
+  MostrarOpcionesSidebarPorRol();
+
 });
 
-// ==== Función para mostrar menú según el rol ====
-// function MostrarOpcionesPorRol() {
-//   const rol = getRol();
 
-//   if (!rol) return;
 
-//   if (rol === "ADMINISTRADOR") {
-//     $("#menuCategorias").removeClass("d-none");
-//     $("#menuTickets").removeClass("d-none");
-//     $("#menuClientes").removeClass("d-none");
-//     $("#menuPuestosLaborales").removeClass("d-none");
-//     $("#menuDesarrolladores").removeClass("d-none");
-//   }
+//////////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR LAS OPCIONES DEL SIDEBAR POR ROL /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+function MostrarOpcionesSidebarPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
 
-  // Podés agregar más roles si necesitás:
-  // if (rol === "RRHH") { ... }
-  // if (rol === "EMPLEADO") { ... }
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #gestionOrganizacional, #gestionGeografica, #gestionUsuarios").removeClass("d-none");
+  } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+   
+  }
+}

@@ -29,7 +29,7 @@ async function ObtenerAsistencias() {
         const asistenciasFiltradas = {
             nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
             DNI: dniEmpleado ? Number(dniEmpleado) : null,
-            nroLegajo: nroLegajo ? Number(nroLegajo) : null,
+            nroLegajo: nroLegajo,
             fecha: fechaFiltro ? fechaFiltro : null,
             estadoAsistencia: estadoAsistencia
         };

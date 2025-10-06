@@ -29,16 +29,40 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE LICENCIAS ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaLicencia>>> LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
         {
             var hoy = DateTime.Today;
+
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var obtenerLicencias = _context.Licencia
                 .Include(l => l.TipoDeLicencia)
                 .Include(l => l.Empleado)
                 .Where(l => l.Empleado != null && !l.Empleado.Eliminado)
                 .AsQueryable();
+
+            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+                var empleado = await _context.Empleado
+                    .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+                    .FirstOrDefaultAsync();
+
+                if (empleado != null)
+                {
+                    var empleadoId = empleado.Id;
+                    obtenerLicencias = obtenerLicencias.Where(l => l.EmpleadoId == empleadoId);
+                }
+                else
+                {
+                    return new List<VistaLicencia>();
+                }
+            }
 
             if (filtro.Estado.HasValue)
                 obtenerLicencias = obtenerLicencias.Where(l => (int)l.Estado == filtro.Estado);
@@ -96,12 +120,30 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METTODO APRA CREAR LICENCIA //////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost]
         public async Task<ActionResult<Licencia>> PostLicencia([FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
         {
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Para SUPERVISOR o EMPLEADO, siempre usar su propio EmpleadoId
+            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+                var empleado = await _context.Empleado
+                    .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+                    .FirstOrDefaultAsync();
+
+                licencia.EmpleadoId = empleado.Id;
+            }
+
             bool existeLicencia = await _context.Licencia
                 .AnyAsync(l =>
                     l.EmpleadoId == licencia.EmpleadoId &&
@@ -130,10 +172,42 @@ namespace API_NET_CORE8_RRHH.Controllers
             return CreatedAtAction(nameof(GetLicencia), new { id = licencia.Id }, licencia);
         }
 
+        // [HttpPost]
+        // public async Task<ActionResult<Licencia>> PostLicencia([FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
+        // {
+        //     bool existeLicencia = await _context.Licencia
+        //         .AnyAsync(l =>
+        //             l.EmpleadoId == licencia.EmpleadoId &&
+        //             (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
+        //             l.FechaInicio <= licencia.FechaFin &&
+        //             l.FechaFin >= licencia.FechaInicio
+        //         );
+
+        //     if (existeLicencia)
+        //         return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
+
+        //     licencia.Estado = EstadoLicencia.PENDIENTE;
+
+        //     if (DocumentoAdjunto != null && DocumentoAdjunto.Length > 0)
+        //     {
+        //         using var ms = new MemoryStream();
+        //         await DocumentoAdjunto.CopyToAsync(ms);
+        //         licencia.DocumentoAdjunto = ms.ToArray();
+        //         licencia.DocumentoNombre = DocumentoAdjunto.FileName;
+        //         licencia.DocumentoMimeType = DocumentoAdjunto.ContentType;
+        //     }
+
+        //     _context.Licencia.Add(licencia);
+        //     await _context.SaveChangesAsync();
+
+        //     return CreatedAtAction(nameof(GetLicencia), new { id = licencia.Id }, licencia);
+        // }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UNA LICENCIA ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLicencia(int id, [FromForm] IFormFile DocumentoAdjunto)
         {
@@ -158,6 +232,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UNA LICENCIA POR ID ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Licencia>> GetLicencia(int id)
         {
@@ -175,6 +250,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA DESCARGAR DOCUMENTO //////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("Documento/{id}")]
         public async Task<IActionResult> DescargarDocumento(int id)
         {
@@ -190,6 +266,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA APROBAR UNA LICENCIA //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost("{id}/Aprobar")]
         public async Task<IActionResult> AprobarLicencia(int id)
         {
@@ -238,6 +315,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA RECHAZAR UNA LICENCIA //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost("{id}/Rechazar")]
         public async Task<IActionResult> RechazarLicencia(int id)
         {
@@ -256,11 +334,12 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMINAR UNA LICENCIA //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLicencia(int id)
         {
             var licencia = await _context.Licencia.FindAsync(id);
-            
+
             _context.Licencia.Remove(licencia);
 
             await _context.SaveChangesAsync();

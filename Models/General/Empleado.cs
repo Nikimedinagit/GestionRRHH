@@ -123,9 +123,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public long? DNI { get; set; }
         public string NroLegajo { get; set; }
         public int? EstadoCiviles { get; set; }
-
         public int? TipoSexo { get; set; }
-
         public int? LocalidadId { get; set; }
         public int? PuestoId { get; set; }
     }

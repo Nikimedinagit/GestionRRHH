@@ -111,10 +111,10 @@ function MostrarEmpleadosActivacion(data) {
 function MostrarDetalleEmpleadoActivacion(index) {
   const item = empleadosActivacionGlobal[index];
 
-  document.getElementById("detalleEmpleadoFecha").textContent = item.fechaActivacion ? new Date(item.fechaActivacion).toLocaleDateString() : "No Activo";
-  document.getElementById("detalleEmpleadoNombre").textContent = item.nombreCompleto || "-";
-  document.getElementById("detalleEmpleadoEmail").textContent = item.email || "-";
-  document.getElementById("detalleEmpleadoDNI").textContent = item.dni || "-";
+  document.getElementById("detalleEmpleadoFecha").textContent = item.fechaActivacionString ? new Date(item.fechaActivacionString).toLocaleDateString() : "No Activo";
+  document.getElementById("detalleEmpleadoNombre").textContent = item.empleadoNombreString || "-";
+  document.getElementById("detalleEmpleadoEmail").textContent = item.empleadoEmailString || "-";
+  document.getElementById("detalleEmpleadoDNI").textContent = item.empleadoDNIString || "-";
   document.getElementById("detalleEmpleadoEstado").textContent = item.activo ? "Activo" : "Inactivo";
 
   const offcanvasElement = document.getElementById("offcanvasDetalleEmpleadoActivacion");
