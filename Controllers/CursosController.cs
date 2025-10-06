@@ -94,37 +94,35 @@ namespace API_NET_CORE8_RRHH.Controllers
                 obtenerCursos = obtenerCursos.Where(c => c.FechaInicio.Date == filtro.Fecha.Value.Date);
 
             var listaFiltrada = await obtenerCursos
-    .OrderBy(c => c.Finalizado)
-    .ThenBy(c => c.FechaInicio)
-    .ThenBy(c => c.Modalidad)
-    .ThenBy(c => c.Nombre)
-    .Select(c => new CursoVista
-    {
-        Id = c.Id,
-        Nombre = c.Nombre,
-        Descripcion = c.Descripcion,
-        FechaInicio = c.FechaInicio,
-        FechaFinalizacion = c.FechaFinalizacion,
-        Modalidad = c.Modalidad,
-        Finalizado = c.Finalizado,
+                .OrderBy(c => c.Finalizado)
+                .ThenBy(c => c.FechaInicio)
+                .ThenBy(c => c.Modalidad)
+                .ThenBy(c => c.Nombre)
+                .Select(c => new CursoVista
+                {
+                    Id = c.Id,
+                    Nombre = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    FechaInicio = c.FechaInicio,
+                    FechaFinalizacion = c.FechaFinalizacion,
+                    Modalidad = c.Modalidad,
+                    Finalizado = c.Finalizado,
 
-        Resultado = empleado != null
-            ? c.AsistenciaCapacitacion
-                .Where(a => a.EmpleadoId == empleado.Id)
-                .Select(a => a.Resultado)
-                .FirstOrDefault()
-            : (int?)null,
+                    Resultado = empleado != null
+                        ? c.AsistenciaCapacitacion
+                            .Where(a => a.EmpleadoId == empleado.Id)
+                            .Select(a => a.Resultado)
+                            .FirstOrDefault()
+                        : (int?)null,
 
-        // Obtenemos solo el ID del certificado aprobado
-        CertificadoId = empleado != null
-            ? c.Certificado
-                .Where(cert => cert.EmpleadoId == empleado.Id)
-                .Select(cert => cert.Id)
-                .FirstOrDefault()
-            : (int?)null
-    })
-    .ToListAsync();
-
+                    CertificadoId = empleado != null
+                        ? c.Certificado
+                            .Where(cert => cert.EmpleadoId == empleado.Id)
+                            .Select(cert => cert.Id)
+                            .FirstOrDefault()
+                        : (int?)null
+                })
+                .ToListAsync();
 
             return Ok(listaFiltrada);
         }
