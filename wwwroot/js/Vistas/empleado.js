@@ -207,30 +207,25 @@ function MostrarEmpleados(data) {
 
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
-        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${
-          activo ? "#198754" : "#DC3545"
-        }; min-height: 260px;">
+        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
+      }; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
 
-            <!-- Título y estado -->
             <div class="d-flex justify-content-between align-items-start mb-2">
               <h5 class="fw-bold mb-0" style="font-size: 1rem;">${nombre}</h5>
               <span class="badge ${claseEstado}" style="font-size: 0.65rem; padding: 0.2em 0.45em;" data-tippy-content="${tooltipEstadoBadge}">${textoEstado}</span>
             </div>
 
-            <!-- Puesto -->
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-briefcase me-2" style="font-size: 1rem;"></i>
               <span>${puesto}</span>
             </p>
 
-            <!-- Email -->
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-envelope me-2" style="font-size: 1rem;"></i>
               <span>${email}</span>
             </p>
 
-            <!-- Teléfono -->
             <p class="mb-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-telephone me-2" style="font-size: 1rem;"></i>
               <span>${telefono}</span>
@@ -238,32 +233,26 @@ function MostrarEmpleados(data) {
 
             <hr class="m-0 mb-2"/>
 
-            <!-- DNI y Estado Civil -->
             <div class="d-flex gap-2 flex-wrap">
               <span class="badge text-dark" style="background-color: #d0e7ff; font-size: 0.75rem;">DNI: ${dni}</span>
               <span class="badge text-dark" style="background-color: #d4edda; font-size: 0.75rem;">${estadoCivil}</span>
             </div>
           </div>
 
-                  <!-- Botones de acción -->
         <div class="d-flex justify-content-between mt-2 align-items-center">
-          <!-- Siempre mostrar historial, ver más y editar -->
           <div>
-            <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${
-              item.id
-            })" data-tippy-content="Historial">
+            <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id
+      })" data-tippy-content="Historial">
               <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
             </button>
           </div>
           <div>
-            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${
-              item.id
-            })" data-tippy-content="Ver más">
+            <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id
+      })" data-tippy-content="Ver más">
               <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
             </button>
-            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${
-              item.id
-            })" data-tippy-content="Editar">
+            <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id
+      })" data-tippy-content="Editar">
               <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
             </button>
           </div>
@@ -1279,7 +1268,7 @@ async function ObtenerHistorialEmpleados(empleadoId) {
 // FUNCIÓN PARA MOSTRAR EL HISTORIAL DE EMPLEADOS ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHistorialEmpleado(data) {
-  historialGlobal = data; 
+  historialGlobal = data;
   $("#tablaHistorialEmpleadoBody").empty();
 
   if (!data || data.length === 0) {
@@ -1292,37 +1281,37 @@ function MostrarHistorialEmpleado(data) {
   $.each(data, function (index, item) {
     $("#tablaHistorialEmpleadoBody").append(
       "<tr>" +
-        "<td class='text-center columna-fecha'>" +
-        item.fechaModificacionString +
-        "</td>" +
-        "<td class='text-center'>" +
-        "<strong>" +
-        item.puestoAnterior +
-        "</strong><br>" +
-        "<small class='text-muted'>" +
-        item.sectorAnterior +
-        "</small>" +
-        "</td>" +
-        "<td class='text-center columna-puesto-actual'>" +
-        "<strong>" +
-        item.puestoActual +
-        "</strong><br>" +
-        "<small class='text-muted'>" +
-        item.sectorActual +
-        "</small>" +
-        "</td>" +
-        "<td class='text-center columna-responsable'>" +
-        "<strong>" +
-        item.usuarioModificadorNombre +
-        "</strong><br>" +
-        "<small class='text-muted'>" +
-        item.usuarioModificadorEmail +
-        "</small>" +
-        "</td>" +
-        "<td class='text-center columna-accion d-none d-md-table-cell'>" +
-        `<button class="btn-editar icono-ver-detalle-historial-empleado" style="background: none; border: none;" onclick="MostrarDetalleHistorial(${index})" data-tippy-content="Ver más"><i class="bi bi-info-circle"></i></button>` +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center columna-fecha'>" +
+      item.fechaModificacionString +
+      "</td>" +
+      "<td class='text-center'>" +
+      "<strong>" +
+      item.puestoAnterior +
+      "</strong><br>" +
+      "<small class='text-muted'>" +
+      item.sectorAnterior +
+      "</small>" +
+      "</td>" +
+      "<td class='text-center columna-puesto-actual'>" +
+      "<strong>" +
+      item.puestoActual +
+      "</strong><br>" +
+      "<small class='text-muted'>" +
+      item.sectorActual +
+      "</small>" +
+      "</td>" +
+      "<td class='text-center columna-responsable'>" +
+      "<strong>" +
+      item.usuarioModificadorNombre +
+      "</strong><br>" +
+      "<small class='text-muted'>" +
+      item.usuarioModificadorEmail +
+      "</small>" +
+      "</td>" +
+      "<td class='text-center columna-accion d-none d-md-table-cell'>" +
+      `<button class="btn-editar icono-ver-detalle-historial-empleado" style="background: none; border: none;" onclick="MostrarDetalleHistorial(${index})" data-tippy-content="Ver más"><i class="bi bi-info-circle"></i></button>` +
+      "</td>" +
+      "</tr>"
     );
   });
 

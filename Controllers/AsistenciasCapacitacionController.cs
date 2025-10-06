@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class AsistenciasCapacitacionController : ControllerBase
@@ -26,6 +25,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AsistenciaCapacitacion>>> GetAsistenciaCapacitacion()
         {
@@ -40,6 +40,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO POR ID ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<AsistenciaCapacitacion>> GetAsistenciaCapacitacion(int id)
         {
@@ -57,6 +58,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UNA NUEVA ASISTENCIA ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize (Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult<AsistenciaCapacitacion>> PostAsistenciaCapacitacion(AsistenciaCapacitacion asistenciaCapacitacion)
         {
@@ -81,6 +83,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMINAR UNA ASISTENCIA //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize (Roles = "ADMINISTRADOR, RRHH")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsistenciaCapacitacion(int id)
         {
@@ -104,6 +107,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CAMBIAR EL ESTADO DE LA ASISTENCIA ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize (Roles = "ADMINISTRADOR, RRHH")]
         [HttpPatch("CambiarEstado/{id}")]
         public async Task<IActionResult> CambiarEstado(int id, [FromBody] bool nuevoEstado)
         {

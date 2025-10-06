@@ -129,7 +129,6 @@ async function ObtenerCursos() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("Respuesta del backend:", data);
       MostrarCursos(data);
       LimpiarModalCursos();
       cerrarPanelCursos();
@@ -159,6 +158,8 @@ function MostrarCursosDesktop(data) {
   const contenedor = $("#contenedorCursos");
   contenedor.empty();
 
+  const rol = getRol()?.toUpperCase();
+
   if (data.length === 0) {
     contenedor.append("<div class='text-center text-muted py-3'>No hay cursos para mostrar.</div>");
     return;
@@ -168,9 +169,6 @@ function MostrarCursosDesktop(data) {
   const modalidadColor = { PRESENCIAL: "badge-presencial", VIRTUAL: "badge-virtual", MIXTO: "badge-mixto" };
 
   data.forEach(element => {
-    const modalidadNombre = modalidades[element.modalidad];
-    const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
-
     const fechaIni = new Date(element.fechaInicio);
     const fechaFin = new Date(element.fechaFinalizacion);
 
@@ -184,142 +182,215 @@ function MostrarCursosDesktop(data) {
       " " +
       fechaFin.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
 
-    const item = $(`
-      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" data-curso-id="${element.id}">
-        <div class="d-flex align-items-center" style="gap: 20px;">
-          ${!element.finalizado
-            ? `<button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square icono-editar"></i>
-              </button>`
-            : ""
+    const modalidadNombre = modalidades[element.modalidad] || "Desconocida";
+
+    if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+      let botonesAccion = `
+        <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
+          <i class="bi-calendar-check"></i>
+        </button>
+        <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
+          <i class="bi-award"></i>
+        </button>
+        <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+      `;
+
+      let botonEditar = "";
+      if (!element.finalizado) {
+        botonEditar = `
+          <div class="me-2">
+            <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      const item = $(`
+        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" data-curso-id="${element.id}">
+          <div class="d-flex align-items-center" style="gap: 20px;">
+            ${botonEditar}
+            <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.nombre || 'Sin nombre'}">
+              ${element.nombre || 'Sin nombre'}
+            </div>
+          </div>
+          <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
+            ${fechaInicioFormateada} -- ${fechaFinalizacionFormateada}
+          </div>
+          <div class="d-flex align-items-center" style="gap: 20px;">
+            <div class="badge ${modalidadColor[modalidadNombre]}" title="${modalidadNombre}">${modalidadNombre}</div>
+            <div class="d-flex align-items-center" style="gap: 10px;">
+              ${botonesAccion}
+            </div>
+          </div>
+        </div>
+      `);
+
+      const descripcionDetalle = $(`
+        <div class="panelCriterios px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">${element.nombre}</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td id="DescripcionCurso_${element.id}">${element.descripcion ?? "Sin descripción"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `);
+
+      const certificadoDetalle = $(`
+        <div class="panelCertificados px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Certificados</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="certificados-panel mt-3">
+            <button class="btn btn-agregar-asistencia mb-2 crearCertificado" data-curso-id="${element.id}">
+              <span>Cargar Certificados</span>
+            </button>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th class="text-start header-table">Empleado</th>
+                    <th class="text-center header-table">Documento Descargable</th>
+                    <th class="text-center header-table">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `);
+
+      const asistenciaDetalle = $(`
+        <div class="panelAsistencias px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">Asistencia de Curso</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="asistencias-panel mt-3">
+            <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}">
+              <span>Registrar Asistencia</span>
+            </button>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th class="text-center header-table">Asistió</th>
+                    <th class="text-start header-table">Empleado</th>
+                    <th class="text-center header-table">Resultado</th>
+                    <th class="text-center header-table">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `);
+
+      function togglePanel(item, panel, btn, tipo = "descripcion") {
+        btn.on("click", function (e) {
+          e.stopPropagation();
+
+          $(".panelCriterios, .panelCertificados, .panelAsistencias").not(panel).slideUp(200).removeClass("mostrar");
+
+          if (tipo === "descripcion") {
+            $(".btn-ver-descripcion i").not(btn.find("i"))
+              .removeClass("bi-chevron-up")
+              .addClass("bi-chevron-down");
           }
-          <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.nombre || 'Sin nombre'}">
-            ${element.nombre || 'Sin nombre'}
-          </div>
-        </div>
 
-        <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
-          ${fechaInicioFormateada} -- ${fechaFinalizacionFormateada}
-        </div>
+          panel.slideToggle(200, function () {
+            panel.toggleClass("mostrar", panel.is(":visible"));
+          });
 
-        <div class="d-flex align-items-center" style="gap: 20px;">
-          <div class="badge ${claseModalidad}" title="${modalidadNombre}">${modalidadNombre}</div>
-          <button class="btn-ver-asistencias icono-asistencia" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
-            <i class="bi-calendar-check"></i>
-          </button>
-          <button class="btn-ver-certificados icono-certificado" style="background: none; border: none;" data-tippy-content="Ver Certificados">
-            <i class="bi-award"></i>
-          </button>
-          <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-        </div>
-      </div>
-    `);
-
-    const descripcionDetalle = $(`
-      <div class="panelCriterios px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">${element.nombre}</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <tbody>
-              <tr>
-                <td id="DescripcionCurso_${element.id}">${element.descripcion ?? "Sin descripción"}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `);
-
-    const asistenciaDetalle = $(`
-      <div class="panelAsistencias px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Asistencia de Curso</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="asistencias-panel mt-3">
-          <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}">
-            <span>Registrar Asistencia</span>
-          </button>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th class="text-center header-table">Asistió</th>
-                  <th class="text-start header-table">Empleado</th>
-                  <th class="text-center header-table">Resultado</th>
-                  <th class="text-center header-table">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    `);
-
-    const certificadoDetalle = $(`
-      <div class="panelCertificados px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Certificados</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="certificados-panel mt-3">
-          <button class="btn btn-agregar-certificado mb-2 crearCertificado" data-curso-id="${element.id}">
-            <span>Cargar Certificado</span>
-          </button>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th class="text-start header-table">Empleado</th>
-                  <th class="text-center header-table">Documento Descargable</th>
-                  <th class="text-center header-table">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    `);
-
-    function togglePanel(item, panel, btn, otrosPanels = []) {
-      btn.on("click", function(e) {
-        e.stopPropagation();
-
-        otrosPanels.forEach(p => p.slideUp(200).removeClass("mostrar"));
-
-        panel.slideToggle(200, function() {
-          panel.toggleClass("mostrar", panel.is(":visible"));
+          if (tipo === "descripcion") {
+            const icono = btn.find("i");
+            if (icono.hasClass("bi-chevron-down") || icono.hasClass("bi-chevron-up")) {
+              icono.toggleClass("bi-chevron-down bi-chevron-up");
+            }
+          }
         });
+      }
 
-        const icono = btn.find("i");
-        if (icono.hasClass("bi-chevron-down") || icono.hasClass("bi-chevron-up")) {
-          icono.toggleClass("bi-chevron-down bi-chevron-up");
-        }
-      });
+      togglePanel(item, descripcionDetalle, item.find(".btn-ver-descripcion"), "descripcion");
+      togglePanel(item, certificadoDetalle, item.find(".btn-ver-certificados"), "fijo");
+      togglePanel(item, asistenciaDetalle, item.find(".btn-ver-asistencias"), "fijo");
+
+
+      contenedor.append(item, descripcionDetalle, certificadoDetalle, asistenciaDetalle);
+
+      ObtenerAsistencia(element.id);
+      ObtenerCertificados(element.id);
+    }
+    else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+      const resultado = parseFloat(element.resultado);
+      const aprobado = !isNaN(resultado) && resultado >= 6;
+      const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
+      const borderColor = aprobado ? "border-bottom: 3px solid #28a745;" : "border-bottom: 3px solid #dc3545;";
+
+      const descripcionCorta = element.descripcion
+        ? element.descripcion.length > 100
+          ? element.descripcion.substring(0, 100) + "..."
+          : element.descripcion
+        : "Sin descripción";
+
+      const fechaIni = new Date(element.fechaInicio).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const fechaFin = new Date(element.fechaFinalizacion).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+      const botonDescargar = aprobado && element.certificadoId
+        ? `
+        <p class="text-muted d-flex align-items-center gap-2 mb-2">
+            <button onclick="DescargarDocumento(${element.certificadoId})" 
+                    class="document-link d-flex align-items-center gap-1" 
+                    data-tippy-content="Descargar" 
+                    style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+                <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+                <span>Descargar</span>
+            </button>
+        </p>
+        `
+        : "Certificado no disponible";
+
+      const card = $(`
+          <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
+              <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
+                  <h5 class="fw-bold mb-2" title="${element.nombre || 'Sin nombre'}">${element.nombre || 'Sin nombre'}</h5>
+                  <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
+
+                  <!-- Contenedor modalidad + fecha -->
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+                      <span class="badge ${modalidadColor[modalidadNombre]} mb-1 mb-md-0">${modalidadNombre}</span>
+                      <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"}</span>
+                      ${botonDescargar}
+                  </div>
+              </div>
+          </div>
+      `);
+
+      contenedor.append(card);
     }
 
-    togglePanel(item, descripcionDetalle, item.find(".btn-ver-descripcion"), [asistenciaDetalle, certificadoDetalle]);
-    togglePanel(item, asistenciaDetalle, item.find(".btn-ver-asistencias"), [descripcionDetalle, certificadoDetalle]);
-    togglePanel(item, certificadoDetalle, item.find(".btn-ver-certificados"), [descripcionDetalle, asistenciaDetalle]);
-
-    contenedor.append(item);
-    contenedor.append(descripcionDetalle);
-    contenedor.append(asistenciaDetalle);
-    contenedor.append(certificadoDetalle);
-
-    ObtenerAsistencia(element.id);
-    ObtenerCertificados(element.id);
   });
 
   tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,149 +400,165 @@ function MostrarCursosMobile(data) {
   const contenedor = document.getElementById("contenedorCursos");
   contenedor.innerHTML = "";
 
+  const rol = getRol()?.toUpperCase();
+
   if (!Array.isArray(data) || data.length === 0) {
     contenedor.innerHTML =
       "<div class='text-center text-muted py-3'>No hay cursos para mostrar.</div>";
     return;
   }
 
-  const modalidades = {
-    1: "PRESENCIAL",
-    2: "VIRTUAL",
-    3: "MIXTO",
-  };
-
-  const modalidadColor = {
-    PRESENCIAL: "badge-presencial",
-    VIRTUAL: "badge-virtual",
-    MIXTO: "badge-mixto",
-  };
+  const modalidades = { 1: "PRESENCIAL", 2: "VIRTUAL", 3: "MIXTO" };
+  const modalidadColor = { PRESENCIAL: "badge-presencial", VIRTUAL: "badge-virtual", MIXTO: "badge-mixto" };
 
   data.forEach((element) => {
     const modalidadNombre = modalidades[element.modalidad] || "SIN MODALIDAD";
-    const claseModalidad =
-      modalidadColor[modalidadNombre] || "bg-light text-dark";
+    const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
 
-    const fechaInicio = element.fechaInicio
-      ? new Date(element.fechaInicio)
-      : null;
-    const fechaFin = element.fechaFinalizacion
-      ? new Date(element.fechaFinalizacion)
-      : null;
+    const fechaInicio = element.fechaInicio ? new Date(element.fechaInicio) : null;
+    const fechaFin = element.fechaFinalizacion ? new Date(element.fechaFinalizacion) : null;
 
-    const fechaInicioStr = fechaInicio
-      ? fechaInicio.toLocaleDateString("es-AR")
-      : "Sin fecha";
-    const fechaFinStr = fechaFin
-      ? fechaFin.toLocaleDateString("es-AR")
-      : "Sin fecha";
+    const fechaInicioStr = fechaInicio ? fechaInicio.toLocaleDateString("es-AR") : "Sin fecha";
+    const fechaFinStr = fechaFin ? fechaFin.toLocaleDateString("es-AR") : "Sin fecha";
 
-    const card = document.createElement("div");
-    card.className =
-      "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
-    card.innerHTML = `
-      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
-        <div class="flex-grow-1 d-flex flex-column">
-          <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
-            ${element.nombre || "Sin nombre"}
-          </h5>
-          <small class="text-muted mb-1" style="font-size: 0.90rem;">
-            <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
-          </small>
-          <span class="badge ${claseModalidad} my-2" style="width: fit-content; font-size: 1rem;">
-            ${modalidadNombre}
-          </span>
-        </div>
+    if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+      let botonesIzquierda = `
+        <button class="btn-ver-asistencias icono-asistencia-mobile" style="background:none;border:none;" data-tippy-content="Ver Asistencias">
+          <i class="bi-calendar-check"></i>
+        </button>
+        <button class="btn-ver-certificados icono-certificado-mobile" style="background:none;border:none;" data-tippy-content="Ver Certificados">
+          <i class="bi-award"></i>
+        </button>
+      `;
+      let botonesDerecha = `
+        <button class="btn-editar me-1" style="background:none;border:none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+          <i class="bi bi-pencil-square icono-editar"></i>
+        </button>
+        <button class="btn-ver-descripcion" style="background:none;border:none;" data-tippy-content="Detalle">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+      `;
 
-        <div class="d-flex justify-content-between mt-2 align-items-center">
-          <div>
-            <button class="btn-ver-asistencias icono-asistencia-mobile" style="background: none; border: none;" data-tippy-content="Ver Asistencias">
-              <i class="bi-calendar-check"></i>
-            </button>
-
-            <button class="btn-ver-certificados icono-certificado-mobile" style="background: none; border: none;" data-tippy-content="Ver Certificados">
-              <i class="bi-award"></i>
-            </button>
+      const card = document.createElement("div");
+      card.className = "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
+      card.innerHTML = `
+        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
+          <div class="flex-grow-1 d-flex flex-column">
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.nombre || "Sin nombre"}</h5>
+            <small class="text-muted mb-1" style="font-size: 0.90rem;">
+              <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
+            </small>
+            <span class="badge ${claseModalidad} my-2" style="width: fit-content; font-size: 1rem;">${modalidadNombre}</span>
           </div>
-          <div>
-            <button class="btn-editar me-1 d-none" style="background: none; border: none;" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
-            <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+          <div class="d-flex justify-content-between mt-2 align-items-center">
+            <div>${botonesIzquierda}</div>
+            <div>${botonesDerecha}</div>
           </div>
         </div>
-      </div>
-    `;
+      `;
 
-    const descripcionDetalle = $(` 
-      <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">${element.nombre}</h3>
+      const descripcionDetalle = $(` 
+        <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
+          <div class="mb-3">
+            <h3 class="titulo-sub-seccion">${element.nombre}</h3>
+          </div>
+          <hr style="margin-bottom: 1rem;" />
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td id="DescripcionCurso_${element.id}" style="white-space: normal; word-wrap: break-word;">
+                    ${element.descripcion ?? "Sin descripción"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <tbody>
-              <tr>
-                <td id="DescripcionCurso_${element.id}" style="white-space: normal; word-wrap: break-word;">
-                  ${element.descripcion ?? "Sin descripción"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `);
+      `);
 
-    $(card)
-      .find(".btn-ver-descripcion")
-      .on("click", function () {
+      $(card).find(".btn-ver-descripcion").on("click", function () {
         $(".panelDescripcionCurso:visible").not(descripcionDetalle).slideUp(200);
-
         descripcionDetalle.slideToggle(200);
 
         const icono = $(this).find("i");
-        $(".btn-ver-descripcion i")
-          .not(icono)
-          .removeClass("bi-chevron-up")
-          .addClass("bi-chevron-down");
+        $(".btn-ver-descripcion i").not(icono).removeClass("bi-chevron-up").addClass("bi-chevron-down");
         icono.toggleClass("bi-chevron-down bi-chevron-up");
       });
 
-    $(card).find(".btn-ver-certificados").on("click", function () {
-      cursoIdSeleccionado = element.id;
-      ObtenerCertificados(element.id);
+      $(card).find(".btn-ver-certificados").on("click", function () {
+        cursoIdSeleccionado = element.id;
+        ObtenerCertificados(element.id);
 
-      const offcanvasAsist = bootstrap.Offcanvas.getInstance(
-        document.getElementById("offcanvasAsistencias")
-      );
-      if (offcanvasAsist) offcanvasAsist.hide();
+        const offcanvasAsist = bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasAsistencias"));
+        if (offcanvasAsist) offcanvasAsist.hide();
 
-      const offcanvas = new bootstrap.Offcanvas(
-        document.getElementById("offcanvasCertificados")
-      );
-      offcanvas.show();
-    });
+        const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasCertificados"));
+        offcanvas.show();
+      });
 
-    $(card).find(".btn-ver-asistencias").on("click", function () {
-      cursoIdSeleccionado = element.id;
-      ObtenerAsistencia(element.id);
+      $(card).find(".btn-ver-asistencias").on("click", function () {
+        cursoIdSeleccionado = element.id;
+        ObtenerAsistencia(element.id);
 
-      const offcanvasCert = bootstrap.Offcanvas.getInstance(
-        document.getElementById("offcanvasCertificados")
-      );
-      if (offcanvasCert) offcanvasCert.hide();
+        const offcanvasCert = bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasCertificados"));
+        if (offcanvasCert) offcanvasCert.hide();
 
-      const offcanvas = new bootstrap.Offcanvas(
-        document.getElementById("offcanvasAsistencias")
-      );
-      offcanvas.show();
-    });
+        const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasAsistencias"));
+        offcanvas.show();
+      });
 
-    contenedor.appendChild(card);
-    contenedor.appendChild(descripcionDetalle[0]);
+      contenedor.appendChild(card);
+      contenedor.appendChild(descripcionDetalle[0]);
+
+    } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+      const resultado = parseFloat(element.resultado);
+      const aprobado = !isNaN(resultado) && resultado >= 6;
+      const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
+      const borderColor = aprobado ? "border-bottom: 3px solid #28a745;" : "border-bottom: 3px solid #dc3545;";
+
+      const descripcionCorta = element.descripcion
+        ? element.descripcion.length > 100
+          ? element.descripcion.substring(0, 100) + "..."
+          : element.descripcion
+        : "Sin descripción";
+
+      const fechaIni = fechaInicioStr;
+      const fechaFin = fechaFinStr;
+
+      const botonDescargar = aprobado && element.certificadoId
+        ? `
+        <p class="text-muted d-flex align-items-center gap-2 mb-2">
+            <button onclick="DescargarDocumento(${element.certificadoId})" 
+                    class="document-link d-flex align-items-center gap-1" 
+                    data-tippy-content="Descargar" 
+                    style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+                <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+                <span>Descargar</span>
+            </button>
+        </p>
+        `
+        : "";
+
+      const card = $(` 
+        <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
+          <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
+            <h5 class="fw-bold mb-2" title="${element.nombre || 'Sin nombre'}">${element.nombre || 'Sin nombre'}</h5>
+            <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+              <span class="badge ${modalidadColor[modalidadNombre]} mb-1 mb-md-0">${modalidadNombre}</span>
+              <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"}</span>
+              ${botonDescargar}
+            </div>
+          </div>
+        </div>
+      `);
+
+      $(contenedor).append(card);
+    }
   });
 
   tippy("[data-tippy-content]", {
@@ -1457,7 +1544,7 @@ function MostrarCertificados(cursoId, data) {
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
-                <button class='btn-eliminar'  style='background: none; border: none;' 
+                <button class='btn-eliminar'  style='background: none; border: none;'
                          onclick='EliminarCertificado(${item.id})'
                         data-tippy-content="Eliminar">
                   <i class='bi bi-trash3 icono-elimina-detalle'></i>
@@ -1498,7 +1585,7 @@ function MostrarCertificados(cursoId, data) {
           <td class='align-middle nombre-empleado'>${item.empleado.nombreCompleto}</td>
           <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
           <td class='d-flex justify-content-center align-items-center'>
-            <button class='btn-eliminar' style='background: none; border: none;' 
+             <button class='btn-eliminar' style='background: none; border: none;' 
               onclick='EliminarCertificado(${item.id})' data-tippy-content='Eliminar'>
               <i class='bi bi-trash3 icono-elimina-detalle'></i>
             </button>
@@ -1513,6 +1600,8 @@ function MostrarCertificados(cursoId, data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
+
+  MostrarOpcionesCursosPorRol();
 }
 
 
@@ -1816,10 +1905,27 @@ async function EliminarSiCertificado(id) {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LAS OPCIONES DE CURSO POR ROL /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MostrarOpcionesCursosPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    $("#cardEstadisticasCursos, #contenedorFiltrosCursos, #btnMostrarGenerar, #btnNuevoCurso").removeClass("d-none");
+
+  } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+    $("#tituloCursos").text("Visualizá los cursos en los que participaste y descargá los certificados disponibles.");
+  }
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 ObtenerCertificados(cursoIdSeleccionado);
-
+MostrarOpcionesCursosPorRol();
 
 

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -45,46 +47,84 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE CURSOS ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<CursoVista>>> FiltroCurso([FromBody] FiltroCurso filtro)
         {
             await ActualizarCursosFinalizados();
 
-            var obtenerCursos = _context.Curso.AsNoTracking().AsQueryable();
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var obtenerCursos = _context.Curso
+                .Include(c => c.AsistenciaCapacitacion)
+                .Include(c => c.Certificado)
+                .AsNoTracking()
+                .AsQueryable();
+
+            Empleado empleado = null;
+
+            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+                empleado = await _context.Empleado
+                    .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+                    .FirstOrDefaultAsync();
+
+                if (empleado == null)
+                    return Ok(new List<CursoVista>());
+
+                var cursosConAsistencia = await _context.AsistenciaCapacitacion
+                    .Where(a => a.EmpleadoId == empleado.Id && a.Asistencia)
+                    .Select(a => a.CursoId)
+                    .ToListAsync();
+
+                obtenerCursos = obtenerCursos.Where(c => cursosConAsistencia.Contains(c.Id));
+            }
 
             if (!string.IsNullOrWhiteSpace(filtro.NombreCurso))
-            {
-                string nombre = filtro.NombreCurso.Trim();
-                obtenerCursos = obtenerCursos.Where(c => EF.Functions.Like(c.Nombre, $"%{nombre}%"));
-            }
+                obtenerCursos = obtenerCursos.Where(c => EF.Functions.Like(c.Nombre, $"%{filtro.NombreCurso.Trim()}%"));
 
             if (filtro.Modalidad.HasValue && filtro.Modalidad.Value != 0)
-            {
                 obtenerCursos = obtenerCursos.Where(c => (int)c.Modalidad == filtro.Modalidad.Value);
-            }
 
             if (filtro.Fecha.HasValue)
-            {
-                var fecha = filtro.Fecha.Value.Date;
-                obtenerCursos = obtenerCursos.Where(c => c.FechaInicio.Date == fecha);
-            }
+                obtenerCursos = obtenerCursos.Where(c => c.FechaInicio.Date == filtro.Fecha.Value.Date);
 
             var listaFiltrada = await obtenerCursos
-                .OrderBy(c => c.Finalizado)                 
-                .ThenBy(c => c.FechaInicio)                 
-                .ThenBy(c => c.Modalidad)                   
-                .ThenBy(c => c.Nombre)                    
-                .Select(c => new CursoVista
-                {
-                    Id = c.Id,
-                    FechaInicio = c.FechaInicio,
-                    Modalidad = c.Modalidad,
-                    Nombre = c.Nombre,
-                    Descripcion = c.Descripcion,
-                    FechaFinalizacion = c.FechaFinalizacion,
-                    Finalizado = c.Finalizado
-                })
-                .ToListAsync();
+    .OrderBy(c => c.Finalizado)
+    .ThenBy(c => c.FechaInicio)
+    .ThenBy(c => c.Modalidad)
+    .ThenBy(c => c.Nombre)
+    .Select(c => new CursoVista
+    {
+        Id = c.Id,
+        Nombre = c.Nombre,
+        Descripcion = c.Descripcion,
+        FechaInicio = c.FechaInicio,
+        FechaFinalizacion = c.FechaFinalizacion,
+        Modalidad = c.Modalidad,
+        Finalizado = c.Finalizado,
+
+        Resultado = empleado != null
+            ? c.AsistenciaCapacitacion
+                .Where(a => a.EmpleadoId == empleado.Id)
+                .Select(a => a.Resultado)
+                .FirstOrDefault()
+            : (int?)null,
+
+        // Obtenemos solo el ID del certificado aprobado
+        CertificadoId = empleado != null
+            ? c.Certificado
+                .Where(cert => cert.EmpleadoId == empleado.Id)
+                .Select(cert => cert.Id)
+                .FirstOrDefault()
+            : (int?)null
+    })
+    .ToListAsync();
+
 
             return Ok(listaFiltrada);
         }
@@ -93,6 +133,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UN NUEVO CURSO //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult<Curso>> PostCurso(Curso curso)
         {
@@ -135,6 +176,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UN CURSO ///////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCurso(int id, Curso curso)
         {
@@ -186,6 +228,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UN CURSO POR ID /////////////////////////////////////////////////////// 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Curso>> GetCurso(int id)
         {

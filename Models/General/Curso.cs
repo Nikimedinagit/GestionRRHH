@@ -6,7 +6,7 @@ using NuGet.Common;
 namespace API_RRHH_TESIS2025.Models.General
 {
     public class Curso
-    {   
+    {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// TABLA DE CURSOS //////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +42,9 @@ namespace API_RRHH_TESIS2025.Models.General
         public DateTime FechaFinalizacion { get; set; }
         public Modalidades Modalidad { get; set; }
         public bool Finalizado { get; set; }
+        public int? Resultado { get; set; }
+        public string CertificadoUrl { get; set; }
+        public int? CertificadoId { get; set; }
     }
 
 

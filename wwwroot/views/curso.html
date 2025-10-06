@@ -4,7 +4,7 @@
   <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Seguimiento de Cursos</h3>
-    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+    <p class="text-muted mb-0" style="font-size: 0.95rem;" id="tituloCursos">
       Visualizá la información de los cursos, controlá la asistencia de los participantes,
       emití certificados y accedé al detalle de cada capacitación.
     </p>
@@ -20,7 +20,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-      <button class="btn btn-agregar" onclick="abrirPanelCursos()">
+      <button class="btn btn-agregar d-none" onclick="abrirPanelCursos()" id="btnNuevoCurso">
         <i class="fa-solid fa-square-plus me-1"></i>
         <span>Nuevo Curso</span>
       </button>
@@ -31,7 +31,7 @@
           <span>Filtros</span>
         </button>
 
-        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+        <button id="btnMostrarGenerar" class="btn btn-informe d-none" onclick="AbrilPanelGenerar('contenedorGenerar')">
           <i class="fa-solid fa-file-lines me-1"></i>
           <span>Generar</span>
         </button>
@@ -81,7 +81,7 @@
 
 
     <!-- ================================ Contenedor de tarjetas de cursos ===================================== -->
-    <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+    <div class="d-flex flex-wrap justify-content-between d-none" style="gap: 1rem;" id="cardEstadisticasCursos">
 
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
