@@ -136,125 +136,120 @@ function MostrarEvaluacionesDesktop(data) {
   const contenedor = $("#contenedorEvaluaciones");
   contenedor.empty();
 
-  if (data.length === 0) {
-    contenedor.append(
-      "<div class='text-center text-muted py-3'>No hay evaluaciones para mostrar.</div>"
-    );
+  const rol = getRol()?.toUpperCase();
+
+  if (!Array.isArray(data) || data.length === 0) {
+    contenedor.append("<div class='text-center text-muted py-3'>No hay evaluaciones para mostrar.</div>");
     return;
   }
 
-  if (Array.isArray(data)) {
-    data.forEach(element => {
-      const nota = Number(element.calificacion);
-      const fecha = element.fecha
-        ? element.fecha.split("T")[0].split("-").reverse().join("/")
-        : "Sin fecha";
+  data.forEach(element => {
+    const nota = Number(element.calificacion);
+    const fecha = element.fecha
+      ? element.fecha.split("T")[0].split("-").reverse().join("/")
+      : "Sin fecha";
 
-      let etiqueta = "Regular";
-      let badgeClass = "badge-regular";
+    let etiqueta = "Regular";
+    let badgeClass = "badge-regular";
 
-      if (nota >= 9) {
-        etiqueta = "Excelente";
-        badgeClass = "badge-excelente";
-      } else if (nota >= 7) {
-        etiqueta = "Muy Buena";
-        badgeClass = "badge-muybuena";
-      } else if (nota >= 5) {
-        etiqueta = "Buena";
-        badgeClass = "badge-buena";
-      }
+    if (nota >= 9) {
+      etiqueta = "Excelente";
+      badgeClass = "badge-excelente";
+    } else if (nota >= 7) {
+      etiqueta = "Muy Buena";
+      badgeClass = "badge-muybuena";
+    } else if (nota >= 5) {
+      etiqueta = "Buena";
+      badgeClass = "badge-buena";
+    }
 
-      const item = $(`
-        <div class="evaluacion-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center" style="gap: 20px;">
-            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
+    let claseBorde = "";
+    switch (element.claseBorde) {
+      case "green": claseBorde = "border-success"; break;
+      case "yellow": claseBorde = "border-warning"; break;
+      default: claseBorde = "";
+    }
 
-            <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-              <div class="fw-bold" title="${element.empleadoNombre || 'Sin nombre'}">
-                ${element.empleadoNombre || 'Sin nombre'}
-              </div>
-              <div class="text-muted" style="opacity: 0.6;" title="${element.empleadoPuesto || 'Sin puesto'}">
-                ${element.empleadoPuesto || 'Sin puesto'}
-              </div>
-            </div>
-          </div>
+    const botonEditarHTML = element.esEditable
+      ? `<button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+           <i class="bi bi-pencil-square icono-editar"></i>
+         </button>`
+      : "";
 
-          <div class="d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
-            <span style="margin-right: 5px;">&bull;</span>
-            Fue evaluado el ${fecha}
-          </div>
+    const nombreMostrar = (rol === "ADMINISTRADOR" || element.esPropia) ? element.empleadoNombre : element.usuarioNombreEvaluador;
+    const rolMostrar = (rol === "ADMINISTRADOR" || element.esPropia) ? element.empleadoPuesto : element.usuarioRolEvaluador;
 
-          <div class="d-flex align-items-center" style="min-width: 220px; justify-content: flex-end; gap: 10px;">
-            <div class="d-flex align-items-center" style="margin-right: 20px;">
-              <div class="text-dark fw-bold" style="margin-right: 10px;">${nota}/10</div>
-              <div class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</div>
-            </div>
-            <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+    const item = $(`
+      <div class="evaluacion-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : "#dee2e6"};">
+        <div class="d-flex align-items-center" style="gap: 20px;">
+          ${botonEditarHTML}
+          <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <div class="fw-bold" title="${nombreMostrar}">${nombreMostrar}</div>
+            <div class="text-muted" style="opacity: 0.6;" title="${rolMostrar}">${rolMostrar}</div>
           </div>
         </div>
-      `);
-
-      const detalleHTML = $(`
-        <div class="panelCriterios px-3 pb-2" style="display: none;">
-          <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+        <div class="d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
+          <span style="margin-right: 5px;">&bull;</span>
+          Fecha de evaluación: ${fecha}
+        </div>
+        <div class="d-flex align-items-center" style="min-width: 220px; justify-content: flex-end; gap: 10px;">
+          <div class="d-flex align-items-center" style="margin-right: 20px;">
+            <div class="text-dark fw-bold" style="margin-right: 10px;">${nota}/10</div>
+            <div class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</div>
           </div>
-          <hr style="margin-bottom: 1rem;"/>
-          <div class="criterios-panel mt-3">
-            <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
-              <span>Agregar Criterio</span>
-            </button>
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <colgroup>
-                  <col style="width: 25%" />
-                  <col style="width: 65%" />
-                  <col style="width: 10%" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th class="text-start header-table">Criterio</th>
-                    <th class="text-start header-table">Descripción</th>
-                    <th class="text-center header-table">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-                  <!-- Se insertan dinámicamente -->
-                </tbody>
-              </table>
-            </div>
+          <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+        </div>
+      </div>
+    `);
+
+    const detalleHTML = $(`
+      <div class="panelCriterios px-3 pb-2" style="display: none;">
+        <div class="mb-3">
+          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
+        </div>
+        <hr style="margin-bottom: 1rem;"/>
+        <div class="criterios-panel mt-3">
+          ${element.esEditable ? `<button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}">Agregar Criterio</button>` : ""}
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <colgroup>
+                <col style="width: 25%" />
+                <col style="width: 65%" />
+                <col style="width: 10%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-start header-table">Criterio</th>
+                  <th class="text-start header-table">Descripción</th>
+                  <th class="text-center header-table">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}"></tbody>
+            </table>
           </div>
         </div>
-      `);
+      </div>
+    `);
 
-      item.find(".toggle-detalle").on("click", function () {
-        const iconoChevron = $(this).find("i");
+    item.find(".toggle-detalle").on("click", function () {
+      const iconoChevron = $(this).find("i");
+      contenedor.find(".panelCriterios:visible").not(detalleHTML).slideUp(200).removeClass("mostrar");
+      contenedor.find(".toggle-detalle i").not(iconoChevron).removeClass("bi-chevron-up").addClass("bi-chevron-down");
+      contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
 
-        contenedor.find(".panelCriterios:visible").not(detalleHTML).slideUp(200).removeClass("mostrar");
-        contenedor.find(".toggle-detalle i")
-          .not(iconoChevron)
-          .removeClass("bi-chevron-up")
-          .addClass("bi-chevron-down");
-        contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
-
-        detalleHTML.stop(true, true).slideToggle(200, function () {
-          detalleHTML.toggleClass("mostrar", detalleHTML.is(":visible"));
-        });
-        iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
-        const expanded = $(this).attr("aria-expanded") === "true";
-        $(this).attr("aria-expanded", !expanded);
+      detalleHTML.stop(true, true).slideToggle(200, function () {
+        detalleHTML.toggleClass("mostrar", detalleHTML.is(":visible"));
       });
-
-      contenedor.append(item);
-      contenedor.append(detalleHTML);
-
-      ObtenerCriterioDeEvaluacion(element.id);
+      iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
+      $(this).attr("aria-expanded", $(this).attr("aria-expanded") !== "true");
     });
-  }
+
+    contenedor.append(item);
+    contenedor.append(detalleHTML);
+    ObtenerCriterioDeEvaluacion(element.id);
+  });
 
   tippy("[data-tippy-content]", {
     animation: "scale",
@@ -434,7 +429,7 @@ function BuscarEvaluacionId() {
 function LimpiarModalEvaluacion() {
   document.getElementById("IdEvaluacion").value = "";
   const inputCalificacion = document.getElementById("CalificacionEvaluacion");
-  inputCalificacion.value = 0 ;
+  inputCalificacion.value = 0;
   const inputEmpleado = document.getElementById("EmpleadoId");
   inputEmpleado.value = "";
   const selectTipoCriterio = document.getElementById("IdTipoCriterio");
@@ -489,7 +484,7 @@ function ValidarFormularioEvaluacion() {
     inputErrorCalificacion.style.display = "block";
     inputErrorCalificacion.textContent = "Campo obligatorio.";
     esValid = false;
-  } 
+  }
 
   if (empleadoId === "") {
     inputEmpleado.classList.add("is-invalid");
@@ -892,7 +887,7 @@ document.getElementById("IdTipoCriterio").addEventListener("change", () => {
   errorTipoCriterio.style.display = "none";
   errorTipoCriterio.textContent = "";
 
-  if (valor === "" || valor === "0") { 
+  if (valor === "" || valor === "0") {
     selectTipoCriterio.classList.add("is-invalid");
     errorTipoCriterio.style.display = "block";
     errorTipoCriterio.textContent = "Campo obligatorio.";
@@ -1046,7 +1041,6 @@ async function EliminarSiCriterio(id, evaluacionId) {
       },
     });
 
-    // Actualizamos la tabla correcta usando el evaluacionId que viene de la función
     ObtenerCriterioDeEvaluacion(evaluacionId);
 
   } catch (error) {
@@ -1056,7 +1050,22 @@ async function EliminarSiCriterio(id, evaluacionId) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LAS OPCIONES DE CURSO POR ROL /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MostrarOpcionesEvaluacionesPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+  if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR") {
+    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
+  } else if (rol === "EMPLEADO") {
+    $("#tituloEvaluaciones").text("Visualizá tu progreso, resultados y estado de las evaluaciones realizadas.");
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA EVALUACIONES ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+MostrarOpcionesEvaluacionesPorRol();
 ObtenerEvaluaciones();

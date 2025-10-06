@@ -29,15 +29,44 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA EVALUACIONES SEGUN SUS FILTROS /////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<EvaluacionVista>>> EvaluacionFiltro([FromBody] EvaluacionFiltro filtro)
         {
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var usuarioActual = await _context.Users.FindAsync(userId);
+            var emailActual = usuarioActual?.Email?.Trim().ToLower();
+
             var obtenerEvaluaciones = _context.Evaluacion
                 .Include(e => e.Empleado)
                     .ThenInclude(emp => emp.Puesto)
                 .Include(e => e.CriterioDeEvaluacion)
                     .ThenInclude(ce => ce.TipoDeCriterio)
                 .AsQueryable();
+
+            if (rolActual == "EMPLEADO")
+            {
+                var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+                if (empleado != null)
+                    obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.EmpleadoId == empleado.Id);
+                else
+                    return Ok(new List<EvaluacionVista>());
+            }
+
+            if (rolActual == "SUPERVISOR")
+            {
+                var empleado = await _context.Empleado.Include(e => e.Puesto)
+                                                      .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+                if (empleado != null)
+                {
+                    var sectorId = empleado.Puesto.SectorId;
+                    obtenerEvaluaciones = obtenerEvaluaciones
+                        .Where(e => e.Empleado.Puesto.SectorId == sectorId || e.Empleado.Email.Trim().ToLower() == emailActual);
+                }
+                else return Ok(new List<EvaluacionVista>());
+            }
 
             if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
                 obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
@@ -51,29 +80,95 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             if (filtro.Calificacion.HasValue)
             {
-                switch (filtro.Calificacion.Value)
+                obtenerEvaluaciones = filtro.Calificacion.Value switch
                 {
-                    case 1: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion < 5); break;
-                    case 2: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 5 && e.Calificacion < 7); break;
-                    case 3: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 7 && e.Calificacion < 9); break;
-                    case 4: obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Calificacion >= 9); break;
-                }
+                    1 => obtenerEvaluaciones.Where(e => e.Calificacion < 5),
+                    2 => obtenerEvaluaciones.Where(e => e.Calificacion >= 5 && e.Calificacion < 7),
+                    3 => obtenerEvaluaciones.Where(e => e.Calificacion >= 7 && e.Calificacion < 9),
+                    4 => obtenerEvaluaciones.Where(e => e.Calificacion >= 9),
+                    _ => obtenerEvaluaciones
+                };
             }
 
-            var listaVista = await obtenerEvaluaciones
+            var evaluaciones = await obtenerEvaluaciones
                 .OrderBy(e => e.Fecha)
                 .ThenByDescending(e => e.Calificacion)
                 .ThenByDescending(e => e.Empleado.NombreCompleto)
-                .Select(e => new EvaluacionVista
+                .ToListAsync();
+
+            var listaVista = new List<EvaluacionVista>();
+
+            foreach (var e in evaluaciones)
+            {
+                var usuarioEvaluador = await _context.Users.FindAsync(e.UsuarioId);
+                var rolesEvaluador = usuarioEvaluador != null
+                    ? await _userManager.GetRolesAsync(usuarioEvaluador)
+                    : new List<string>();
+                var rolEvaluador = rolesEvaluador.FirstOrDefault() ?? "Sin rol";
+
+                bool esEditable = false;
+                string claseBorde = "";
+                bool esPropia = false;
+
+                switch (rolActual)
+                {
+                    case "ADMINISTRADOR":
+                        esEditable = true;
+                        claseBorde = "";
+                        esPropia = true;
+                        break;
+                    case "RRHH":
+                        if (e.UsuarioId == userId)
+                        {
+                            esEditable = true;
+                            claseBorde = "green";
+                            esPropia = true;
+                        }
+                        else
+                        {
+                            esEditable = false;
+                            claseBorde = "yellow";
+                            esPropia = false;
+                        }
+                        break;
+                    case "SUPERVISOR":
+                        if (e.Empleado.Puesto.SectorId == (await _context.Empleado.FirstOrDefaultAsync(emp => emp.Email.Trim().ToLower() == emailActual))?.Puesto.SectorId
+                            && e.UsuarioId == userId)
+                        {
+                            esEditable = true;
+                            claseBorde = "green";
+                            esPropia = true;
+                        }
+                        else
+                        {
+                            esEditable = false;
+                            claseBorde = "yellow";
+                            esPropia = false;
+                        }
+                        break;
+                    case "EMPLEADO":
+                        esEditable = false;
+                        claseBorde = "";
+                        esPropia = false;
+                        break;
+                }
+
+                listaVista.Add(new EvaluacionVista
                 {
                     Id = e.Id,
                     Fecha = e.Fecha,
                     Calificacion = e.Calificacion,
                     EmpleadoId = e.EmpleadoId.ToString(),
                     EmpleadoNombre = e.Empleado.NombreCompleto,
-                    EmpleadoPuesto = e.Empleado.Puesto.Descripcion
-                })
-                .ToListAsync();
+                    EmpleadoPuesto = e.Empleado.Puesto.Descripcion,
+                    UsuarioNombreEvaluador = usuarioEvaluador?.NombreCompleto ?? "Sin evaluador",
+                    UsuarioRolEvaluador = rolEvaluador,
+                    EsEditable = esEditable,
+                    ClaseBorde = claseBorde,
+                    EsPropia = esPropia,
+                    UsuarioId = e.UsuarioId
+                });
+            }
 
             return Ok(listaVista);
         }
@@ -82,23 +177,66 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UNA NUEVA EVALUACION ////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpPost]
         public async Task<ActionResult<Evaluacion>> PostEvaluacion(Evaluacion evaluacion)
         {
-            bool evaluacionExistente = await _context.Evaluacion
-                .AnyAsync(e => e.EmpleadoId == evaluacion.EmpleadoId
-                            && e.Fecha.Month == DateTime.Now.Month
-                            && e.Fecha.Year == DateTime.Now.Year);
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (rolActual == "EMPLEADO")
+            {
+                return Forbid("Los empleados no pueden crear evaluaciones.");
+            }
+
+            var usuario = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (usuario == null)
+                return Unauthorized("Usuario no encontrado.");
+
+            var fechaActual = DateTime.Now;
+            bool evaluacionExistente = false;
+
+            if (rolActual == "RRHH")
+            {
+                evaluacionExistente = await _context.Evaluacion.AnyAsync(e =>
+                    e.EmpleadoId == evaluacion.EmpleadoId &&
+                    e.UsuarioId == userId &&
+                    e.Fecha.Month == fechaActual.Month &&
+                    e.Fecha.Year == fechaActual.Year);
+            }
+            else if (rolActual == "SUPERVISOR")
+            {
+                var calendario = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+                int semanaActual = calendario.GetWeekOfYear(fechaActual,
+                    System.Globalization.CalendarWeekRule.FirstFourDayWeek,
+                    DayOfWeek.Monday);
+
+                var evaluacionesSupervisor = await _context.Evaluacion
+                    .Where(e => e.EmpleadoId == evaluacion.EmpleadoId && e.UsuarioId == userId)
+                    .ToListAsync();
+
+                evaluacionExistente = evaluacionesSupervisor.Any(e =>
+                {
+                    int semanaEvaluacion = calendario.GetWeekOfYear(e.Fecha,
+                        System.Globalization.CalendarWeekRule.FirstFourDayWeek,
+                        DayOfWeek.Monday);
+                    return semanaEvaluacion == semanaActual && e.Fecha.Year == fechaActual.Year;
+                });
+            }
 
             if (evaluacionExistente)
             {
-                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
+                string mensaje = rolActual == "RRHH"
+                    ? "No puede volver a evaluar a este empleado en este mes."
+                    : "No puede volver a evaluar a este empleado en esta semana.";
+
+                return BadRequest(new { codigo = 0, mensaje });
             }
 
-            evaluacion.Fecha = DateTime.Now;
+            evaluacion.Fecha = fechaActual;
+            evaluacion.UsuarioId = userId;
 
             _context.Evaluacion.Add(evaluacion);
-
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
@@ -108,24 +246,64 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UNA EVALUACION ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEvaluacion(int id, Evaluacion evaluacion)
         {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
             var evaluacionOriginal = await _context.Evaluacion.FindAsync(id);
+            if (evaluacionOriginal == null)
+                return NotFound(new { codigo = 0, mensaje = "Evaluación no encontrada." });
 
-            var existeOtraEvaluacion = await _context.Evaluacion
-                .AnyAsync(e => e.EmpleadoId == evaluacion.EmpleadoId
-                               && e.Fecha.Month == DateTime.Now.Month
-                               && e.Fecha.Year == DateTime.Now.Year
-                               && e.Id != id);
+            var fechaActual = DateTime.Now;
+            bool evaluacionExistente = false;
 
-            if (existeOtraEvaluacion)
+            if (rolActual == "RRHH")
             {
-                return BadRequest(new { codigo = 0, mensaje = "No puede volver a evaluar a este empleado en este mes" });
+                evaluacionExistente = await _context.Evaluacion.AnyAsync(e =>
+                    e.EmpleadoId == evaluacion.EmpleadoId &&
+                    e.UsuarioId == userId &&
+                    e.Fecha.Month == fechaActual.Month &&
+                    e.Fecha.Year == fechaActual.Year &&
+                    e.Id != id);
+            }
+            else if (rolActual == "SUPERVISOR")
+            {
+                var calendario = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+                int semanaActual = calendario.GetWeekOfYear(fechaActual,
+                    System.Globalization.CalendarWeekRule.FirstFourDayWeek,
+                    DayOfWeek.Monday);
+
+                var evaluacionesSupervisor = await _context.Evaluacion
+                    .Where(e => e.EmpleadoId == evaluacion.EmpleadoId &&
+                                e.UsuarioId == userId &&
+                                e.Id != id)
+                    .ToListAsync();
+
+                evaluacionExistente = evaluacionesSupervisor.Any(e =>
+                {
+                    int semanaEvaluacion = calendario.GetWeekOfYear(e.Fecha,
+                        System.Globalization.CalendarWeekRule.FirstFourDayWeek,
+                        DayOfWeek.Monday);
+                    return semanaEvaluacion == semanaActual && e.Fecha.Year == fechaActual.Year;
+                });
+            }
+
+            if (evaluacionExistente)
+            {
+                string mensaje = rolActual == "RRHH"
+                    ? "No puede volver a evaluar a este empleado en este mes."
+                    : "No puede volver a evaluar a este empleado en esta semana.";
+
+                return BadRequest(new { codigo = 0, mensaje });
             }
 
             evaluacionOriginal.Calificacion = evaluacion.Calificacion;
             evaluacionOriginal.EmpleadoId = evaluacion.EmpleadoId;
+            evaluacionOriginal.Fecha = DateTime.Now; 
+            evaluacionOriginal.UsuarioId = userId;
 
             await _context.SaveChangesAsync();
 
@@ -136,6 +314,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UNA EVALUACION POR ID ///////////////////////////////////////////////////////   
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Evaluacion>> GetEvaluacion(int id)
         {

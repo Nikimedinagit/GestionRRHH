@@ -1913,7 +1913,7 @@ function MostrarOpcionesCursosPorRol() {
   if (!rol) return;
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    $("#cardEstadisticasCursos, #contenedorFiltrosCursos, #btnMostrarGenerar, #btnNuevoCurso").removeClass("d-none");
+    $("#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso").removeClass("d-none");
 
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
     $("#tituloCursos").text("Visualizá los cursos en los que participaste y descargá los certificados disponibles.");

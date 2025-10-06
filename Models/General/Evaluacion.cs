@@ -15,9 +15,8 @@ namespace API_RRHH_TESIS2025.Models.General
         public DateTime Fecha { get; set; }
         public int Calificacion { get; set; }
         public int EmpleadoId { get; set; }
-
         public Empleado Empleado { get; set; }
-
+        public string UsuarioId { get; set; }
         public virtual ICollection<CriterioDeEvaluacion> CriterioDeEvaluacion { get; set; }
 
     }
@@ -34,6 +33,12 @@ namespace API_RRHH_TESIS2025.Models.General
         public string EmpleadoId { get; set; }
         public string EmpleadoNombre { get; set; }
         public string EmpleadoPuesto { get; set; }
+        public string UsuarioId { get; set; }
+        public string UsuarioNombreEvaluador { get; set; }
+        public string UsuarioRolEvaluador { get; set; }
+        public bool EsEditable { get; set; }
+        public string ClaseBorde { get; set; }
+        public bool EsPropia { get; set; }
     }
 
     

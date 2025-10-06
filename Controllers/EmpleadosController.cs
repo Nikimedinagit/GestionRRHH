@@ -255,17 +255,43 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
         {
-            var empleadosActivos = await _context.Empleado
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var obtenerEmpelados = _context.Empleado
                 .Where(e => !e.Eliminado)
+                .Include(e => e.Puesto)
+                .AsQueryable();
+
+            if (rolActual == "SUPERVISOR")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var email = usuario?.Email?.Trim().ToLower();
+
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == email);
+
+                if (supervisor == null || supervisor.Puesto == null)
+                {
+                    return Ok(new List<Empleado>());
+                }
+
+                var sectorId = supervisor.Puesto.SectorId;
+
+                obtenerEmpelados = obtenerEmpelados.Where(e => e.Puesto.SectorId == sectorId);
+            }
+
+            var empleados = await obtenerEmpelados
                 .OrderBy(e => e.NombreCompleto)
                 .ToListAsync();
-            return empleadosActivos;
+
+            return Ok(empleados);
         }
-
-
 
 
 
