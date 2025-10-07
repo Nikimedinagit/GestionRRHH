@@ -63,16 +63,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
 
             var resultado = await obtenerActivacionEmpleado
-                .Include(x => x.Empleado) 
+                .Include(x => x.Empleado)
                 .OrderBy(x => !x.Activo)
                 .ThenBy(x => x.Empleado.NombreCompleto)
                 .ThenBy(x => x.FechaActivacion)
                 .Select(x => new VistaActivacionEmpleado
                 {
                     Id = x.Id,
-                    EmpleadoNombreString = x.Empleado.NombreCompleto,  
-                    EmpleadoEmailString = x.Empleado.Email,             
-                    EmpleadoDNIString = x.Empleado.DNI.ToString(),     
+                    EmpleadoNombreString = x.Empleado.NombreCompleto,
+                    EmpleadoEmailString = x.Empleado.Email,
+                    EmpleadoDNIString = x.Empleado.DNI.ToString(),
                     FechaActivacionString = x.FechaActivacion.HasValue
                         ? x.FechaActivacion.Value.ToString("yyyy-MM-dd")
                         : "",
@@ -92,8 +92,12 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<IActionResult> ActivarEmpleado([FromBody] ActivacionEmpleadoDto dto)
         {
             var empleado = await _context.Empleado.FindAsync(dto.EmpleadoId);
+            if (empleado == null)
+                return NotFound("Empleado no encontrado.");
 
             var activacion = await _context.ActivacionEmpleado.FindAsync(dto.Id);
+            if (activacion == null)
+                return NotFound("Activación no encontrada.");
 
             activacion.Activo = true;
             activacion.FechaActivacion = DateTime.UtcNow;
@@ -138,7 +142,6 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(new { mensaje = "Empleado activado correctamente.", activacion.Id });
         }
 
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA DESACTIVAR UN EMPLEADO ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +152,23 @@ namespace API_NET_CORE8_RRHH.Controllers
                 .Include(a => a.Empleado)
                 .FirstOrDefaultAsync(a => a.Id == dto.Id && a.EmpleadoId == dto.EmpleadoId);
 
+            if (activacion == null)
+                return NotFound("Activación no encontrada.");
+
             activacion.Activo = false;
             activacion.Empleado.Eliminado = true;
 
             await _context.SaveChangesAsync();
+
+            var usuario = await _userManager.FindByEmailAsync(activacion.Empleado.Email);
+            if (usuario != null)
+            {
+                var rolesUsuario = await _userManager.GetRolesAsync(usuario);
+                foreach (var rol in rolesUsuario)
+                {
+                    await _userManager.RemoveFromRoleAsync(usuario, rol);
+                }
+            }
 
             return Ok(new { mensaje = "Empleado desactivado correctamente." });
         }

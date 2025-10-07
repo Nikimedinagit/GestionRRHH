@@ -729,13 +729,6 @@ select.form-control:not([value=""])+label {
 
 
 
-#contenedorGrafico canvas {
-  width: 90% !important;
-  height: auto !important;
-  max-height: 200px;
-  display: block;
-  margin: 0 auto;
-}
 
 
 

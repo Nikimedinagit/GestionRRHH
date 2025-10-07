@@ -238,7 +238,9 @@ function MostrarCursosDesktop(data) {
             <table class="table table-bordered">
               <tbody>
                 <tr>
-                  <td id="DescripcionCurso_${element.id}">${element.descripcion ?? "Sin descripción"}</td>
+                 <td id="DescripcionCurso_${element.id}" class="text-wrap">
+                    ${element.descripcion ?? "Sin descripción"}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -390,7 +392,6 @@ function MostrarCursosDesktop(data) {
 
   tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

@@ -255,7 +255,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivos()
         {

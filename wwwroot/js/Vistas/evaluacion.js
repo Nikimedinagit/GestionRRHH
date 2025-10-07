@@ -121,7 +121,7 @@ async function ObtenerEvaluaciones() {
 // FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluaciones(data) {
-  if (window.innerWidth <= 764) {
+  if (window.innerWidth <= 820) {
     MostrarEvaluacionesMobile(data);
   } else {
     MostrarEvaluacionesDesktop(data);
@@ -213,20 +213,20 @@ function MostrarEvaluacionesDesktop(data) {
         <div class="criterios-panel mt-3">
           ${element.esEditable ? `<button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}">Agregar Criterio</button>` : ""}
           <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover align-middle w-100">
               <colgroup>
                 <col style="width: 25%" />
                 <col style="width: 65%" />
-                <col style="width: 10%" />
+                 ${element.esEditable ? `<col style="width: 10%" />` : ""}
               </colgroup>
-              <thead>
-                <tr>
-                  <th class="text-start header-table">Criterio</th>
-                  <th class="text-start header-table">Descripción</th>
-                  <th class="text-center header-table">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}"></tbody>
+             <thead>
+              <tr>
+                <th class="text-start header-table">Criterio</th>
+                <th class="text-start header-table">Descripción</th>
+                ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+              </tr>
+            </thead>
+            <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}"></tbody>
             </table>
           </div>
         </div>
@@ -248,7 +248,7 @@ function MostrarEvaluacionesDesktop(data) {
 
     contenedor.append(item);
     contenedor.append(detalleHTML);
-    ObtenerCriterioDeEvaluacion(element.id);
+    ObtenerCriterioDeEvaluacion(element.id, element.esEditable);
   });
 
   tippy("[data-tippy-content]", {
@@ -259,13 +259,14 @@ function MostrarEvaluacionesDesktop(data) {
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES MOBILE /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluacionesMobile(data) {
   const contenedor = document.getElementById("contenedorEvaluaciones");
   contenedor.innerHTML = "";
+
+  const rol = getRol()?.toUpperCase();
 
   if (!Array.isArray(data) || data.length === 0) {
     contenedor.innerHTML =
@@ -275,7 +276,9 @@ function MostrarEvaluacionesMobile(data) {
 
   data.forEach((element) => {
     const nota = Number(element.calificacion);
-    const fecha = element.fecha.split("T")[0].split("-").reverse().join("/") || "Sin fecha";
+    const fecha = element.fecha
+      ? element.fecha.split("T")[0].split("-").reverse().join("/")
+      : "Sin fecha";
 
     let etiqueta = "Regular";
     let badgeClass = "badge-regular";
@@ -291,19 +294,47 @@ function MostrarEvaluacionesMobile(data) {
       badgeClass = "badge-buena";
     }
 
+    let bordeColor = "#dee2e6";
+    if (element.claseBorde === "green") bordeColor = "#198754";
+    else if (element.claseBorde === "yellow") bordeColor = "#ffc107";
+
+    const esEditable = element.esEditable === true || element.esEditable === "true";
+
+    const nombreMostrar = (rol === "ADMINISTRADOR" || element.esPropia)
+      ? element.empleadoNombre
+      : element.usuarioNombreEvaluador;
+
+    const rolMostrar = (rol === "ADMINISTRADOR" || element.esPropia)
+      ? element.empleadoPuesto
+      : element.usuarioRolEvaluador;
+
+    const botonEditarHTML = esEditable
+      ? `<button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+           <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+         </button>`
+      : "";
+
+    const botonAgregarCriterioHTML = esEditable
+      ? `<div class="d-flex justify-content-center mb-2">
+           <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
+             <span>Agregar Criterio</span>
+           </button>
+         </div>`
+      : "";
+
     contenedor.innerHTML += `
       <div class="col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex">
-        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
           <div class="flex-grow-1 d-flex flex-column">
-            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
-              ${element.empleadoNombre || "Sin nombre"}
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;" title="${nombreMostrar}">
+              ${nombreMostrar || "Sin nombre"}
             </h5>
-            <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
+            <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;" title="${rolMostrar}">
               <i class="bi bi-briefcase me-2"></i>
-              ${element.empleadoPuesto || "Sin puesto"}
+              ${rolMostrar || "Sin puesto"}
             </p>
             <small class="text-muted mb-2" style="font-size: 0.75rem;">
-              ${fecha || "Fecha no disponible"}
+              ${fecha}
             </small>
             <span class="badge ${badgeClass} my-2" style="width: fit-content; font-size: 1rem;">
               ${etiqueta}
@@ -312,14 +343,12 @@ function MostrarEvaluacionesMobile(data) {
           
           <div class="d-flex justify-content-between mt-2 align-items-center">
             <div>
-              <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id})" data-tippy-content="Detalle" style="background: none; border: none;">
+              <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none;">
                 <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
               </button>
             </div>
             <div>
-              <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
-              </button>
+              ${botonEditarHTML}
               <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
                 <i class="bi bi-chevron-down"></i>
               </button>
@@ -327,21 +356,17 @@ function MostrarEvaluacionesMobile(data) {
           </div>
 
           <div class="panelCriterios mt-2" style="display:none;">
-            <div class="d-flex justify-content-end mb-2">
-              <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
-                <span>Agregar Criterio</span>
-              </button>
-            </div>
+            ${botonAgregarCriterioHTML}
             <div class="table-responsive">
               <table class="table table-bordered table-hover table-sm align-middle">
                 <colgroup>
                   <col style="width: 70%" /> 
-                  <col style="width: 30%" /> 
+                  ${element.esEditable ? `<col style="width: 30%" />` : ""}
                 </colgroup>
                 <thead>
                   <tr>
                     <th class="text-start header-table">Criterio</th>
-                    <th class="text-center header-table">Acciones</th>
+                    ${esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
                   </tr>
                 </thead>
                 <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
@@ -353,7 +378,7 @@ function MostrarEvaluacionesMobile(data) {
       </div>
     `;
 
-    ObtenerCriterioDeEvaluacion(element.id);
+    ObtenerCriterioDeEvaluacion(element.id, esEditable);
   });
 
   tippy("[data-tippy-content]", {
@@ -380,7 +405,7 @@ function MostrarEvaluacionesMobile(data) {
         icono.classList.replace("bi-chevron-down", "bi-chevron-up");
 
         const evaluacionId = detalleTabla.querySelector(".tabla-criterios-body").dataset.evaluacionId;
-        ObtenerCriterioDeEvaluacion(Number(evaluacionId));
+        ObtenerCriterioDeEvaluacion(Number(evaluacionId), esEditable);
       } else {
         detalleTabla.style.display = "none";
         icono.classList.replace("bi-chevron-up", "bi-chevron-down");
@@ -388,6 +413,7 @@ function MostrarEvaluacionesMobile(data) {
     });
   });
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -656,27 +682,24 @@ async function EditarEvaluacion(id) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS CRITERIOS DE EVALUACION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
-async function ObtenerCriterioDeEvaluacion(evaluacionId) {
-  const res = await authFetch("CriteriosDeEvaluacion", {
-    method: "GET",
-  })
-    .then(response => response.json())
-    .then(data => {
+async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable) {
+  try {
+    const res = await authFetch("CriteriosDeEvaluacion", { method: "GET" });
+    const data = await res.json();
 
-      const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
-      MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados);
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+    const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
+
+    MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados, esEditable);
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS CRITERIOS DE EVALUACION ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function MostrarCriterioDeEvaluacion(evaluacionId, data) {
+function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
   const tablaBody = $(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
   if (!tablaBody.length) return;
 
@@ -684,37 +707,46 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
 
   if (data.length === 0) {
     tablaBody.append(
-      "<tr><td colspan='3' class='text-center text-muted'>No hay criterios de evaluación para mostrar.</td></tr>"
+      `<tr><td colspan='${esEditable ? 3 : 2}' class='text-center text-muted'>
+        No hay criterios de evaluación para mostrar.
+      </td></tr>`
     );
     return;
   }
 
-  const enMovil = window.innerWidth <= 764;
+  const enMovil = window.innerWidth <= 820;
 
   $.each(data, function (index, item) {
-    if (enMovil) {
-      tablaBody.append(`
-      <tr>
-        <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
-        <td class='d-flex justify-content-center align-items-center'>
-         <button class='btn-eliminar' style='background: none; border: none;' 
-          onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId})' data-tippy-content='Eliminar'>
-          <i class='bi bi-trash3 icono-elimina-detalle'></i>
-        </button>
-        </td>
-      </tr>
-    `);
-    } else {
+   if (enMovil) {
       tablaBody.append(`
         <tr>
           <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
-          <td class='align-middle'>${item.descripcion}</td>
-          <td class='d-flex justify-content-center align-items-center'>
-            <button class='btn-eliminar' style='background: none; border: none;' 
-              onclick='EliminarCriterioDeEvaluacion(${item.id} , ${evaluacionId})' data-tippy-content='Eliminar'>
-              <i class='bi bi-trash3 icono-elimina-detalle'></i>
-            </button>
-          </td>
+          ${esEditable
+            ? `<td class='align-middle text-center'>
+                <button class='btn-eliminar' style='background: none; border: none;' 
+                  onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
+                  <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                </button>
+              </td>`
+            : ""
+          }
+        </tr>
+      `);
+    }
+    else {
+      tablaBody.append(`
+        <tr>
+          <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
+          <td class='align-middle'>${item.descripcion || "Sin descripción"}</td>
+          ${esEditable
+          ? `<td class='d-flex justify-content-center align-items-center'>
+                  <button class='btn-eliminar' style='background: none; border: none;' 
+                    onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
+                    <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                  </button>
+                </td>`
+          : ""
+        }
         </tr>
       `);
     }
@@ -725,7 +757,6 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
-
 }
 
 
@@ -753,18 +784,15 @@ async function MostrarDetalleCriterios(evaluacionId) {
         const card = `
           <div class="card mb-3 detalle-criterio-tarjeta">
             <div class="card-body detalle-criterio-seccion">
-              <p class="detalle-criterio-titulo-seccion">
-                Información del Criterio
-              </p>
+              <p class="detalle-criterio-titulo-seccion">Información del Criterio</p>
 
               <div class="detalle-criterio-fila">
-                <span class="detalle-criterio-valor-nombre"> ${item.tipoDeCriterio.nombre}</span>
+                <span class="detalle-criterio-valor-nombre">${item.tipoDeCriterio.nombre}</span>
               </div>
 
               <div class="detalle-criterio-fila">
                 <span class="detalle-criterio-valor">${item.descripcion || "Sin descripción"}</span>
               </div>
-
             </div>
           </div>
         `;
@@ -776,16 +804,18 @@ async function MostrarDetalleCriterios(evaluacionId) {
         theme: "mi-tema",
         delay: [100, 0],
       });
-    })
+    });
 
   const offcanvasElement = document.getElementById("offcanvasDetalleCriterios");
   if (offcanvasElement.parentNode !== document.body) {
     document.body.appendChild(offcanvasElement);
   }
+
   let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
   if (!offcanvas) offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -933,7 +963,7 @@ async function CrearCriterioDeEvaluacion() {
         ValidarCriterioDeEvaluacionExistente(response.mensaje);
       } else {
         cerrarPanelCriterios();
-        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada);
+        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true);
         Swal.fire({
           title: "¡Criterio Creado!",
           toast: true,
@@ -962,7 +992,7 @@ async function CrearCriterioDeEvaluacion() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL MODAL DE ELIMINAR CRITERIO DE EVALUACION ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function EliminarCriterioDeEvaluacion(id, evaluacionId) {
+function EliminarCriterioDeEvaluacion(id, evaluacionId, esEditable) {
   Swal.fire({
     title: "¿Desea eliminar este criterio?",
     html: `
@@ -986,7 +1016,7 @@ function EliminarCriterioDeEvaluacion(id, evaluacionId) {
     color: "#22223b",
   }).then((result) => {
     if (result.isConfirmed) {
-      EliminarSiCriterio(id, evaluacionId);
+      EliminarSiCriterio(id, evaluacionId, esEditable);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
         title: "Acción Cancelada",
@@ -1015,7 +1045,7 @@ function EliminarCriterioDeEvaluacion(id, evaluacionId) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ELIMINAR SI CRITERIO ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function EliminarSiCriterio(id, evaluacionId) {
+async function EliminarSiCriterio(id, evaluacionId, esEditable) {
   try {
     const res = await authFetch(`CriteriosDeEvaluacion/${id}`, {
       method: "DELETE",
@@ -1041,7 +1071,7 @@ async function EliminarSiCriterio(id, evaluacionId) {
       },
     });
 
-    ObtenerCriterioDeEvaluacion(evaluacionId);
+    ObtenerCriterioDeEvaluacion(evaluacionId, esEditable);
 
   } catch (error) {
     MostrarErrorCatch();

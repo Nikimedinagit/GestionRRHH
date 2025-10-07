@@ -287,7 +287,7 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
   try {
     const response = await authFetch('ActivacionEmpleados/Activar', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },  // <--- Aquí
+      headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify(body)
     });
 
@@ -308,11 +308,6 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
       color: "#1c3d26",
       icon: "success",
       iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
     });
 
     ObtenerEmpleadosActivacion();
@@ -324,14 +319,14 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA DESACTIVAR UN EMPLEADO ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function DesactivarEmpleado(empleadoId, activacionId) {
   const body = {
     id: activacionId,
-    empleadoId: empleadoId,
-    activo: false  
+    empleadoId: empleadoId
   };
 
   try {
@@ -357,11 +352,6 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
       color: "#842029",
       icon: "success",
       iconColor: "#dc3545",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
     });
 
     ObtenerEmpleadosActivacion();
