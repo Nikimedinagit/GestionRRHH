@@ -52,6 +52,10 @@ namespace API_RRHH_TESIS2025.Models.General
         public byte[] DocumentoAdjunto { get; set; }
         public string DocumentoNombre { get; set; }
         public string DocumentoMimeType { get; set; }
+        public bool EsEditable { get; set; }
+        public string ClaseBorde { get; set; }
+        public bool EsPropia { get; set; }
+
     }
 
 

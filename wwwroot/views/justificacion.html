@@ -3,8 +3,11 @@
   <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Gestor de Ausencias-Tardanzas</h3>
-    <p class="text-muted fs-6 mb-0">Visualiza y gestiona las justificaciones de los empleados.</p>
+    <p class="text-muted mb-0" style="font-size: 0.95rem;" id="tituloJustificacion">
+      Visualiza y gestiona las justificaciones de los empleados.
+    </p>
   </div>
+
 
   <hr />
 
@@ -15,10 +18,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-      <button class="btn btn-agregar" onclick="abrirPanelJustificacion()">
-        <i class="fa-solid fa-square-plus me-1"></i>
-        <span>Nueva Justificación</span>
-      </button>
+    <button class="btn btn-agregar" onclick="abrirPanelJustificacion()">
+      <i class="fa-solid fa-square-plus me-1"></i>
+      <span>Nueva Justificación</span>
+    </button>
+
 
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
@@ -26,7 +30,7 @@
           <span>Filtros</span>
         </button>
 
-        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+        <button id="btnMostrarGenerar" class="btn btn-informe d-none" onclick="AbrilPanelGenerar('contenedorGenerar')">
           <i class="fa-solid fa-file-lines me-1"></i>
           <span>Generar</span>
         </button>
@@ -51,12 +55,12 @@
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtroEmpleado">
           <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
           <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtroEstado">
           <label for="EstadoJustificacionBuscar" class="form-label-fija">Estado</label>
           <select id="EstadoJustificacionBuscar" class="form-control filtro-select">
             <option value="0">[Todos]</option>
@@ -66,7 +70,7 @@
           </select>
         </div>
 
-        <div id="horariosInputs" class="col-12 col-md-2">
+        <div id="horariosInputs" class="col-12 col-md-2" id="filtroFecha">
           <label for="FechaBuscar" class="form-label-fija">Fecha</label>
           <input type="date" class="form-control filtro-select" id="FechaBuscar" />
         </div>
@@ -76,7 +80,7 @@
 
 
     <!-- ================================ Tarjetas resumen ===================================== -->
-    <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+    <div class="d-flex flex-wrap justify-content-between d-none" style="gap: 1rem;" id5="contenedorEstadisticasJustificaciones">
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-primary bg-opacity-10 p-3 me-3">
@@ -146,6 +150,8 @@
     <div class="panel-body">
       <form id="formJustificacion">
         <input type="hidden" id="IdJustificacion" />
+            <div class="invalid-feedback mb-3" id="errorEmpleadoIdJustificacionSinEmpleado"></div>
+
         <div class="form-grid">
           <div class="form-group position-relative mb-3">
             <textarea name="MotivoJustificacion" id="MotivoJustificacion" class="form-control" rows="1"
@@ -160,7 +166,7 @@
             <div class="invalid-feedback" id="errorFechaJustificacion"></div>
           </div>
 
-          <div class="form-group position-relative mb-3">
+          <div class="form-group position-relative mb-3 d-none" id="seleccionEmpleadoJustificacion">
             <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
               <option value="" disabled selected>Seleccione</option>
             </select>

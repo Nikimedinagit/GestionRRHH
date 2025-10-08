@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 // ABRIR PANEL DE JUSTIFICACIONES ////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -13,7 +12,6 @@ function abrirPanelJustificacion() {
   }, 400);
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // CERRAR PANEL DE JUSTIFICACIONES ////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -25,19 +23,18 @@ function cerrarPanelJustificacion() {
   LimpiarModalJustificacion();
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR LOS ONCLICK AL BUSCAR ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
   ObtenerJustificaciones();
-  $(
-    "#EmpleadoIdBuscar, #FechaBuscar, #EstadoJustificacionBuscar"
-  ).on("input", function () {
-    ObtenerJustificaciones();
-  });
+  $("#EmpleadoIdBuscar, #FechaBuscar, #EstadoJustificacionBuscar").on(
+    "input",
+    function () {
+      ObtenerJustificaciones();
+    }
+  );
 });
-
 
 //////////////////////////////////////////////////////////////////////////////
 // OBTENER LAS LOS DATODS DE LA API DE JUSTIFICACIONES /////////////////////////
@@ -54,14 +51,14 @@ async function ObtenerJustificaciones() {
   const filtro = {
     fechaJustificacion: fecha || null,
     estadoJustificacion: estado || null,
-    empleadoTexto: empleado
+    empleadoTexto: empleado,
   };
 
   try {
     const res = await authFetch("Justificaciones/Filtrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(filtro)
+      body: JSON.stringify(filtro),
     });
 
     const data = await res.json();
@@ -74,7 +71,6 @@ async function ObtenerJustificaciones() {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -86,13 +82,14 @@ function MostrarJustificaciones(data) {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES DESKTOP ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function MostrarJustificacionesDesktop(data) {
   const contenedor = $("#contenedorJustificaciones");
   contenedor.empty();
+
+  const rol = getRol().trim().toUpperCase();
 
   if (!Array.isArray(data) || data.length === 0) {
     contenedor.append(
@@ -108,6 +105,7 @@ function MostrarJustificacionesDesktop(data) {
   };
 
   data.forEach((element) => {
+
     const documentoHtml = element.documentoNombre
       ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
@@ -123,9 +121,9 @@ function MostrarJustificacionesDesktop(data) {
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
 
-    const botonAccion =
-      estadoNombre === "PENDIENTE"
-        ? `
+    let botonAccion = "";
+    if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE") {
+      botonAccion = `
         <div class="d-flex justify-content-between align-items-center mt-2">
           <div class="d-flex gap-1">
             <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
@@ -134,11 +132,11 @@ function MostrarJustificacionesDesktop(data) {
             </button>
           </div>
         </div>
-      `
-        : "";
+      `;
+    }
 
     let botonEditar = "";
-    if (estadoNombre === "PENDIENTE") {
+    if (estadoNombre === "PENDIENTE" && (rol === "ADMINISTRADOR" || rol === "RRHH" || element.esPropia)) {
       const fechaParts = fecha.split("/");
       const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
       const hoy = new Date();
@@ -159,7 +157,7 @@ function MostrarJustificacionesDesktop(data) {
     }
 
     const item = $(`
-      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
+      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between"  style = "border-left: 3px solid ${element.claseBorde === "#dee2e6"} !important;">
         <div class="d-flex justify-content-between align-items-center w-100" style="gap: 20px;">
           
           <!-- Nombre del empleado -->
@@ -200,12 +198,12 @@ function MostrarJustificacionesDesktop(data) {
         <div class="d-flex gap-3 mb-3">
           <!-- Motivo -->
           <div class="p-3 rounded" style="flex: 2; background-color: #f8fbfd;" id="motivoDiv">
-            <small class="fw-bold d-block mb-1" id="tituloJustificacion">MOTIVO</small>
+            <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">MOTIVO</small>
             <hr style="margin: 0.2rem;" />
             <div>${element.motivo || "Sin motivo"}</div>
           </div>
           <div class="p-3 rounded" style="flex: 1; background-color: #f8fbfd;" id="documentoDiv">
-            <small class="fw-bold d-block mb-1" id="tituloJustificacion">DOCUMENTO ADJUNTO</small>
+            <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">DOCUMENTO ADJUNTO</small>
             <div>${documentoHtml || "No se adjuntó ningún documento"}</div>
           </div>
         </div>
@@ -238,13 +236,14 @@ function MostrarJustificacionesDesktop(data) {
   });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES MOBILE ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function MostrarJustificacionesMobile(data) {
   const contenedor = document.getElementById("contenedorJustificaciones");
   contenedor.innerHTML = "";
+
+  const rol = getRol().trim().toUpperCase();
 
   if (!Array.isArray(data) || data.length === 0) {
     contenedor.innerHTML =
@@ -288,30 +287,21 @@ function MostrarJustificacionesMobile(data) {
         limite.setDate(limite.getDate() + 7);
 
         if (hoy <= limite) {
-          botonesHtml = `
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div>
-                <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                  <i class="bi bi-pencil-square icono-editar"></i>
+          botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
+          botonesHtml += `
+                <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                    <i class="bi bi-pencil-square icono-editar"></i>
                 </button>
-              </div>
-              <div class="d-flex gap-1">
-                <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-                  data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
-                </button>
-              </div>
-            </div>
-          `;
-        } else {
-          botonesHtml = `
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="d-flex gap-1">
-                <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-                  data-tippy-content="Aprobar o rechazar"> <i class="bi bi-sliders icono-accion-licencia"></i>
-                </button>
-              </div>
-            </div>
-          `;
+            `;
+          if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+            botonesHtml += `
+                    <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+                        data-tippy-content="Aprobar o rechazar">
+                        <i class="bi bi-sliders icono-accion-licencia"></i>
+                    </button>
+                `;
+          }
+          botonesHtml += `</div>`;
         }
       }
     }
@@ -368,8 +358,11 @@ function MostrarJustificacionesMobile(data) {
       .on("click", function () {
         const icono = $(this).find("i");
 
-        $(".panelDescripcionCurso:visible").not(descripcionDetalle).slideUp(200);
-        $(".btn-ver-descripcion i").not(icono)
+        $(".panelDescripcionCurso:visible")
+          .not(descripcionDetalle)
+          .slideUp(200);
+        $(".btn-ver-descripcion i")
+          .not(icono)
           .removeClass("bi-chevron-up")
           .addClass("bi-chevron-down");
 
@@ -387,7 +380,6 @@ function MostrarJustificacionesMobile(data) {
     delay: [100, 0],
   });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // DESCARGAR DOCUMENTO /////////////////////////////////////////////////////
@@ -419,17 +411,21 @@ async function DescargarDocumento(id) {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR MODAL DE EDICION DE LA JUSTIFICACION //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
   const res = await authFetch(`Justificaciones/${id}`);
+
   const justificacion = await res.json();
+
+  console.log(justificacion);
 
   document.getElementById("IdJustificacion").value = justificacion.id;
   document.getElementById("MotivoJustificacion").value = justificacion.motivo;
-  document.getElementById("FechaJustificacion").value = justificacion.fecha;
+  document.getElementById("FechaJustificacion").value = justificacion.fecha
+    ? new Date(justificacion.fecha).toISOString().split("T")[0]
+    : "";
   document.getElementById("EmpleadoId").value = justificacion.empleadoId;
 
   document.getElementById("FechaJustificacion").disabled = true;
@@ -472,7 +468,6 @@ async function MostrarModalEditar(id) {
   abrirPanelJustificacion();
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA BUSCAR EL ID DE LA JUSTIFICACION Y LLAMAR A LA FUNCION DE EDICION O CREACION //////
 //////////////////////////////////////////////////////////////////////////////
@@ -486,12 +481,10 @@ function BuscarJustificacionId() {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // LIMPIAR EL FORMULARIO DE LA JUSTIFICACION /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function LimpiarModalJustificacion() {
-
   document.getElementById("FechaJustificacion").disabled = false;
   document.getElementById("EmpleadoId").disabled = false;
 
@@ -512,6 +505,12 @@ function LimpiarModalJustificacion() {
 
   const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
   inputErrorMotivo.textContent = "";
+
+  const errorEmpleadoId = document.getElementById(
+    "errorEmpleadoIdJustificacionSinEmpleado"
+  );
+  errorEmpleadoId.textContent = "";
+
   inputErrorMotivo.style.display = "none";
   const fechaErrorJustificacion = document.getElementById(
     "errorFechaJustificacion"
@@ -525,19 +524,24 @@ function LimpiarModalJustificacion() {
   selectErrorEmpleado.style.display = "none";
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA VALIDAR EL FORMULARIO DE LA JUSTIFICACION ////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioJustificacion() {
+  const rol = getRol()?.toUpperCase();
+
   const inputMotivo = document.getElementById("MotivoJustificacion");
   const inputErrorMotivo = document.getElementById("errorMotivoJustificacion");
 
   const fechaJustificacion = document.getElementById("FechaJustificacion");
-  const fechaErrorJustificacion = document.getElementById("errorFechaJustificacion");
+  const fechaErrorJustificacion = document.getElementById(
+    "errorFechaJustificacion"
+  );
 
   const selectEmpleado = document.getElementById("EmpleadoId");
-  const selectErrorEmpleado = document.getElementById("errorEmpleadoIdJustificacion");
+  const selectErrorEmpleado = document.getElementById(
+    "errorEmpleadoIdJustificacion"
+  );
 
   const motivo = inputMotivo.value.trim();
   const fecha = fechaJustificacion.value;
@@ -607,21 +611,21 @@ function ValidarFormularioJustificacion() {
       fechaErrorJustificacion.style.display = "none";
     }
   }
-
-  if (empleado === "") {
-    selectEmpleado.classList.add("is-invalid");
-    selectErrorEmpleado.style.display = "block";
-    selectErrorEmpleado.textContent = "Campo obligatorio.";
-    esValid = false;
-  } else {
-    selectEmpleado.classList.remove("is-invalid");
-    selectEmpleado.classList.add("is-valid");
-    selectErrorEmpleado.style.display = "none";
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    if (empleado === "") {
+      selectEmpleado.classList.add("is-invalid");
+      selectErrorEmpleado.style.display = "block";
+      selectErrorEmpleado.textContent = "Campo obligatorio.";
+      esValid = false;
+    } else {
+      selectEmpleado.classList.remove("is-invalid");
+      selectEmpleado.classList.add("is-valid");
+      selectErrorEmpleado.style.display = "none";
+    }
   }
 
   return esValid;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA VALIDAR EN VIVO FORMULARIO DE LA JUSTIFICACION ////////////////////
@@ -698,21 +702,35 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
   }
 });
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA VALIDAR DADOS EXISTENTES ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function MostrarErrorJustificacionExistente(mensaje) {
   const errorLicencia = document.getElementById("errorEmpleadoIdJustificacion");
-  if (mensaje) {
-    errorLicencia.textContent = mensaje;
-    errorLicencia.style.display = "block";
-  } else {
-    errorLicencia.textContent = "";
-    errorLicencia.style.display = "none";
+  const errorEmpleadoId = document.getElementById(
+    "errorEmpleadoIdJustificacionSinEmpleado"
+  );
+
+  const rol = getRol()?.toUpperCase();
+
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    if (mensaje) {
+      errorLicencia.textContent = mensaje;
+      errorLicencia.style.display = "block";
+    } else {
+      errorLicencia.textContent = "";
+      errorLicencia.style.display = "none";
+    }
+  } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+    if (mensaje) {
+      errorEmpleadoId.textContent = mensaje;
+      errorEmpleadoId.style.display = "block";
+    } else {
+      errorEmpleadoId.textContent = "";
+      errorEmpleadoId.style.display = "none";
+    }
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CREAR UNA NUEVA JUSTIFICACION ///////////////////////////////
@@ -728,8 +746,10 @@ async function CrearJustificacion() {
     document.getElementById("MotivoJustificacion").value
   );
   formData.append("Fecha", document.getElementById("FechaJustificacion").value);
-  formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
-
+  const rol = getRol()?.toUpperCase();
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+  }
   const archivo = document.getElementById("DocumentoAdjunto").files[0];
   if (archivo) {
     formData.append("DocumentoAdjunto", archivo);
@@ -742,6 +762,8 @@ async function CrearJustificacion() {
     });
 
     const response = await res.json();
+
+    console.log(response);
 
     if (response.mensaje) {
       MostrarErrorJustificacionExistente(response.mensaje);
@@ -771,7 +793,6 @@ async function CrearJustificacion() {
     MostrarErrorCatch();
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR UNA JUSTIFICACION ////////////////////////////////////
@@ -833,7 +854,6 @@ async function EditarJustificacion(id) {
     });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR EL MODAL DE ACCION SOBRE LA JUSTIFICACION //////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -888,7 +908,6 @@ function AbrirModalAccionJustificacion(id) {
   });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA APROBAR UNA JUSTIFICACION ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -921,7 +940,6 @@ async function AprobarJustificacion(id) {
       MostrarErrorCatch();
     });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA RECHAZAR UNA JUSTIFICACION ////////////////////////////////////
@@ -957,7 +975,6 @@ async function RechazarJustificacion(id) {
     });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL ERROR DE CATCH //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -980,14 +997,23 @@ function MostrarErrorCatch() {
   });
 }
 
+function MostrarOpcionesJustificacionesPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+    $(
+      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
+    ).removeClass("d-none");
+  } else if (rol === "EMPLEADO" || rol === "SUPERVISOR") {
+    $("#tituloJustificacion").text(
+      "Consultá tus justificaciones, verificá su estado y gestioná nuevas solicitudes."
+    );
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARRGAR LA VISTA ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-  ObtenerJustificaciones();
-
- 
-
-
-
-
+MostrarOpcionesJustificacionesPorRol();
+ObtenerJustificaciones();
