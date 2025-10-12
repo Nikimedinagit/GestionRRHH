@@ -75,7 +75,6 @@ function MostrarAsistencias(data) {
     const contenedor = $("#asistenciasContainer");
     contenedor.empty();
 
-    // Actualizar la variable global
     asistenciasData = data;
 
     if (!data || data.length === 0) {
@@ -194,4 +193,8 @@ function MostrarDetalleAsistencia(id) {
 // INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 ObtenerAsistencias();
+
+
+
+
 

@@ -104,5 +104,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (!result.ok) return BadRequest(result.payload);
             return Ok(result.payload);
         }
+
+
     }
 }
