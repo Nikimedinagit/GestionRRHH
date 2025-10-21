@@ -4,7 +4,7 @@
 
 <head>
   <title>WorkSync | RRHH</title>
-  
+
   <!-- [Meta] -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -13,11 +13,11 @@
   <!-- ICONOS (CDN) -->
   <link href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" 
-        integrity="sha512-sVZfx71R+...etc..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-sVZfx71R+...etc..." crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  
+
   <!-- Librerías de terceros -->
   <link rel="stylesheet" href="./lib/select2/select2.min.css">
 
@@ -73,19 +73,34 @@
             <span>Navegacion</span>
           </div>
 
+          <!-- Panel Personal del Empleado -->
+          <li class="pc-item pc-hasmenu" id="miPanelPersonal">
+            <a href="javascript:void(0);" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-id"></i></span>
+              <span class="pc-mtext">Mi Panel Personal</span>
+              <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+            </a>
+            <ul class="pc-submenu">
+              <li class="pc-item" id="miInformacion"><a class="pc-link" href="#informacion">Mi Información</a></li>
+              <li class="pc-item" id="asistenciaHorarios"><a class="pc-link" href="#asistenciaHorarios">Mi Asistencia y
+                  Horario</a></li>
+              <li class="pc-item" id="justificacionPersonal"><a class="pc-link" href="#justificacion?context=personal">Gestor de
+                  Tardanzas /<br> Ausencias</a></li>
+            </ul>
+          </li>
+
 
           <!-- Gestion de Empleados -->
-          <li class="pc-item pc-hasmenu">
-            <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i
-                  class="ti ti-user"></i></span><span class="pc-mtext">
+          <li class="pc-item pc-hasmenu d-none" id="gestionEmpleados">
+            <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i class="ti ti-user"></i></span><span
+                class="pc-mtext">
                 Gestion de Empleados
               </span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="#empleado">Registro de Personal</a></li>
-              <li class="pc-item"><a class="pc-link" href="#asistenciaHorarios">Asistencias y Horarios</a></li>
               <li class="pc-item"><a class="pc-link" href="#asistencia">Control de Asistencia</a></li>
               <li class="pc-item"><a class="pc-link" href="#horario">Asignación de Horarios</a></li>
-              <li class="pc-item"><a class="pc-link" href="#justificacion">Gestor de Ausencias/<br>Tardanzas</a></li>
+              <li class="pc-item"><a class="pc-link" href="#justificacion?context=empleado">Gestor de Ausencias/<br>Tardanzas</a></li>
             </ul>
           </li>
 
@@ -97,21 +112,24 @@
               </span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="#evaluacion">Seguimiento de <br> Evaluaciones</a></li>
-              <li class="pc-item"><a class="pc-link" href="#tiposCriterios">Tipos de Criterios</a></li>
+              <li class="pc-item"><a class="pc-link d-none" href="#tiposCriterios" id="tiposCriterios">Tipos de
+                  Criterios</a></li>
             </ul>
           </li>
 
 
-            <!-- Gestion de Licencias -->
+          <!-- Gestion de Licencias -->
           <li class="pc-item pc-hasmenu">
-            <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i
-                  class="ti ti-id"></i></span><span class="pc-mtext">
+            <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span
+                class="pc-mtext">
                 Gestion de Licencias
               </span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="#licencias">Gestor de Licencias</a></li>
-              <li class="pc-item"><a class="pc-link d-none" href="#licenciasAprobadas" id="aprobacionDeLicencias">Aprobacion de Licencias</a></li>
-              <li class="pc-item"><a class="pc-link d-none" href="#tiposLicencia" id="tiposDeLicencias">Tipos de Licencias</a></li>
+              <li class="pc-item"><a class="pc-link d-none" href="#licenciasAprobadas"
+                  id="aprobacionDeLicencias">Aprobacion de Licencias</a></li>
+              <li class="pc-item"><a class="pc-link d-none" href="#tiposLicencia" id="tiposDeLicencias">Tipos de
+                  Licencias</a></li>
             </ul>
           </li>
 
@@ -126,7 +144,7 @@
             </ul>
           </li>
 
-        
+
           <!-- Gestion de Organizacion -->
           <li class="pc-item pc-hasmenu d-none" id="gestionOrganizacional">
             <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i
@@ -395,41 +413,41 @@
     </div>
   </footer>
 
-<!-- DEPENDENCIAS BASE -->
-<script src="./lib/jquery/jquery-3.7.1.min.js"></script>
-<script src="dist/assets/js/plugins/popper.min.js"></script>
-<script src="dist/assets/js/plugins/bootstrap.min.js"></script>
-<script src="dist/assets/js/plugins/simplebar.min.js"></script>
-<script src="dist/assets/js/pcoded.js"></script>
-<script src="dist/assets/js/plugins/feather.min.js"></script>
+  <!-- DEPENDENCIAS BASE -->
+  <script src="./lib/jquery/jquery-3.7.1.min.js"></script>
+  <script src="dist/assets/js/plugins/popper.min.js"></script>
+  <script src="dist/assets/js/plugins/bootstrap.min.js"></script>
+  <script src="dist/assets/js/plugins/simplebar.min.js"></script>
+  <script src="dist/assets/js/pcoded.js"></script>
+  <script src="dist/assets/js/plugins/feather.min.js"></script>
 
-<!-- LIBRERÍAS DE TERCEROS -->
-<!-- Ventanas emergentes -->
-<script src="./lib/sweetalert/sweetalert2.all.min.js"></script>
+  <!-- LIBRERÍAS DE TERCEROS -->
+  <!-- Ventanas emergentes -->
+  <script src="./lib/sweetalert/sweetalert2.all.min.js"></script>
 
-<!-- Generar PDF -->
-<script src="./lib/jspdf/jspdf.umd.min.js"></script>
-<script src="./lib/jspdf/jspdf.plugin.autotable.min.js"></script>
+  <!-- Generar PDF -->
+  <script src="./lib/jspdf/jspdf.umd.min.js"></script>
+  <script src="./lib/jspdf/jspdf.plugin.autotable.min.js"></script>
 
-<!-- Generar Excel -->
-<script src="./lib/xlsx/xlsx.full.min.js"></script>
-<script src="./lib/exceljs/exceljs.min.js"></script>
+  <!-- Generar Excel -->
+  <script src="./lib/xlsx/xlsx.full.min.js"></script>
+  <script src="./lib/exceljs/exceljs.min.js"></script>
 
-<!-- Gráficos -->
-<script src="./lib/chartjs/chart.umd.min.js"></script>
+  <!-- Gráficos -->
+  <script src="./lib/chartjs/chart.umd.min.js"></script>
 
-<!-- Select2 -->
-<script src="./lib/select2/select2.min.js"></script>
+  <!-- Select2 -->
+  <script src="./lib/select2/select2.min.js"></script>
 
-<!-- Tooltips -->
-<script src="./lib/popper/core.min.js"></script>
-<script src="./lib/tippy/tippy-bundle.umd.min.js"></script>
+  <!-- Tooltips -->
+  <script src="./lib/popper/core.min.js"></script>
+  <script src="./lib/tippy/tippy-bundle.umd.min.js"></script>
 
-<!-- TUS ARCHIVOS PERSONALIZADOS -->
-<script src="./js/SelectorDePantalla/selectorDePantalla.js"></script>
-<script src="./js/authentication/auth.js"></script>
-<script src="./js/main.js"></script>
-<script src="./js/Vistas/accionesGeneral.js"></script>
+  <!-- TUS ARCHIVOS PERSONALIZADOS -->
+  <script src="./js/SelectorDePantalla/selectorDePantalla.js"></script>
+  <script src="./js/authentication/auth.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/Vistas/accionesGeneral.js"></script>
 
 
 </body>

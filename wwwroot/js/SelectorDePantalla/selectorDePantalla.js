@@ -1,15 +1,22 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.hash) {
-    window.location.hash = 'inicio';
+    window.location.hash = '#inicio';
   }
   CargarVistaPorHash();
 });
 
+window.addEventListener('hashchange', CargarVistaPorHash);
+
+// Función para cargar una vista HTML
 function CargarVista(view) {
-  fetch(`../views/${view}.html`)
+  // Separar hash y parámetro context si existe
+  let [vista, query] = view.split('?');
+  const params = new URLSearchParams(query);
+  const contexto = params.get('context');
+
+  fetch(`../views/${vista}.html`)
     .then(res => {
-      if (!res.ok) throw new Error(`No se encontró la vista: ${view}`);
+      if (!res.ok) throw new Error(`No se encontró la vista: ${vista}`);
       return res.text();
     })
     .then(html => {
@@ -31,29 +38,40 @@ function CargarVista(view) {
         document.body.appendChild(nuevoScript);
       });
 
-      ActualizarLinkActivo(); // actualizar menú luego de cargar vista
+      // Inicializar vistas específicas con context
+      if (vista === "justificacion") {
+        if (contexto === "personal" && typeof window.inicializarJustificacionPersonal === "function") {
+          window.inicializarJustificacionPersonal();
+        } else if (contexto === "empleado" && typeof window.inicializarJustificacionEmpleados === "function") {
+          window.inicializarJustificacionEmpleados();
+        }
+      }
+
+      ActualizarLinkActivo();
     })
     .catch(err => {
       console.error(err);
-      document.getElementById('app').innerHTML = `<p>Error cargando la vista: ${view}</p>`;
-      ActualizarLinkActivo(); // también actualizar menú en error para que no quede desactualizado
+      document.getElementById('app').innerHTML = `<p>Error cargando la vista: ${vista}</p>`;
+      ActualizarLinkActivo();
     });
 }
 
+// Función para cargar la vista actual según el hash
 function CargarVistaPorHash() {
-  let vista = window.location.hash.replace('#', '') || 'inicio';
+  const vista = window.location.hash.replace('#', '') || 'inicio';
   CargarVista(vista);
 }
 
+// Función para actualizar la clase "active" en el menú
 function ActualizarLinkActivo() {
   const vistaActual = window.location.hash.replace('#', '') || 'inicio';
 
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('.pc-item').forEach(item => item.classList.remove('active'));
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     const hrefVista = link.getAttribute('href').replace('#', '');
     if (hrefVista === vistaActual) {
       link.classList.add('active');
-      const itemNavPadre = link.closest('.nav-item');
+      const itemNavPadre = link.closest('.pc-item.pc-hasmenu');
       if (itemNavPadre) itemNavPadre.classList.add('active');
     } else {
       link.classList.remove('active');
@@ -61,4 +79,13 @@ function ActualizarLinkActivo() {
   });
 }
 
-window.addEventListener('hashchange', CargarVistaPorHash);
+// Inicializadores globales para justificacion
+window.inicializarJustificacionPersonal = function() {
+  console.log("Vista personal: mostrar solo asistencia y horario del usuario logueado");
+  // tu código específico para personal
+};
+
+window.inicializarJustificacionEmpleados = function() {
+  console.log("Vista RRHH: mostrar asistencias de todos los empleados");
+  // tu código específico para RRHH
+};

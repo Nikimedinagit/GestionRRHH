@@ -26,6 +26,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER Y MOSTARR LOS DATOS DE LA JUSTIFICACION SEGUN SUS FILTROS /////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaJustificacion>>> JustificacionFiltrar([FromBody] JustificacionFiltrar filtro)
         {
@@ -93,7 +94,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                     case "ADMINISTRADOR":
                         esEditable = true;
                         esPropia = true;
-                        claseBorde = ""; 
+                        claseBorde = "";
                         break;
                     case "RRHH":
                         if (j.Empleado.Email.Trim().ToLower() == emailActual)
@@ -123,9 +124,9 @@ namespace API_NET_CORE8_RRHH.Controllers
                         break;
 
                     case "EMPLEADO":
-                            esEditable = true;
-                            esPropia = true;
-                            claseBorde = "";
+                        esEditable = true;
+                        esPropia = true;
+                        claseBorde = "";
                         break;
                 }
 
@@ -153,6 +154,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UN JUSTIFICACION POR ID ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Justificacion>> GetJustificacion(int id)
         {
@@ -170,6 +172,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA DESCARGAR DOCUMENTO //////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("Documento/{id}")]
         public async Task<IActionResult> DescargarDocumento(int id)
         {
@@ -187,7 +190,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UNA NUEVA JUSTIFICACION ////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// 
         [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost]
         public async Task<ActionResult<Justificacion>> PostJustificacion([FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
@@ -244,6 +246,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutJustificacion(int id, [FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
         {
@@ -270,6 +273,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMINAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJustificacion(int id)
         {
@@ -285,11 +289,12 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA APROBAR UNA JUSTIFICACION /////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost("{id}/Aprobar")]
         public async Task<IActionResult> AprobarJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-            
+
             if (justificacion.Estados != EstadoJustificacion.PENDIENTE)
                 return BadRequest("Solo se pueden aprobar justificaciones pendientes.");
 
@@ -305,6 +310,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA RECHAZAR UNA JUSTIFICACION ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost("{id}/Rechazar")]
         public async Task<IActionResult> RechazarJustificacion(int id)
         {

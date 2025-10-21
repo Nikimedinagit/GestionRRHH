@@ -65,7 +65,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                 })
                 .FirstOrDefaultAsync();
 
-            // Obtenemos asistencia del día actual
             var hoy = DateTime.Today;
             var asistencia = await _context.Asistencia
                 .Where(a => a.EmpleadoId == empleado.Id && a.Fecha.Date == hoy)

@@ -26,11 +26,48 @@ namespace API_RRHH_TESIS2025.Controllers
             _userManager = userManager;
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LA INFO DEL USUARIO LOGUEADO /////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [HttpGet("MiInformacion")]
+        public async Task<ActionResult<VistaEmpleado>> MiInformacion()
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var usuario = await _context.Users.FindAsync(userId);
+            var emailUsuario = usuario?.Email?.Trim().ToLower();
+            
+            var empleado = await _context.Empleado
+                .Include(e => e.Localidad)
+                .Include(e => e.Puesto)
+                .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+                .Select(e => new VistaEmpleado
+                {
+                    Id = e.Id,
+                    NombreCompleto = e.NombreCompleto,
+                    DNI = e.DNI,
+                    Direccion = e.Direccion,
+                    FechaNacimientoString = e.FechaNacimiento.ToString("dd/MM/yyyy"),
+                    EstadoCivilesString = e.EstadoCiviles.ToString(),
+                    Email = e.Email,
+                    Telefono = e.Telefono,
+                    Cuil = e.Cuil,
+                    CantidadHijos = e.CantidadHijos,
+                    TipoSexoString = e.TipoSexo.ToString(),
+                    LocalidadIdString = e.Localidad.Nombre,
+                    PuestoIdString = e.Puesto.Descripcion,
+                    NroLegajo = e.NroLegajo
+                }).FirstOrDefaultAsync();
+
+            if (empleado == null) return NotFound();
+            return empleado;
+        }
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA BTENER LOS EMPELADOS SEGUN SU FILTRO Y MOSTRAR EN LAS VISTAS /////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<VistaEmpleado>>> FiltrarEmpleado([FromBody] FiltrarEmpleado filtro)
         {
@@ -39,8 +76,13 @@ namespace API_RRHH_TESIS2025.Controllers
                 .Include(e => e.Puesto)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-                obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+
+                if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+                    obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
 
             if (filtro.DNI.HasValue)
                 obtenerEmpleados = obtenerEmpleados.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
@@ -98,6 +140,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UN EMPLEADO POR ID ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Empleado>> GetEmpleado(int id)
         {
@@ -115,6 +158,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UN EMPLEADO ////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
         {
@@ -175,6 +219,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UN EMPLEADO ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
         {
@@ -236,6 +281,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///  METDO APRA ALTERNAR EL ELIMINADO DE UN EMPLEADO /////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmpleado(int id)
         {

@@ -77,9 +77,22 @@ function MostrarOpcionesSidebarPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
+  // Mostrar opciones comunes
+  $("#miPanelPersonal, #gestionDeDesempeno, #gestionDeLicencias, #gestionDeCursos").removeClass("d-none");
+
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #gestionOrganizacional, #gestionGeografica, #gestionUsuarios").removeClass("d-none");
+    // Mostrar módulos de gestión completa
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #gestionOrganizacional, #gestionGeografica, #gestionUsuarios, #gestionEmpleados, #tiposCriterios").removeClass("d-none");
+
+    // Mostrar solo ciertas opciones del Panel Personal
+    $("#miInformacion, #asistenciaHorarios").removeClass("d-none");
+    $("#justificacionPersonal").addClass("d-none");
+
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
-   
+    // Ocultar módulos administrativos
+    $("#gestionOrganizacional, #gestionGeografica, #gestionUsuarios, #gestionEmpleados, #tiposCriterios, #aprobacionDeLicencias, #tiposDeLicencias").addClass("d-none");
+
+    // Mostrar todo el Panel Personal completo
+    $("#miInformacion, #asistenciaHorarios, #justificacionPersonal").removeClass("d-none");
   }
 }

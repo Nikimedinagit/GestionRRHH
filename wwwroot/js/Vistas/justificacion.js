@@ -975,27 +975,6 @@ async function RechazarJustificacion(id) {
     });
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// FUNCION PARA MOSTRAR EL ERROR DE CATCH //////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-function MostrarErrorCatch() {
-  Swal.fire({
-    title: "¡Error!",
-    html: `
-      <div class="text-center">
-        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-      </div>
-    `,
-    confirmButtonText: "Entendido",
-    customClass: {
-      popup: "shadow rounded-3 p-3",
-      confirmButton: "btn btn-danger",
-      title: "fs-5 text-dark mb-2",
-      htmlContainer: "text-muted fs-6",
-    },
-    buttonsStyling: false,
-  });
-}
 
 function MostrarOpcionesJustificacionesPorRol() {
   const rol = getRol()?.toUpperCase();
