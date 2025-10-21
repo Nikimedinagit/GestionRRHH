@@ -1,5 +1,3 @@
-
-
 <div class="px-3 py-3">
 
     <!-- ======================================= Título ====================================== -->
@@ -14,7 +12,8 @@
     <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
     <div style="background-color: white; border-radius: 5px; padding: 10px">
 
-      
+        <div id="fondoOscuro" onclick="CerrarPanelEmpleado()"></div>
+
 
         <!-- ======================================= Tarjetas de Informacion Personal ====================================== -->
         <div id="contenedorInformacionPersonal" class="row g-4"></div>
@@ -22,7 +21,136 @@
     </div>
 
 
+    <!--==================================== Panel Deslizante Formulario de Empleado ===================================== -->
+    <div id="panelEmpleado" aria-modal="true" role="dialog" aria-labelledby="panelTituloEmpleado" tabindex="-1"
+        class="w-30">
+        <div class="panel-header">
+            <h2 id="panelTituloEmpleado" class="panel-title">
+                Formulario de Empleado
+            </h2>
+        </div>
+
+        <div class="panel-body">
+            <form id="formEmpleado">
+                <input type="hidden" id="IdEmpleado" />
+
+                <div class="form-grid" style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+          ">
+                    <div class="form-group position-relative mb-3">
+                        <input type="text" id="NombreEmpleado" class="form-control" placeholder=" " />
+                        <label for="NombreEmpleado">Nombre</label>
+                        <div class="invalid-feedback" id="errorNombreEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="number" id="DniEmpleado" class="form-control" placeholder=" " />
+                        <label for="DniEmpleado">DNI</label>
+                        <div class="invalid-feedback" id="errorDniEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="number" id="CuilEmpleado" class="form-control" placeholder=" " />
+                        <label for="CuilEmpleado">CUIL</label>
+                        <div class="invalid-feedback" id="errorCuilEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="text" id="TelefonoEmpleado" class="form-control" placeholder=" " />
+                        <label for="TelefonoEmpleado">Teléfono</label>
+                        <div class="invalid-feedback" id="errorTelefonoEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="email" id="EmailEmpleado" class="form-control" placeholder=" " />
+                        <label for="EmailEmpleado">Email</label>
+                        <div class="invalid-feedback" id="errorEmailEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="date" id="FechaNacimientoEmpleado" class="form-control" placeholder=" " />
+                        <label for="FechaNacimientoEmpleado">Fecha Nacimiento</label>
+                        <div class="invalid-feedback" id="errorFechaNacimientoEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="text" id="DireccionEmpleado" class="form-control" placeholder=" " />
+                        <label for="DireccionEmpleado">Dirección</label>
+                        <div class="invalid-feedback" id="errorDireccionEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <select id="EstadoCivilEmpleado" class="form-control" required>
+                            <option value="0" disabled selected hidden>
+                                Seleccione
+                            </option>
+                            <option value="1">SOLTERO/A</option>
+                            <option value="2">CASADO/A</option>
+                            <option value="3">DIVORCIADO/A</option>
+                            <option value="4">VIUDO/A</option>
+                        </select>
+                        <label for="EstadoCivilEmpleado">Estado Civil</label>
+                        <div class="invalid-feedback" id="errorEstadoCivilEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="number" id="CantidadHijosEmpleado" class="form-control" placeholder=" " />
+                        <label for="CantidadHijosEmpleado">Cantidad Hijos</label>
+                        <div class="invalid-feedback" id="errorCantidadHijosEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <select id="TipoSexoEmpleado" class="form-control" required>
+                            <option value="0" disabled selected hidden>
+                                Seleccione
+                            </option>
+                            <option value="1">MASCULINO</option>
+                            <option value="2">FEMENINO</option>
+                            <option value="3">NO BINARIO</option>
+                            <option value="4">OTRO</option>
+                        </select>
+                        <label for="TipoSexoEmpleado">Tipo de Sexo</label>
+                        <div class="invalid-feedback" id="errorTipoSexoEmpleado"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <select id="IdLocalidad" class="form-control" required>
+                            <option value="" disabled selected hidden>
+                                Seleccione
+                            </option>
+                        </select>
+                        <label for="IdLocalidad">Localidad</label>
+                        <div class="invalid-feedback" id="errorIdLocalidad"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <select id="IdPuesto" class="form-control" required>
+                            <option value="0" disabled selected hidden>
+                                Seleccione
+                            </option>
+                        </select>
+                        <label for="IdPuesto">Puesto</label>
+                        <div class="invalid-feedback" id="errorIdPuesto"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel-footer">
+            <button class="btn btn-cancelar" onclick="CerrarPanelEmpleado()">
+                Cancelar
+            </button>
+            <button type="submit" class="btn btn-guardar" onclick="BuscarEmpleadoId()">
+                Guardar
+            </button>
+        </div>
+    </div>
+
+
 </div>
 
-
+<script src="../js/Vistas/common/obtenerLocalidad.js"></script>
+<script src="../js/Vistas/common/obtenerPuesto.js"></script>
 <script src="../js/Vistas/informacion.js"></script>

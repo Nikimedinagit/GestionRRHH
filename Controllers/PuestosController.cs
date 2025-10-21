@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class PuestosController : ControllerBase
@@ -169,7 +168,7 @@ namespace API_RRHH_TESIS2025.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UN PUESTO POR ID /////////////////////////////////////////////////////// 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Puesto>> GetPuesto(int id)
         {
