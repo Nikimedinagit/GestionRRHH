@@ -45,20 +45,20 @@ function CerrarPanelEmpleado() {
 // FUNCION PARA OBTENER LA INFO DEL USUARIO LOGUEADO
 //////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerMiInformacion() {
-    try {
-        const resp = await authFetch('Empleados/MiInformacion', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const empleado = await resp.json();
+  try {
+    const resp = await authFetch('Empleados/MiInformacion', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const empleado = await resp.json();
 
-        MostrarMiInformacion(empleado);
-        LimpiarFormularioEmpleado();
-    } catch (error) {
-        MostrarErrorCatch();
-    }
+    MostrarMiInformacion(empleado);
+    LimpiarFormularioEmpleado();
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 }
 
 
@@ -66,115 +66,126 @@ async function ObtenerMiInformacion() {
 // FUNCION PARA MOSTRAR LA CARD DEL USUARIO LOGUEADO
 //////////////////////////////////////////////////////////////////////////////////////
 function MostrarMiInformacion(empleado) {
-    const contenedor = $("#contenedorInformacionPersonal");
-    contenedor.empty();
+  const contenedor = $("#contenedorInformacionPersonal");
+  contenedor.empty();
 
-    const bordeColor = "#0d6efd";
+  const bordeColor = "#0d6efd";
 
-    const card = `
-        <div class="col-12 d-flex">
-        <div class="card shadow-sm rounded-3 w-100 h-100" style="border-left: 4px solid ${bordeColor};">
+  const card = `
+    <div class="col-12 d-flex">
+      <div class="card shadow-sm rounded-3 w-100 h-100" style="border-left: 4px solid ${bordeColor};">
 
-            <div class="card shadow-sm m-2 p-3 d-flex flex-row align-items-center justify-content-between">
-            <div class="d-flex flex-row align-items-center gap-3">
-                <img src="./dist/assets/images/user/avatar-8.jpg"
-                    alt="Foto" class="rounded-circle"
-                    style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #a8dadc;">
-                <div>
-                <h5 class="fw-bold mb-0" style="font-size: 1rem;">${empleado.nombreCompleto}</h5>
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="badge fw-bold" style="background-color: #e3f2fd; color: #1565c0; font-size: 0.75rem; letter-spacing: 0.05rem;">
-                    ${empleado.puestoIdString}
-                    </span>
-                </div>
-                </div>
+        <div class="card shadow-sm m-2 p-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+
+          <div class="d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
+            <img src="./dist/assets/images/user/avatar-1.jpg"
+              alt="Foto" class="rounded-circle"
+              style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #a8dadc;">
+            
+            <div>
+              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${empleado.nombreCompleto}</h5>
+              <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mt-2">
+                <span class="badge fw-bold" style="background-color: #e3f2fd; color: #1565c0; font-size: 0.75rem; letter-spacing: 0.05rem;">
+                  ${empleado.puestoIdString}
+                </span>
+              </div>
+
+              <div class="d-md-none mt-3 d-flex justify-content-center">
+                <button class="btn btn-agregar w-100" onclick="MostrarModalEditarEmpleado(${empleado.id})">
+                  <i class="fa-solid fa-pen-to-square me-1"></i>Editar
+                </button>
+              </div>
             </div>
+          </div>
 
+          <div class="d-none d-md-block">
             <button class="btn btn-agregar" onclick="MostrarModalEditarEmpleado(${empleado.id})">
-                <i class="fa-solid fa-pen-to-square me-1"></i>Editar
+              <i class="fa-solid fa-pen-to-square me-1"></i>Editar
             </button>
-            </div>
+          </div>
 
-            <div class="card shadow-sm m-2 p-3">
-            <h6 class="fw-bold mb-3">
-                <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Personal</span>
-            </h6>
-            <div class="row mb-2">
-                <div class="col-md-6 mb-2">
-                <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                    <strong>Dni:</strong> ${empleado.dni || "-"}
-                </span>
-                </div>
-                <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
-                <strong>Cuil:</strong> ${empleado.cuil || "-"}
-                </div>
-                <div class="col-md-6 mb-2">
-                <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                    <strong>Fecha de Nacimiento:</strong> ${empleado.fechaNacimientoString || "-"}
-                </span>
-                </div>
-                <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
-                <strong>Localidad:</strong> ${empleado.localidadIdString || "-"}
-                </div>
-                <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
-                <strong>Dirección:</strong> ${empleado.direccion || "-"}
-                </div>
-                <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
-                <strong>Cantidad de Hijos:</strong> ${empleado.cantidadHijos || 0}
-                </div>
-                <div class="col-md-6 mb-2">
-                <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+        </div>
+
+        <div class="card shadow-sm m-2 p-3">
+          <h6 class="fw-bold mb-3">
+            <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Personal</span>
+          </h6>
+          <div class="row mb-2">
+            <div class="col-md-6 mb-2">
+              <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                <strong>Dni:</strong> ${empleado.dni || "-"}
+              </span>
+            </div>
+            <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
+              <strong>Cuil:</strong> ${empleado.cuil || "-"}
+            </div>
+            <div class="col-md-6 mb-2">
+              <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                <strong>Fec. de Nacimiento:</strong> ${empleado.fechaNacimientoString || "-"}
+              </span>
+            </div>
+            <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
+              <strong>Localidad:</strong> ${empleado.localidadIdString || "-"}
+            </div>
+            <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
+              <strong>Dirección:</strong> ${empleado.direccion || "-"}
+            </div>
+            <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
+              <strong>Cant. de Hijos:</strong> ${empleado.cantidadHijos || 0}
+            </div>
+            <div class="col-md-6 mb-2">
+              <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
                 <strong>Estado Civil:</strong> ${empleado.tipoSexoString || "-"}
-                </span>
-                </div>
+              </span>
             </div>
-            </div>
-
-            <div class="row m-2 g-2">
-            <div class="col-md-6">
-                <div class="card shadow-sm p-3 h-100">
-                <h6 class="fw-bold mb-2">
-                    <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Contacto</span>
-                </h6>
-                <div class="row">
-                    <div class="col-md-12 mb-2">
-                    <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                        <strong>Email:</strong> ${empleado.email || "-"}
-                    </span>
-                    </div>
-                    <div class="col-md-12 mb-2">
-                        <strong>Teléfono:</strong> ${empleado.telefono || "-"}
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card shadow-sm p-3 h-100">
-                <h6 class="fw-bold mb-2">
-                    <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Laboral</span>
-                </h6>
-                <div class="row">
-                    <div class="col-md-12 mb-2">
-                    <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                        <strong>Puesto:</strong> ${empleado.puestoIdString || "-"}
-                    </span>
-                    </div>
-                    <div class="col-md-12 mb-2">
-                    <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                        <strong>Número de Legajo:</strong> ${empleado.nroLegajo || "-"}
-                    </span>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-
+          </div>
         </div>
-        </div>
-        `;
 
-    contenedor.append(card);
+        <div class="row m-2 g-2">
+          <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100">
+              <h6 class="fw-bold mb-2">
+                <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Contacto</span>
+              </h6>
+              <div class="row">
+                <div class="col-md-12 mb-2">
+                  <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                    <strong>Email:</strong> ${empleado.email || "-"}
+                  </span>
+                </div>
+                <div class="col-md-12 mb-2">
+                  <strong>Teléfono:</strong> ${empleado.telefono || "-"}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100">
+              <h6 class="fw-bold mb-2">
+                <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Laboral</span>
+              </h6>
+              <div class="row">
+                <div class="col-md-12 mb-2">
+                  <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                    <strong>Puesto:</strong> ${empleado.puestoIdString || "-"}
+                  </span>
+                </div>
+                <div class="col-md-12 mb-2">
+                  <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                    <strong>Nº de Legajo:</strong> ${empleado.nroLegajo || "-"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    `;
+
+  contenedor.append(card);
 }
 
 
@@ -219,8 +230,8 @@ async function MostrarModalEditarEmpleado(id) {
 function BuscarEmpleadoId() {
   const id = parseInt(document.getElementById("IdEmpleado").value);
 
-    EditarEmpleado(id);
-  
+  EditarEmpleado(id);
+
 }
 
 
