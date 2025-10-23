@@ -105,7 +105,6 @@ function MostrarJustificacionesDesktop(data) {
   };
 
   data.forEach((element) => {
-        console.log("Empleado:", element.empleadoString, "ClaseBorde raw:", element.claseBorde);
 
     const documentoHtml = element.documentoNombre
       ? `
