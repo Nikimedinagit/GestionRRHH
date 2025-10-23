@@ -53,22 +53,11 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (rolActual == "SUPERVISOR")
             {
                 var supervisor = await _context.Empleado
-                    .Include(e => e.Puesto)
-                    .ThenInclude(p => p.Sector)
                     .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-            if (supervisor != null)
-            {
-                var sectorId = supervisor.Puesto?.SectorId;
-
-                obtenerJustificaciones = obtenerJustificaciones
-                    .Where(j =>
-                        j.Empleado.Email.Trim().ToLower() == emailActual || 
-                        j.Empleado.Puesto.SectorId == sectorId              
-                    );}
-            else
-            {
+                if (supervisor != null)
+                    obtenerJustificaciones = obtenerJustificaciones.Where(j => j.EmpleadoId == supervisor.Id);
+                else
                 return Ok(new List<VistaJustificacion>());
-            }
             }
 
             if (filtro.EstadoJustificacion.HasValue)
@@ -104,11 +93,11 @@ namespace API_NET_CORE8_RRHH.Controllers
                     case "ADMINISTRADOR":
                         esEditable = true;
                         esPropia = true;
-                        claseBorde = ""; 
+                        claseBorde = "";
                         break;
 
                     case "RRHH":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual) 
+                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
                         {
                             esEditable = true;
                             esPropia = true;
@@ -118,34 +107,17 @@ namespace API_NET_CORE8_RRHH.Controllers
                         {
                             esEditable = false;
                             esPropia = false;
-                            claseBorde = ""; 
+                            claseBorde = "yellow";
                         }
                         break;
 
-                case "SUPERVISOR":
-                    var supervisor = await _context.Empleado
-                        .Include(e => e.Puesto)
-                        .ThenInclude(p => p.Sector)
-                        .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+                    case "SUPERVISOR":
 
-                    if (j.Empleado.Email.Trim().ToLower() == emailActual)
-                    {
-                        esEditable = true;
-                        esPropia = true;
-                        claseBorde = "green";
-                    }
-                    else if (supervisor != null)
-                    {
-                        var empleadoJustificacion = await _context.Empleado
-                            .Include(e => e.Puesto)
-                            .ThenInclude(p => p.Sector)
-                            .FirstOrDefaultAsync(e => e.Id == j.EmpleadoId);
-
-                        if (empleadoJustificacion?.Puesto?.SectorId == supervisor.Puesto?.SectorId)
+                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
                         {
-                            esEditable = false;
-                            esPropia = false;
-                            claseBorde = "yellow";
+                            esEditable = true;
+                            esPropia = true;
+                            claseBorde = "";
                         }
                         else
                         {
@@ -153,24 +125,18 @@ namespace API_NET_CORE8_RRHH.Controllers
                             esPropia = false;
                             claseBorde = "";
                         }
-                    }
-                    break;
+                        break;
 
                     case "EMPLEADO":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual) 
+                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
                         {
                             esEditable = true;
                             esPropia = true;
-                            claseBorde = "green";
-                        }
-                        else
-                        {
-                            esEditable = false;
-                            esPropia = false;
-                            claseBorde = "yellow"; 
+                            claseBorde = "";
                         }
                         break;
                 }
+
                 listaVista.Add(new VistaJustificacion
                 {
                     Id = j.Id,
