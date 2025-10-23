@@ -36,7 +36,7 @@ namespace API_RRHH_TESIS2025.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var usuario = await _context.Users.FindAsync(userId);
             var emailUsuario = usuario?.Email?.Trim().ToLower();
-            
+
             var empleado = await _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
@@ -61,6 +61,101 @@ namespace API_RRHH_TESIS2025.Controllers
 
             if (empleado == null) return NotFound();
             return empleado;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER LOS EMPLEADOS POR SECTOR CON HORARIO ///////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("FiltrarPorSectorYHorario")]
+        public async Task<ActionResult<IEnumerable<object>>> FiltrarEmpleadoPorSectorYHorario([FromBody] FiltrarEmpleado filtro)
+        {
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+            var empleadosObtener = _context.Empleado
+                .Include(e => e.Puesto)
+                .Include(e => e.Localidad)
+                .Include(e => e.Horario)
+                .AsQueryable();
+
+            if (rolActual == "SUPERVISOR")
+            {
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+                if (supervisor == null)
+                    return Ok(new List<object>());
+
+                var sectorId = supervisor.Puesto.SectorId;
+                empleadosObtener = empleadosObtener.Where(e => e.Puesto.SectorId == sectorId);
+            }
+
+            if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+                empleadosObtener = empleadosObtener.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+
+            if (filtro.DNI.HasValue)
+                empleadosObtener = empleadosObtener.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
+
+            if (!string.IsNullOrEmpty(filtro.NroLegajo))
+                empleadosObtener = empleadosObtener.Where(e => e.NroLegajo.StartsWith(filtro.NroLegajo));
+
+            if (filtro.EstadoCiviles.HasValue)
+                empleadosObtener = empleadosObtener.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+
+            if (filtro.TipoSexo.HasValue)
+                empleadosObtener = empleadosObtener.Where(e => (int)e.TipoSexo == filtro.TipoSexo);
+
+            if (filtro.LocalidadId.HasValue)
+                empleadosObtener = empleadosObtener.Where(e => e.LocalidadId == filtro.LocalidadId.Value);
+
+            if (filtro.PuestoId.HasValue)
+                empleadosObtener = empleadosObtener.Where(e => e.PuestoId == filtro.PuestoId.Value);
+
+            var empleados = await empleadosObtener
+                .OrderBy(e => e.Eliminado)
+                .ThenBy(e => e.NombreCompleto)
+                .Select(e => new
+                {
+                    e.Id,
+                    e.NombreCompleto,
+                    e.DNI,
+                    e.NroLegajo,
+                    e.Email,
+                    e.Telefono,
+                    e.Direccion,
+                    e.Cuil,
+                    e.CantidadHijos,
+                    FechaNacimiento = e.FechaNacimiento.ToString("dd/MM/yyyy"),
+                    e.Eliminado,
+                    EstadoCivil = e.EstadoCiviles.ToString(),
+                    TipoSexo = e.TipoSexo.ToString(),
+                    Puesto = e.Puesto.Descripcion,
+                    Localidad = e.Localidad.Nombre,
+                    Horario = e.Horario
+                        .OrderByDescending(h => h.Id)
+                        .Select(h => new
+                        {
+                            h.TipoHorario,
+                            TipoHorarioString = h.TipoHorario.ToString(),
+                            h.HorarioInicioString,
+                            h.HorarioFinString,
+                            h.SegundoHorarioInicioString,
+                            h.SegundoHorarioFinString,
+                            h.Lunes,
+                            h.Martes,
+                            h.Miercoles,
+                            h.Jueves,
+                            h.Viernes,
+                            h.Sabado,
+                            h.Domingo
+                        })
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return Ok(empleados);
         }
 
 

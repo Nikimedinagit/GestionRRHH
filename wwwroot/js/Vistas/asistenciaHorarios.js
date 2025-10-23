@@ -87,7 +87,7 @@ function MostrarAsistenciaHorario(data) {
             <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${bordeEstado};">
                 <h5 class="fw-bold mb-2 fs-6">Asistencia de Hoy</h5>
                 <div class="d-flex align-items-center mb-2 flex-wrap">
-                    <img src="${asistencia.fotoRuta || "No hay foto"}" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="${asistencia.fotoRuta ||"./img/avatarAusente.png" }" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                     <div>
                         <h5 class="mb-1 fw-bold fs-6">${data.empleado || "Sin Registro"}</h5>
                         <span class="badge ${claseEstado} px-2 py-1 fs-7">${estado}</span>

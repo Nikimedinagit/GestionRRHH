@@ -1,0 +1,366 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Empleados del Sector</h3>
+        <p class="text-muted fs-6 mb-0">
+            Visualizá la información y el horario asignado de los empleados a tu cargo.
+        </p>
+    </div>
+
+    <hr />
+
+
+    <!--==================================== Contenedor de Botones y Tabla ===================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!--================================ Contenedor Filtros ===================================== -->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-3">
+                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="NroLegajoFiltro" class="form-label-fija">Legajo</label>
+                    <input type="text" class="form-control filtro-select" id="NroLegajoFiltro"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="DniEmpleadoFiltro" class="form-label-fija">DNI</label>
+                    <input type="number" class="form-control filtro-select" id="DniEmpleadoFiltro"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="TipoSexoEmpleadoFiltro" class="form-label-fija">Tipo de Sexo</label>
+                    <select id="TipoSexoEmpleadoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">MASCULINO</option>
+                        <option value="2">FEMENINO</option>
+                        <option value="3">NO BINARIO</option>
+                        <option value="4">OTRO</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="EstadoCivilEmpleadoFiltro" class="form-label-fija">Estado Civil</label>
+                    <select id="EstadoCivilEmpleadoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">SOLTERO</option>
+                        <option value="2">CASADO</option>
+                        <option value="3">DIVORCIADO</option>
+                        <option value="4">VIUDO</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="IdLocalidadFiltro" class="form-label-fija">Localidad</label>
+                    <select id="IdLocalidadFiltro" class="form-control filtro-select">
+                        <option value="0">[Todas]</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
+                    <select id="IdPuestoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todas]</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!--================================ Contenedor Generar ===================================== -->
+        <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                </button>
+                <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+                    <i class="fa-solid fa-file-excel me-1"></i> Excel
+                </button>
+            </div>
+        </div>
+
+        <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
+
+
+        <!--================================ Cards de Empleados ===================================== -->
+        <div id="empleadosContainer" class="row g-4"></div>
+    </div>
+
+
+    <!-- ====================================== Offcanvas Detalle Empleado ===================================== -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleado"
+        aria-labelledby="tituloDetalleEmpleado" style="
+      width: 380px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    ">
+        <div class="detalle-empleado-contenedor">
+            <div class="detalle-empleado-encabezado row align-items-start">
+
+                <div class="col-10">
+                    <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
+                        Detalle del Empleado
+                    </h5>
+                    <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+                        Información personal y de contacto del empleado seleccionado.
+                    </p>
+                </div>
+
+                <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+                </div>
+            </div>
+
+            <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+            <div class="offcanvas-body p-2" style="
+          font-size: 0.75rem;
+          line-height: 1.1;
+          max-height: calc(100vh - 70px);
+          overflow-y: auto;
+        ">
+                <div class="detalle-empleado-seccion">
+                    <div class="text-center mb-3">
+                        <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+                            Nombre del Empleado
+                        </h4>
+                        <span id="detallePuesto" class="text-muted" style="font-size: 0.85rem">Puesto del
+                            Empleado</span>
+                        <br>
+                        <span id="detalleLegajo" class="text-muted font-bold" style="font-size: 0.85rem">Legajo del
+                            Empleado</span>
+                    </div>
+
+                    <div class="detalle-empleado-tarjeta">
+                        <div class="detalle-empleado-seccion">
+                            <p class="detalle-empleado-titulo-seccion">
+                                Información Personal
+                            </p>
+
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">DNI:</span>
+                                <span class="detalle-empleado-valor" id="detalleDni"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">CUIL:</span>
+                                <span class="detalle-empleado-valor" id="detalleCuil"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Fecha Nacimiento:</span>
+                                <span class="detalle-empleado-valor" id="detalleFechaNacimiento"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Sexo:</span>
+                                <span class="detalle-empleado-valor" id="detalleSexo"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Estado Civil:</span>
+                                <span class="detalle-empleado-valor" id="detalleEstadoCivil"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Hijos:</span>
+                                <span class="detalle-empleado-valor" id="detalleCantidadHijos"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Localidad:</span>
+                                <span class="detalle-empleado-valor" id="detalleLocalidad"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+                        <div class="detalle-empleado-seccion">
+                            <p class="detalle-empleado-titulo-seccion">Contacto</p>
+
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Teléfono:</span>
+                                <span class="detalle-empleado-valor" id="detalleTelefono"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Email:</span>
+                                <span class="detalle-empleado-valor" id="detalleEmail"></span>
+                            </div>
+                            <div class="detalle-empleado-fila">
+                                <span class="detalle-empleado-etiqueta">Dirección:</span>
+                                <span class="detalle-empleado-valor" id="detalleDireccion"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--  ====================================== Offcanvas Detalle Horario ===================================== -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHorario"
+        aria-labelledby="tituloDetalleHorario" style="
+          width: 360px;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        ">
+        <div class="detalle-horario-contenedor">
+            <div class="detalle-horario-encabezado row align-items-start">
+                <div class="col-10">
+                    <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
+                        Detalle de Horarios y Días
+                    </h5>
+                    <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+                        Información detallada del horario seleccionado.
+                    </p>
+                </div>
+
+                <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+                </div>
+            </div>
+
+            <hr style="margin-bottom: 1rem; margin-top: 1rem;" />
+
+            <div class="offcanvas-body p-2" style="
+      font-size: 0.75rem;
+      line-height: 1.1;
+      max-height: calc(100vh - 70px);
+      overflow-y: auto;
+    ">
+                <div class="detalle-horario-seccion">
+
+                    <div class="detalle-horario-tarjeta">
+                        <div class="detalle-horario-seccion">
+                            <p class="detalle-horario-titulo-seccion">
+                                Información de Horarios
+                            </p>
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Lunes:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioLunes"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinLunes"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoLunes2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioLunes2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinLunes2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Martes:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioMartes"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinMartes"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoMartes2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioMartes2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinMartes2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Miércoles:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioMiercoles"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinMiercoles"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoMiercoles2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioMiercoles2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinMiercoles2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Jueves:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioJueves"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinJueves"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoJueves2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioJueves2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinJueves2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Viernes:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioViernes"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinViernes"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoViernes2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioViernes2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinViernes2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Sábado:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioSabado"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinSabado"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoSabado2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioSabado2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinSabado2"></span>
+                                </div>
+                            </div>
+
+                            <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
+
+                            <div class="detalle-horario-fila">
+                                <span class="detalle-horario-etiqueta">Domingo:</span>
+                                <div class="detalle-horario-turno">
+                                    <span class="detalle-horario-valor" id="detalleInicioDomingo"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinDomingo"></span>
+                                </div>
+                                <div class="detalle-horario-turno" id="turnoDomingo2" style="display:none;">
+                                    <span class="detalle-horario-valor" id="detalleInicioDomingo2"></span> a
+                                    <span class="detalle-horario-valor" id="detalleFinDomingo2"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/empleadoPorSector.js"></script>
