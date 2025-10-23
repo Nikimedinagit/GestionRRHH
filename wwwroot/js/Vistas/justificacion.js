@@ -89,14 +89,14 @@ function MostrarJustificacionesDesktop(data) {
   const contenedor = $("#contenedorJustificaciones");
   contenedor.empty();
 
-  const rol = getRol().trim().toUpperCase();
-
   if (!Array.isArray(data) || data.length === 0) {
     contenedor.append(
       "<div class='text-center text-muted py-3'>No hay justificaciones para mostrar.</div>"
     );
     return;
   }
+
+  const rol = getRol().trim().toUpperCase();
 
   const justificacionColor = {
     PENDIENTE: "badge-pendiente",
@@ -105,7 +105,6 @@ function MostrarJustificacionesDesktop(data) {
   };
 
   data.forEach((element) => {
-
     const documentoHtml = element.documentoNombre
       ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
@@ -117,10 +116,56 @@ function MostrarJustificacionesDesktop(data) {
       `
       : "";
 
+    let claseBorde = "";
+    switch (element.claseBorde) {
+      case "green": claseBorde = "border-success"; break;
+      case "yellow": claseBorde = "border-warning"; break;
+      default: claseBorde = "";
+    }
+
     const estadoNombre = element.estadoString || "PENDIENTE";
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
 
+    // Validación de 7 días para edición
+    const fechaParts = fecha.split("/");
+    const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
+    const hoy = new Date();
+    const limite = new Date(fechaIncidente);
+    limite.setDate(limite.getDate() + 7);
+
+    let botonEditar = "";
+    let botonEliminar = "";
+
+    // BOTÓN EDITAR
+    if (((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia && hoy <= limite && estadoNombre === "PENDIENTE") ||
+        ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite)) {
+      botonEditar = `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div>
+            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
+          </div>
+        </div>`;
+    }
+
+    // BOTÓN ELIMINAR
+    if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite) {
+      botonEliminar = `
+        <button class='btn-eliminar' style='background: none; border: none;' 
+          onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
+          <i class='bi bi-trash3 icono-elimina-detalle'></i>
+        </button>`;
+    } else if ((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia && estadoNombre === "PENDIENTE" && hoy <= limite) {
+      botonEliminar = `
+        <button class='btn-eliminar' style='background: none; border: none;' 
+          onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
+          <i class='bi bi-trash3 icono-elimina-detalle'></i>
+        </button>`;
+    }
+
+    // BOTÓN ACCIÓN (Aprobar/Rechazar) solo ADMIN/RRHH
     let botonAccion = "";
     if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE") {
       botonAccion = `
@@ -131,36 +176,12 @@ function MostrarJustificacionesDesktop(data) {
               <i class="bi bi-sliders icono-accion-licencia"></i>
             </button>
           </div>
-        </div>
-      `;
-    }
-
-    let botonEditar = "";
-    if (estadoNombre === "PENDIENTE" && (rol === "ADMINISTRADOR" || rol === "RRHH" || element.esPropia)) {
-      const fechaParts = fecha.split("/");
-      const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
-      const hoy = new Date();
-      const limite = new Date(fechaIncidente);
-      limite.setDate(limite.getDate() + 7);
-
-      if (hoy <= limite) {
-        botonEditar = `
-          <div class="d-flex justify-content-between align-items-center mt-2">
-            <div>
-              <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                <i class="bi bi-pencil-square icono-editar"></i>
-              </button>
-            </div>
-          </div>
-        `;
-      }
+        </div>`;
     }
 
     const item = $(`
-      <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between"  style = "border-left: 3px solid ${element.claseBorde === "#dee2e6"} !important;">
+      <div class="curso-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : "#dee2e6"}">
         <div class="d-flex justify-content-between align-items-center w-100" style="gap: 20px;">
-          
-          <!-- Nombre del empleado -->
           <div class="d-flex align-items-center" style="gap: 10px; flex: 1;">
             ${botonEditar}
             <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.empleadoString || "Sin nombre"}">
@@ -168,17 +189,16 @@ function MostrarJustificacionesDesktop(data) {
             </div>
           </div>
 
-          <!-- Fecha en el centro -->
           <div class="text-muted text-center" style="opacity: 0.6; min-width: 120px; flex: 1;">
             Día del incidente: ${fecha}
           </div>
 
-          <!-- Estado y flecha -->
           <div class="d-flex align-items-center justify-content-end" style="gap: 20px; flex: 1;">
             <div class="badge ${claseJustificacion}" title="${estadoNombre}">
               ${estadoNombre}
             </div>
             ${botonAccion}
+            ${botonEliminar}
             <div>
               <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
                 <i class="bi bi-chevron-down"></i>
@@ -196,7 +216,6 @@ function MostrarJustificacionesDesktop(data) {
         </div>
         <hr style="margin-bottom: 1rem;" />
         <div class="d-flex gap-3 mb-3">
-          <!-- Motivo -->
           <div class="p-3 rounded" style="flex: 2; background-color: #f8fbfd;" id="motivoDiv">
             <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">MOTIVO</small>
             <hr style="margin: 0.2rem;" />
@@ -223,7 +242,6 @@ function MostrarJustificacionesDesktop(data) {
       });
       icono.toggleClass("bi-chevron-down bi-chevron-up");
     });
-
 
     contenedor.append(item);
     contenedor.append(descripcionDetalle);
@@ -258,10 +276,17 @@ function MostrarJustificacionesMobile(data) {
   };
 
   data.forEach((element) => {
+    let claseBorde = "";
+    switch (element.claseBorde) {
+      case "green": claseBorde = "border-success"; break;
+      case "yellow": claseBorde = "border-warning"; break;
+      default: claseBorde = "";
+    }
+
     const estadoNombre = element.estadoString || "SIN ESTADO";
-    const claseJustificacion =
-      justificacionColor[estadoNombre] || "bg-light text-dark";
+    const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
+
     const documentoHtml = element.documentoNombre
       ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
@@ -274,6 +299,7 @@ function MostrarJustificacionesMobile(data) {
       : "No se adjuntó ningún documento";
 
     let botonesHtml = "";
+
     if (estadoNombre === "PENDIENTE") {
       const fechaParts = fecha.split("/");
       if (fechaParts.length === 3) {
@@ -288,19 +314,37 @@ function MostrarJustificacionesMobile(data) {
 
         if (hoy <= limite) {
           botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
-          botonesHtml += `
-                <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-                    <i class="bi bi-pencil-square icono-editar"></i>
-                </button>
+
+          // BOTÓN EDITAR
+          if (((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia) || (rol === "ADMINISTRADOR" || rol === "RRHH")) {
+            botonesHtml += `
+              <button class="btn-editar" style="background: none; border: none;" 
+                onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                <i class="bi bi-pencil-square icono-editar"></i>
+              </button>
             `;
+          }
+
+          // BOTÓN ELIMINAR
+          if ((rol === "ADMINISTRADOR" || rol === "RRHH") || ((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia)) {
+            botonesHtml += `
+              <button class="btn-eliminar" style="background: none; border: none;" 
+                onclick="EliminarJustificacion(${element.id})" data-tippy-content="Eliminar">
+                <i class="bi bi-trash3 icono-elimina-detalle"></i>
+              </button>
+            `;
+          }
+
+          // BOTÓN ACCIÓN (Aprobar/Rechazar) solo ADMIN/RRHH
           if (rol === "ADMINISTRADOR" || rol === "RRHH") {
             botonesHtml += `
-                    <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-                        data-tippy-content="Aprobar o rechazar">
-                        <i class="bi bi-sliders icono-accion-licencia"></i>
-                    </button>
-                `;
+              <button class="btn-accionLicencia" style="background:none; border:none;" 
+                onclick="AbrirModalAccionJustificacion(${element.id})" data-tippy-content="Aprobar o rechazar">
+                <i class="bi bi-sliders icono-accion-licencia"></i>
+              </button>
+            `;
           }
+
           botonesHtml += `</div>`;
         }
       }
@@ -309,7 +353,7 @@ function MostrarJustificacionesMobile(data) {
     const card = document.createElement("div");
     card.className = "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
     card.innerHTML = `
-      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+    <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
         <div class="flex-grow-1 d-flex flex-column">
           <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
             ${element.empleadoString || "Sin nombre"}
@@ -333,7 +377,7 @@ function MostrarJustificacionesMobile(data) {
       </div>
     `;
 
-    const descripcionDetalle = $(` 
+    const descripcionDetalle = $(`  
       <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
         <div class="mb-3">
           <h3 class="titulo-sub-seccion">Detalle del Evento</h3>
@@ -380,6 +424,14 @@ function MostrarJustificacionesMobile(data) {
     delay: [100, 0],
   });
 }
+
+
+
+///SUPERVISOR DEBE DE VER LAS JUSTIFICACIONES DE LOS EMPLEADOS A CARGO DE MI SECTOR EN COLOR AMARILLO, 
+// CUANDO CREO LAS PROPIAS MIAS COMO SUPERVISOR APARECEN EN VERDE. 
+// LOS EMPLEADOS SOLO VISUALIZAN LAS JUSTIFICACIONES EN COLOR GRIS YA SEA CREADO POR UN ADMINISTRADOR O POR EL DE RRHH 
+// Y CUANDO CREAN SUS PROPIAS JUTIFICACIONES DEBEN DE VERSE EN VERDE. 
+// CUANDO ES ADMINISTRADOR VE TODAS OSEA PUEDE HACER TODO TODO Y APARECEN EN UN GRIS MUY CLARITO. SERIA ASI??? 
 
 //////////////////////////////////////////////////////////////////////////////
 // DESCARGAR DOCUMENTO /////////////////////////////////////////////////////
@@ -975,7 +1027,92 @@ async function RechazarJustificacion(id) {
     });
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA ELIMINAR JUSTIFICACION /////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+function EliminarJustificacion(id) {
+  Swal.fire({
+    title: "¿Desea eliminar esta Justificación?",
+    html: `
+      <div class="text-center">
+        <p>Esta justificacion será eliminada de forma definitiva. ¿Desea continuar?</p>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiJustificacion(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece registrada.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
+    }
+  });
+}
 
+async function EliminarSiJustificacion(id) {
+  try {
+    const res = await authFetch(`Justificaciones/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) throw new Error("No se pudo eliminar la justificacion");
+
+    Swal.fire({
+      title: "¡Justificacion Eliminada!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+
+    ObtenerJustificaciones();
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
+//////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR JUTIFICACIONES SEGUN ROL /////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 function MostrarOpcionesJustificacionesPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;

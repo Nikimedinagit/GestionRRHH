@@ -39,6 +39,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             var obtenerJustificaciones = _context.Justificacion
                 .Include(j => j.Empleado)
                     .ThenInclude(e => e.Puesto)
+                    .ThenInclude(p => p.Sector)
                 .AsQueryable();
 
             if (rolActual == "EMPLEADO")
@@ -49,16 +50,25 @@ namespace API_NET_CORE8_RRHH.Controllers
                 else
                     return Ok(new List<VistaJustificacion>());
             }
-
             if (rolActual == "SUPERVISOR")
             {
-                var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-                if (empleado != null)
-                {
-                    obtenerJustificaciones = obtenerJustificaciones
-                        .Where(j => j.Empleado.Email.Trim().ToLower() == emailActual);
-                }
-                else return Ok(new List<VistaJustificacion>());
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .ThenInclude(p => p.Sector)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+            if (supervisor != null)
+            {
+                var sectorId = supervisor.Puesto?.SectorId;
+
+                obtenerJustificaciones = obtenerJustificaciones
+                    .Where(j =>
+                        j.Empleado.Email.Trim().ToLower() == emailActual || 
+                        j.Empleado.Puesto.SectorId == sectorId              
+                    );}
+            else
+            {
+                return Ok(new List<VistaJustificacion>());
+            }
             }
 
             if (filtro.EstadoJustificacion.HasValue)
@@ -94,10 +104,11 @@ namespace API_NET_CORE8_RRHH.Controllers
                     case "ADMINISTRADOR":
                         esEditable = true;
                         esPropia = true;
-                        claseBorde = "";
+                        claseBorde = ""; 
                         break;
+
                     case "RRHH":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
+                        if (j.Empleado.Email.Trim().ToLower() == emailActual) 
                         {
                             esEditable = true;
                             esPropia = true;
@@ -107,29 +118,59 @@ namespace API_NET_CORE8_RRHH.Controllers
                         {
                             esEditable = false;
                             esPropia = false;
-                            claseBorde = "yellow";
+                            claseBorde = ""; 
                         }
                         break;
-                    case "SUPERVISOR":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
+
+                case "SUPERVISOR":
+                    var supervisor = await _context.Empleado
+                        .Include(e => e.Puesto)
+                        .ThenInclude(p => p.Sector)
+                        .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+                    if (j.Empleado.Email.Trim().ToLower() == emailActual)
+                    {
+                        esEditable = true;
+                        esPropia = true;
+                        claseBorde = "green";
+                    }
+                    else if (supervisor != null)
+                    {
+                        var empleadoJustificacion = await _context.Empleado
+                            .Include(e => e.Puesto)
+                            .ThenInclude(p => p.Sector)
+                            .FirstOrDefaultAsync(e => e.Id == j.EmpleadoId);
+
+                        if (empleadoJustificacion?.Puesto?.SectorId == supervisor.Puesto?.SectorId)
                         {
-                            esEditable = true;
-                            esPropia = true;
+                            esEditable = false;
+                            esPropia = false;
+                            claseBorde = "yellow";
                         }
                         else
                         {
                             esEditable = false;
                             esPropia = false;
+                            claseBorde = "";
                         }
-                        break;
+                    }
+                    break;
 
                     case "EMPLEADO":
-                        esEditable = true;
-                        esPropia = true;
-                        claseBorde = "";
+                        if (j.Empleado.Email.Trim().ToLower() == emailActual) 
+                        {
+                            esEditable = true;
+                            esPropia = true;
+                            claseBorde = "green";
+                        }
+                        else
+                        {
+                            esEditable = false;
+                            esPropia = false;
+                            claseBorde = "yellow"; 
+                        }
                         break;
                 }
-
                 listaVista.Add(new VistaJustificacion
                 {
                     Id = j.Id,
@@ -278,7 +319,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<IActionResult> DeleteJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-            
+
             _context.Justificacion.Remove(justificacion);
             await _context.SaveChangesAsync();
 
@@ -315,7 +356,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<IActionResult> RechazarJustificacion(int id)
         {
             var justificacion = await _context.Justificacion.FindAsync(id);
-           
+
             if (justificacion.Estados != EstadoJustificacion.PENDIENTE)
                 return BadRequest("Solo se pueden rechazar justificaciones pendientes.");
 
