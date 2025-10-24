@@ -24,7 +24,7 @@ async function ObtenerAsistencias() {
 
         let dniEmpleado = document.getElementById("DniBuscar").value;
         let nroLegajo = document.getElementById("NroLegajoBuscar").value;
-        let fechaFiltro = document.getElementById("FechaBuscar").value; 
+        let fechaFiltro = document.getElementById("FechaBuscar").value;
 
         const asistenciasFiltradas = {
             nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
@@ -82,56 +82,73 @@ function MostrarAsistencias(data) {
         return;
     }
 
-    const EstadoAsistenciaBadge = {
-        COMPLETA: "bg-success text-white fw-bold fs-6",
-        INCOMPLETA: "bg-warning text-white fw-bold fs-6",
-        AUSENTE: "bg-danger text-white fw-bold fs-6",
-        TARDE: "bg-orange text-white fw-bold fs-6",
-        "FUERA DE HORARIO": "bg-secondary text-white fw-bold fs-6",
+    const EstadoAsistenciaEstilo = {
+        COMPLETA: {
+            backgroundColor: "#a3dc9a72",
+            color: "#06923E"
+        },
+        INCOMPLETA: {
+            backgroundColor: "#fff3cd",
+            color: "#856404"
+        },
+        AUSENTE: {
+            backgroundColor: "#f8d7da",
+            color: "#c62828"
+        },
+        TARDE: {
+            backgroundColor: "#ffe5d0",
+            color: "#d35400"
+        },
+        "FUERA DE HORARIO": {
+            backgroundColor: "#e2e3e5",
+            color: "#495057"
+        }
     };
 
-    const EstadoAsistenciaColor = {
-        COMPLETA: "#28a745",
-        INCOMPLETA: "#ffc107",
-        AUSENTE: "#dc3545",
-        TARDE: "#fd7e14",
-        "FUERA DE HORARIO": "#6c757d",
-    };
+    const badgeBaseClass = "badge fw-bold fs-6 mb-2";
 
     data.forEach((item) => {
-        let estado = (item.estadoString || "").toUpperCase().replace(/\s+/g, "");
-        if (estado === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
+        let estadoRaw = item.estadoString || "";
+        let estado = estadoRaw.trim().toUpperCase();
 
-        const colorBorde = EstadoAsistenciaColor[estado] || "#6c757d";
-        const claseEstado = EstadoAsistenciaBadge[estado] || "bg-secondary text-white fw-bold fs-6";
+        if (estado.replace(/\s+/g, "") === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
+
+        const estilo = EstadoAsistenciaEstilo[estado] || {
+            backgroundColor: "#e2e3e5",
+            color: "#495057"
+        };
 
         const nombre = item.empleadoString || "Sin nombre";
+        const foto = item.fotoUrl || "img/default.png";
 
         contenedor.append(`
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
-          <div class="card shadow-sm p-2 rounded-3 text-center w-100" 
-               style="min-height: 260px; border-bottom: 4px solid ${colorBorde};">
-              <img src="${item.fotoUrl || "img/default.png"}" alt="Foto" class="card-img-top" 
-                   style="height: 180px; object-fit: cover; border-radius: 12px 12px 0 0;">
-              <div class="card-body py-2 d-flex flex-column justify-content-center">
-                  <h5 class="card-title mb-1" 
-                      style="font-size: 1rem; font-weight:bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
-                      title="${nombre}">${nombre}</h5>
-                  <span class="badge ${claseEstado} mb-2">${estado}</span>
-                  <button class="btn-ver" 
-                          style="background: none; border: none; cursor: pointer;" 
-                          onclick="MostrarDetalleAsistencia(${item.id})" 
-                          data-tippy-content="Ver más">
-                      <i class="bi bi-info-circle btn-sm iocno-ver-asistencia"></i>
-                  </button>
-              </div>
-          </div>
-      </div>
-    `);
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+                <div class="card shadow-sm p-2 rounded-3 text-center w-100" 
+                     style="min-height: 260px; border-bottom: 4px solid ${estilo.color};">
+                    <img src="${foto}" alt="Foto" class="card-img-top" 
+                         style="height: 180px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                    <div class="card-body py-2 d-flex flex-column justify-content-center">
+                        <h5 class="card-title mb-1" 
+                            style="font-size: 1rem; font-weight:bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
+                            title="${nombre}">${nombre}</h5>
+                        <span class="${badgeBaseClass}" style="background-color: ${estilo.backgroundColor}; color: ${estilo.color};">
+                            ${estado}
+                        </span>
+                        <button class="btn-ver" 
+                                style="background: none; border: none; cursor: pointer;" 
+                                onclick="MostrarDetalleAsistencia(${item.id})" 
+                                data-tippy-content="Ver más">
+                            <i class="bi bi-info-circle btn-sm iocno-ver-asistencia"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `);
     });
 
     tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
 }
+
 
 
 /////////////////////////////////////////////////////////////
@@ -165,21 +182,42 @@ function MostrarDetalleAsistencia(id) {
     `;
     $("#detalleTipoHorarioAsistencia").empty().append(badgeTipoHorario);
 
-    const EstadoAsistenciaBadge = {
-        COMPLETA: "bg-success text-white fw-bold fs-6",
-        INCOMPLETA: "bg-warning text-white fw-bold fs-6",
-        AUSENTE: "bg-danger text-white fw-bold fs-6",
-        TARDE: "bg-orange text-white fw-bold fs-6",
-        "FUERA DE HORARIO": "bg-secondary text-white fw-bold fs-6",
+    const EstadoAsistenciaEstilo = {
+        COMPLETA: {
+            backgroundColor: "#a3dc9a72",
+            color: "#06923E"
+        },
+        INCOMPLETA: {
+            backgroundColor: "#fff3cd",
+            color: "#856404"
+        },
+        AUSENTE: {
+            backgroundColor: "#f8d7da",
+            color: "#c62828"
+        },
+        TARDE: {
+            backgroundColor: "#ffe5d0",
+            color: "#d35400"
+        },
+        "FUERA DE HORARIO": {
+            backgroundColor: "#e2e3e5",
+            color: "#495057"
+        }
     };
-    let estado = (asistencia.estadoString || "").toUpperCase();
-    if (estado === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
+
+    let estado = (asistencia.estadoString || "").toUpperCase().trim();
+    if (estado.replace(/\s+/g, "") === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
+
+    const estiloEstado = EstadoAsistenciaEstilo[estado] || {
+        backgroundColor: "#e2e3e5",
+        color: "#495057"
+    };
 
     $("#detalleEstadoAsistencia").empty().append(
         $("<span>", {
-            class: EstadoAsistenciaBadge[estado] || "bg-secondary text-white fw-bold fs-6",
+            class: "badge fw-bold fs-6",
             text: estado,
-            style: "display:inline-block; padding:4px 8px; border-radius:4px;"
+            style: `background-color:${estiloEstado.backgroundColor}; color:${estiloEstado.color}; display:inline-block; padding:4px 8px; border-radius:4px;`
         })
     );
 

@@ -1378,8 +1378,8 @@ async function EliminarSiAsistencia(id) {
       method: "DELETE",
     });
 
-    const data = await res.json(); // <-- Captura el mensaje del backend
-    await ObtenerAsistencia(cursoIdSeleccionado); // Refresca la tabla
+    const data = await res.json(); 
+    ObtenerAsistencia(cursoIdSeleccionado);
 
     if (res.ok) {
       Swal.fire({
@@ -1880,7 +1880,7 @@ async function EliminarSiCertificado(id) {
   if (!res.ok) {
     throw new Error("No se pudo eliminar el certificado");
   }
-  await ObtenerCertificados(cursoIdSeleccionado);
+  ObtenerCertificados(cursoIdSeleccionado);
 
   Swal.fire({
     title: "¡Certificado Eliminado!",

@@ -73,12 +73,32 @@ function MostrarLicenciasAprobadas(data) {
     return;
   }
 
+  const estiloAprobada = {
+    backgroundColor: "#d4f4dd", // verde pastel
+    color: "#2e7d32",           // verde fuerte
+    fontSize: "0.70rem",
+    fontWeight: "700",
+    padding: "0.25em 0.5em",
+    borderRadius: "4px",
+    display: "inline-block"
+  };
+
   $.each(data, function (index, item) {
+    const badgeHtml = `<span class="badge" style="
+      background-color: ${estiloAprobada.backgroundColor};
+      color: ${estiloAprobada.color};
+      font-size: ${estiloAprobada.fontSize};
+      font-weight: ${estiloAprobada.fontWeight};
+      padding: ${estiloAprobada.padding};
+      border-radius: ${estiloAprobada.borderRadius};
+      display: ${estiloAprobada.display};
+    ">${item.estadoString}</span>`;
+
     $("#tablaLicenciasAprobadasBody").append(
       `<tr>
         <td class="text-center columna-fecha">${item.fechaDeAprobacion}</td>
         <td class="text-center columna-estado">
-          <span class="badge badge-success">${item.estadoString}</span>
+          ${badgeHtml}
         </td>
         <td class="text-center columna-licencia">${item.licenciaString}</td>
         <td class="text-center columna-responsable">

@@ -805,6 +805,19 @@ select.form-control:not([value=""])+label {
 .icono-historial-empleado:hover{
   color: #FF944D !important;
 }
+
+.badge-empleado-activo {
+  background-color: #a3dc9a72 !important; 
+  color: #06923E !important; 
+  font-size: 0.85rem !important;
+}
+
+.badge-empleado-desactivado {
+  background-color: #f8d7da; 
+  color: #c62828 !important;
+  font-size: 0.85rem !important;
+}
+
 /* FIN CARD DE LICENCIAS/EMPLEADOS */
 
 
@@ -1389,3 +1402,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   box-sizing: border-box;  
 }
 /* FIN DE DETALLE ASISTENCIA POR SEMANA RESPONSIVO */
+
+
+
+ 

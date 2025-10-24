@@ -171,37 +171,49 @@ function MostrarLicencias(data) {
     return;
   }
 
-  const estadoColor = {
-    PENDIENTE: "bg-warning text-dark",
-    APROBADA: "bg-success text-white",
-    RECHAZADA: "bg-danger text-white",
-    EXPIRADA: "bg-dark text-white",
-  };
-
-  const bordeSuperiorColorHex = {
-    PENDIENTE: "#FFC107",
-    APROBADA: "#198754",
-    RECHAZADA: "#DC3545",
-    EXPIRADA: "#212529",
+  const estadoEstilo = {
+    PENDIENTE: {
+      backgroundColor: "#fff3cd", // amarillo pastel
+      color: "#856404",
+      borde: "#ffc107"
+    },
+    APROBADA: {
+      backgroundColor: "#d4f4dd", // verde pastel
+      color: "#2e7d32",
+      borde: "#52C41A"
+    },
+    RECHAZADA: {
+      backgroundColor: "#f8d7da", // rojo pastel
+      color: "#c62828",
+      borde: "#ff0000"
+    },
+    EXPIRADA: {
+      backgroundColor: "#e2e3e5", // gris pastel
+      color: "#495057",
+      borde: "#6c757d"
+    }
   };
 
   data.forEach((item) => {
     const estado = (item.estadoString || "PENDIENTE").toUpperCase();
-    const claseEstado = estadoColor[estado] || "bg-light text-dark";
-    const colorBorde = bordeSuperiorColorHex[estado] || "#ccc";
+    const estilo = estadoEstilo[estado] || {
+      backgroundColor: "#e2e3e5",
+      color: "#495057",
+      borde: "#ccc"
+    };
 
     const fechaInicio = formatearFecha(item.fechaInicioString);
     const fechaFin = formatearFecha(item.fechaFinString);
 
     const documentoHtml = item.documentoAdjunto
       ? `
-    <p class="text-muted d-flex align-items-center gap-2 mb-2">
-        <button onclick="DescargarDocumento(${item.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+        <p class="text-muted d-flex align-items-center gap-2 mb-2">
+          <button onclick="DescargarDocumento(${item.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
             <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
             <span>Descargar</span>
-        </button>
-    </p>
-    `
+          </button>
+        </p>
+      `
       : "";
 
     const rol = getRol()?.toUpperCase();
@@ -209,36 +221,33 @@ function MostrarLicencias(data) {
     const botonesHtml =
       estado === "PENDIENTE"
         ? `
-    <div class="d-flex justify-content-between align-items-center mt-2">
-      <div>
-        ${(rol === "ADMINISTRADOR" || rol === "RRHH") ? `
-          <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
-            <i class="bi bi-sliders icono-accion-licencia"></i>
-          </button>
-        ` : ""}
-      </div>
-      <div class="d-flex gap-1">
-        <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
-          <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
-        </button>
-        <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
-          <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
-        </button>
-      </div>
-    </div>
-  `
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <div>
+            ${(rol === "ADMINISTRADOR" || rol === "RRHH") ? `
+              <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
+                <i class="bi bi-sliders icono-accion-licencia"></i>
+              </button>
+            ` : ""}
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
+            </button>
+            <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
+              <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
+            </button>
+          </div>
+        </div>
+      `
         : "";
 
-
     const cardHtml = `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${item.id
-      }">
-        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${colorBorde}; min-height: 260px;">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${item.id}">
+        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${estilo.borde}; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicenciaString || "-"
-      }</h5>
-              <span class="badge ${claseEstado}" style="font-size: 0.75rem; padding: 0.25em 0.5em;">${estado}</span>
+              <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicenciaString || "-"}</h5>
+              <span class="badge fw-bold" style="background-color:${estilo.backgroundColor}; color:${estilo.color}; font-size: 0.75rem; padding: 0.25em 0.5em;">${estado}</span>
             </div>
             <p class="mb-1 text-muted d-flex align-items-start" style="font-size: 0.9rem;">
               <i class="bi bi-calendar3 me-2" style="font-size: 1rem;"></i>
@@ -264,6 +273,7 @@ function MostrarLicencias(data) {
     delay: [100, 0],
   });
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

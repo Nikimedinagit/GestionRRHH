@@ -128,7 +128,6 @@ function MostrarJustificacionesDesktop(data) {
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
 
-    // Validación de 7 días para edición
     const fechaParts = fecha.split("/");
     const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
     const hoy = new Date();
@@ -138,7 +137,6 @@ function MostrarJustificacionesDesktop(data) {
     let botonEditar = "";
     let botonEliminar = "";
 
-    // BOTÓN EDITAR
     if (((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia && hoy <= limite && estadoNombre === "PENDIENTE") ||
         ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite)) {
       botonEditar = `
@@ -151,7 +149,6 @@ function MostrarJustificacionesDesktop(data) {
         </div>`;
     }
 
-    // BOTÓN ELIMINAR
     if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite) {
       botonEliminar = `
         <button class='btn-eliminar' style='background: none; border: none;' 
@@ -166,7 +163,6 @@ function MostrarJustificacionesDesktop(data) {
         </button>`;
     }
 
-    // BOTÓN ACCIÓN (Aprobar/Rechazar) solo ADMIN/RRHH
     let botonAccion = "";
     if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE") {
       botonAccion = `

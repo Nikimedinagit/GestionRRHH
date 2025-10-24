@@ -198,13 +198,9 @@ function MostrarEmpleados(data) {
     const textoEstado = activo ? "A" : "D";
     const tooltipEstadoBadge = activo ? "Activo" : "Desactivado";
     const claseEstado = activo
-      ? "bg-success text-white"
-      : "bg-danger text-white";
-    const iconoEstado = activo
-      ? "bi-person-x icono-desactivar-empleado"
-      : "bi-person-check icono-activar-empleado";
-    const tooltipEstado = activo ? "Desactivar" : "Activar";
-
+      ? "badge-empleado-activo"
+      : "badge-empleado-desactivado";
+  
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
@@ -213,7 +209,7 @@ function MostrarEmpleados(data) {
 
             <div class="d-flex justify-content-between align-items-start mb-2">
               <h5 class="fw-bold mb-0" style="font-size: 1rem;">${nombre}</h5>
-              <span class="badge ${claseEstado}" style="font-size: 0.65rem; padding: 0.2em 0.45em;" data-tippy-content="${tooltipEstadoBadge}">${textoEstado}</span>
+              <span class="badge ${claseEstado}" style="font-size: 0.65rem fw-bold; padding: 0.2em 0.45em;" data-tippy-content="${tooltipEstadoBadge}">${textoEstado}</span>
             </div>
 
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">

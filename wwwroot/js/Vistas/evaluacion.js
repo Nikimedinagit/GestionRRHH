@@ -149,17 +149,17 @@ function MostrarEvaluacionesDesktop(data) {
       ? element.fecha.split("T")[0].split("-").reverse().join("/")
       : "Sin fecha";
 
-    let etiqueta = "Regular";
+    let etiqueta = "REGULAR";
     let badgeClass = "badge-regular";
 
     if (nota >= 9) {
-      etiqueta = "Excelente";
+      etiqueta = "EXCELENTE";
       badgeClass = "badge-excelente";
     } else if (nota >= 7) {
-      etiqueta = "Muy Buena";
+      etiqueta = "MUY BUENA";
       badgeClass = "badge-muybuena";
     } else if (nota >= 5) {
-      etiqueta = "Buena";
+      etiqueta = "BUENA";
       badgeClass = "badge-buena";
     }
 
@@ -280,17 +280,17 @@ function MostrarEvaluacionesMobile(data) {
       ? element.fecha.split("T")[0].split("-").reverse().join("/")
       : "Sin fecha";
 
-    let etiqueta = "Regular";
+    let etiqueta = "REGULAR";
     let badgeClass = "badge-regular";
 
     if (nota >= 9) {
-      etiqueta = "Excelente";
+      etiqueta = "EXCELENTE";
       badgeClass = "badge-excelente";
     } else if (nota >= 7) {
-      etiqueta = "Muy Buena";
+      etiqueta = "MUY BUENA";
       badgeClass = "badge-muybuena";
     } else if (nota >= 5) {
-      etiqueta = "Buena";
+      etiqueta = "BUENA";
       badgeClass = "badge-buena";
     }
 

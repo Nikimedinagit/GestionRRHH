@@ -185,14 +185,13 @@ function MostrarHorariosDesktop(data) {
   }
 
   const tipoColor = {
-    Alterno: "bg-alterno",
-    Continuo: "bg-continuo",
+    ALTERNO: "bg-alterno",
+    CONTINUO: "bg-continuo",
   };
 
   data.forEach((horario) => {
     const tipoStr = horario.tipoHorarioString
-      ? horario.tipoHorarioString.charAt(0).toUpperCase() +
-      horario.tipoHorarioString.slice(1).toLowerCase()
+      ? horario.tipoHorarioString.toUpperCase()
       : "";
 
     const tipoClase = tipoColor[tipoStr] || "";
@@ -211,7 +210,7 @@ function MostrarHorariosDesktop(data) {
             ${horario.puestoEmpleado || "Sin puesto"}
           </div>
           <div class="tipo text-truncate ${tipoClase}">
-            ${horario.tipoHorarioString || "Sin tipo"}
+            ${tipoStr}
           </div>
         </div>
 
@@ -236,9 +235,7 @@ function MostrarHorariosDesktop(data) {
       { key: "domingo", label: "Domingo" },
     ];
 
-    const esSeparado =
-      horario.tipoHorarioString &&
-      horario.tipoHorarioString.toLowerCase() === "alterno";
+    const esSeparado = tipoStr === "ALTERNO";
 
     let filasHorario = "";
 
@@ -275,26 +272,18 @@ function MostrarHorariosDesktop(data) {
               <col style="width: 25%" />
               <col style="width: 18%" />
               <col style="width: 18%" />
-              ${esSeparado
-        ? `<col style="width: 18%" /><col style="width: 21%" />`
-        : ""
-      }
+              ${esSeparado ? `<col style="width: 18%" /><col style="width: 21%" />` : ""}
             </colgroup>
             <thead>
               <tr>
                 <th class="text-start header-table">Días</th>  
                 <th class="text-center header-table">Inicio °1</th>
                 <th class="text-center header-table">Fin °1</th>
-                ${esSeparado
-        ? `<th class="text-center header-table">Inicio °2</th><th class="text-center header-table">Fin °2</th>`
-        : ""
-      }
+                ${esSeparado ? `<th class="text-center header-table">Inicio °2</th><th class="text-center header-table">Fin °2</th>` : ""}
               </tr>
             </thead>
             <tbody>
-              ${filasHorario ||
-      `<tr><td colspan="${esSeparado ? 5 : 3}" class="tabla-horarios-body text-center text-muted">Sin días activos</td></tr>`
-      }
+              ${filasHorario || `<tr><td colspan="${esSeparado ? 5 : 3}" class="tabla-horarios-body text-center text-muted">Sin días activos</td></tr>`}
             </tbody>
           </table>
         </div>
@@ -305,9 +294,7 @@ function MostrarHorariosDesktop(data) {
       const iconoChevron = $(this).find("i");
 
       contenedor.find(".panelHorarios:visible").not(detalleHTML).slideUp(200);
-      contenedor.find(".toggle-detalle i")
-        .removeClass("bi-chevron-up")
-        .addClass("bi-chevron-down");
+      contenedor.find(".toggle-detalle i").removeClass("bi-chevron-up").addClass("bi-chevron-down");
       contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
 
       detalleHTML.stop(true, true).slideToggle(200);
@@ -328,8 +315,9 @@ function MostrarHorariosDesktop(data) {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// MOSTRAR HORARIOS MOVILES ////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR LOS HORARIOS MOVILES ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarHorariosMobile(data) {
   const contenedor = document.getElementById("contenedorHorarios");
@@ -342,19 +330,15 @@ function MostrarHorariosMobile(data) {
   }
 
   const tipoColor = {
-    Alterno: "bg-alterno",
-    Continuo: "bg-continuo",
+    ALTERNO: "bg-alterno",
+    CONTINUO: "bg-continuo",
   };
   window.horariosData = data;
 
   data.forEach((horario) => {
     const { id, empleadoString, puestoEmpleado, tipoHorarioString } = horario;
 
-    const tipoStr = tipoHorarioString
-      ? tipoHorarioString.charAt(0).toUpperCase() +
-      tipoHorarioString.slice(1).toLowerCase()
-      : "-";
-
+    const tipoStr = tipoHorarioString ? tipoHorarioString.toUpperCase() : "";
     const tipoClase = tipoColor[tipoStr] || "bg-light text-dark";
 
     contenedor.innerHTML += `
@@ -363,8 +347,9 @@ function MostrarHorariosMobile(data) {
           <div class="flex-grow-1 d-flex flex-column">
 
             <!-- Nombre del empleado -->
-            <h5 class=text-start fw-bold mb-2" style="font-size: 1.2rem;">${empleadoString || "Sin nombre"
-      }</h5>
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
+              ${empleadoString || "Sin nombre"}
+            </h5>
 
             <!-- Puesto -->
             <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
@@ -381,18 +366,17 @@ function MostrarHorariosMobile(data) {
           <!-- Botones de acción -->
           <div class="d-flex justify-content-between mt-3 align-items-center">
             <div>
-            <button class="btn-ver" onclick="MostrarDetalleHorario(${id})" data-tippy-content="Detalle" style="background: none; border: none;">
-              <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
-            </button>
+              <button class="btn-ver" onclick="MostrarDetalleHorario(${id})" data-tippy-content="Detalle" style="background: none; border: none;">
+                <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
+              </button>
             </div>
             <div>
-
-            <button class="btn-editar" onclick="MostrarModalEditar(${id})" data-tippy-content="Editar" style="background: none; border: none;">
-              <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
-            </button>
-            <button class="btn-eliminar" onclick="EliminarHorarioId(${id})" data-tippy-content="Eliminar" style="background: none; border: none;">
-              <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
-            </button>
+              <button class="btn-editar" onclick="MostrarModalEditar(${id})" data-tippy-content="Editar" style="background: none; border: none;">
+                <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+              </button>
+              <button class="btn-eliminar" onclick="EliminarHorarioId(${id})" data-tippy-content="Eliminar" style="background: none; border: none;">
+                <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
+              </button>
             </div>
           </div>
         </div>
