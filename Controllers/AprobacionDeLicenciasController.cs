@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
-{
+{   
+    [Authorize(Roles = "ADMINISTRADOR, RRHH")]
     [Route("api/[controller]")]
     [ApiController]
     public class AprobacionDeLicenciasController : ControllerBase

@@ -27,7 +27,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("FiltrarDia")]
         public async Task<ActionResult<IEnumerable<VistaAsistencia>>> FiltrarAsistenciaDia([FromBody] FiltrarAsistencia filtro)
         {
-            // Usamos la fecha del filtro si existe, sino hoy
             var fechaSeleccionada = filtro.Fecha ?? DateTime.Today;
             var fechaSiguiente = fechaSeleccionada.AddDays(1);
 

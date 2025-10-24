@@ -74,7 +74,7 @@
           </div>
 
           <!-- Panel Personal del Empleado -->
-          <li class="pc-item pc-hasmenu" id="miPanelPersonal">
+          <li class="pc-item pc-hasmenu d-none" id="miPanelPersonal">
             <a href="javascript:void(0);" class="pc-link">
               <span class="pc-micon"><i class="ti ti-id"></i></span>
               <span class="pc-mtext">Mi Panel Personal</span>
@@ -84,25 +84,22 @@
               <li class="pc-item" id="miInformacion"><a class="pc-link" href="#informacion">Mi Información</a></li>
               <li class="pc-item" id="asistenciaHorarios"><a class="pc-link" href="#asistenciaHorarios">Mi Asistencia y
                   Horario</a></li>
-              <li class="pc-item" id="justificacionPersonal"><a class="pc-link" href="#justificacion?context=personal">Gestor de
-                  Tardanzas /<br> Ausencias</a></li>
-              <li class="pc-item"><a class="pc-link" href="#empleadosPorSector">Personal a Cargo</a></li>
-
             </ul>
           </li>
 
 
           <!-- Gestion de Empleados -->
-          <li class="pc-item pc-hasmenu d-none" id="gestionEmpleados">
+          <li class="pc-item pc-hasmenu" id="gestionEmpleados">
             <a href="javascript:void(0);" class="pc-link"><span class="pc-micon"><i class="ti ti-user"></i></span><span
                 class="pc-mtext">
                 Gestion de Empleados
               </span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
             <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="#empleado">Registro de Personal</a></li>
-              <li class="pc-item"><a class="pc-link" href="#asistencia">Control de Asistencia</a></li>
-              <li class="pc-item"><a class="pc-link" href="#horario">Asignación de Horarios</a></li>
-              <li class="pc-item"><a class="pc-link" href="#justificacion?context=empleado">Gestor de Ausencias/<br>Tardanzas</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="registroDePersonal" href="#empleado">Registro de Personal</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="controlDeAsistencia" href="#asistencia">Control de Asistencia</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="asignacionDeHorarios" href="#horario">Asignación de Horarios</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="justificacionGeneral" href="#justificacion">Gestor de Ausencias/<br>Tardanzas</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="personalACargo" href="#empleadosPorSector">Personal a Cargo</a></li>
             </ul>
           </li>
 

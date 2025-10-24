@@ -77,22 +77,24 @@ function MostrarOpcionesSidebarPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
-  // Mostrar opciones comunes
-  $("#miPanelPersonal, #gestionDeDesempeno, #gestionDeLicencias, #gestionDeCursos").removeClass("d-none");
 
-  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    // Mostrar módulos de gestión completa
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #gestionOrganizacional, #gestionGeografica, #gestionUsuarios, #gestionEmpleados, #tiposCriterios").removeClass("d-none");
+  if (rol === "ADMINISTRADOR") {
+    $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral").removeClass("d-none");
+  }
 
-    // Mostrar solo ciertas opciones del Panel Personal
-    $("#miInformacion, #asistenciaHorarios").removeClass("d-none");
-    $("#justificacionPersonal").addClass("d-none");
+  else if (rol === "RRHH") {
+    $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral").removeClass("d-none");
+  }
 
-  } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
-    // Ocultar módulos administrativos
-    $("#gestionOrganizacional, #gestionGeografica, #gestionUsuarios, #gestionEmpleados, #tiposCriterios, #aprobacionDeLicencias, #tiposDeLicencias").addClass("d-none");
+  else if (rol === "SUPERVISOR") {
+    $("#miPanelPersonal").removeClass("d-none");
+    $("#justificacionGeneral, #personalACargo").removeClass("d-none");
+  }
 
-    // Mostrar todo el Panel Personal completo
-    $("#miInformacion, #asistenciaHorarios, #justificacionPersonal").removeClass("d-none");
+  else if (rol === "EMPLEADO") {
+    $("#miPanelPersonal").removeClass("d-none");
+    $("#justificacionGeneral").removeClass("d-none");
   }
 }

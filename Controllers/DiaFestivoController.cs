@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
 [ApiController]
 [Route("api/[controller]")]
 public class DiasFestivosController : ControllerBase
 {
-[HttpGet("proximos-festivos")]
-public async Task<IActionResult> ObtenerProximosFestivos()
-{
+    [HttpGet("proximos-festivos")]
+    public async Task<IActionResult> ObtenerProximosFestivos()
+    {
         var año = DateTime.Today.Year;
         var pais = "AR";
         var url = $"https://date.nager.at/api/v3/PublicHolidays/{año}/{pais}";

@@ -38,14 +38,6 @@ function CargarVista(view) {
         document.body.appendChild(nuevoScript);
       });
 
-      // Inicializar vistas específicas con context
-      if (vista === "justificacion") {
-        if (contexto === "personal" && typeof window.inicializarJustificacionPersonal === "function") {
-          window.inicializarJustificacionPersonal();
-        } else if (contexto === "empleado" && typeof window.inicializarJustificacionEmpleados === "function") {
-          window.inicializarJustificacionEmpleados();
-        }
-      }
 
       ActualizarLinkActivo();
     })
@@ -79,13 +71,3 @@ function ActualizarLinkActivo() {
   });
 }
 
-// Inicializadores globales para justificacion
-window.inicializarJustificacionPersonal = function() {
-  console.log("Vista personal: mostrar solo asistencia y horario del usuario logueado");
-  // tu código específico para personal
-};
-
-window.inicializarJustificacionEmpleados = function() {
-  console.log("Vista RRHH: mostrar asistencias de todos los empleados");
-  // tu código específico para RRHH
-};

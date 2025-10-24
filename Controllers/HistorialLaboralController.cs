@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTEENR LOS DATOS DEL HISTORIAL DE LABORAL POR EMPLEADO //////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpGet("empleado/{empleadoId}")]
         public async Task<ActionResult<IEnumerable<VistaHistorialLaboral>>> GetHistorialPorEmpleado(int empleadoId)
         {

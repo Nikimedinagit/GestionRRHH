@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class CriteriosDeEvaluacionController : ControllerBase
@@ -24,6 +25,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS CRITERIOS DE EVALUACION ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CriterioDeEvaluacion>>> GetCriterioDeEvaluacion()
         {
@@ -38,6 +40,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// MERODO PARA CREAR UN CRITERIO DE EVALUACION //////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult<CriterioDeEvaluacion>> PostCriterioDeEvaluacion(CriterioDeEvaluacion criterioDeEvaluacion)
         {
@@ -63,6 +66,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMIANR UN CRITERIO DE EVALUACION ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCriterioDeEvaluacion(int id)
         {
