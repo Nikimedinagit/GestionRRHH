@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Globalization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -20,6 +22,27 @@ namespace API_RRHH_TESIS2025.Controllers
         {
             _context = context;
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
+        }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,20 +79,25 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Provincia>> PostProvincia(Provincia provincia)
         {
-            provincia.Nombre = provincia.Nombre.ToUpper();
 
-            bool existe = await _context.Provincia
+            string nombreNormalizado = NormalizarTexto(provincia.Nombre);
+
+            var provincias = await _context.Provincia
                 .AsNoTracking()
-                .AnyAsync(x => x.Nombre == provincia.Nombre);
+                .ToListAsync();
+
+            bool existe = provincias.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
 
             if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
 
+            provincia.Nombre = nombreNormalizado;
             _context.Provincia.Add(provincia);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProvincia), new { id = provincia.Id }, provincia);
         }
+
 
 
 
@@ -80,22 +108,28 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProvincia(int id, Provincia provincia)
         {
+            string nombreNormalizado = NormalizarTexto(provincia.Nombre);
+
             var provinciaOriginal = await _context.Provincia.FindAsync(id);
 
-            var provinciaExistente = await _context.Provincia
+            var provincias = await _context.Provincia
                 .AsNoTracking()
-                .AnyAsync(p => p.Nombre == provincia.Nombre && p.Id != id);
+                .Where(p => p.Id != id)
+                .ToListAsync();
+
+            bool provinciaExistente = provincias
+                .Any(p => NormalizarTexto(p.Nombre) == nombreNormalizado);
 
             if (provinciaExistente)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            
-            provinciaOriginal.Nombre = provincia.Nombre.ToUpper();
 
+            provinciaOriginal.Nombre = nombreNormalizado;
 
             await _context.SaveChangesAsync();
 
-            return Ok(provincia);
+            return Ok(provinciaOriginal);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +140,7 @@ namespace API_RRHH_TESIS2025.Controllers
         public async Task<IActionResult> DeleteProvincia(int id)
         {
             var provincia = await _context.Provincia.FindAsync(id);
-         
+
             if (!provincia.Eliminado)
             {
                 bool tieneLocalidades = await _context.Localidad
@@ -118,7 +152,7 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             provincia.Eliminado = !provincia.Eliminado;
-            
+
             _context.Provincia.Update(provincia);
             await _context.SaveChangesAsync();
 

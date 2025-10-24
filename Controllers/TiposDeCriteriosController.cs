@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Globalization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -19,6 +21,25 @@ namespace API_NET_CORE8_RRHH.Controllers
         public TiposDeCriteriosController(Context context)
         {
             _context = context;
+        }
+
+             ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
         }
 
 
@@ -57,15 +78,19 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoDeCriterio>> PostTipoDeCriterio(TipoDeCriterio tipoDeCriterio)
         {
-            var existeTipoDeCriterio = await _context.TipoDeCriterio
-            .AnyAsync(tc => tc.Nombre.ToLower() == tipoDeCriterio.Nombre.ToLower());
+            string nombreNormalizado = NormalizarTexto(tipoDeCriterio.Nombre);
 
-            if (existeTipoDeCriterio)
+            var existeTipoDeCriterio = await _context.TipoDeCriterio
+                .AsNoTracking()
+                .ToListAsync();
+
+            bool existe = existeTipoDeCriterio.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+            if (existe)
             {
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
             }
 
-            tipoDeCriterio.Nombre = tipoDeCriterio.Nombre.ToUpper();
+            tipoDeCriterio.Nombre = nombreNormalizado;
 
             _context.TipoDeCriterio.Add(tipoDeCriterio);
             await _context.SaveChangesAsync();
@@ -80,18 +105,24 @@ namespace API_NET_CORE8_RRHH.Controllers
         [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTipoDeCriterio(int id, TipoDeCriterio tipoDeCriterio)
-        {
+        {   
+            string nombreNormalizado = NormalizarTexto(tipoDeCriterio.Nombre);
+
             var tipoDeCriterios = await _context.TipoDeCriterio.FindAsync(id);
 
             var existeTipoDeCriterio = await _context.TipoDeCriterio
-            .AnyAsync(tc => tc.Nombre.ToLower() == tipoDeCriterio.Nombre.ToLower());
+                .AsNoTracking()
+                .Where(t => t.Id != id)
+                .ToListAsync();
 
-            if (existeTipoDeCriterio)
+            bool existe = existeTipoDeCriterio.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (existe)
             {
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
             }
 
-            tipoDeCriterios.Nombre = tipoDeCriterio.Nombre.ToUpper();
+            tipoDeCriterios.Nombre = nombreNormalizado;
 
             await _context.SaveChangesAsync();
 

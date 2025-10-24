@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Globalization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -20,6 +22,26 @@ namespace API_RRHH_TESIS2025.Controllers
         public SectorController(Context context)
         {
             _context = context;
+        }
+
+
+         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
         }
 
 
@@ -57,15 +79,18 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Sector>> PostSector(Sector sector)
         {
-            sector.Nombre = sector.Nombre.ToUpper();
+            string nombreNormalizado = NormalizarTexto(sector.Nombre);
 
-            var sectorExistente = await _context.Sector
+            var sectores = await _context.Sector
                 .AsNoTracking()
-                .AnyAsync(x => x.Nombre == sector.Nombre);
+                .ToListAsync();
 
-            if (sectorExistente)
+            bool existe = sectores.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
 
+            sector.Nombre = nombreNormalizado;
             _context.Sector.Add(sector);
             await _context.SaveChangesAsync();
             
@@ -80,16 +105,21 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSector(int id, Sector sector)
         {
+            string nombreNormalizado = NormalizarTexto(sector.Nombre);
+
             var sectorOriginal = await _context.Sector.FindAsync(id);
 
             var sectorExistente = await _context.Sector
                 .AsNoTracking()
-                .AnyAsync(p => p.Nombre == sector.Nombre && p.Id != id);
+                .Where(p => p.Id != id)
+                .ToListAsync();
+             
+            bool existe = sectorExistente.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
 
-            if (sectorExistente)
+            if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
 
-            sectorOriginal.Nombre = sector.Nombre.ToUpper();
+            sectorOriginal.Nombre = nombreNormalizado;
 
             await _context.SaveChangesAsync();
 

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
+using System.Text;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -19,6 +21,26 @@ namespace API_RRHH_TESIS2025.Controllers
         public LocalidadesController(Context context)
         {
             _context = context;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
         }
 
 
@@ -68,19 +90,25 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Localidad>> PostLocalidad(Localidad localidad)
         {
-            localidad.Nombre = localidad.Nombre.Trim().ToUpper();
+            string nombreNormalizado = NormalizarTexto(localidad.Nombre);
 
-            bool localidadExistente = await _context.Localidad
-                .AnyAsync(x => x.Nombre == localidad.Nombre && x.ProvinciaId == localidad.ProvinciaId);
+            var localidades = await _context.Localidad
+                .Where(x => x.ProvinciaId == localidad.ProvinciaId)
+                .ToListAsync();
+
+            bool localidadExistente = localidades
+                .Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
 
             if (localidadExistente)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
 
+            localidad.Nombre = nombreNormalizado;
             _context.Localidad.Add(localidad);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetLocalidad", new { id = localidad.Id }, localidad);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,25 +118,28 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLocalidad(int id, Localidad localidad)
         {
-            var nombreNormalizado = localidad.Nombre.Trim().ToUpper();
+            string nombreNormalizado = NormalizarTexto(localidad.Nombre);
 
-            bool existe = await _context.Localidad
+            var localidades = await _context.Localidad
                 .AsNoTracking()
-                .AnyAsync(x => x.Id != id && x.Nombre == nombreNormalizado && x.ProvinciaId == localidad.ProvinciaId);
+                .Where(x => x.Id != id && x.ProvinciaId == localidad.ProvinciaId)
+                .ToListAsync();
+
+            bool existe = localidades.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
 
             if (existe)
-                return BadRequest(new { codigo = 0, mensaje = "Ya existe en esta provincia." });
+                return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
 
             var localidadOriginal = await _context.Localidad.FindAsync(id);
-          
+           
             localidadOriginal.Nombre = nombreNormalizado;
             localidadOriginal.ProvinciaId = localidad.ProvinciaId;
 
-            _context.Localidad.Update(localidadOriginal);
             await _context.SaveChangesAsync();
 
             return Ok(localidadOriginal);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

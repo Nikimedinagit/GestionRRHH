@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Globalization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -19,6 +21,27 @@ namespace API_NET_CORE8_RRHH.Controllers
         public TipoDeLicenciasController(Context context)
         {
             _context = context;
+        }
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
         }
 
 
@@ -57,22 +80,25 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoDeLicencia>> PostTipoDeLicencia(TipoDeLicencia tipoDeLicencia)
         {
-            var tipoDeLicenciaExistente = await _context.TipoDeLicencia
-                .AnyAsync(x => x.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower());
+            string nombreNormalizado = NormalizarTexto(tipoDeLicencia.Nombre);
 
-            if (tipoDeLicenciaExistente)
-            {
+            var tipos = await _context.TipoDeLicencia
+                .AsNoTracking()
+                .ToListAsync();
+
+            bool existe = tipos.Any(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
 
-            tipoDeLicencia.Nombre = tipoDeLicencia.Nombre.ToUpper();
+            tipoDeLicencia.Nombre = nombreNormalizado;
 
             _context.TipoDeLicencia.Add(tipoDeLicencia);
-
             await _context.SaveChangesAsync();
 
             return Ok(tipoDeLicencia);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,21 +108,27 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTipoDeLicencia(int id, TipoDeLicencia tipoDeLicencia)
         {
+            string nombreNormalizado = NormalizarTexto(tipoDeLicencia.Nombre);
+
             var tipoDeLicencias = await _context.TipoDeLicencia.FindAsync(id);
+           
+            var tipos = await _context.TipoDeLicencia
+                .AsNoTracking()
+                .Where(t => t.Id != id)
+                .ToListAsync();
 
-            var tipoDeLicenciaExistente = await _context.TipoDeLicencia.FirstOrDefaultAsync(t => t.Nombre.ToLower() == tipoDeLicencia.Nombre.ToLower() && t.Id != id);
+            bool existe = tipos.Any(t => NormalizarTexto(t.Nombre) == nombreNormalizado);
 
-            if (tipoDeLicenciaExistente != null)
-            {
+            if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
-            }
 
-            tipoDeLicencias.Nombre = tipoDeLicencia.Nombre.ToUpper();
+            tipoDeLicencias.Nombre = nombreNormalizado;
 
             await _context.SaveChangesAsync();
 
-            return Ok(tipoDeLicencia);
+            return Ok(tipoDeLicencias);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

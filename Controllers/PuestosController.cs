@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Globalization;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -23,6 +25,27 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
+        }
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [Authorize(Roles = "ADMINISTRADOR, RRHH")]
@@ -32,7 +55,7 @@ namespace API_RRHH_TESIS2025.Controllers
             var query = _context.Puesto
                 .AsNoTracking()
                 .Include(p => p.Sector)
-                .Where(p => !p.Sector.Eliminado) 
+                .Where(p => !p.Sector.Eliminado)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(filtro.Descripcion))
@@ -74,12 +97,14 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPost]
         public async Task<ActionResult<Puesto>> PostPuesto([FromBody] Puesto puesto)
         {
-            string descripcionNormalizada = puesto.Descripcion.Trim().ToUpper();
 
-            bool existe = await _context.Puesto
-                .AsNoTracking()
-                .AnyAsync(x => x.Descripcion == descripcionNormalizada &&
-                               x.SectorId == puesto.SectorId);
+            string descripcionNormalizada = NormalizarTexto(puesto.Descripcion);
+
+            var puestos = await _context.Puesto
+                .Where(x => x.SectorId == puesto.SectorId)
+                .ToListAsync();
+
+            bool existe = puestos.Any(x => NormalizarTexto(x.Descripcion) == descripcionNormalizada);
 
             if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
@@ -93,6 +118,7 @@ namespace API_RRHH_TESIS2025.Controllers
         }
 
 
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UN PUESTO ///////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,15 +126,17 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPuesto(int id, [FromBody] Puesto puesto)
         {
+            
+            string descripcionNormalizada = NormalizarTexto(puesto.Descripcion);
+
             var puestoOriginal = await _context.Puesto.FindAsync(id);
-
-            string descripcionNormalizada = puesto.Descripcion.Trim().ToUpper();
-
-            bool existe = await _context.Puesto
+            
+            var puestos = await _context.Puesto
                 .AsNoTracking()
-                .AnyAsync(x => x.Descripcion == descripcionNormalizada &&
-                               x.SectorId == puesto.SectorId &&
-                               x.Id != id);
+                .Where(x => x.SectorId == puesto.SectorId && x.Id != id)
+                .ToListAsync();
+
+            bool existe = puestos.Any(x => NormalizarTexto(x.Descripcion) == descripcionNormalizada);
 
             if (existe)
                 return BadRequest(new { codigo = 0, mensaje = "Ya existe." });
@@ -121,6 +149,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return Ok(puestoOriginal);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +211,7 @@ namespace API_RRHH_TESIS2025.Controllers
             return puesto;
         }
 
-  
+
         private bool PuestoExists(int id)
         {
             return _context.Puesto.Any(e => e.Id == id);

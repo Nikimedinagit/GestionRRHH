@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Text;
+using System.Globalization;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -20,6 +22,26 @@ namespace API_NET_CORE8_RRHH.Controllers
         public CursosController(Context context)
         {
             _context = context;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private string NormalizarTexto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
+
+            texto = string.Join(" ", texto.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+            texto = texto.ToUpperInvariant();
+
+            texto = new string(texto
+                .Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            return texto;
         }
 
 
@@ -128,47 +150,47 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// METODO PARA CREAR UN NUEVO CURSO //////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult<Curso>> PostCurso(Curso curso)
         {
             curso.FechaInicio = new DateTime(curso.FechaInicio.Year, curso.FechaInicio.Month, curso.FechaInicio.Day,
                                              curso.FechaInicio.Hour, curso.FechaInicio.Minute, 0);
+
             curso.FechaFinalizacion = new DateTime(curso.FechaFinalizacion.Year, curso.FechaFinalizacion.Month, curso.FechaFinalizacion.Day,
                                                    curso.FechaFinalizacion.Hour, curso.FechaFinalizacion.Minute, 0);
 
-            curso.Nombre = curso.Nombre.ToUpper();
+            string nombreNormalizado = NormalizarTexto(curso.Nombre);
 
-            bool fechasCoinciden = await _context.Curso.AnyAsync(c =>
-                c.Nombre == curso.Nombre &&
-                c.Modalidad == curso.Modalidad &&
+            var cursos = await _context.Curso
+                .AsNoTracking()
+                .Where(c => c.Modalidad == curso.Modalidad || curso.Modalidad == Modalidades.MIXTO)
+                .ToListAsync();
+
+            bool fechasCoinciden = cursos.Any(c =>
+                NormalizarTexto(c.Nombre) == nombreNormalizado &&
                 c.FechaInicio < curso.FechaFinalizacion &&
-                curso.FechaInicio < c.FechaFinalizacion
+                curso.FechaInicio < c.FechaFinalizacion &&
+                (curso.Modalidad != Modalidades.MIXTO || c.Modalidad == curso.Modalidad)
             );
 
             if (fechasCoinciden)
-                return BadRequest(new { codigo = 0, mensaje = "No se puede crear el mismo curso en le mismo horario." });
-
-            if (curso.Modalidad == Modalidades.MIXTO)
             {
-                bool fechasMixto = await _context.Curso.AnyAsync(c =>
-                    c.Nombre == curso.Nombre &&
-                    c.FechaInicio < curso.FechaFinalizacion &&
-                    curso.FechaInicio < c.FechaFinalizacion
-                );
+                string mensaje = curso.Modalidad == Modalidades.MIXTO
+                    ? "No se puede crear un curso mixto que coincida en fechas con otro curso del mismo nombre"
+                    : "No se puede crear el mismo curso en el mismo horario.";
 
-                if (fechasMixto)
-                    return BadRequest(new { codigo = 0, mensaje = "No se puede crear un curso mixto que coincida en fechas con otro curso del mismo nombre" });
+                return BadRequest(new { codigo = 0, mensaje });
             }
+
+            curso.Nombre = nombreNormalizado;
 
             _context.Curso.Add(curso);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetCurso), new { id = curso.Id }, curso);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,36 +204,34 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             curso.FechaInicio = new DateTime(curso.FechaInicio.Year, curso.FechaInicio.Month, curso.FechaInicio.Day,
                                              curso.FechaInicio.Hour, curso.FechaInicio.Minute, 0);
+
             curso.FechaFinalizacion = new DateTime(curso.FechaFinalizacion.Year, curso.FechaFinalizacion.Month, curso.FechaFinalizacion.Day,
                                                    curso.FechaFinalizacion.Hour, curso.FechaFinalizacion.Minute, 0);
 
-            curso.Nombre = curso.Nombre.ToUpper();
+            string nombreNormalizado = NormalizarTexto(curso.Nombre);
 
-            bool fechasCoinciden = await _context.Curso.AnyAsync(c =>
-                c.Id != id &&
-                c.Nombre == curso.Nombre &&
-                c.Modalidad == curso.Modalidad &&
+            var cursos = await _context.Curso
+                .AsNoTracking()
+                .Where(c => c.Id != id && (c.Modalidad == curso.Modalidad || curso.Modalidad == Modalidades.MIXTO))
+                .ToListAsync();
+
+            bool fechasCoinciden = cursos.Any(c =>
+                NormalizarTexto(c.Nombre) == nombreNormalizado &&
                 c.FechaInicio < curso.FechaFinalizacion &&
-                curso.FechaInicio < c.FechaFinalizacion
+                curso.FechaInicio < c.FechaFinalizacion &&
+                (curso.Modalidad != Modalidades.MIXTO || c.Modalidad == curso.Modalidad)
             );
 
             if (fechasCoinciden)
-                return BadRequest(new { codigo = 0, mensaje = "No se puede crear el mismo curso en el mismo horario." });
-
-            if (curso.Modalidad == Modalidades.MIXTO)
             {
-                bool fechasMixto = await _context.Curso.AnyAsync(c =>
-                    c.Id != id &&
-                    c.Nombre == curso.Nombre &&
-                    c.FechaInicio < curso.FechaFinalizacion &&
-                    curso.FechaInicio < c.FechaFinalizacion
-                );
+                string mensaje = curso.Modalidad == Modalidades.MIXTO
+                    ? "No se puede crear un curso mixto que coincida en fechas con otro curso del mismo nombre"
+                    : "No se puede crear el mismo curso en el mismo horario.";
 
-                if (fechasMixto)
-                    return BadRequest(new { codigo = 0, mensaje = "No se puede crear un curso mixto que coincida en fechas con otro curso del mismo nombre" });
+                return BadRequest(new { codigo = 0, mensaje });
             }
 
-            cursoOriginal.Nombre = curso.Nombre;
+            cursoOriginal.Nombre = nombreNormalizado;
             cursoOriginal.FechaInicio = curso.FechaInicio;
             cursoOriginal.FechaFinalizacion = curso.FechaFinalizacion;
             cursoOriginal.Modalidad = curso.Modalidad;
@@ -221,6 +241,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(cursoOriginal);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
