@@ -1,22 +1,22 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-/// FUNCIONES PARA OBTENER LOS DATOS DE LA API TOTAL DE EVALUACIONES /////////////////////////////////////////////
+/// FUNCIONES PARA OBTENER LOS DATOS DE LA API DE CURSOS /////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerTotalEvaluaciones() {
+async function ObtenerTotalCursos() {
   try {
-    const response = await authFetch("CardsEstadisticas/EvaluacionesEstadisticas");
+    const response = await authFetch("CardsEstadisticas/CursosEstadisticas");
     const data = await response.json();
 
-    document.getElementById("totalEvaluaciones").textContent = data.totalEvaluaciones;
-    document.getElementById("promedioEvaluaciones").textContent = data.promedioEvaluaciones;
-    document.getElementById("totalEmpleadosEvaluados").textContent = data.totalEmpleadosEvaluados;
+    document.getElementById("totalCursos").textContent = data.totalCursos;
+    document.getElementById("participantesCurso").textContent = data.participantesCurso;
+    document.getElementById("certificadosEmitidos").textContent = data.certificadosEmitidos;
+    document.getElementById("certificadosPendientes").textContent = data.certificadosPendientes;
 
   } catch (error) {
     MostrarErrorCatch(error);
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 /// INICIALIZAR AL CARGAR LA VISTA /////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-ObtenerTotalEvaluaciones();
+ObtenerTotalCursos();

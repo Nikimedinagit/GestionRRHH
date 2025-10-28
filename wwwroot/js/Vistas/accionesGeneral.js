@@ -91,3 +91,7 @@ function MostrarErrorCatch() {
     buttonsStyling: false,
   });
 }
+
+// function MostrarErrorCatch() {
+//   console.error("No se pudo acceder al servidor. Por favor, inténtalo de nuevo.");
+// }

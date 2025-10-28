@@ -40,6 +40,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             var emailActual = usuarioActual?.Email?.Trim().ToLower();
 
             var obtenerEvaluaciones = _context.Evaluacion
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
                 .Include(e => e.Empleado)
                     .ThenInclude(emp => emp.Puesto)
                 .Include(e => e.CriterioDeEvaluacion)

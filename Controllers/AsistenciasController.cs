@@ -31,10 +31,16 @@ namespace API_NET_CORE8_RRHH.Controllers
             var fechaSiguiente = fechaSeleccionada.AddDays(1);
 
             var obtenerAsistencias = _context.Asistencia
-                .Include(a => a.Empleado)
-                .Include(a => a.Horario)
-                .Where(a => a.Fecha >= fechaSeleccionada && a.Fecha < fechaSiguiente)
-                .AsQueryable();
+                    .Include(a => a.Empleado)
+                    .Include(a => a.Horario)
+                    .Where(a =>
+                        a.Fecha >= fechaSeleccionada &&
+                        a.Fecha < fechaSiguiente &&
+                        a.Empleado != null &&
+                        !a.Empleado.Eliminado
+                    )
+                    .AsQueryable();
+
 
             if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
             {

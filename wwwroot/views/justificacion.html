@@ -18,10 +18,10 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-    <button class="btn btn-agregar" onclick="abrirPanelJustificacion()">
-      <i class="fa-solid fa-square-plus me-1"></i>
-      <span>Nueva Justificación</span>
-    </button>
+      <button class="btn btn-agregar" onclick="abrirPanelJustificacion()">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        <span>Nueva Justificación</span>
+      </button>
 
 
       <div class="d-flex gap-2 flex-wrap responsive-buttons">
@@ -80,15 +80,28 @@
 
 
     <!-- ================================ Tarjetas resumen ===================================== -->
-    <div class="d-flex flex-wrap justify-content-between d-none" style="gap: 1rem;" id5="contenedorEstadisticasJustificaciones">
+    <div class="d-flex flex-wrap justify-content-between d-none" style="gap: 1rem;"
+      id="contenedorEstadisticasJustificaciones">
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
           <div class="bg-primary bg-opacity-10 p-3 me-3">
             <i class="bx bx-file text-primary fs-4"></i>
           </div>
           <div>
-            <p class="mb-0 text-muted small">Total</p>
+            <p class="mb-0 text-muted small">Total justificaciones</p>
             <h5 class="mb-0 fw-bold" id="totalJustificaciones">0</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
+        <div class="d-flex align-items-center">
+          <div class="bg-info bg-opacity-10 p-3 me-3">
+            <i class="bx bx-check-circle text-info fs-4"></i>
+          </div>
+          <div>
+            <p class="mb-0 text-muted small">Aprobadas</p>
+            <h5 class="mb-0 fw-bold" id="justificacionesAprobadas">0</h5>
           </div>
         </div>
       </div>
@@ -105,17 +118,6 @@
         </div>
       </div>
 
-      <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
-        <div class="d-flex align-items-center">
-          <div class="bg-info bg-opacity-10 p-3 me-3">
-            <i class="bx bx-check-circle text-info fs-4"></i>
-          </div>
-          <div>
-            <p class="mb-0 text-muted small">Aprobadas</p>
-            <h5 class="mb-0 fw-bold" id="justificacionesAprobadas">0</h5>
-          </div>
-        </div>
-      </div>
 
       <div class="card p-3 border-0 flex-grow-1 card-resumen" style="background-color: #f3f4f6; min-width: 220px;">
         <div class="d-flex align-items-center">
@@ -150,7 +152,7 @@
     <div class="panel-body">
       <form id="formJustificacion">
         <input type="hidden" id="IdJustificacion" />
-            <div class="invalid-feedback mb-3" id="errorEmpleadoIdJustificacionSinEmpleado"></div>
+        <div class="invalid-feedback mb-3" id="errorEmpleadoIdJustificacionSinEmpleado"></div>
 
         <div class="form-grid">
           <div class="form-group position-relative mb-3">
@@ -193,7 +195,8 @@
     </div>
   </div>
 
-
-  <script src="../js/Vistas/justificacion.js"></script>
-  <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
 </div>
+
+<script src="../js/Vistas/estadisticas/estadisticasJustificaciones.js"></script>
+<script src="../js/Vistas/justificacion.js"></script>
+<script src="../js/Vistas/common/obtenerEmpleado.js"></script>

@@ -37,6 +37,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             var emailActual = usuarioActual?.Email?.Trim().ToLower();
 
             var obtenerJustificaciones = _context.Justificacion
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
                 .Include(j => j.Empleado)
                     .ThenInclude(e => e.Puesto)
                     .ThenInclude(p => p.Sector)

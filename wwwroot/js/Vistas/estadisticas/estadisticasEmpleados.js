@@ -1,43 +1,22 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIONES PARA OBTENER LOS DATOS DE LA API TOTAL DE EMPLEADOS /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTotalEmpleados() {
-  const res = await authFetch("Empleados/Total")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("totalEmpleados").textContent = data.total;
-      ObtenerTotalEmpleados();
-    })
-    .catch(error => console.log("No se pudo obtener el total de empleados", error));
+  try {
+    const response = await authFetch("CardsEstadisticas/EmpleadosEstadisticas");
+    const data = await response.json();
+
+    document.getElementById("totalEmpleados").textContent = data.totalEmpleados;
+    document.getElementById("masculinosEmpleados").textContent = data.masculinos;
+    document.getElementById("femeninosEmpleados").textContent = data.femeninos;
+    document.getElementById("otrosEmpleados").textContent = data.noBinarios;
+  } catch (error) {
+    MostrarErrorCatch(error);
+  }
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIALIZAR AL CARGAR LA VISTA /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerTotalEmpleados();
-
-async function ObtenerMasculinosEmpleados() {
-  const res = await authFetch("Empleados/Masculinos")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("masculinosEmpleados").textContent = data.total;
-      ObtenerMasculinosEmpleados();
-    })
-    .catch(error => console.log("No se pudo obtener los masculinos empleados", error));
-}
-ObtenerMasculinosEmpleados();
-
-async function ObtenerFemeninosEmpleados() {
-  const res = await authFetch("Empleados/Femeninos")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("femeninosEmpleados").textContent = data.total;
-      ObtenerFemeninosEmpleados();
-    })
-    .catch(error => console.log("No se pudo obtener los femeninos empleados", error));
-}
-ObtenerFemeninosEmpleados();
-
-async function ObtenerOtrosEmpleados() {
-  const res = await authFetch("Empleados/Otros")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("otrosEmpleados").textContent = data.total;
-      ObtenerOtrosEmpleados();
-    })
-    .catch(error => console.log("No se pudo obtener los otros empleados", error));
-}
-ObtenerOtrosEmpleados();

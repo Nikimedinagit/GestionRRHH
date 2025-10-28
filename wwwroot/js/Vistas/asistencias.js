@@ -65,7 +65,7 @@ async function ObtenerAsistencias() {
     } catch (error) {
         MostrarErrorCatch();
     }
-}
+} 
 
 
 /////////////////////////////////////////////////////////////

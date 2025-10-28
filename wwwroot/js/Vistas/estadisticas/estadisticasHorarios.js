@@ -1,34 +1,23 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCIONES PARA OBTENER LOS DATOS DE LA API TOTAL DE HORARIOS /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTotalHorarios() {
-  const res = await authFetch("Horarios/Total")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("totalHorariosAsignados").textContent = data.total;
-      ObtenerTotalHorarios();
-    })
-    .catch(error => console.log("No se pudo obtener el total de horarios", error));
+  try {
+  const res = await authFetch("CardsEstadisticas/HorariosEstadisticas")
+   const data = await res.json();
+
+    document.getElementById("totalHorariosAsignados").textContent = data.totalHorariosAsignados;
+    document.getElementById("totalHorasSemanales").textContent =
+      `${data.totalHorasFormateadas}`;
+    document.getElementById("empleadosFindes").textContent = data.empleadosFindes;
+    
+    } catch (error) {
+      MostrarErrorCatch(error);
+    }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIALIZAR AL CARGAR LA VISTA /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 ObtenerTotalHorarios();
 
-async function ObtenerTotalHorasSemanales() {
-  const res = await authFetch("Horarios/HorasSemanales")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("totalHorasSemanales").textContent = data.totalHorasSemanales;
-      ObtenerTotalHorasSemanales();
-    })
-    .catch(error => console.log("No se pudo obtener las horas semanales", error));
-}
-ObtenerTotalHorasSemanales();
-
-
-async function ObtenerEmpleadosQueTrabajanFinesDeSemana() {
-  const res = await authFetch("Horarios/FindesDeSemana")
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("empleadosFindes").textContent = data.empleadosFindes;
-      ObtenerEmpleadosQueTrabajanFinesDeSemana();
-    })
-    .catch(error => console.log("No se pudo obtener los empleados que trabajan fines de semana", error));
-}
-
-ObtenerEmpleadosQueTrabajanFinesDeSemana();

@@ -3,7 +3,6 @@ using System.Text.Json;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
 [ApiController]
 [Route("api/[controller]")]
 public class DiasFestivosController : ControllerBase
