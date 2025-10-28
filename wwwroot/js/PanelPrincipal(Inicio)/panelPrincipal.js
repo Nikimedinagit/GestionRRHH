@@ -1,5 +1,4 @@
 
-  // Parallax Tilt Effect
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
@@ -16,7 +15,6 @@
     });
   });
 
-  // Fade-in on scroll
   const cards = document.querySelectorAll('.card');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
