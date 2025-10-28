@@ -36,11 +36,9 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        // Crear rol ADMINISTRADOR si no existe
         if (!await _rolManager.RoleExistsAsync("ADMINISTRADOR"))
             await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
 
-        // Verificamos si ya existe un usuario con ese correo
         var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
             return Conflict(new { message = "El correo ya está registrado" });
@@ -60,7 +58,6 @@ public class AuthController : ControllerBase
             return Ok("Usuario administrador registrado");
         }
 
-        // Si hay otros errores (como contraseña débil), los devolvemos como 400
         return BadRequest(result.Errors);
     }
 
@@ -74,28 +71,22 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            // Buscar el empleado vinculado al usuario
             var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email == user.Email);
 
-            // Si el empleado está eliminado, no permitir el login
             if (empleado != null && empleado.Eliminado)
             {
                 return Unauthorized("Credenciales inválidas");
             }
 
-            // Obtener roles asignados al usuario
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Definir roles permitidos para iniciar sesión
             var rolesPermitidos = new[] { "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" };
 
-            // Verificar si el usuario tiene al menos un rol permitido
             if (!roles.Any(r => rolesPermitidos.Contains(r)))
             {
                 return Unauthorized("Acceso restringido.");
             }
 
-            // Usar el primer rol válido para el token (o ajusta según tu lógica)
             string rolNombre = roles.First(r => rolesPermitidos.Contains(r));
 
             var claims = new[]
@@ -160,11 +151,9 @@ public class AuthController : ControllerBase
         if (savedToken != model.RefreshToken)
             return Unauthorized("Refresh token inválido");
 
-        // AGREGADO: obtener el rol
         var roles = await _userManager.GetRolesAsync(user);
         var rolNombre = roles.FirstOrDefault() ?? "CLIENTE";
 
-        // AGREGADO: incluir el ID y el rol en los claims
         var claims = new[]
         {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -180,7 +169,7 @@ public class AuthController : ControllerBase
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Issuer"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddMinutes(60),
             signingCredentials: creds
         );
 

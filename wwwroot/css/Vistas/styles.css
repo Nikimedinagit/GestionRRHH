@@ -1405,4 +1405,11 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
+/* INICIO ESTILO CERRAR SESION */
+.btn-cerrarsesion:hover {
+  background: #E13641 !important;
+  border-color: #E13641 !important;
+  color: #fff !important;
+}
+/* FIN ESTILO CERRAR SESION */
  

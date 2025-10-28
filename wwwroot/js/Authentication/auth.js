@@ -71,7 +71,7 @@ function authFetch(url, options = {}, retry = true) {
         .catch((err) => {
           console.error("No se pudo renovar el token:", err);
           window.location.href = "login.html";
-          return response; // devolvemos el 401 original
+          return response;
         });
     }
     return response;
@@ -81,6 +81,37 @@ function authFetch(url, options = {}, retry = true) {
 
 
 function cerrarSesion() {
-  localStorage.clear();
-  window.location.href = "login.html";
+  Swal.fire({
+    title: "¿Cerrar sesión?",
+    html: `<p class='swal2-content-center'>Tu sesión actual se cerrará y serás redirigido al login.</p>`,
+    showDenyButton: true,
+    showCancelButton: false,
+    confirmButtonText: "Sí, cerrar sesión",
+    denyButtonText: "No, mantener sesión",
+    focusDeny: true,
+    customClass: {
+      popup: "swal2-custom-popup",
+      confirmButton: "swal2-btn-activar",
+      denyButton: "swal2-btn-desactivar",
+      title: "swal2-title-custom",
+      htmlContainer: "swal2-content-center",
+    },
+    background: "#ffffff",
+    color: "#1a1a1a",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        html: `<div class='swal2-content-center' style="font-size: 1rem;">
+           <i class="fa fa-spinner fa-spin"></i> Cerrando sesión y redirigiendo al login...
+         </div>`,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        timer: 2500,
+        willClose: () => {
+          localStorage.clear();
+          window.location.href = "login.html";
+        }
+      });
+    }
+  });
 }
