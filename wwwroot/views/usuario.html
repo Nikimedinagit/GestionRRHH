@@ -1,21 +1,20 @@
 <div class="px-3 py-3">
 
-  
-  <!-- Título -->
+
+  <!--==================================== Título =====================================-->
   <div class="mb-3">
     <h3 class="titulo-seccion">Estado del Empleados</h3>
     <p class="text-muted mb-3">Panel para gestionar la activación y roles de los empleados.</p>
   </div>
 
+
   <hr />
 
-  <!-- Contenedor de Botones y Tabla -->
+  <!-- ==================================== Contenedor de Botones y Tabla ===================================== -->
   <div style="background-color: white; border-radius: 5px; padding: 10px">
 
-    <!-- Contenedor de Acciones (Filtros y Generar Informe) -->
     <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
 
-      <!-- Botones Filtros y Informe -->
       <div class="d-flex gap-2 flex-wrap responsive-button">
         <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
           <i class="fa-solid fa-filter me-1"></i>
@@ -24,29 +23,27 @@
       </div>
     </div>
 
-    <!-- Contenedor Filtros-->
+
+    <!-- ==================================== Contenedor Filtros ===================================== -->
+
     <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
       <div class="row g-3 align-items-end">
 
-         <!-- Buscar por Nombre -->
         <div class="col-12 col-md-3">
           <label for="FiltroNombre" class="form-label-fija">Empleado</label>
           <input type="text" id="FiltroNombre" class="form-control filtro-select" placeholder="Buscar..." />
         </div>
 
-        <!-- Buscar por Email -->
         <div class="col-12 col-md-3">
           <label for="FiltroEmail" class="form-label-fija">Email</label>
           <input type="email" id="FiltroEmail" class="form-control filtro-select" placeholder="Buscar..." />
         </div>
 
-        <!-- Buscar por DNI -->
         <div class="col-12 col-md-2">
           <label for="FiltroDNI" class="form-label-fija">DNI</label>
           <input type="text" id="FiltroDNI" class="form-control filtro-select" placeholder="Buscar..." />
         </div>
 
-        <!-- Buscar por Activo -->
         <div class="col-12 col-md-2">
           <label for="FiltroActivo" class="form-label-fija">Estado de Activación</label>
           <select id="FiltroActivo" class="form-control filtro-select">
@@ -56,13 +53,74 @@
           </select>
         </div>
 
-       
+
 
       </div>
     </div>
 
 
-    <!-- Tabla de Datos -->
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-person-check me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Empleado Activo</p>
+              <p class="mb-0 small text-muted">Tiene acceso al sistema. Se muestra con ícono verde y fecha de activación
+                registrada.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-person-x me-3" style="color:#dc3545; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#dc3545;">Empleado Inactivo</p>
+              <p class="mb-0 small text-muted">No tiene acceso al sistema. Se muestra con ícono rojo y sin fecha de
+                activación.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <div class="d-flex flex-column align-items-center me-3" style="font-size:1.2rem;">
+              <i class="bi bi-person-check mb-1" style="color:#198754;"></i>
+              <i class="bi bi-person-x" style="color:#dc3545;"></i>
+            </div>
+            <div>
+              <p class="fw-bold mb-1">Activar / Desactivar</p>
+              <p class="mb-0 small text-muted">Permite habilitar (<i class="bi bi-person-check"
+                  style="color:#198754;"></i>) o deshabilitar (<i class="bi bi-person-x" style="color:#dc3545;"></i>) el
+                acceso del empleado al sistema.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-info-circle me-3" style="font-size:1.2rem; color:#ffc107;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color: #ffc107;">Ver más</p>
+              <p class="mb-0 small text-muted">Muestra información adicional del empleado en dispositivos móviles.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ==================================== Tabla de Datos ===================================== -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle w-100">
         <thead class="table-activacion-empleados">
@@ -71,7 +129,7 @@
             <th class="text-start ">Nombre Completo</th>
             <th class="text-start columna-email-activacion">Email</th>
             <th class="text-center columna-dni-activacion">DNI</th>
-            <th class="text-center columna-estado-activacion" style="width: 5%;">Estado</th>
+            <th class="text-center columna-estado-activacion" style="width: 5%;">Accion</th>
           </tr>
         </thead>
         <tbody id="tablaActivacionEmpleadosBody"></tbody>
@@ -81,69 +139,65 @@
   </div>
 
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleadoActivacion"
-  aria-labelledby="tituloEmpleadoActivacion"
-  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  
-  <div class="detalle-activacion-contenedor">
-    <!-- Encabezado -->
-    <div class="detalle-activacion-encabezado d-flex justify-content-between align-items-start">
-      <div>
-        <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
-          Detalle del Empleado
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
-          Información detallada del estado de activación del empleado.
-        </p>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleEmpleadoActivacion"
+    aria-labelledby="tituloEmpleadoActivacion"
+    style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+
+    <div class="detalle-activacion-contenedor">
+      <div class="detalle-activacion-encabezado d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-0" style="font-size: 1rem; font-weight: 700; color: #212529;">
+            Detalle del Empleado
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+            Información detallada del estado de activación del empleado.
+          </p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
       </div>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-    </div>
 
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-    <!-- Cuerpo -->
-    <div class="offcanvas-body p-2"
-      style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+      <div class="offcanvas-body p-2"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
 
-      <!-- Datos del Cambio -->
-      <div class="detalle-activacion-tarjeta">
-        <div class="detalle-activacion-seccion">
-          <p class="detalle-activacion-titulo-seccion">Datos de Activación</p>
+        <div class="detalle-activacion-tarjeta">
+          <div class="detalle-activacion-seccion">
+            <p class="detalle-activacion-titulo-seccion">Datos de Activación</p>
 
-          <div class="detalle-activacion-fila">
-            <span class="detalle-activacion-etiqueta">Fecha Activación:</span>
-            <span class="detalle-activacion-valor" id="detalleEmpleadoFecha"></span>
-          </div>
-          <div class="detalle-activacion-fila">
-            <span class="detalle-activacion-etiqueta">Estado:</span>
-            <span class="detalle-activacion-valor" id="detalleEmpleadoEstado"></span>
+            <div class="detalle-activacion-fila">
+              <span class="detalle-activacion-etiqueta">Fecha Activación:</span>
+              <span class="detalle-activacion-valor" id="detalleEmpleadoFecha"></span>
+            </div>
+            <div class="detalle-activacion-fila">
+              <span class="detalle-activacion-etiqueta">Estado:</span>
+              <span class="detalle-activacion-valor" id="detalleEmpleadoEstado"></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Datos del Empleado -->
-      <div class="detalle-activacion-tarjeta" style="margin-bottom: 1rem;">
-        <div class="detalle-activacion-seccion">
-          <p class="detalle-activacion-titulo-seccion">Datos Personales</p>
+        <div class="detalle-activacion-tarjeta" style="margin-bottom: 1rem;">
+          <div class="detalle-activacion-seccion">
+            <p class="detalle-activacion-titulo-seccion">Datos Personales</p>
 
-          <div class="detalle-activacion-fila">
-            <span class="detalle-activacion-etiqueta">Nombre:</span>
-            <span class="detalle-activacion-valor" id="detalleEmpleadoNombre"></span>
-          </div>
-          <div class="detalle-activacion-fila">
-            <span class="detalle-activacion-etiqueta">Email:</span>
-            <span class="detalle-activacion-valor" id="detalleEmpleadoEmail"></span>
-          </div>
-          <div class="detalle-activacion-fila">
-            <span class="detalle-activacion-etiqueta">DNI:</span>
-            <span class="detalle-activacion-valor" id="detalleEmpleadoDNI"></span>
+            <div class="detalle-activacion-fila">
+              <span class="detalle-activacion-etiqueta">Nombre:</span>
+              <span class="detalle-activacion-valor" id="detalleEmpleadoNombre"></span>
+            </div>
+            <div class="detalle-activacion-fila">
+              <span class="detalle-activacion-etiqueta">Email:</span>
+              <span class="detalle-activacion-valor" id="detalleEmpleadoEmail"></span>
+            </div>
+            <div class="detalle-activacion-fila">
+              <span class="detalle-activacion-etiqueta">DNI:</span>
+              <span class="detalle-activacion-valor" id="detalleEmpleadoDNI"></span>
+            </div>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
-</div>
 
 
 

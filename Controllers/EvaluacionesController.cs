@@ -39,6 +39,9 @@ namespace API_NET_CORE8_RRHH.Controllers
             var usuarioActual = await _context.Users.FindAsync(userId);
             var emailActual = usuarioActual?.Email?.Trim().ToLower();
 
+            var empleadoActual = await _context.Empleado.Include(e => e.Puesto)
+                                                        .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
             var obtenerEvaluaciones = _context.Evaluacion
                 .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
                 .Include(e => e.Empleado)
@@ -47,36 +50,37 @@ namespace API_NET_CORE8_RRHH.Controllers
                     .ThenInclude(ce => ce.TipoDeCriterio)
                 .AsQueryable();
 
+            // Filtrar según rol
             if (rolActual == "EMPLEADO")
             {
-                var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-                if (empleado != null)
-                    obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.EmpleadoId == empleado.Id);
+                if (empleadoActual != null)
+                    obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.EmpleadoId == empleadoActual.Id);
                 else
                     return Ok(new List<EvaluacionVista>());
             }
 
             if (rolActual == "SUPERVISOR")
             {
-                var empleado = await _context.Empleado.Include(e => e.Puesto)
-                                                      .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-                if (empleado != null)
+                if (empleadoActual != null)
                 {
-                    var sectorId = empleado.Puesto.SectorId;
+                    var sectorId = empleadoActual.Puesto.SectorId;
                     obtenerEvaluaciones = obtenerEvaluaciones
                         .Where(e => e.Empleado.Puesto.SectorId == sectorId || e.Empleado.Email.Trim().ToLower() == emailActual);
                 }
                 else return Ok(new List<EvaluacionVista>());
             }
 
+            // Filtros adicionales
             if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
-                obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
+                obtenerEvaluaciones = obtenerEvaluaciones
+                    .Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
 
             if (filtro.Fecha.HasValue)
             {
                 var fecha = filtro.Fecha.Value.Date;
                 var fechaSiguiente = fecha.AddDays(1);
-                obtenerEvaluaciones = obtenerEvaluaciones.Where(e => e.Fecha >= fecha && e.Fecha < fechaSiguiente);
+                obtenerEvaluaciones = obtenerEvaluaciones
+                    .Where(e => e.Fecha >= fecha && e.Fecha < fechaSiguiente);
             }
 
             if (filtro.Calificacion.HasValue)
@@ -110,43 +114,59 @@ namespace API_NET_CORE8_RRHH.Controllers
                 bool esEditable = false;
                 string claseBorde = "";
                 bool esPropia = false;
+                bool esParaEl = false;
 
                 switch (rolActual)
                 {
                     case "ADMINISTRADOR":
                         esEditable = true;
-                        claseBorde = "";
+                        claseBorde = "";  // gris
                         esPropia = true;
                         break;
+
                     case "RRHH":
-                        if (e.UsuarioId == userId)
+                        if (e.UsuarioId == userId) // propia
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else
+                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id) // para él
+                        {
+                            esEditable = false;
+                            claseBorde = "blue";
+                            esParaEl = true;
+                        }
+                        else // de otros
                         {
                             esEditable = false;
                             claseBorde = "yellow";
                             esPropia = false;
                         }
                         break;
+
                     case "SUPERVISOR":
-                        if (e.Empleado.Puesto.SectorId == (await _context.Empleado.FirstOrDefaultAsync(emp => emp.Email.Trim().ToLower() == emailActual))?.Puesto.SectorId
-                            && e.UsuarioId == userId)
+                        if (empleadoActual != null &&
+                            e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId && e.UsuarioId == userId) // propia
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else
+                        else if (empleadoActual != null && e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId) // para su sector
+                        {
+                            esEditable = false;
+                            claseBorde = "blue";
+                            esParaEl = true;
+                        }
+                        else // de superiores
                         {
                             esEditable = false;
                             claseBorde = "yellow";
                             esPropia = false;
                         }
                         break;
+
                     case "EMPLEADO":
                         esEditable = false;
                         claseBorde = "";
@@ -167,12 +187,14 @@ namespace API_NET_CORE8_RRHH.Controllers
                     EsEditable = esEditable,
                     ClaseBorde = claseBorde,
                     EsPropia = esPropia,
+                    EsParaEl = esParaEl,
                     UsuarioId = e.UsuarioId
                 });
             }
 
             return Ok(listaVista);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +325,7 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             evaluacionOriginal.Calificacion = evaluacion.Calificacion;
             evaluacionOriginal.EmpleadoId = evaluacion.EmpleadoId;
-            evaluacionOriginal.Fecha = DateTime.Now; 
+            evaluacionOriginal.Fecha = DateTime.Now;
             evaluacionOriginal.UsuarioId = userId;
 
             await _context.SaveChangesAsync();

@@ -132,6 +132,246 @@
       </div>
     </div>
 
+
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="PresencialRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-building me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#0d6efd;">Presencial</p>
+              <p class="mb-0 small text-muted">Curso dictado en sede física. Se muestra con <span
+                  class="badge badge-presencial">PRESENCIAL</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="VirtualRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-laptop me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Virtual</p>
+              <p class="mb-0 small text-muted">Curso dictado en línea. Se muestra con <span
+                  class="badge badge-virtual">VIRTUAL</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="MixtoRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-laptop-fill me-3" style="color:#ffc107; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#ffc107;">Mixto</p>
+              <p class="mb-0 small text-muted">Curso con modalidad combinada. Se muestra con <span
+                  class="badge badge-mixto">MIXTO</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="AprobadoRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
+            <i class="bi bi-check-circle-fill me-3" style="color:#28a745; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#28a745;">Aprobado</p>
+              <p class="mb-0 small text-muted">El empleado superó el curso. Se indica con borde inferior
+                <strong>verde</strong> y badge <span class="badge-pill badge-aprobado">Aprobado</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="DesaprobadoRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
+            <i class="bi bi-x-circle-fill me-3" style="color:#dc3545; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#dc3545;">Desaprobado</p>
+              <p class="mb-0 small text-muted">El empleado no alcanzó el resultado mínimo. Se indica con borde inferior
+                <strong>rojo</strong> y badge <span class="badge-pill badge-desaprobado">Desaprobado</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="AsistenciaRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-check me-3" style="font-size:1.2rem; color:#6c757d;"></i>
+            <div>
+              <p class="fw-bold mb-1">Ver Asistencias</p>
+              <p class="mb-0 small text-muted">Permite visualizar y registrar la asistencia de los empleados al curso.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="CertificadoRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-award me-3" style="font-size:1.2rem; color:#6f42c1;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#6f42c1;">Ver Certificados</p>
+              <p class="mb-0 small text-muted">Permite cargar y descargar certificados de finalización para cada
+                empleado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="DescripcionRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-info-circle me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
+            <div>
+              <p class="fw-bold mb-1">Ver Descripción</p>
+              <p class="mb-0 small text-muted">Despliega la descripción completa del curso, incluyendo objetivos y
+                contenidos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="EditarRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
+            <div>
+              <p class="fw-bold mb-1">Editar</p>
+              <p class="mb-0 small text-muted">Permite modificar los datos del curso si aún no fue finalizado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="AsistioRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-check-square me-3" style="font-size:1.2rem; color:#198754;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Asistió</p>
+              <p class="mb-0 small text-muted">
+                Casilla de verificación para registrar si el empleado asistió al curso. Se puede marcar o desmarcar
+                según corresponda.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="DescargarRA">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-file-earmark-text me-3" style="font-size:1.2rem; color:#6c757d;"></i>
+            <div>
+              <p class="fw-bold mb-1">Descargar Certificado</p>
+              <p class="mb-0 small text-muted">Disponible si el curso fue aprobado y tiene certificado cargado.</p>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="AprobadoES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-check-circle-fill me-3" style="color:#28a745; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#28a745;">Aprobado</p>
+              <p class="mb-1 small text-muted">El curso fue aprobado por el empleado. Se muestra con borde verde y
+                badge:</p>
+              <span class="badge-pill px-2 py-1 fw-bold"
+                style="background-color:#d1f7d1; color:#28a745; font-size:0.75rem;">APROBADO</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="DesaprobadoES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-x-circle-fill me-3" style="color:#dc3545; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#dc3545;">Desaprobado</p>
+              <p class="mb-1 small text-muted">El curso no fue aprobado. Se muestra con borde rojo y badge:</p>
+              <span class="badge-pill px-2 py-1 fw-bold"
+                style="background-color:#f8d7da; color:#dc3545; font-size:0.75rem;">DESAPROBADO</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="PresencialES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-building me-3" style="color:#06923E; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#06923E;">Presencial</p>
+              <p class="mb-1 small text-muted">Curso dictado en sede física. Se muestra con badge:</p>
+              <span class="badge badge-presencial px-2 py-1 fw-bold">PRESENCIAL</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="VirtualES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-laptop me-3" style="color:#f9bc06; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#f9bc06;">Virtual</p>
+              <p class="mb-1 small text-muted">Curso dictado en línea. Se muestra con badge:</p>
+              <span class="badge badge-virtual px-2 py-1 fw-bold">VIRTUAL</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="MixtoES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100" >
+            <i class="bi bi-laptop-fill me-3" style="color:#fa7319; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#fa7319;">Mixto</p>
+              <p class="mb-1 small text-muted">Curso con modalidad combinada. Se muestra con badge:</p>
+              <span class="badge badge-mixto px-2 py-1 fw-bold">MIXTO</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="CertificadoES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-file-earmark-text me-3" style="color:#6c757d; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1">Certificado</p>
+              <p class="mb-1 small text-muted">Si el curso fue aprobado y tiene certificado cargado, se muestra el botón
+                <strong>Descargar</strong>.</p>
+              <span class="badge px-2 py-1 fw-bold"
+                style="background-color:#e2e3e5; color:#495057; font-size:0.75rem;">CERTIFICADO DISPONIBLE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex d-none" id="FechaES">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-event me-3" style="color:#1d3557; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1">Fechas del Curso</p>
+              <p class="mb-0 small text-muted">Se muestra la fecha de inicio y finalización del curso en formato
+                dd/mm/aaaa.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+       
+      
+
+
+
+
+
+
+    </div>
+
+
+
+
+
     <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
 

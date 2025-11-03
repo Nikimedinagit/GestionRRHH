@@ -1,249 +1,347 @@
 <div class="px-3 py-3">
 
-    <!--==================================== Título ===================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Control De Asistencias</h3>
-        <p class="text-muted mb-0" style="font-size: 0.95rem">
-            Verificá la presencia del personal, horarios de entrada y salida, y
-            cumplimiento de los días laborales establecidos.
-        </p>
-    </div>
+  <!--==================================== Título ===================================== -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Control De Asistencias</h3>
+    <p class="text-muted mb-0" style="font-size: 0.95rem">
+      Verificá la presencia del personal, horarios de entrada y salida, y
+      cumplimiento de los días laborales establecidos.
+    </p>
+  </div>
 
-    <hr />
+  <hr />
 
-    <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
 
-        <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
-            <div class="d-flex gap-2 flex-wrap responsive-buttons">
-                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-                    <i class="fa-solid fa-filter me-1"></i>
-                    <span>Filtros</span>
-                </button>
+    <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
+      <div class="d-flex gap-2 flex-wrap responsive-buttons">
+        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+          <i class="fa-solid fa-filter me-1"></i>
+          <span>Filtros</span>
+        </button>
 
-                <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
-                    <i class="fa-solid fa-file-lines me-1"></i>
-                    <span>Generar</span>
-                </button>
-            </div>
-        </div>
-
-
-        <!-- ================================ Contenedor Filtros ===================================== -->
-        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
-            <div class="row g-3 align-items-end">
-                <div class="col-12 col-md-3">
-
-                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
-                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
-                        placeholder="Buscar..." />
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label for="NroLegajoBuscar" class="form-label-fija">Nro Legajo</label>
-                    <input type="text" class="form-control filtro-select" id="NroLegajoBuscar"
-                        placeholder="Buscar..." />
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label for="DniBuscar" class="form-label-fija">DNI</label>
-                    <input type="number" class="form-control filtro-select" id="DniBuscar" placeholder="Buscar..." />
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label for="FechaBuscar" class="form-label-fija">Fecha</label>
-                    <input type="date" class="form-control filtro-select" id="FechaBuscar" />
-                </div>
-
-                <div class="col-12 col-md-3">
-                    <label for="EstadoAsistenciaBuscar" class="form-label-fija">Estado</label>
-                    <select id="EstadoAsistenciaBuscar" class="form-control filtro-select">
-                        <option value="0">[Todos]</option>
-                        <option value="1">COMPLETA</option>
-                        <option value="2">INCOMPLETA</option>
-                        <option value="3">AUSENTE</option>
-                        <option value="4">TARDE</option>
-                        <option value="5">FUERA DE HORARIO</option>
-                    </select>
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- ================================ Contenedor Generar ===================================== -->
-        <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
-            <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
-                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
-                </button>
-                <button class="btn btn-generar-excel" onclick="GenerarExcel()">
-                    <i class="fa-solid fa-file-excel me-1"></i> Excel
-                </button>
-            </div>
-        </div>
-
-
-
-
-        <!-- ================================ Contenedor de tarjetas de resumen de asistncias ===================================== -->
-        <div>
-            <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
-                <div class="card p-3 border-0" style="
-            background-color: #f3f4f6;
-            min-width: 200px;
-            flex: 1 1 calc(25% - 1rem);
-          ">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-user-check text-primary fs-4"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Total asistencias hoy</p>
-                            <h5 class="mb-0 fw-bold" id="totalAsistenciasHoy">0</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-3 border-0" style="
-            background-color: #f3f4f6;
-            min-width: 200px;
-            flex: 1 1 calc(25% - 1rem);
-          ">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-info bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-hourglass-half text-info fs-4"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Total horas trabajadas</p>
-                            <h5 class="mb-0 fw-bold" id="totalHorasTrabajadas">0</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-3 border-0" style="
-            background-color: #f3f4f6;
-            min-width: 200px;
-            flex: 1 1 calc(25% - 1rem);
-          ">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-warning bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-user-times text-danger fs-4"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Ausencias</p>
-                            <h5 class="mb-0 fw-bold" id="empleadosAusentes">0</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-3 border-0" style="
-            background-color: #f3f4f6;
-            min-width: 200px;
-            flex: 1 1 calc(25% - 1rem);
-          ">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-warning bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-clock text-warning fs-4"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Tardanzas / Llegadas Tardes</p>
-                            <h5 class="mb-0 fw-bold" id="empleadosLLegadasTardes">0</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
-
-        <h3 id="tituloAsistencias"
-            class="shadow-sm p-2 rounded-3 d-flex align-items-center justify-content-center gap-2 mb-3 mt-3 titulo-asistencias">
-        </h3>
-
-        <div id="asistenciasContainer" class="row g-4"></div>
+        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+          <i class="fa-solid fa-file-lines me-1"></i>
+          <span>Generar</span>
+        </button>
+      </div>
     </div>
 
 
-    <!-- ======================================= Detallle Asistencia Por Dia ====================================== -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistencia"
-        aria-labelledby="tituloDetalleAsistencia" style="
+    <!-- ================================ Contenedor Filtros ===================================== -->
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+
+          <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+          <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="NroLegajoBuscar" class="form-label-fija">Nro Legajo</label>
+          <input type="text" class="form-control filtro-select" id="NroLegajoBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="DniBuscar" class="form-label-fija">DNI</label>
+          <input type="number" class="form-control filtro-select" id="DniBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+          <label for="FechaBuscar" class="form-label-fija">Fecha</label>
+          <input type="date" class="form-control filtro-select" id="FechaBuscar" />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label for="EstadoAsistenciaBuscar" class="form-label-fija">Estado</label>
+          <select id="EstadoAsistenciaBuscar" class="form-control filtro-select">
+            <option value="0">[Todos]</option>
+            <option value="1">COMPLETA</option>
+            <option value="2">INCOMPLETA</option>
+            <option value="3">AUSENTE</option>
+            <option value="4">TARDE</option>
+            <option value="5">FUERA DE HORARIO</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ================================ Contenedor Generar ===================================== -->
+    <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
+          <i class="fa-solid fa-file-pdf me-1"></i> PDF
+        </button>
+        <button class="btn btn-generar-excel" onclick="GenerarExcel()">
+          <i class="fa-solid fa-file-excel me-1"></i> Excel
+        </button>
+      </div>
+    </div>
+
+
+
+
+    <!-- ================================ Contenedor de tarjetas de resumen de asistncias ===================================== -->
+    <div>
+      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem">
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 me-3">
+              <i class="fas fa-user-check text-primary fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total asistencias hoy</p>
+              <h5 class="mb-0 fw-bold" id="totalAsistenciasHoy">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+          <div class="d-flex align-items-center">
+            <div class="bg-info bg-opacity-10 p-3 me-3">
+              <i class="fas fa-hourglass-half text-info fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Total horas trabajadas</p>
+              <h5 class="mb-0 fw-bold" id="totalHorasTrabajadas">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 me-3">
+              <i class="fas fa-user-times text-danger fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Ausencias</p>
+              <h5 class="mb-0 fw-bold" id="empleadosAusentes">0</h5>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-3 border-0" style="
+            background-color: #f3f4f6;
+            min-width: 200px;
+            flex: 1 1 calc(25% - 1rem);
+          ">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 me-3">
+              <i class="fas fa-clock text-warning fs-4"></i>
+            </div>
+            <div>
+              <p class="mb-0 text-muted small">Tardanzas / Llegadas Tardes</p>
+              <h5 class="mb-0 fw-bold" id="empleadosLLegadasTardes">0</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
+          Información de Ayuda
+        </h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-check-circle-fill me-3" style="color:#06923E; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#06923E;">Completa</p>
+              <p class="mb-0 small text-muted">
+                El empleado cumplió con su jornada completa. Se muestra con
+                <span class="badge fw-bold fs-6 mb-1"
+                  style="background-color:#a3dc9a72; color:#06923E;">COMPLETA</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-exclamation-circle-fill me-3" style="color:#856404; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#856404;">Incompleta</p>
+              <p class="mb-0 small text-muted">
+                El empleado asistió parcialmente. Se muestra con
+                <span class="badge fw-bold fs-6 mb-1"
+                  style="background-color:#fff3cd; color:#856404;">INCOMPLETA</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-x-circle-fill me-3" style="color:#c62828; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#c62828;">Ausente</p>
+              <p class="mb-0 small text-muted">
+                El empleado no asistió. Se muestra con
+                <span class="badge fw-bold fs-6 mb-1" style="background-color:#f8d7da; color:#c62828;">AUSENTE</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-clock-fill me-3" style="color:#d35400; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#d35400;">Llegada Tarde</p>
+              <p class="mb-0 small text-muted">
+                El empleado llegó fuera del horario esperado. Se muestra con
+                <span class="badge fw-bold fs-6 mb-1" style="background-color:#ffe5d0; color:#d35400;">TARDE</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-x-fill me-3" style="color:#495057; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#495057;">Fuera de Horario</p>
+              <p class="mb-0 small text-muted">
+                La asistencia fue registrada fuera del rango permitido. Se muestra con
+                <span class="badge fw-bold fs-6 mb-1" style="background-color:#e2e3e5; color:#495057;">FUERA DE
+                  HORARIO</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-info-circle me-3" style="font-size:1.2rem; color:#ffc107;"></i>
+            <div>
+              <p class="fw-bold mb-1">Ver Más</p>
+              <p class="mb-0 small text-muted">Muestra el detalle completo de la asistencia registrada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
+
+    <h3 id="tituloAsistencias"
+      class="shadow-sm p-2 rounded-3 d-flex align-items-center justify-content-center gap-2 mb-3 mt-3 titulo-asistencias">
+    </h3>
+
+    <div id="asistenciasContainer" class="row g-4"></div>
+  </div>
+
+
+
+  <!-- ======================================= Detallle Asistencia Por Dia ====================================== -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleAsistencia"
+    aria-labelledby="tituloDetalleAsistencia" style="
       width: 380px;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     ">
-        <div class="detalle-asistencia-contenedor">
-            <div class="detalle-asistencia-encabezado row align-items-start">
-                <div class="col-10">
-                    <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529">
-                        Detalle de Asistencia
-                    </h5>
-                    <p class="mb-0 text-muted" style="font-size: 0.85rem">
-                        Información personal y de asistencia del empleado seleccionado.
-                    </p>
-                </div>
-                <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-                </div>
-            </div>
+    <div class="detalle-asistencia-contenedor">
+      <div class="detalle-asistencia-encabezado row align-items-start">
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529">
+            Detalle de Asistencia
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.85rem">
+            Información personal y de asistencia del empleado seleccionado.
+          </p>
+        </div>
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+      </div>
 
-            <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-            <div class="offcanvas-body p-2" style="
+      <div class="offcanvas-body p-2" style="
           font-size: 0.75rem;
           line-height: 1.1;
           max-height: calc(100vh - 70px);
           overflow-y: auto;
         ">
-                <div class=".detalle-asistencia-seccion">
-                    <div class="text-center mb-3">
-                        <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
-                            Nombre del Empleado
-                        </h4>
-                        <span id="detalleLegajoAsistencia" class="text-muted" style="font-size: 0.85rem">Nro
-                            Legajo</span>
-                    </div>
+        <div class=".detalle-asistencia-seccion">
+          <div class="text-center mb-3">
+            <h4 id="detalleNombre" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+              Nombre del Empleado
+            </h4>
+            <span id="detalleLegajoAsistencia" class="text-muted" style="font-size: 0.85rem">Nro
+              Legajo</span>
+          </div>
 
-                    <div class="detalle-asistencia-tarjeta">
-                        <div class="detalle-asistencia-seccion">
-                            <p class="detalle-asistencia-titulo-seccion">INFORMACION</p>
+          <div class="detalle-asistencia-tarjeta">
+            <div class="detalle-asistencia-seccion">
+              <p class="detalle-asistencia-titulo-seccion">INFORMACION</p>
 
-                            <div class="detalle-asistencia-fila">
-                                <span class="detalle-asistencia-valor" id="detalleTipoHorarioAsistencia"></span>
-                            </div>
+              <div class="detalle-asistencia-fila">
+                <span class="detalle-asistencia-valor" id="detalleTipoHorarioAsistencia"></span>
+              </div>
 
-                            <div class="detalle-asistencia-fila">
-                                <span class="detalle-asistencia-etiqueta">Primer Entrada:</span>
-                                <span class="detalle-asistencia-valor" id="detallePrimerEntradaAsistencia"></span>
-                            </div>
-                            <div class="detalle-asistencia-fila">
-                                <span class="detalle-asistencia-etiqueta">Primer Salida:</span>
-                                <span class="detalle-asistencia-valor" id="detallePrimerSalidaAsistencia"></span>
-                            </div>
-                            <div class="detalle-asistencia-fila" id="filaSegundaEntrada">
-                                <span class="detalle-asistencia-etiqueta">Segunda Entrada:</span>
-                                <span class="detalle-asistencia-valor" id="detalleSegundaEntradaAsistencia"></span>
-                            </div>
-                            <div class="detalle-asistencia-fila" id="filaSegundaSalida">
-                                <span class="detalle-asistencia-etiqueta">Segunda Salida:</span>
-                                <span class="detalle-asistencia-valor" id="detalleSegundaSalidaAsistencia"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="detalle-asistencia-tarjeta">
-                        <div class="detalle-asistencia-seccion">
-                            <p class="detalle-asistencia-titulo-seccion">ESTADO</p>
-
-                            <div class="detalle-asistencia-fila text-center">
-                                <span class="detalle-asistencia-valor" id="detalleEstadoAsistencia"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <div class="detalle-asistencia-fila">
+                <span class="detalle-asistencia-etiqueta">Primer Entrada:</span>
+                <span class="detalle-asistencia-valor" id="detallePrimerEntradaAsistencia"></span>
+              </div>
+              <div class="detalle-asistencia-fila">
+                <span class="detalle-asistencia-etiqueta">Primer Salida:</span>
+                <span class="detalle-asistencia-valor" id="detallePrimerSalidaAsistencia"></span>
+              </div>
+              <div class="detalle-asistencia-fila" id="filaSegundaEntrada">
+                <span class="detalle-asistencia-etiqueta">Segunda Entrada:</span>
+                <span class="detalle-asistencia-valor" id="detalleSegundaEntradaAsistencia"></span>
+              </div>
+              <div class="detalle-asistencia-fila" id="filaSegundaSalida">
+                <span class="detalle-asistencia-etiqueta">Segunda Salida:</span>
+                <span class="detalle-asistencia-valor" id="detalleSegundaSalidaAsistencia"></span>
+              </div>
             </div>
+          </div>
+
+          <div class="detalle-asistencia-tarjeta">
+            <div class="detalle-asistencia-seccion">
+              <p class="detalle-asistencia-titulo-seccion">ESTADO</p>
+
+              <div class="detalle-asistencia-fila text-center">
+                <span class="detalle-asistencia-valor" id="detalleEstadoAsistencia"></span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
 </div>
 

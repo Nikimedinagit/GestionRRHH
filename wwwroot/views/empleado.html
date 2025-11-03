@@ -178,6 +178,81 @@
       </div>
     </div>
 
+
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
+          Información de Ayuda
+        </h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+          <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+
+        <div class="col-12 col-md-6">
+          <div class="info-box d-flex align-items-start p-3 rounded-3">
+            <i class="bi bi-circle-fill me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Empleado Activo</p>
+              <p class="mb-0 small text-muted">Los empleados se muestran con un borde verde y la letra
+                <strong>A</strong> en verde.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="info-box d-flex align-items-start p-3 rounded-3">
+            <i class="bi bi-circle-fill me-3" style="color:#DC3545; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#DC3545;">Empleado Desactivado</p>
+              <p class="mb-0 small text-muted">Los empleados se muestran con un borde rojo y la letra
+                <strong>D</strong> en rojo.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="info-box d-flex align-items-start p-3 rounded-3">
+            <i class="bi bi-card-text me-3" style="font-size:1.2rem; color:#FF6600;"></i>
+            <div>
+              <p class="fw-bold mb-1">Historial</p>
+              <p class="mb-0 small text-muted">Muestra los cambios de puesto y sector del empleado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="info-box d-flex align-items-start p-3 rounded-3">
+            <i class="bi bi-info-circle me-3" style="font-size:1.2rem; color:#FF6600;"></i>
+            <div>
+              <p class="fw-bold mb-1">Ver Más</p>
+              <p class="mb-0 small text-muted">Muestra la información completa del empleado.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="info-box d-flex align-items-start p-3 rounded-3">
+            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
+            <div>
+              <p class="fw-bold mb-1">Editar</p>
+              <p class="mb-0 small text-muted">Permite modificar los datos del empleado seleccionado.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+
     <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
 

@@ -105,24 +105,14 @@ function MostrarJustificacionesDesktop(data) {
   };
 
   data.forEach((element) => {
-
     const documentoHtml = element.documentoNombre
-      ? `
-        <p class="text-muted d-flex align-items-center gap-2 mb-2">
-          <button onclick="DescargarDocumento(${element.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
-            <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
-            <span>Descargar</span>
-          </button>
-        </p>
-      `
+      ? `<p class="text-muted d-flex align-items-center gap-2 mb-2">
+           <button onclick="DescargarDocumento(${element.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+             <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+             <span>Descargar</span>
+           </button>
+         </p>`
       : "";
-
-    let claseBorde = "";
-    switch (element.claseBorde) {
-      case "green": claseBorde = "border-success"; break;
-      case "yellow": claseBorde = "border-warning"; break;
-      default: claseBorde = "";
-    }
 
     const estadoNombre = element.estadoString || "PENDIENTE";
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
@@ -136,48 +126,34 @@ function MostrarJustificacionesDesktop(data) {
 
     let botonEditar = "";
     let botonEliminar = "";
-
-    if (((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia && hoy <= limite && estadoNombre === "PENDIENTE") ||
-        ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite)) {
-      botonEditar = `
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <div>
-            <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar"></i>
-            </button>
-          </div>
-        </div>`;
-    }
-
-    if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE" && hoy <= limite) {
-      botonEliminar = `
-        <button class='btn-eliminar' style='background: none; border: none;' 
-          onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
-          <i class='bi bi-trash3 icono-elimina-detalle'></i>
-        </button>`;
-    } else if ((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia && estadoNombre === "PENDIENTE" && hoy <= limite) {
-      botonEliminar = `
-        <button class='btn-eliminar' style='background: none; border: none;' 
-          onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
-          <i class='bi bi-trash3 icono-elimina-detalle'></i>
-        </button>`;
+    if (estadoNombre === "PENDIENTE" && hoy <= limite) {
+      botonEditar = `<div class="d-flex justify-content-between align-items-center mt-2">
+                       <div>
+                         <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                           <i class="bi bi-pencil-square icono-editar"></i>
+                         </button>
+                       </div>
+                     </div>`;
+      botonEliminar = `<button class='btn-eliminar' style='background: none; border: none;' 
+                         onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
+                         <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                       </button>`;
     }
 
     let botonAccion = "";
     if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE") {
-      botonAccion = `
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <div class="d-flex gap-1">
-            <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
-              data-tippy-content="Aprobar o rechazar"> 
-              <i class="bi bi-sliders icono-accion-licencia"></i>
-            </button>
-          </div>
-        </div>`;
+      botonAccion = `<div class="d-flex justify-content-between align-items-center mt-2">
+                       <div class="d-flex gap-1">
+                         <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
+                           data-tippy-content="Aprobar o rechazar"> 
+                           <i class="bi bi-sliders icono-accion-licencia"></i>
+                         </button>
+                       </div>
+                     </div>`;
     }
 
     const item = $(`
-      <div class="curso-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : "#dee2e6"}">
+      <div class="curso-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
         <div class="d-flex justify-content-between align-items-center w-100" style="gap: 20px;">
           <div class="d-flex align-items-center" style="gap: 10px; flex: 1;">
             ${botonEditar}
@@ -273,13 +249,6 @@ function MostrarJustificacionesMobile(data) {
   };
 
   data.forEach((element) => {
-    let claseBorde = "";
-    switch (element.claseBorde) {
-      case "green": claseBorde = "border-success"; break;
-      case "yellow": claseBorde = "border-warning"; break;
-      default: claseBorde = "";
-    }
-
     const estadoNombre = element.estadoString || "SIN ESTADO";
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
@@ -295,16 +264,13 @@ function MostrarJustificacionesMobile(data) {
       `
       : "No se adjuntó ningún documento";
 
+    // BOTONES
     let botonesHtml = "";
 
     if (estadoNombre === "PENDIENTE") {
       const fechaParts = fecha.split("/");
       if (fechaParts.length === 3) {
-        const fechaIncidente = new Date(
-          fechaParts[2],
-          fechaParts[1] - 1,
-          fechaParts[0]
-        );
+        const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
         const hoy = new Date();
         const limite = new Date(fechaIncidente);
         limite.setDate(limite.getDate() + 7);
@@ -312,19 +278,13 @@ function MostrarJustificacionesMobile(data) {
         if (hoy <= limite) {
           botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
 
-          // BOTÓN EDITAR
-          if (((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia) || (rol === "ADMINISTRADOR" || rol === "RRHH")) {
+          // EDITAR y ELIMINAR: todos los roles mientras esté pendiente y dentro de los 7 días
+          if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR" || rol === "EMPLEADO") {
             botonesHtml += `
               <button class="btn-editar" style="background: none; border: none;" 
                 onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
                 <i class="bi bi-pencil-square icono-editar"></i>
               </button>
-            `;
-          }
-
-          // BOTÓN ELIMINAR
-          if ((rol === "ADMINISTRADOR" || rol === "RRHH") || ((rol === "SUPERVISOR" || rol === "EMPLEADO") && element.esPropia)) {
-            botonesHtml += `
               <button class="btn-eliminar" style="background: none; border: none;" 
                 onclick="EliminarJustificacion(${element.id})" data-tippy-content="Eliminar">
                 <i class="bi bi-trash3 icono-elimina-detalle"></i>
@@ -332,7 +292,7 @@ function MostrarJustificacionesMobile(data) {
             `;
           }
 
-          // BOTÓN ACCIÓN (Aprobar/Rechazar) solo ADMIN/RRHH
+          // ACCIÓN solo ADMIN/RRHH
           if (rol === "ADMINISTRADOR" || rol === "RRHH") {
             botonesHtml += `
               <button class="btn-accionLicencia" style="background:none; border:none;" 
@@ -350,7 +310,7 @@ function MostrarJustificacionesMobile(data) {
     const card = document.createElement("div");
     card.className = "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
     card.innerHTML = `
-    <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
+      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
         <div class="flex-grow-1 d-flex flex-column">
           <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
             ${element.empleadoString || "Sin nombre"}
@@ -374,7 +334,7 @@ function MostrarJustificacionesMobile(data) {
       </div>
     `;
 
-    const descripcionDetalle = $(`  
+    const descripcionDetalle = $(`
       <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
         <div class="mb-3">
           <h3 class="titulo-sub-seccion">Detalle del Evento</h3>
@@ -394,22 +354,20 @@ function MostrarJustificacionesMobile(data) {
       </div>
     `);
 
-    $(card)
-      .find(".btn-ver-descripcion")
-      .on("click", function () {
-        const icono = $(this).find("i");
+    $(card).find(".btn-ver-descripcion").on("click", function () {
+      const icono = $(this).find("i");
 
-        $(".panelDescripcionCurso:visible")
-          .not(descripcionDetalle)
-          .slideUp(200);
-        $(".btn-ver-descripcion i")
-          .not(icono)
-          .removeClass("bi-chevron-up")
-          .addClass("bi-chevron-down");
+      $(".panelDescripcionCurso:visible")
+        .not(descripcionDetalle)
+        .slideUp(200);
+      $(".btn-ver-descripcion i")
+        .not(icono)
+        .removeClass("bi-chevron-up")
+        .addClass("bi-chevron-down");
 
-        descripcionDetalle.slideToggle(200);
-        icono.toggleClass("bi-chevron-down bi-chevron-up");
-      });
+      descripcionDetalle.slideToggle(200);
+      icono.toggleClass("bi-chevron-down bi-chevron-up");
+    });
 
     contenedor.appendChild(card);
     contenedor.appendChild(descripcionDetalle[0]);
@@ -1114,14 +1072,27 @@ function MostrarOpcionesJustificacionesPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
-  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+
+  if (rol === "ADMINISTRADOR") {
+
     $(
       "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
     ).removeClass("d-none");
-  } else if (rol === "EMPLEADO" || rol === "SUPERVISOR") {
+
+  }
+
+  else if (rol === "RRHH") {
+    $(
+      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
+    ).removeClass("d-none");
+
+  }
+
+  else if (rol === "EMPLEADO" || rol === "SUPERVISOR") {
     $("#tituloJustificacion").text(
       "Consultá tus justificaciones, verificá su estado y gestioná nuevas solicitudes."
     );
+    $("#JustificacionCreadoPorTercero, #JustificacionCreadoPorUsuario, #JustificacionAccion").addClass("d-none")
   }
 }
 

@@ -14,6 +14,74 @@
 
         <div id="fondoOscuro" onclick="CerrarPanelEmpleado()"></div>
 
+        <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+        <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+                <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
+                <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+                     <i class="bi bi-eye me-1"></i> Mostrar
+                </button>
+            </div>
+
+            <div id="contenido-ayuda" class="row g-3 d-none">
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+                        <i class="bi bi-person-vcard me-3" style="color:#6a1b9a; font-size:1.2rem;"></i>
+                        <div>
+                            <p class="fw-bold mb-1" style="color:#6a1b9a;">Información Personal</p>
+                            <p class="mb-0 small text-muted">Incluye datos como DNI, CUIL, fecha de nacimiento,
+                                localidad, dirección, hijos y estado civil.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+                        <i class="bi bi-envelope me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
+                        <div>
+                            <p class="fw-bold mb-1" style="color:#0d6efd;">Contacto</p>
+                            <p class="mb-0 small text-muted">Incluye email y teléfono del empleado. Algunos campos
+                                pueden editarse desde el botón correspondiente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+                        <i class="bi bi-briefcase me-3" style="color:#1565c0; font-size:1.2rem;"></i>
+                        <div>
+                            <p class="fw-bold mb-1" style="color:#1565c0;">Información Laboral</p>
+                            <p class="mb-0 small text-muted">Incluye puesto y número de legajo. Se muestran como badges
+                                para indicar que no se pueden modificar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+                        <i class="bi bi-patch-minus me-3" style="color:#6c757d; font-size:1.2rem;"></i>
+                        <div>
+                            <p class="fw-bold mb-1">Campos no editables</p>
+                            <p class="mb-0 small text-muted">Los datos que se muestran como <span class="badge"
+                                    style="background-color:#d0e7ff; color:#141414;">badges</span> no pueden modificarse
+                                desde esta vista.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+                        <i class="fa-solid fa-pen-to-square me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
+                        <div>
+                            <p class="fw-bold mb-1">Editar Información</p>
+                            <p class="mb-0 small text-muted">Permite modificar ciertos datos personales desde el botón
+                                <i class="fa-solid fa-pen-to-square"></i> disponible en escritorio y móvil.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- ======================================= Tarjetas de Informacion Personal ====================================== -->
         <div id="contenedorInformacionPersonal" class="row g-4"></div>

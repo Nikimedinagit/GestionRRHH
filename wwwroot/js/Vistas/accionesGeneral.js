@@ -73,25 +73,47 @@ function AbrilPanelGenerar(idPanel) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL ERROR DE CATCH ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MostrarErrorCatch() {
+  Swal.fire({
+    title: "¡Error!",
+    html: `
+      <div class="text-center">
+        <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
+      </div>
+    `,
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
+}
+
 // function MostrarErrorCatch() {
-//   Swal.fire({
-//     title: "¡Error!",
-//     html: `
-//       <div class="text-center">
-//         <p>No se pudo acceder al servidor. Por favor, inténtalo de nuevo.</p>
-//       </div>
-//     `,
-//     confirmButtonText: "Entendido",
-//     customClass: {
-//       popup: "shadow rounded-3 p-3",
-//       confirmButton: "btn btn-danger",
-//       title: "fs-5 text-dark mb-2",
-//       htmlContainer: "text-muted fs-6",
-//     },
-//     buttonsStyling: false,
-//   });
+//   console.error("No se pudo acceder al servidor. Por favor, inténtalo de nuevo.");
 // }
 
-function MostrarErrorCatch() {
-  console.error("No se pudo acceder al servidor. Por favor, inténtalo de nuevo.");
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA OCULTAR Y MOSTRAR EL CONTENEDOR DE AYUDA     ///////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+function toggleAyuda() {
+  const btnToggle = document.getElementById('toggle-ayuda');
+  const contenidoAyuda = document.getElementById('contenido-ayuda');
+  const headerAyuda = document.querySelector('.info-ayuda-header');
+
+  const oculto = contenidoAyuda.classList.toggle('d-none');
+
+  if (oculto) {
+    btnToggle.innerHTML = '<i class="bi bi-eye me-1"></i> Mostrar';
+    headerAyuda.classList.remove('mb-3'); 
+  } else {
+    btnToggle.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Ocultar';
+    headerAyuda.classList.add('mb-3'); 
+  }
 }
+
+

@@ -1413,3 +1413,45 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 }
 /* FIN ESTILO CERRAR SESION */
  
+
+
+
+
+
+
+.info-ayuda {
+  background: transparent; 
+  border-left: 4px solid #457b9d !important;
+  border: 1px solid #dee2e6;
+}
+
+.info-box {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  transition: 0.2s ease;
+}
+
+.info-box:hover {
+  background: #edf2f4;
+  transform: translateY(-2px);
+}
+
+.info-box .text-muted {
+  font-size: 0.85rem;      
+  color: #555 !important; 
+  line-height: 1.5;       
+}
+
+.btn-ayuda-toggle {
+  background: none;
+  border: none;
+  color: #1d3557;
+  font-size: 0.9rem;       
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-ayuda-toggle:hover {
+  font-weight: bold;
+}

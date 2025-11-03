@@ -37,6 +37,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public string UsuarioNombreEvaluador { get; set; }
         public string UsuarioRolEvaluador { get; set; }
         public bool EsEditable { get; set; }
+        public bool EsParaEl { get; set; }
         public string ClaseBorde { get; set; }
         public bool EsPropia { get; set; }
     }

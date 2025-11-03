@@ -1000,6 +1000,7 @@ function MostrarOpcionesLicenciasPorRol() {
   const seleccionEmpleado = $("#seleccionEmpleadoLicencia");
   const titulo = $("#tituloLicencia");
   const tipoLicenciaGroup = $("#IdTipoLicencia").closest(".form-group");
+  const contenedorAyuda = $("#LicenciaAcciones");
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     estadisticasYFiltros.removeClass("d-none");
@@ -1011,6 +1012,7 @@ function MostrarOpcionesLicenciasPorRol() {
     seleccionEmpleado.addClass("d-none");
     titulo.text("Solicitá tu licencia o consultá el estado de tus solicitudes.");
     tipoLicenciaGroup.css("grid-column", "span 2");
+    contenedorAyuda.addClass("d-none")
   }
 }
 

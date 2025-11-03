@@ -37,126 +37,57 @@ namespace API_NET_CORE8_RRHH.Controllers
             var emailActual = usuarioActual?.Email?.Trim().ToLower();
 
             var obtenerJustificaciones = _context.Justificacion
-                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .Where(j => j.Empleado != null && !j.Empleado.Eliminado)
                 .Include(j => j.Empleado)
                     .ThenInclude(e => e.Puesto)
                     .ThenInclude(p => p.Sector)
                 .AsQueryable();
 
-            if (rolActual == "EMPLEADO")
+            if (rolActual == "SUPERVISOR" || rolActual == "EMPLEADO")
             {
-                var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-                if (empleado != null)
-                    obtenerJustificaciones = obtenerJustificaciones.Where(j => j.EmpleadoId == empleado.Id);
-                else
-                    return Ok(new List<VistaJustificacion>());
-            }
-            if (rolActual == "SUPERVISOR")
-            {
-                var supervisor = await _context.Empleado
-                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
-                if (supervisor != null)
-                    obtenerJustificaciones = obtenerJustificaciones.Where(j => j.EmpleadoId == supervisor.Id);
-                else
-                return Ok(new List<VistaJustificacion>());
+                obtenerJustificaciones = obtenerJustificaciones
+                    .Where(j => j.Empleado.Email.Trim().ToLower() == emailActual);
             }
 
             if (filtro.EstadoJustificacion.HasValue)
-                obtenerJustificaciones = obtenerJustificaciones.Where(j => (int)j.Estados == filtro.EstadoJustificacion.Value);
+                obtenerJustificaciones = obtenerJustificaciones
+                    .Where(j => (int)j.Estados == filtro.EstadoJustificacion.Value);
 
             if (filtro.FechaJustificacion.HasValue)
             {
                 var fecha = filtro.FechaJustificacion.Value.Date;
-                obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Fecha.Date == fecha);
+                obtenerJustificaciones = obtenerJustificaciones
+                    .Where(j => j.Fecha.Date == fecha);
             }
 
             if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
             {
                 var texto = filtro.EmpleadoTexto.ToLower();
-                obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Empleado.NombreCompleto.ToLower().Contains(texto));
+                obtenerJustificaciones = obtenerJustificaciones
+                    .Where(j => j.Empleado.NombreCompleto.ToLower().Contains(texto));
             }
-
-            var listaVista = new List<VistaJustificacion>();
 
             var justificaciones = await obtenerJustificaciones
                 .OrderBy(j => j.Estados)
                 .ThenBy(j => j.Fecha)
                 .ToListAsync();
 
-            foreach (var j in justificaciones)
+            var listaVista = justificaciones.Select(j => new VistaJustificacion
             {
-                bool esEditable = false;
-                bool esPropia = false;
-                string claseBorde = "";
-
-                switch (rolActual)
-                {
-                    case "ADMINISTRADOR":
-                        esEditable = true;
-                        esPropia = true;
-                        claseBorde = "";
-                        break;
-
-                    case "RRHH":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
-                        {
-                            esEditable = true;
-                            esPropia = true;
-                            claseBorde = "green";
-                        }
-                        else
-                        {
-                            esEditable = false;
-                            esPropia = false;
-                            claseBorde = "yellow";
-                        }
-                        break;
-
-                    case "SUPERVISOR":
-
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
-                        {
-                            esEditable = true;
-                            esPropia = true;
-                            claseBorde = "";
-                        }
-                        else
-                        {
-                            esEditable = false;
-                            esPropia = false;
-                            claseBorde = "";
-                        }
-                        break;
-
-                    case "EMPLEADO":
-                        if (j.Empleado.Email.Trim().ToLower() == emailActual)
-                        {
-                            esEditable = true;
-                            esPropia = true;
-                            claseBorde = "";
-                        }
-                        break;
-                }
-
-                listaVista.Add(new VistaJustificacion
-                {
-                    Id = j.Id,
-                    Motivo = j.Motivo,
-                    FechaString = j.Fecha.ToString("dd/MM/yyyy"),
-                    EstadoString = j.Estados.ToString(),
-                    EmpleadoString = j.Empleado.NombreCompleto,
-                    EmpleadoId = j.EmpleadoId,
-                    DocumentoAdjunto = j.DocumentoAdjunto,
-                    DocumentoNombre = j.DocumentoNombre,
-                    DocumentoMimeType = j.DocumentoMimeType,
-                    EsEditable = esEditable,
-                    EsPropia = esPropia,
-                    ClaseBorde = claseBorde
-                });
-            }
+                Id = j.Id,
+                Motivo = j.Motivo,
+                FechaString = j.Fecha.ToString("dd/MM/yyyy"),
+                EstadoString = j.Estados.ToString(),
+                EmpleadoString = j.Empleado.NombreCompleto,
+                EmpleadoId = j.EmpleadoId,
+                DocumentoAdjunto = j.DocumentoAdjunto,
+                DocumentoNombre = j.DocumentoNombre,
+                DocumentoMimeType = j.DocumentoMimeType,
+            }).ToList();
 
             return Ok(listaVista);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

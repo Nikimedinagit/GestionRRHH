@@ -1915,9 +1915,11 @@ function MostrarOpcionesCursosPorRol() {
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     $("#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso").removeClass("d-none");
+    $("#PresencialRA, #VirtualRA, #MixtoRA, #AprobadoRA, #DesaprobadoRA, #AsistenciaRA, #CertificadoRA, #DescripcionRA, #EditarRA, #AsistioRA, #DescargarRA").removeClass("d-none");
 
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
     $("#tituloCursos").text("Visualizá los cursos en los que participaste y descargá los certificados disponibles.");
+    $("#AprobadoES, #DesaprobdoES, #PresencialES, #VirtualES, #MixtoES, #CertificadoES, #FechaES").removeClass("d-none")
   }
 }
 

@@ -30,24 +30,16 @@ function MostrarAsistenciaHorario(data) {
     const resumenSemanal = data.resumenSemanal || [];
     const historial = data.historialReciente || [];
 
-    const EstadoAsistenciaBadge = {
-        COMPLETA: { clase: "bg-success text-white fw-bold fs-6", borde: "#198754" },
-        INCOMPLETA: { clase: "bg-warning text-white fw-bold fs-6", borde: "#ffc107" },
-        AUSENTE: { clase: "bg-danger text-white fw-bold fs-6", borde: "#dc3545" },
-        TARDE: { clase: "bg-warning text-white fw-bold fs-6", borde: "#ffc107" },
-        FUERADEHORARIO: { clase: "bg-secondary text-white fw-bold fs-6", borde: "#6c757d" },
+    const EstadoAsistenciaEstilo = {
+        COMPLETA: { backgroundColor: "#a3dc9a72", color: "#06923E" },
+        INCOMPLETA: { backgroundColor: "#fff3cd", color: "#856404" },
+        AUSENTE: { backgroundColor: "#f8d7da", color: "#c62828" },
+        TARDE: { backgroundColor: "#ffe5d0", color: "#d35400" },
+        "FUERA DE HORARIO": { backgroundColor: "#e2e3e5", color: "#495057" }
     };
 
     const estado = (asistencia.estadoString || "SIN REGISTRO").toUpperCase();
-    const claseEstado = EstadoAsistenciaBadge[estado]?.clase || "bg-secondary text-white fw-bold fs-6";
-    const bordeEstado = EstadoAsistenciaBadge[estado]?.borde || "#6c757d";
-
-    const tipoColor = {
-        ALTERNO: { clase: "bg-alterno", borde: "#a33a44" },
-        CONTINUO: { clase: "bg-continuo", borde: "#1a4a8a" },
-    };
-    const tipoClase = tipoColor[horario.tipoHorarioString]?.clase || "bg-secondary";
-    const bordeTipo = tipoColor[horario.tipoHorarioString]?.borde || "#6c757d";
+    const estiloEstado = EstadoAsistenciaEstilo[estado] || { backgroundColor: "#e2e3e5", color: "#495057" };
 
     const dias = [
         { dia: "Lun", activo: horario.lunes },
@@ -84,13 +76,15 @@ function MostrarAsistenciaHorario(data) {
 
     const cardAsistencia = `
         <div class="col-12 col-md-6 d-flex">
-            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${bordeEstado};">
+            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${estiloEstado.color};">
                 <h5 class="fw-bold mb-2 fs-6">Asistencia de Hoy</h5>
                 <div class="d-flex align-items-center mb-2 flex-wrap">
-                    <img src="${asistencia.fotoRuta ||"./img/avatarAusente.png" }" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="${asistencia.fotoRuta || "./img/avatarAusente.png"}" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                     <div>
                         <h5 class="mb-1 fw-bold fs-6">${data.empleado || "Sin Registro"}</h5>
-                        <span class="badge ${claseEstado} px-2 py-1 fs-7">${estado}</span>
+                        <span class="px-2 py-1 fs-7 fw-bold" style="background-color: ${estiloEstado.backgroundColor}; color: ${estiloEstado.color}; border-radius: 0.25rem;">
+                            ${estado}
+                        </span>
                         <p class="mb-0 text-muted fs-7">${asistencia.fechaString || "Sin Registro"}</p>
                     </div>
                 </div>
@@ -101,12 +95,14 @@ function MostrarAsistenciaHorario(data) {
 
     const cardHorario = `
         <div class="col-12 col-md-6 d-flex">
-            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${bordeTipo};">
+            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
                 <h5 class="fw-bold mb-2 fs-6">Horario</h5>
                 <div class="d-flex flex-column justify-content-between h-100">
                     <div class="d-flex flex-column align-items-center text-center">
                         <h5 class="fw-bold mb-2 fs-6">${data.empleado || "Empleado"}</h5>
-                        <span class="badge ${tipoClase} px-2 py-1 fs-7">${horario.tipoHorarioString || "SIN HORARIO"}</span>
+                        <span class="badge ${horario.tipoHorarioString === "ALTERNO" ? "bg-alterno" : "bg-continuo"} px-2 py-1 fs-7">
+                            ${horario.tipoHorarioString || "SIN HORARIO"}
+                        </span>
                         ${
                             horario.tipoHorarioString === "ALTERNO"
                             ? `<p class="mb-1 fs-7"><strong>Primer Turno:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>
@@ -116,7 +112,7 @@ function MostrarAsistenciaHorario(data) {
                     </div>
                     <div class="d-flex justify-content-center gap-1 flex-wrap mt-2">
                         ${dias.map(d => `
-                            <span class="badge rounded-pill px-2 py-1 fs-7" 
+                            <span class="badge rounded-pill px-2 py-1 fs-6" 
                                   style="background-color: ${d.activo ? '#d1f7d1' : '#f0f0f0'}; 
                                          color: ${d.activo ? '#0a8c0a' : '#999'};">
                                 ${d.dia}
@@ -141,28 +137,33 @@ function MostrarAsistenciaHorario(data) {
     `;
 
     const cardHistorial = `
-    <div class="col-12 col-lg-8">
-        <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid #34a853;">
-            <h5 class="fw-bold mb-2 fs-6">Historial Reciente de Asistencia</h5>
-            <div class="d-flex flex-column gap-2">
-                ${historial.map(h => {
-                    const estadoBadge = EstadoAsistenciaBadge[h.estadoString?.toUpperCase()] || { clase: "bg-secondary text-white fw-bold fs-7" };
-                    return `
-                    <div class="d-flex flex-wrap justify-content-between align-items-center p-2 border rounded-2 shadow-sm" style="font-size: 0.85rem;">
-                        <div class="flex-fill mb-1 mb-md-0"><strong>Fecha:</strong> ${h.fechaString || "-"}</div>
-                        <div class="flex-fill mb-1 mb-md-0"><strong>Estado:</strong> <span class="badge ${estadoBadge.clase}" style="font-size:0.8rem !important;">${h.estadoString || "-"}</span></div>
-                        <div class="flex-fill mb-1 mb-md-0"><strong>E1:</strong> ${h.primerEntradaString || "-"}</div>
-                        <div class="flex-fill mb-1 mb-md-0"><strong>S1:</strong> ${h.primerSalidaString || "-"}</div>
-                        ${horario.tipoHorarioString === "ALTERNO" ? `
-                        <div class="flex-fill mb-1 mb-md-0"><strong>E2:</strong> ${h.segundaEntradaString || "-"}</div>
-                        <div class="flex-fill mb-1 mb-md-0"><strong>S2:</strong> ${h.segundaSalidaString || "-"}</div>
-                        ` : ""}
-                    </div>
-                    `;
-                }).join("")}
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid #34a853;">
+                <h5 class="fw-bold mb-2 fs-6">Historial Reciente de Asistencia</h5>
+                <div class="d-flex flex-column gap-2">
+                    ${historial.map(h => {
+                        const estadoBadge = EstadoAsistenciaEstilo[h.estadoString?.toUpperCase()] || { backgroundColor: "#e2e3e5", color: "#495057" };
+                        return `
+                        <div class="d-flex flex-wrap justify-content-between align-items-center p-2 border rounded-2 shadow-sm" style="font-size: 0.85rem;">
+                            <div class="flex-fill mb-1 mb-md-0"><strong>Fecha:</strong> ${h.fechaString || "-"}</div>
+                            <div class="flex-fill mb-1 mb-md-0">
+                                <strong>Estado:</strong> 
+                                <span class="px-2 py-1 fs-7 fw-bold" style="background-color: ${estadoBadge.backgroundColor}; color: ${estadoBadge.color}; border-radius: 0.25rem;">
+                                    ${h.estadoString || "-"}
+                                </span>
+                            </div>
+                            <div class="flex-fill mb-1 mb-md-0"><strong>E1:</strong> ${h.primerEntradaString || "-"}</div>
+                            <div class="flex-fill mb-1 mb-md-0"><strong>S1:</strong> ${h.primerSalidaString || "-"}</div>
+                            ${horario.tipoHorarioString === "ALTERNO" ? `
+                            <div class="flex-fill mb-1 mb-md-0"><strong>E2:</strong> ${h.segundaEntradaString || "-"}</div>
+                            <div class="flex-fill mb-1 mb-md-0"><strong>S2:</strong> ${h.segundaSalidaString || "-"}</div>
+                            ` : ""}
+                        </div>
+                        `;
+                    }).join("")}
+                </div>
             </div>
         </div>
-    </div>
     `;
 
     contenedor.append(`
@@ -178,10 +179,8 @@ function MostrarAsistenciaHorario(data) {
     const labels = resumenSemanal.map(r => r.estado);
     const valores = resumenSemanal.map(r => r.cantidad);
     const colores = labels.map(l => {
-        if(l === "COMPLETA") return "#198754";
-        if(l === "TARDE" || l === "INCOMPLETA") return "#ffc107";
-        if(l === "AUSENTE") return "#dc3545";
-        return "#6c757d";
+        const e = EstadoAsistenciaEstilo[l];
+        return e ? e.backgroundColor : "#e2e3e5";
     });
 
     new Chart(ctx, {
@@ -196,7 +195,7 @@ function MostrarAsistenciaHorario(data) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, 
+            maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom', labels: { font: { size: 12 } } },
                 tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}` } }
@@ -204,6 +203,7 @@ function MostrarAsistenciaHorario(data) {
         }
     });
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////

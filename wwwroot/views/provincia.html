@@ -52,6 +52,67 @@
     </div>
 
 
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-toggle-on me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Provincia Activa</p>
+              <p class="mb-0 small text-muted">Está disponible para ser utilizada en formularios y asignaciones. Se
+                muestra con ícono verde y opciones habilitadas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-toggle-off me-3" style="color:#dc3545; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#dc3545;">Provincia Desactivada</p>
+              <p class="mb-0 small text-muted">Está inactiva y no puede ser seleccionada. Se muestra con ícono rojo y
+                opciones ocultas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
+            <div>
+              <p class="fw-bold mb-1">Editar</p>
+              <p class="mb-0 small text-muted">Permite modificar el nombre de la provincia si está activa.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <div class="d-flex flex-column align-items-center me-3" style="font-size:1.2rem;">
+              <i class="bi bi-toggle-on mb-1" style="color:#198754;"></i>
+              <i class="bi bi-toggle-off" style="color:#dc3545;"></i>
+            </div>
+            <div>
+              <p class="fw-bold mb-1">Activar / Desactivar</p>
+              <p class="mb-0 small text-muted">Permite habilitar (<i class="bi bi-toggle-on"
+                  style="color:#198754;"></i>) o deshabilitar (<i class="bi bi-toggle-off" style="color:#dc3545;"></i>)
+                la provincia para su uso en el sistema.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <!-- ======================================= Contenedor Generar ====================================== -->
     <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
       <div class="d-flex gap-2 flex-wrap">
@@ -114,6 +175,4 @@
   </div>
 
 </div>
-  <script src="../js/Vistas/provincia.js"></script>
-
-
+<script src="../js/Vistas/provincia.js"></script>

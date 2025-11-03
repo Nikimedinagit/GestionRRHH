@@ -152,21 +152,15 @@ function MostrarEvaluacionesDesktop(data) {
     let etiqueta = "REGULAR";
     let badgeClass = "badge-regular";
 
-    if (nota >= 9) {
-      etiqueta = "EXCELENTE";
-      badgeClass = "badge-excelente";
-    } else if (nota >= 7) {
-      etiqueta = "MUY BUENA";
-      badgeClass = "badge-muybuena";
-    } else if (nota >= 5) {
-      etiqueta = "BUENA";
-      badgeClass = "badge-buena";
-    }
+    if (nota >= 9) { etiqueta = "EXCELENTE"; badgeClass = "badge-excelente"; }
+    else if (nota >= 7) { etiqueta = "MUY BUENA"; badgeClass = "badge-muybuena"; }
+    else if (nota >= 5) { etiqueta = "BUENA"; badgeClass = "badge-buena"; }
 
     let claseBorde = "";
     switch (element.claseBorde) {
       case "green": claseBorde = "border-success"; break;
       case "yellow": claseBorde = "border-warning"; break;
+      case "blue": claseBorde = "border-primary"; break;
       default: claseBorde = "";
     }
 
@@ -176,11 +170,18 @@ function MostrarEvaluacionesDesktop(data) {
          </button>`
       : "";
 
-    const nombreMostrar = (rol === "ADMINISTRADOR" || element.esPropia) ? element.empleadoNombre : element.usuarioNombreEvaluador;
-    const rolMostrar = (rol === "ADMINISTRADOR" || element.esPropia) ? element.empleadoPuesto : element.usuarioRolEvaluador;
+    const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
+      ? element.empleadoNombre
+      : element.usuarioNombreEvaluador;
+
+    const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
+      ? element.empleadoPuesto
+      : element.usuarioRolEvaluador;
+
 
     const item = $(`
-      <div class="evaluacion-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : "#dee2e6"};">
+      <div class="evaluacion-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between"
+           style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : element.claseBorde === "blue" ? "#0d6efd" : "#dee2e6"};">
         <div class="d-flex align-items-center" style="gap: 20px;">
           ${botonEditarHTML}
           <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -259,6 +260,7 @@ function MostrarEvaluacionesDesktop(data) {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES MOBILE /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,33 +282,32 @@ function MostrarEvaluacionesMobile(data) {
       ? element.fecha.split("T")[0].split("-").reverse().join("/")
       : "Sin fecha";
 
+    // Etiquetas de calificación
     let etiqueta = "REGULAR";
     let badgeClass = "badge-regular";
 
-    if (nota >= 9) {
-      etiqueta = "EXCELENTE";
-      badgeClass = "badge-excelente";
-    } else if (nota >= 7) {
-      etiqueta = "MUY BUENA";
-      badgeClass = "badge-muybuena";
-    } else if (nota >= 5) {
-      etiqueta = "BUENA";
-      badgeClass = "badge-buena";
-    }
+    if (nota >= 9) { etiqueta = "EXCELENTE"; badgeClass = "badge-excelente"; }
+    else if (nota >= 7) { etiqueta = "MUY BUENA"; badgeClass = "badge-muybuena"; }
+    else if (nota >= 5) { etiqueta = "BUENA"; badgeClass = "badge-buena"; }
 
+    // Clase de borde según color
     let bordeColor = "#dee2e6";
-    if (element.claseBorde === "green") bordeColor = "#198754";
-    else if (element.claseBorde === "yellow") bordeColor = "#ffc107";
+    switch(element.claseBorde) {
+      case "green": bordeColor = "#198754"; break;  // propia
+      case "yellow": bordeColor = "#ffc107"; break; // de otros
+      case "blue": bordeColor = "#0d6efd"; break;   // destinada al usuario
+    }
 
     const esEditable = element.esEditable === true || element.esEditable === "true";
 
-    const nombreMostrar = (rol === "ADMINISTRADOR" || element.esPropia)
-      ? element.empleadoNombre
-      : element.usuarioNombreEvaluador;
+    // Nombre y rol a mostrar según color
+    const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
+      ? element.empleadoNombre    // verde o amarillo → mostrar empleado evaluado
+      : element.usuarioNombreEvaluador; // azul → mostrar quien la realizó
 
-    const rolMostrar = (rol === "ADMINISTRADOR" || element.esPropia)
-      ? element.empleadoPuesto
-      : element.usuarioRolEvaluador;
+    const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
+      ? element.empleadoPuesto    // verde o amarillo → mostrar puesto del evaluado
+      : element.usuarioRolEvaluador; // azul → mostrar rol de quien la realizó
 
     const botonEditarHTML = esEditable
       ? `<button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
@@ -717,19 +718,19 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
   const enMovil = window.innerWidth <= 820;
 
   $.each(data, function (index, item) {
-   if (enMovil) {
+    if (enMovil) {
       tablaBody.append(`
         <tr>
           <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
           ${esEditable
-            ? `<td class='align-middle text-center'>
+          ? `<td class='align-middle text-center'>
                 <button class='btn-eliminar' style='background: none; border: none;' 
                   onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
                   <i class='bi bi-trash3 icono-elimina-detalle'></i>
                 </button>
               </td>`
-            : ""
-          }
+          : ""
+        }
         </tr>
       `);
     }
@@ -1086,10 +1087,16 @@ function MostrarOpcionesEvaluacionesPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
-  if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR") {
+  if (rol === "ADMINISTRADOR"  ){
+    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
+    $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida").addClass("d-none");
+  }
+  else if (rol === "RRHH" || rol === "SUPERVISOR") {
     $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
   } else if (rol === "EMPLEADO") {
     $("#tituloEvaluaciones").text("Visualizá tu progreso, resultados y estado de las evaluaciones realizadas.");
+    $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida, #JustificacionCriterioEliminar").addClass("d-none");
+
   }
 }
 

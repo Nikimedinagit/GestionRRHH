@@ -204,7 +204,7 @@ function MostrarEmpleados(data) {
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
-      }; min-height: 260px;">
+      }; background-color: ${activo ? "#ffffff" : "#f8d7da3b"} ;  min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
 
             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -1350,3 +1350,6 @@ function MostrarDetalleHistorial(index) {
 // INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 ComboParaFiltrarLocalidadPuesto();
+
+
+

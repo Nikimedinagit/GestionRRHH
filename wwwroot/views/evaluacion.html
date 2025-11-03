@@ -124,6 +124,131 @@
       </div>
     </div>
 
+
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
+          Información de Ayuda
+        </h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-star-fill me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Excelente</p>
+              <p class="mb-0 small text-muted">Nota 9 o más. Se muestra con <span
+                  class="badge-pill badge-excelente">EXCELENTE</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-star-half me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#0d6efd;">Muy Buena</p>
+              <p class="mb-0 small text-muted">Nota entre 7 y 8. Se muestra con <span
+                  class="badge-pill badge-muybuena">MUY BUENA</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-hand-thumbs-up me-3" style="color:#ffc107; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#ffc107;">Buena</p>
+              <p class="mb-0 small text-muted">Nota entre 5 y 6. Se muestra con <span
+                  class="badge-pill badge-buena">BUENA</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-hand-thumbs-down me-3" style="color:#6c757d; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#6c757d;">Regular</p>
+              <p class="mb-0 small text-muted">Nota menor a 5. Se muestra con <span
+                  class="badge-pill badge-regular">REGULAR</span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionCreadoPorUsuario">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
+            <i class="bi bi-person-check-fill me-3" style="color:#198754; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#198754;">Creada por el Usuario</p>
+              <p class="mb-0 small text-muted">Evaluación que el usuario realizó a otro. Puede editarse. Indicada con
+                borde izquierdo <strong>verde</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionCreadoSuperior">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
+            <i class="bi bi-person-fill-lock me-3" style="color:#ffc107; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#ffc107;">Creada por un Superior</p>
+              <p class="mb-0 small text-muted">Evaluación registrada por un superior para un tercero. Solo se visualiza.
+                Indicada con borde <strong>amarillo</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionRecibida">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
+            <i class="bi bi-person-fill me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#0d6efd;">Recibida por el Usuario</p>
+              <p class="mb-0 small text-muted">Evaluación que el usuario recibió de un superior. Solo se visualiza.
+                Indicada con borde <strong>azul</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-chevron-down me-3" style="font-size:1.2rem; color:#6c757d;"></i>
+            <div>
+              <p class="fw-bold mb-1">Detalle</p>
+              <p class="mb-0 small text-muted">Despliega los criterios de evaluación y sus descripciones.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex" id="JustificacionCriterioEliminar">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100"> <i class="bi bi-trash me-3"
+              style="font-size:1.2rem; color:#fd0d1d;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#fd0d1d;">Eliminar</p>
+              <p class="mb-0 small text-muted">  Permite borrar el criterio de evaluación asignado en el detalle de forma permanente.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
+            <div>
+              <p class="fw-bold mb-1">Editar</p>
+              <p class="mb-0 small text-muted">Permite modificar la evaluación si fue creada por el mismo usuario.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
     <!-- ================================ Contenedor de las evaluaciones ===================================== -->

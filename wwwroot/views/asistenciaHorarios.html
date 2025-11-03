@@ -1,25 +1,141 @@
-
-
 <div class="px-3 py-3">
 
-    <!-- ======================================= Título ====================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Control de Asitencia y Asignacion de Horarios</h3>
-        <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá tu horario laboral y controlá tus registros de asistencia diarios.</p>
+  <!-- ======================================= Título ====================================== -->
+  <div class="mb-3">
+    <h3 class="titulo-seccion">Control de Asitencia y Asignacion de Horarios</h3>
+    <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá tu horario laboral y controlá tus registros de
+      asistencia diarios.</p>
+  </div>
+
+  <hr />
+
+
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
+  <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+
+    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
+    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
+        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
+        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
+           <i class="bi bi-eye me-1"></i> Mostrar
+        </button>
+      </div>
+
+      <div id="contenido-ayuda" class="row g-3 d-none">
+         <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-check-circle-fill me-3" style="color:#06923E; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#06923E;">Completa</p>
+              <p class="mb-0 small text-muted">El empleado registró todas las entradas y salidas correctamente. Fondo
+                verde pastel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-exclamation-circle-fill me-3" style="color:#856404; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#856404;">Incompleta</p>
+              <p class="mb-0 small text-muted">Faltan registros. Fondo amarillo pastel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-person-x-fill me-3" style="color:#c62828; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#c62828;">Ausente</p>
+              <p class="mb-0 small text-muted">No se registró ninguna entrada o salida. Fondo rojo pastel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-clock-fill me-3" style="color:#d35400; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#d35400;">Tarde</p>
+              <p class="mb-0 small text-muted">Ingreso fuera del horario esperado. Fondo naranja pastel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-clock-history me-3" style="color:#495057; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#495057;">Fuera de Horario</p>
+              <p class="mb-0 small text-muted">Registro fuera de los turnos definidos. Fondo gris pastel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-week me-3" style="color:#0a8c0a; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#0a8c0a;">Horario Continuo</p>
+              <p class="mb-0 small text-muted">Incluye una sola entrada y salida por jornada laboral.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-range me-3" style="color:#1a4a8a; font-size:1.2rem;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#1a4a8a;">Horario Alterno</p>
+              <p class="mb-0 small text-muted">Incluye dos turnos con doble entrada y salida por jornada.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-calendar-day me-3" style="font-size:1.2rem; color:#6c757d;"></i>
+            <div>
+              <p class="fw-bold mb-1">Días Activos</p>
+              <p class="mb-0 small text-muted">Se indican con badges verdes los días laborales asignados en el horario.
+                Los días inactivos se muestran en gris.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-pie-chart-fill me-3" style="font-size:1.2rem; color:#1a73e8;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#1a73e8;">Resumen de Puntualidad</p>
+              <p class="mb-0 small text-muted">Gráfico semanal que muestra la cantidad de asistencias por estado.
+                Colores pastel según cada tipo.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
+            <i class="bi bi-clock-history me-3" style="font-size:1.2rem; color:#34a853;"></i>
+            <div>
+              <p class="fw-bold mb-1" style="color:#34a853;">Historial Reciente</p>
+              <p class="mb-0 small text-muted">Lista de días recientes con detalle de entradas, salidas y estado de
+                asistencia. Se adapta al tipo de horario.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <hr />
 
 
-    <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <!-- ======================================= Tarjetas de asistencias y horarios ====================================== -->
+    <div id="contenedorAsistenciaHorario" class="row g-4"></div>
 
-      
-
-        <!-- ======================================= Tarjetas de asistencias y horarios ====================================== -->
-        <div id="contenedorAsistenciaHorario" class="row g-4"></div>
-
-    </div>
+  </div>
 
 
 </div>
