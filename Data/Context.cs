@@ -28,6 +28,7 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<ActivacionEmpleado> ActivacionEmpleado { get; set; }
     public DbSet<Justificacion> Justificacion { get; set; }
     public DbSet<Asistencia> Asistencia { get; set; }
+    public DbSet<Feriado> Feriados { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

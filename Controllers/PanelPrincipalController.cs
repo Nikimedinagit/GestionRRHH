@@ -20,39 +20,29 @@ public class PanelPrincipalController : ControllerBase
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LOS DATOS DEL PROXIMOS FESTIVOS /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("proximos-festivos")]
-    public async Task<IActionResult> ObtenerProximosFestivos()
+    [HttpGet("proximo-festivo")]
+    public async Task<IActionResult> ObtenerProximoFestivo()
     {
-        var año = DateTime.Today.Year;
-        var pais = "AR";
-        var url = $"https://date.nager.at/api/v3/PublicHolidays/{año}/{pais}";
+        var hoy = DateTime.Today;
 
-        using var client = new HttpClient();
-        var response = await client.GetStringAsync(url);
-
-        var datosApi = JsonSerializer.Deserialize<List<JsonElement>>(response);
-
-        var proximos = datosApi
-            .Select(f =>
+        var proximo = await _context.Feriados
+            .Where(f => f.Fecha >= hoy)
+            .OrderBy(f => f.Fecha)
+            .Select(f => new
             {
-                var fecha = f.TryGetProperty("date", out var fechaProp) ? fechaProp.GetString() : null;
-                var nombre = f.TryGetProperty("localName", out var nombreProp) ? nombreProp.GetString() : "Sin nombre";
-
-                if (fecha == null) return null;
-
-                return new DiaFestivo
-                {
-                    Fecha = fecha,
-                    NombreFestivo = nombre
-                };
+                Fecha = f.Fecha,
+                Descripcion = f.Descripcion,
+                Tipo = f.Tipos,
+                TipoNombre = f.TiposString
             })
-            .Where(f => f != null && DateTime.Parse(f.Fecha) >= DateTime.Today)
-            .OrderBy(f => DateTime.Parse(f.Fecha))
-            .Take(5)
-            .ToList();
+            .FirstOrDefaultAsync();
 
-        return Ok(proximos);
+        if (proximo == null)
+            return NotFound(new { message = "No hay feriados próximos." });
+
+        return Ok(proximo);
     }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LA ASISTENCIA DEL USUARIO /////////////////////////////////////////////

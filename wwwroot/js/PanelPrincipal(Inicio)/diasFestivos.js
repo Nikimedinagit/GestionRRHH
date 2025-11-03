@@ -2,22 +2,24 @@
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS DATOS DE LA API DE DIAS FESTIVOS /////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function cargarProximoFestivo() {
-    const response = await fetch('/api/PanelPrincipal/proximos-festivos');
-    const festivos = await response.json();
+async function cargarProximoFeriado() {
+    try {
+        const response = await authFetch('PanelPrincipal/proximo-festivo');
+        const feriado = await response.json();
 
-    if (festivos.length > 0) {
-        const proximo = festivos[0];
+        const fecha = new Date(feriado.fecha);
 
-        const [year, month, day] = proximo.fecha.split('-');
-        const fecha = new Date(year, month - 1, day);
-        const dia = fecha.getDate();
-        const mes = fecha.toLocaleString('es-ES', { month: 'long' });
+        const dias = document.getElementById('dia-festivo');
+        dias.textContent = fecha.getDate();
 
-        document.getElementById('dia-festivo').textContent = dia;
-        document.getElementById('mes-festivo').textContent = mes.charAt(0).toUpperCase() + mes.slice(1);
-        document.getElementById('feriado-nombre').textContent = proximo.nombreFestivo;
-        document.getElementById('feriado-nombre').title = proximo.nombreFestivo;
+        const mes = document.getElementById('mes-festivo');
+        const mesTexto = fecha.toLocaleString('es-AR', { month: 'long' });
+        mes.textContent = mesTexto.charAt(0).toUpperCase() + mesTexto.slice(1);
+
+        const nombreFestivo = document.getElementById('feriado-nombre');
+        nombreFestivo.textContent = feriado.descripcion;
+    }catch (error) {
+        MostrarErrorCatch();
     }
 }
 
@@ -115,7 +117,7 @@ async function mostrarTiempoUsuario() {
 // ALMACENAMOS LAS FUNCIONES EN UNA SOLA PARA LLAMARLAS EN INICIO.HTML /////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function cargarLasFuncionesInicio() {
-    cargarProximoFestivo();
+    cargarProximoFeriado();
     mostrarNombreUsuario();
     mostrarAsistenciaUsuario();
     mostrarTiempoUsuario();
