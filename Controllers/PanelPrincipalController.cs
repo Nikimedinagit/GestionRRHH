@@ -4,6 +4,7 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -20,6 +21,7 @@ public class PanelPrincipalController : ControllerBase
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LOS DATOS DEL PROXIMOS FESTIVOS /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
     [HttpGet("proximo-festivo")]
     public async Task<IActionResult> ObtenerProximoFestivo()
     {
@@ -47,6 +49,7 @@ public class PanelPrincipalController : ControllerBase
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LA ASISTENCIA DEL USUARIO /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Authorize(Roles = "RRHH, SUPERVISOR, EMPLEADO")]
     [HttpGet("AsistenciaUsuario")]
     public async Task<IActionResult> ObtenerAsistenciaUsuario()
     {
@@ -104,7 +107,10 @@ public class PanelPrincipalController : ControllerBase
     }
 
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER EL TIEMPO DEL USUARIO /////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Authorize(Roles = "RRHH, SUPERVISOR, EMPLEADO")]
     [HttpGet("TiempoUsuario")]
     public async Task<IActionResult> ObtenerTiempoUsuario()
     {
@@ -171,6 +177,212 @@ public class PanelPrincipalController : ControllerBase
     }
 
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA VACACIONES DEL USUARIO /////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Authorize(Roles = "RRHH, SUPERVISOR, EMPLEADO")]
+    [HttpGet("VacacionesUsuario")]
+    public async Task<IActionResult> ObtenerVacacionesUsuario()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usuario = await _context.Users.FindAsync(userId);
+        var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+
+        var empleado = await _context.Empleado
+            .Include(e => e.Licencia)
+            .ThenInclude(l => l.TipoDeLicencia)
+            .Where(e => e.Email.Trim().ToLower() == emailUsuario)
+            .FirstOrDefaultAsync();
+
+        if (empleado == null) return NotFound("Empleado no encontrado");
+
+        int diasTotales = 30;
+
+        int anioActual = DateTime.Now.Year;
+
+        var vacaciones = empleado.Licencia
+            .Where(l => l.TipoDeLicencia.Nombre.ToLower() == "vacaciones" &&
+                        l.Estado == EstadoLicencia.APROBADA &&
+                        l.FechaInicio.Year == anioActual)
+            .ToList();
+
+        int diasTomados = vacaciones.Sum(v => (v.FechaFin - v.FechaInicio).Days + 1);
+        int diasRestantes = Math.Max(diasTotales - diasTomados, 0);
+
+        var historial = vacaciones
+            .GroupBy(v => v.FechaInicio.Month)
+            .Select(g => new
+            {
+                Mes = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(
+                          new DateTime(anioActual, g.Key, 1)
+                              .ToString("MMMM", new CultureInfo("es-ES"))
+                      ),
+                Dias = g.Sum(v => (v.FechaFin - v.FechaInicio).Days + 1)
+            })
+            .OrderBy(h => DateTime.ParseExact(h.Mes, "MMMM", new CultureInfo("es-ES")).Month)
+            .ToList();
+
+        return Ok(new
+        {
+            Anio = anioActual,
+            Restantes = diasRestantes,
+            Tomados = diasTomados,
+            Historial = historial
+        });
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER EL EQUIPO DEL USUARIO /////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Authorize(Roles = "RRHH, SUPERVISOR, EMPLEADO")]
+    [HttpGet("MiEquipo")]
+    public async Task<IActionResult> ObtenerMiEquipo()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usuario = await _context.Users.FindAsync(userId);
+        var emailUsuario = usuario?.Email?.Trim().ToLower();
+
+        var empleado = await _context.Empleado
+            .Include(e => e.Puesto)
+            .ThenInclude(p => p.Sector)
+            .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailUsuario);
+
+        int sectorId = empleado.Puesto?.SectorId ?? 0;
+        DateTime hoy = DateTime.Today;
+
+        var companieros = await _context.Empleado
+            .Include(e => e.Puesto)
+            .ThenInclude(p => p.Sector)
+            .Include(e => e.Licencia)
+            .ThenInclude(l => l.TipoDeLicencia)
+            .Where(e => e.Puesto.SectorId == sectorId && e.Id != empleado.Id)
+            .Take(3)
+            .Select(e => new
+            {
+                NombreCompleto = e.NombreCompleto,
+                Puesto = e.Puesto.Descripcion,
+                Estado = e.Licencia.Any(l =>
+                    l.Estado == EstadoLicencia.APROBADA &&
+                    l.FechaInicio <= hoy &&
+                    l.FechaFin >= hoy)
+                    ? "Licencia"
+                    : "Presente"
+            })
+            .ToListAsync();
+
+        return Ok(companieros);
+    }
+
+
+
+
+    [Authorize(Roles = "RRHH, SUPERVISOR, EMPLEADO")]
+    [HttpGet("EstadoOficina")]
+    public async Task<IActionResult> GetEstadoOficina()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usuario = await _context.Users.FindAsync(userId);
+        var emailUsuario = usuario?.Email?.Trim().ToLower();
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+        var empleado = await _context.Empleado
+            .Include(e => e.Puesto)
+            .ThenInclude(p => p.Sector)
+            .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailUsuario);
+
+        if (empleado == null)
+            return NotFound("Empleado no encontrado.");
+
+        IQueryable<Empleado> empleadosQuery = _context.Empleado
+            .Include(e => e.Puesto)
+            .ThenInclude(p => p.Sector)
+            .Where(e => !e.Eliminado);
+
+        if (rolActual != "RRHH")
+        {
+            int sectorId = empleado.Puesto.SectorId;
+            empleadosQuery = empleadosQuery.Where(e => e.Puesto.SectorId == sectorId);
+        }
+
+        var empleados = await empleadosQuery.ToListAsync();
+
+        DateTime hoy = DateTime.Today;
+        var licenciasAprobadas = await _context.Licencia
+            .Where(l => l.Estado == EstadoLicencia.APROBADA &&
+                        l.FechaInicio <= hoy && l.FechaFin >= hoy)
+            .ToListAsync();
+
+        int conLicencia = 0;
+        int presentes = 0;
+
+        foreach (var emp in empleados)
+        {
+            bool tieneLicencia = licenciasAprobadas.Any(l => l.EmpleadoId == emp.Id);
+            if (tieneLicencia)
+                conLicencia++;
+            else
+                presentes++;
+        }
+
+        var resultado = new
+        {
+            Anio = hoy.Year,
+            Presentes = presentes,
+            ConLicencia = conLicencia
+        };
+
+        return Ok(resultado);
+    }
+
+
+
+    [Authorize(Roles = "ADMINISTRADOR")]
+    [HttpGet("PanelAdministrador")]
+    public async Task<IActionResult> ObtenerResumenAdministrador()
+    {
+        var empleadosActivos = await _context.Empleado
+            .CountAsync(e => !e.Eliminado);
+
+        var empleadosConLicencia = await _context.Licencia
+            .Include(l => l.Empleado)
+            .CountAsync(l => l.Estado == EstadoLicencia.APROBADA && l.FechaFin >= DateTime.Today);
+
+        var ausenciasHoy = await _context.Empleado
+            .CountAsync(e => !_context.Asistencia
+                .Any(a => a.EmpleadoId == e.Id && a.Fecha == DateTime.Today));
+
+        var evaluacionesRecientes = await _context.Evaluacion
+            .CountAsync(e => e.Fecha >= DateTime.Today.AddDays(-30));
+
+        var cursosActivos = await _context.Curso
+            .CountAsync(c => !c.Finalizado);
+
+        var movimientosRecientes = await _context.HistorialLaboral
+            .Include(h => h.Empleado)
+            .OrderByDescending(h => h.FechaModificacion)
+            .Take(6)
+            .Select(h => new
+            {
+                Empleado = h.Empleado.NombreCompleto,
+                h.PuestoAnterior,
+                h.PuestoActual,
+                Fecha = h.FechaModificacion.ToString("dd/MM/yyyy")
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            EmpleadosActivos = empleadosActivos,
+            EmpleadosConLicencia = empleadosConLicencia,
+            AusenciasHoy = ausenciasHoy,
+            EvaluacionesRecientes = evaluacionesRecientes,
+            CursosActivos = cursosActivos,
+            MovimientosRecientes = movimientosRecientes
+        });
+    }
 
 
 

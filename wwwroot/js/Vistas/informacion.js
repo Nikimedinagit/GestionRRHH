@@ -943,7 +943,6 @@ async function EditarEmpleado() {
       return;
     }
 
-    // Mostrar toast de éxito
     Swal.fire({
       title: "¡Información Modificada!",
       toast: true,

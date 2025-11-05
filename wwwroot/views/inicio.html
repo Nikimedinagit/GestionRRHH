@@ -5,7 +5,6 @@
   <div class="col-span-12 md:col-span-8">
     <div
       class="card bg-white rounded-lg shadow p-6 flex items-center justify-center md:items-start h-auto md:min-h-[150px]">
-
       <div class="flex flex-col items-center md:flex-row md:items-start gap-4 w-full">
         <div class="bg-blue-100 p-3 rounded-full flex-shrink-0 mx-auto md:mx-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -28,6 +27,7 @@
   </div>
 
 
+
   <div class="col-span-12 md:col-span-4">
     <div
       class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between h-[150px]">
@@ -41,7 +41,7 @@
         </div>
         <h2 class="text-lg font-semibold text-gray-900 leading-tight">Próximo Festivo</h2>
       </div>
-      <div class="text-center py-2 border border-gray-200 rounded-lg bg-red-50">
+      <div class="text-center py-1 border border-gray-200 rounded-lg bg-red-50">
         <div id="dia-festivo" class="text-2xl font-extrabold text-red-700 leading-none"></div>
         <div id="mes-festivo" class="text-base font-semibold text-red-600 leading-tight"></div>
       </div>
@@ -51,7 +51,77 @@
     </div>
   </div>
 
-  <div class="col-span-12">
+
+
+
+
+
+
+<div class="col-span-12 d-none" id="CardResumenGeneral">
+  <div class="bg-white rounded-lg shadow p-4 flex flex-col hover:shadow-lg transition-shadow duration-300">
+    <div class="flex items-center border-b border-gray-200 pb-2 mb-3">
+      <div class="bg-blue-100 p-2 rounded-full mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 10h11M9 21V3m12 6l-3 3m0 0l3 3m-3-3H12" />
+        </svg>
+      </div>
+      <h2 class="text-lg font-semibold text-gray-900">Resumen General</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+      <div class="bg-blue-50 p-3 rounded-lg shadow-sm">
+        <h3 class="text-3xl font-bold text-blue-700" id="empleadosActivos">0</h3>
+        <p class="text-base text-gray-600 font-medium">Empleados Activos</p>
+      </div>
+
+      <div class="bg-green-50 p-3 rounded-lg shadow-sm">
+        <h3 class="text-3xl font-bold text-green-700" id="empleadosConLicencia">0</h3>
+        <p class="text-sm text-gray-600 font-medium">En Licencia (Aprobadas)</p>
+      </div>
+
+      <div class="bg-red-50 p-3 rounded-lg shadow-sm">
+        <h3 class="text-3xl font-bold text-red-700" id="ausenciasHoy">0</h3>
+        <p class="text-base text-gray-600 font-medium">Ausencias Hoy</p>
+      </div>
+
+      <div class="bg-yellow-50 p-3 rounded-lg shadow-sm">
+        <h3 class="text-3xl font-bold text-yellow-700" id="evaluacionesRecientes">0</h3>
+        <p class="text-base text-gray-600 font-medium">Evaluaciones Recientes (30 dias)</p>
+      </div>
+
+      <div class="bg-purple-50 p-3 rounded-lg shadow-sm">
+        <h3 class="text-3xl font-bold text-purple-700" id="cursosActivos">0</h3>
+        <p class="text-base text-gray-600 font-medium">Cursos Activos</p>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <h3 class="text-base font-semibold text-gray-800 mb-2">Últimos Movimientos Laborales</h3>
+      <ul id="movimientosList" class="space-y-2 text-sm">
+        <li class="bg-gray-50 p-2 rounded text-gray-700 text-left">Cargando...</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="col-span-12 d-none" id="CardAsitencia">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
 
       <div class="bg-white rounded-lg shadow p-4 flex flex-col justify-between">
@@ -97,7 +167,7 @@
       </div>
 
 
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col justify-between">
+      <div class="bg-white rounded-lg shadow p-4 flex flex-col justify-between d-none" id="CardTiempo">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center">
             <div class="bg-yellow-100 p-2 rounded-full mr-2">
@@ -116,7 +186,7 @@
           <div>
             <div class="flex justify-between mb-1">
               <span class="text-gray-600">Hoy:</span>
-              <span class="font-semibold" id="horasHoy">6.5 hs</span>
+              <span class="font-semibold" id="horasHoy">0 hs</span>
             </div>
             <div class="w-full h-2 bg-gray-200 rounded">
               <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoHoy"></div>
@@ -127,21 +197,21 @@
         <div class="grid grid-cols-3 gap-3">
           <div class="bg-gray-50 p-2 rounded text-center">
             <div class="text-gray-500 text-sm">Semana</div>
-            <div class="text-lg font-bold text-gray-800" id="horasSemana">32.5</div>
+            <div class="text-lg font-bold text-gray-800" id="horasSemana">0 hs</div>
             <div class="w-full h-2 bg-gray-200 rounded mt-1">
               <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoSemana"></div>
             </div>
           </div>
           <div class="bg-gray-50 p-2 rounded text-center">
             <div class="text-gray-500 text-sm">Mes</div>
-            <div class="text-lg font-bold text-gray-800" id="horasMes">132</div>
+            <div class="text-lg font-bold text-gray-800" id="horasMes">0 hs</div>
             <div class="w-full h-2 bg-gray-200 rounded mt-1">
               <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoMes"></div>
             </div>
           </div>
           <div class="bg-gray-50 p-2 rounded text-center">
             <div class="text-gray-500 text-sm">Año</div>
-            <div class="text-lg font-bold text-gray-800" id="horasAnio">1024</div>
+            <div class="text-lg font-bold text-gray-800" id="horasAnio">0 hs</div>
             <div class="w-full h-2 bg-gray-200 rounded mt-1">
               <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoAnio"></div>
             </div>
@@ -150,7 +220,7 @@
       </div>
 
 
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col justify-between">
+      <div class="bg-white rounded-lg shadow p-4 flex flex-col justify-between d-none" id="CardVacaciones">
         <div class="flex items-center mb-3">
           <div class="bg-purple-100 p-2 rounded-full mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24"
@@ -164,27 +234,19 @@
         <div class="grid grid-cols-2 gap-2 mb-3 text-base">
           <div class="bg-blue-50 p-2 rounded text-center">
             <div class="text-blue-500 text-sm">Restantes</div>
-            <div class="text-xl font-bold text-blue-800">14</div>
+            <div class="text-xl font-bold text-blue-800" id="vacacionesRestantes">0</div>
           </div>
           <div class="bg-orange-50 p-2 rounded text-center">
             <div class="text-orange-500 text-sm">Tomados</div>
-            <div class="text-xl font-bold text-orange-800">6</div>
+            <div class="text-xl font-bold text-orange-800" id="vacacionesTomadas">0</div>
           </div>
         </div>
         <div class="text-sm mt-auto">
           <div class="flex justify-between">
             <span class="text-gray-600">Historial:</span>
-            <span class="text-gray-600">2025</span>
+            <span class="text-gray-600" id="vacacionesAnio">2025</span>
           </div>
-          <div class="border-t border-gray-200 pt-1 space-y-1 mt-1">
-            <div class="flex justify-between">
-              <span>Enero</span>
-              <span class="font-semibold">2 días</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Marzo</span>
-              <span class="font-semibold">4 días</span>
-            </div>
+          <div id="vacacionesHistorial" class="border-t border-gray-200 pt-1 space-y-1 mt-1">
           </div>
         </div>
       </div>
@@ -193,7 +255,7 @@
   </div>
 
 
-  <div class="col-span-12 md:col-span-6 flex">
+  <div class="col-span-12 md:col-span-8 flex d-none" id="CardMiEquipo">
     <div class="bg-white rounded-lg shadow p-4 flex flex-col flex-1 hover:shadow-lg transition-shadow duration-300">
       <div class="flex items-center border-b border-gray-200 pb-2 mb-2">
         <div class="bg-blue-100 p-2 rounded-full mr-2">
@@ -206,32 +268,13 @@
         <h2 class="text-lg font-semibold text-gray-900">Mi Equipo</h2>
       </div>
 
-      <div class="flex flex-col md:flex-row md:gap-4 flex-1">
-        <div class="flex flex-col md:flex-1 gap-1 justify-center">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-            <div>
-              <div class="font-semibold text-gray-900">Juan Pérez</div>
-              <div class="text-gray-500 text-sm">Desarrollador Senior</div>
-              <span class="text-green-600 italic text-sm">Presente</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col md:flex-1 gap-1 justify-center">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-            <div>
-              <div class="font-semibold text-gray-900">María García</div>
-              <div class="text-gray-500 text-sm">Project Manager</div>
-              <span class="text-blue-600 italic text-sm">Remoto</span>
-            </div>
-          </div>
-        </div>
+      <div id="miEquipoContainer" class="flex flex-col md:flex-row md:gap-4 flex-1">
       </div>
     </div>
   </div>
 
-  <div class="col-span-12 md:col-span-6 flex">
+
+  <div class="col-span-12 md:col-span-4 flex d-none" id="CardEstadoOficina">
     <div class="bg-white rounded-lg shadow p-4 flex flex-col flex-1 hover:shadow-lg transition-shadow duration-300">
       <div class="flex items-center border-b border-gray-200 pb-2 mb-2">
         <div class="bg-gray-200 p-2 rounded-full mr-2">
@@ -244,26 +287,28 @@
       </div>
 
       <div class="flex flex-col flex-1 justify-between">
-
         <div class="flex justify-between text-center text-sm mb-4">
           <div class="flex flex-col justify-center items-center flex-1">
-            <span class="text-green-600 font-extrabold text-xl">4</span>
-            <span class="text-gray-700 font-medium">Presente</span>
+            <span id="presenteEmpleados" class="text-green-600 font-extrabold text-xl">0</span>
+            <span class="text-gray-700 font-medium">Presentes</span>
           </div>
           <div class="flex flex-col justify-center items-center flex-1">
-            <span class="text-blue-600 font-extrabold text-xl">2</span>
-            <span class="text-gray-700 font-medium">Remoto</span>
-          </div>
-          <div class="flex flex-col justify-center items-center flex-1">
-            <span class="text-orange-500 font-extrabold text-xl">1</span>
-            <span class="text-gray-700 font-medium">Vacaciones</span>
+            <span id="licenciaEmpleados" class="text-orange-500 font-extrabold text-xl">0</span>
+            <span class="text-gray-700 font-medium">licencias</span>
           </div>
         </div>
 
+        <div class="text-sm border-t border-gray-200 pt-2 mt-auto">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Año:</span>
+            <span id="estadoAnio" class="text-gray-600 font-semibold"></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+
 </div>
 
-<script src="../js/PanelPrincipal(Inicio)/diasFestivos.js"></script>
+<script src="../js/PanelPrincipal(Inicio)/panelPrincipal.js"></script>
