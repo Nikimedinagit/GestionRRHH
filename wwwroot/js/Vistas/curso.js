@@ -209,15 +209,17 @@ function MostrarCursosDesktop(data) {
       }
 
       const item = $(`
-        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between" data-curso-id="${element.id}">
-          <div class="d-flex align-items-center" style="gap: 20px;">
+        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${element.id}">
+          <div class="d-flex align-items-start" style="gap: 10px; flex-grow: 1; min-width: 0;">
             ${botonEditar}
-            <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.nombre || 'Sin nombre'}">
-              ${element.nombre || 'Sin nombre'}
+            <div class="d-flex flex-column" style="min-width: 0;">
+              <div class="fw-bold" title="${element.nombre || 'Sin nombre'}" style="white-space: normal; word-break: break-word;">
+                ${element.nombre || 'Sin nombre'}
+              </div>
+              <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;"">
+                ${fechaInicioFormateada} || ${fechaFinalizacionFormateada}
+              </div>
             </div>
-          </div>
-          <div class="flex-grow-1 text-center text-muted" style="opacity: 0.7;">
-            ${fechaInicioFormateada} -- ${fechaFinalizacionFormateada}
           </div>
           <div class="d-flex align-items-center" style="gap: 20px;">
             <div class="badge ${modalidadColor[modalidadNombre]}" title="${modalidadNombre}">${modalidadNombre}</div>
@@ -227,6 +229,7 @@ function MostrarCursosDesktop(data) {
           </div>
         </div>
       `);
+
 
       const descripcionDetalle = $(`
         <div class="panelCriterios px-3 pb-2" style="display: none;">
