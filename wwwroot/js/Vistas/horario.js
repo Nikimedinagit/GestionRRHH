@@ -666,12 +666,19 @@ function ValidarFormularioHorario() {
       const [hfH, hfM] = inputHorarioFin.value.split(":").map(Number);
       const inicio = new Date(0, 0, 0, hiH, hiM);
       const fin = new Date(0, 0, 0, hfH, hfM);
-      if (fin <= inicio) {
-        errorHorarioFin.textContent = "El fin debe ser mayor al inicio.";
+
+      if(fin <= inicio) fin.setDate(fin.getDate() + 1)
+
+      const duracion = (fin - inicio) / (1000 * 60);
+      if (duracion <= 0) {
+        errorHorarioFin.textContent = "Duración inválida.";
         errorHorarioFin.style.display = "block";
         inputHorarioFin.classList.add("is-invalid");
         esValido = false;
+      } else {
+        inputHorarioFin.classList.add("is-valid");
       }
+
     }
   }
 
@@ -706,25 +713,47 @@ function ValidarFormularioHorario() {
         const [fH, fM] = horario.fin.value.split(":").map(Number);
         const inicioDate = new Date(0, 0, 0, hH, hM);
         const finDate = new Date(0, 0, 0, fH, fM);
+
         if (finDate <= inicioDate) {
-          horario.errorFin.textContent = "El fin debe ser mayor al inicio.";
+          finDate.setDate(finDate.getDate() + 1);
+        }
+
+        const duracion = (finDate - inicioDate) / (1000 * 60)
+        if (duracion <= 0) {
+          horario.errorFin.textContent = "Duración inválida.";
           horario.errorFin.style.display = "block";
           horario.fin.classList.add("is-invalid");
           esValido = false;
+        } else {
+          horario.errorFin.style.display = "none";
+          horario.fin.classList.remove("is-invalid");
+          horario.fin.classList.add("is-valid");
         }
       }
     });
 
     if (primerHorarioFin.value && segundoHorarioInicio.value) {
       const [pfH, pfM] = primerHorarioFin.value.split(":").map(Number);
+      const [piH, piM] = primerHorarioInicio.value.split(":").map(Number);
       const [siH, siM] = segundoHorarioInicio.value.split(":").map(Number);
+      const primerInicioDate = new Date(0, 0, 0, piH, piM);
       const primerFinDate = new Date(0, 0, 0, pfH, pfM);
+
+      if (primerFinDate <= primerInicioDate) primerFinDate.setDate(primerFinDate.getDate() + 1);
+
       const segundoInicioDate = new Date(0, 0, 0, siH, siM);
+      if(segundoInicioDate <= primerFinDate) {
+        segundoInicioDate.setDate(segundoInicioDate.getDate() + 1);
+      }
       if (segundoInicioDate <= primerFinDate) {
         errorSegundoHorarioInicio.textContent = "El inicio del segundo horario debe ser mayor que el fin del primero.";
         errorSegundoHorarioInicio.style.display = "block";
         segundoHorarioInicio.classList.add("is-invalid");
         esValido = false;
+      } else {
+        errorSegundoHorarioInicio.style.display = "none";
+        segundoHorarioInicio.classList.remove("is-invalid");
+        segundoHorarioInicio.classList.add("is-valid")
       }
     }
   }
@@ -804,12 +833,29 @@ document.getElementById("horarioContinuo").addEventListener("input", () => {
     inputHorarioFin.classList.add("is-invalid");
     errorHorarioFin.style.display = "block";
     errorHorarioFin.textContent = "Ingrese hora de fin.";
-  } else if (inputHorarioInicio.value && inputHorarioFin.value <= inputHorarioInicio.value) {
-    inputHorarioFin.classList.add("is-invalid");
-    errorHorarioFin.style.display = "block";
-    errorHorarioFin.textContent = "Debe ser mayor que la hora de inicio.";
-  } else {
-    inputHorarioFin.classList.add("is-valid");
+    return;
+  } 
+  
+  if (inputHorarioInicio.value && inputHorarioFin.value) {
+    const [hiH, hiM] = inputHorarioInicio.value.split(":").map(Number);
+    const [hfH, hfM] = inputHorarioFin.value.split(":").map(Number);
+
+    const horarioInicio = new Date(0, 0, 0, hiH, hiM);
+    let horarioFin = new Date(0, 0, 0, hfH, hfM);
+
+    if (horarioFin <= horarioInicio) {
+      horarioFin.setDate(horarioFin.getDate() + 1);
+    }
+
+    // Validación final
+    if (horarioFin > horarioInicio) {
+      inputHorarioFin.classList.add("is-valid");
+      errorHorarioFin.style.display = "none";
+    } else {
+      inputHorarioFin.classList.add("is-invalid");
+      errorHorarioFin.style.display = "block";
+      errorHorarioFin.textContent = "Debe ser mayor que la hora de inicio.";
+    }
   }
 });
 
@@ -829,51 +875,15 @@ document.getElementById("horarioAlterno").addEventListener("input", () => {
     error.style.display = "none";
     error.textContent = "";
     valores[item.id] = input.value;
+
+      if (!input.value) {
+      input.classList.add("is-invalid");
+      error.textContent = "Ingrese hora.";
+      error.style.display = "block";
+    } else {
+      input.classList.add("is-valid");
+    }
   });
-
-  if (!valores.PrimerHorarioInicio) {
-    document.getElementById("PrimerHorarioInicio").classList.add("is-invalid");
-    document.getElementById("errorPrimerHorarioInicio").textContent = "Ingrese hora de inicio.";
-    document.getElementById("errorPrimerHorarioInicio").style.display = "block";
-  } else {
-    document.getElementById("PrimerHorarioInicio").classList.add("is-valid");
-  }
-
-  if (!valores.PrimerHorarioFin) {
-    document.getElementById("PrimerHorarioFin").classList.add("is-invalid");
-    document.getElementById("errorPrimerHorarioFin").textContent = "Ingrese hora de fin.";
-    document.getElementById("errorPrimerHorarioFin").style.display = "block";
-  } else if (valores.PrimerHorarioFin && valores.PrimerHorarioInicio && valores.PrimerHorarioFin <= valores.PrimerHorarioInicio) {
-    document.getElementById("PrimerHorarioFin").classList.add("is-invalid");
-    document.getElementById("errorPrimerHorarioFin").textContent = "Debe ser mayor que la hora de inicio.";
-    document.getElementById("errorPrimerHorarioFin").style.display = "block";
-  } else {
-    document.getElementById("PrimerHorarioFin").classList.add("is-valid");
-  }
-
-  if (!valores.SegundoHorarioInicio) {
-    document.getElementById("SegundoHorarioInicio").classList.add("is-invalid");
-    document.getElementById("errorSegundoHorarioInicio").textContent = "Ingrese hora de inicio.";
-    document.getElementById("errorSegundoHorarioInicio").style.display = "block";
-  } else if (valores.PrimerHorarioFin && valores.SegundoHorarioInicio <= valores.PrimerHorarioFin) {
-    document.getElementById("SegundoHorarioInicio").classList.add("is-invalid");
-    document.getElementById("errorSegundoHorarioInicio").textContent = "Debe ser mayor que el fin del primer horario.";
-    document.getElementById("errorSegundoHorarioInicio").style.display = "block";
-  } else {
-    document.getElementById("SegundoHorarioInicio").classList.add("is-valid");
-  }
-
-  if (!valores.SegundoHorarioFin) {
-    document.getElementById("SegundoHorarioFin").classList.add("is-invalid");
-    document.getElementById("errorSegundoHorarioFin").textContent = "Ingrese hora de fin.";
-    document.getElementById("errorSegundoHorarioFin").style.display = "block";
-  } else if (valores.SegundoHorarioFin && valores.SegundoHorarioInicio && valores.SegundoHorarioFin <= valores.SegundoHorarioInicio) {
-    document.getElementById("SegundoHorarioFin").classList.add("is-invalid");
-    document.getElementById("errorSegundoHorarioFin").textContent = "Debe ser mayor que la hora de inicio.";
-    document.getElementById("errorSegundoHorarioFin").style.display = "block";
-  } else {
-    document.getElementById("SegundoHorarioFin").classList.add("is-valid");
-  }
 });
 
 document.getElementById("diasSemana").addEventListener("input", () => {

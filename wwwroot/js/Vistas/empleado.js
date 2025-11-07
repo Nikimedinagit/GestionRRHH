@@ -334,7 +334,7 @@ async function MostrarModalEditarEmpleado(id) {
   document.getElementById("DniEmpleado").disabled = true;
   document.getElementById("EmailEmpleado").disabled = true;
   document.getElementById("FechaNacimientoEmpleado").disabled = true;
-  document.getElementById("TipoSexoEmpleado").disabled = true;
+  document.getElementById("CuilEmpleado").disabled = true;
 
   AbrirPanelEmpleado();
 }
@@ -590,18 +590,18 @@ function ValidarFormularioEmpleado() {
     inputCantidadHijos.classList.remove("is-invalid", "is-valid");
     inputErrorCantidadHijos.style.display = "none";
   }
-
-  if (cuil.length > 0) {
-    if (!/^\d{11}$/.test(cuil)) {
-      inputCuil.classList.add("is-invalid");
-      inputErrorCuil.textContent = "Debe tener 11 dígitos.";
-      inputErrorCuil.style.display = "block";
-      esValido = false;
-    } else {
-      inputCuil.classList.add("is-valid");
-    }
+  if (cuil.length === 0) {
+    inputCuil.classList.add("is-invalid");
+    inputErrorCuil.textContent = "Campo obligatorio.";
+    inputErrorCuil.style.display = "block";
+    esValido = false;
+  } else if (!/^\d{11}$/.test(cuil)) {
+    inputCuil.classList.add("is-invalid");
+    inputErrorCuil.textContent = "Debe tener 11 dígitos.";
+    inputErrorCuil.style.display = "block";
+    esValido = false;
   } else {
-    inputCuil.classList.remove("is-invalid", "is-valid");
+    inputCuil.classList.add("is-valid");
     inputErrorCuil.style.display = "none";
   }
 
@@ -666,6 +666,27 @@ document.getElementById("DniEmpleado").addEventListener("input", () => {
     input.classList.add("is-invalid");
     error.style.display = "block";
     error.textContent = "8 dígitos.";
+  } else {
+    input.classList.add("is-valid");
+    error.style.display = "none";
+  }
+});
+
+document.getElementById("CuilEmpleado").addEventListener("input", () => {
+  const input = document.getElementById("CuilEmpleado");
+  const error = document.getElementById("errorCuilEmpleado");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+
+  if (valor.length === 0) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "Campo obligatorio.";
+  } else if (!/^\d{8}$/.test(valor)) {
+    input.classList.add("is-invalid");
+    error.style.display = "block";
+    error.textContent = "11 dígitos.";
   } else {
     input.classList.add("is-valid");
     error.style.display = "none";

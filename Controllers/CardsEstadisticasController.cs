@@ -26,12 +26,14 @@ public class CardsEstadisticasController : ControllerBase
         var totalEmpleadosMasculinos = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.MASCULINO).CountAsync();
         var totalEmpleadosFemeninos = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.FEMENINO).CountAsync();
         var totalEmpleadosNoBinarios = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.NO_BINARIO).CountAsync();
+        var totalEmpleadosOtro = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.OTRO).CountAsync();
         return new
         {
             TotalEmpleados = totalEmpleados,
             Masculinos = totalEmpleadosMasculinos,
             Femeninos = totalEmpleadosFemeninos,
-            NoBinarios = totalEmpleadosNoBinarios
+            NoBinarios = totalEmpleadosNoBinarios,
+            Otros = totalEmpleadosOtro
         };
     }
 

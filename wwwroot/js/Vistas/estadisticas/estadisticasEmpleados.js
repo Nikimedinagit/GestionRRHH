@@ -9,7 +9,8 @@ async function ObtenerTotalEmpleados() {
     document.getElementById("totalEmpleados").textContent = data.totalEmpleados;
     document.getElementById("masculinosEmpleados").textContent = data.masculinos;
     document.getElementById("femeninosEmpleados").textContent = data.femeninos;
-    document.getElementById("otrosEmpleados").textContent = data.noBinarios;
+    document.getElementById("NoBinarioEmpleados").textContent = data.noBinarios;
+    document.getElementById("otrosEmpleados").textContent = data.otros;
   } catch (error) {
     MostrarErrorCatch(error);
   }
