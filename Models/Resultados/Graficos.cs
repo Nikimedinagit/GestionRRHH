@@ -3,12 +3,19 @@ using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 
 namespace API_RRHH_TESIS2025.Models.Graficos;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CLASE PARA EL GRAFICO DE EMPLEADOS ACTIVOS EN LOS ULTIMOS 12 MESES ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class EvolucionEmpleadoGrafico
 {
     public string Mes { get; set; }
     public int Cantidad { get; set; }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CLASE PARA EL GRAFICO DE ASISTENCIA MENSUAL EN LOS ULTIMOS 6 MESES ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class AsistenciaMensualGrafico
 {
     public string Mes { get; set; }
@@ -16,25 +23,23 @@ public class AsistenciaMensualGrafico
     public int Ausencias { get; set; }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CLASE PARA EL GRAFICO DE JUSTIFICACION COMPARATIVA POR DIA DE LA SEMANA ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class JustificacionComparativaPorDiaGrafico
 {
-    public string Dia { get; set; }         
-    public string DiaSemana { get; set; }   
+    public string Dia { get; set; }
+    public string DiaSemana { get; set; }
     public int TotalJustificaciones { get; set; }
     public int TotalAprobadas { get; set; }
     public int TotalRechazadas { get; set; }
 }
 
-public class CursosCompletadosGrafico
-{
-    public string NombreCurso { get; set; }
-    public int TotalAsistidos { get; set; }
-    public int TotalCertificados { get; set; }
-}
 
-public class EmpleadosPorPuestoGrafico
-{
-    public string NombrePuesto { get; set; }
-    public int TotalEmpleados{ get; set; }
-}
+
+
+
+
+
+
 

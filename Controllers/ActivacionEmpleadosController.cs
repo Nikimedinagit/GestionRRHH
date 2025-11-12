@@ -9,6 +9,7 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Identity;
 using API_RRHH_TESIS2025.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
+using API_NET_CORE8_RRHH.Models.Dto;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {   

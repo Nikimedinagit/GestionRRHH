@@ -50,7 +50,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                     .ThenInclude(ce => ce.TipoDeCriterio)
                 .AsQueryable();
 
-            // Filtrar según rol
             if (rolActual == "EMPLEADO")
             {
                 if (empleadoActual != null)
@@ -70,7 +69,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                 else return Ok(new List<EvaluacionVista>());
             }
 
-            // Filtros adicionales
             if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
                 obtenerEvaluaciones = obtenerEvaluaciones
                     .Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
@@ -120,24 +118,24 @@ namespace API_NET_CORE8_RRHH.Controllers
                 {
                     case "ADMINISTRADOR":
                         esEditable = true;
-                        claseBorde = "";  // gris
+                        claseBorde = "";  
                         esPropia = true;
                         break;
 
                     case "RRHH":
-                        if (e.UsuarioId == userId) // propia
+                        if (e.UsuarioId == userId) 
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id) // para él
+                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id) 
                         {
                             esEditable = false;
                             claseBorde = "blue";
                             esParaEl = true;
                         }
-                        else // de otros
+                        else 
                         {
                             esEditable = false;
                             claseBorde = "yellow";
@@ -147,19 +145,19 @@ namespace API_NET_CORE8_RRHH.Controllers
 
                     case "SUPERVISOR":
                         if (empleadoActual != null &&
-                            e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId && e.UsuarioId == userId) // propia
+                            e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId && e.UsuarioId == userId) 
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else if (empleadoActual != null && e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId) // para su sector
+                        else if (empleadoActual != null && e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId) 
                         {
                             esEditable = false;
                             claseBorde = "blue";
                             esParaEl = true;
                         }
-                        else // de superiores
+                        else 
                         {
                             esEditable = false;
                             claseBorde = "yellow";

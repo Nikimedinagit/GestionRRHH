@@ -19,6 +19,9 @@ public class ResultadosController : ControllerBase
         _context = context;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA EVOLUCION DE EMPLEADOS ACTIVOS EN LOS ULTIMOS 12 MESES ///
+    /////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("EvolucionEmpleados")]
     public async Task<IActionResult> EvolucionEmpleados()
     {
@@ -46,13 +49,17 @@ public class ResultadosController : ControllerBase
         return Ok(resultado);
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA ASISTENCIA MENSUAL EN LOS ULTIMOS 6 MESES //////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("AsistenciaMensual")]
     public async Task<IActionResult> AsistenciaMensual()
     {
         var hoy = DateTime.Today;
         var resultado = new List<AsistenciaMensualGrafico>();
 
-        for (int i = 11; i >= 0; i--)
+        for (int i = 5; i >= 0; i--)
         {
             var mes = hoy.AddMonths(-i);
             var asistencias = await _context.Asistencia
@@ -73,6 +80,10 @@ public class ResultadosController : ControllerBase
         return Ok(resultado);
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA JUSTIFICACION COMPARATIVA POR DIA DE LA SEMANA //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("JustificacionPorDia")]
     public async Task<IActionResult> JustificacionPorDia()
     {
@@ -113,40 +124,7 @@ public class ResultadosController : ControllerBase
     }
 
 
-    [HttpGet("CantidadAsitenciasCurso")]
-    public async Task<IActionResult> CursosCompletadosGrafico()
-    {
-        var cursos = _context.Curso
-        .Include(c => c.Certificado)
-        .AsQueryable();
-
-        var resultado = await cursos
-        .Select(c => new CursosCompletadosGrafico
-        {
-            NombreCurso = c.Nombre,
-            TotalAsistidos = c.AsistenciaCapacitacion.Count(a => a.Asistencia == true),
-            TotalCertificados = c.Certificado.Count()
-        })
-        .ToListAsync();
-
-        return Ok(resultado);
-    }
-
-
-    [HttpGet("CantidadEmpleadosPorPuestos")]
-    public async Task<IActionResult> EmpleadosPorPuestoGrafico()
-    {
-        var resultado = await _context.Puesto
-        .Include(p => p.Empleados)
-        .Select(p => new EmpleadosPorPuestoGrafico
-        {
-            NombrePuesto = p.Descripcion,
-            TotalEmpleados = p.Empleados.Count()
-        })
-        .ToListAsync();
-
-        return Ok(resultado);
-    }
+    
 
 
 }

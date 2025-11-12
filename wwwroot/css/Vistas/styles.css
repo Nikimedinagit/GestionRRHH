@@ -1418,7 +1418,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
-
+/*  INICIO ESTILO APRA EL CONTENDOR DE AYUDA */
 .info-ayuda {
   background: transparent; 
   border-left: 4px solid #457b9d !important;
@@ -1455,3 +1455,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 .btn-ayuda-toggle:hover {
   font-weight: bold;
 }
+/*  FIN ESTILO APRA EL CONTENDOR DE AYUDA */
+
+
+

@@ -128,10 +128,10 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<Licencia>> PostLicencia([FromForm] Licencia licencia, IFormFile DocumentoAdjunto)
         {
-            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value?.ToUpper();
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
+            if (rol == "EMPLEADO" || rol == "SUPERVISOR")
             {
                 var usuario = await _context.Users.FindAsync(userId);
                 var emailUsuario = usuario?.Email?.Trim().ToLower();
@@ -168,10 +168,37 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Licencia.Add(licencia);
             await _context.SaveChangesAsync();
 
+            var empleadoDueño = await _context.Empleado.FindAsync(licencia.EmpleadoId);
+
+            _context.Notificaciones.Add(new Notificaciones
+            {
+                Titulo = "Nueva Solicitud de Licencia",
+                Mensaje = $"El empleado {empleadoDueño.NombreCompleto} ha solicitado una nueva licencia.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = null,
+                DestinatarioRol = "ADMINISTRADOR,RRHH",
+                Leida = false
+            });
+
+            if (empleadoDueño.Puesto?.Descripcion.ToUpper() == "RRHH")
+            {
+                _context.Notificaciones.Add(new Notificaciones
+                {
+                    Titulo = "Nueva Solicitud de Licencia (RRHH)",
+                    Mensaje = $"Tu solicitud de licencia fue registrada como empleado de RRHH.",
+                    FechaCreacion = DateTime.Now,
+                    UsuarioId = licencia.EmpleadoId.ToString(),
+                    Leida = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetLicencia), new { id = licencia.Id }, licencia);
         }
 
-      
+
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA MODIFICAR UNA LICENCIA ////////////////////////////////////////////////////////////
@@ -254,31 +281,29 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("{id}/Aprobar")]
         public async Task<IActionResult> AprobarLicencia(int id)
         {
-            var informacionLicencia = await _context.Licencia
-                .Where(l => l.Id == id)
-                .Select(l => new { l.Id, l.EmpleadoId, l.Estado, l.FechaInicio, l.FechaFin })
-                .FirstOrDefaultAsync();
+            var licencia = await _context.Licencia
+                .Include(l => l.Empleado)
+                .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (informacionLicencia.Estado != EstadoLicencia.PENDIENTE)
+            if (licencia == null)
+                return NotFound();
+
+            if (licencia.Estado != EstadoLicencia.PENDIENTE)
                 return BadRequest("Solo se pueden aprobar licencias pendientes.");
 
             bool tieneSolapamiento = await _context.Licencia
                 .AnyAsync(l =>
-                    l.EmpleadoId == informacionLicencia.EmpleadoId &&
+                    l.EmpleadoId == licencia.EmpleadoId &&
                     l.Id != id &&
                     (l.Estado == EstadoLicencia.PENDIENTE || l.Estado == EstadoLicencia.APROBADA) &&
-                    l.FechaInicio <= informacionLicencia.FechaFin &&
-                    l.FechaFin >= informacionLicencia.FechaInicio
+                    l.FechaInicio <= licencia.FechaFin &&
+                    l.FechaFin >= licencia.FechaInicio
                 );
 
             if (tieneSolapamiento)
                 return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada que solapa fechas." });
 
-            var licencia = new Licencia { Id = id, Estado = EstadoLicencia.APROBADA };
-
-            _context.Licencia.Attach(licencia);
-
-            _context.Entry(licencia).Property(l => l.Estado).IsModified = true;
+            licencia.Estado = EstadoLicencia.APROBADA;
 
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -289,6 +314,22 @@ namespace API_NET_CORE8_RRHH.Controllers
                 FechDeAprobacion = DateTime.UtcNow,
                 UsuarioAprobador = userId
             });
+
+            var empleadoDueño = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Id == licencia.EmpleadoId);
+
+            if (empleadoDueño != null)
+            {
+                _context.Notificaciones.Add(new Notificaciones
+                {
+                    Titulo = "Licencia Aprobada",
+                    Mensaje = $"{empleadoDueño.NombreCompleto}, tu solicitud de licencia fue aprobada.",
+                    FechaCreacion = DateTime.Now,
+                    UsuarioId = licencia.EmpleadoId.ToString(),
+                    Leida = false
+                });
+            }
 
             await _context.SaveChangesAsync();
 
@@ -303,16 +344,38 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("{id}/Rechazar")]
         public async Task<IActionResult> RechazarLicencia(int id)
         {
-            var licencia = new Licencia { Id = id, Estado = EstadoLicencia.RECHAZADA };
+            var licencia = await _context.Licencia
+                .Include(l => l.Empleado)
+                .FirstOrDefaultAsync(l => l.Id == id);
 
-            _context.Licencia.Attach(licencia);
+            if (licencia == null)
+                return NotFound();
 
-            _context.Entry(licencia).Property(l => l.Estado).IsModified = true;
-
+            licencia.Estado = EstadoLicencia.RECHAZADA;
             await _context.SaveChangesAsync();
 
+            var empleadoDueño = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Id == licencia.EmpleadoId);
+
+            if (empleadoDueño != null)
+            {
+                _context.Notificaciones.Add(new Notificaciones
+                {
+                    Titulo = "Licencia Rechazada",
+                    Mensaje = $"{empleadoDueño.NombreCompleto}, tu solicitud de licencia fue rechazada.",
+                    FechaCreacion = DateTime.Now,
+                    UsuarioId = licencia.EmpleadoId.ToString(),
+                    Leida = false
+                });
+
+            }
+
+            await _context.SaveChangesAsync();
             return Ok(licencia);
         }
+
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
