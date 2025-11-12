@@ -1,3 +1,6 @@
+using Humanizer;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
+
 namespace API_RRHH_TESIS2025.Models.Graficos;
 
 public class EvolucionEmpleadoGrafico
@@ -22,4 +25,16 @@ public class JustificacionComparativaPorDiaGrafico
     public int TotalRechazadas { get; set; }
 }
 
+public class CursosCompletadosGrafico
+{
+    public string NombreCurso { get; set; }
+    public int TotalAsistidos { get; set; }
+    public int TotalCertificados { get; set; }
+}
+
+public class EmpleadosPorPuestoGrafico
+{
+    public string NombrePuesto { get; set; }
+    public int TotalEmpleados{ get; set; }
+}
 

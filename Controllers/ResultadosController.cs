@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using API_RRHH_TESIS2025.Models.Graficos;
 using System.Globalization;
+using NuGet.Versioning;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -96,7 +97,7 @@ public class ResultadosController : ControllerBase
                 .CountAsync();
 
             string diaSemana = cultura.DateTimeFormat.GetDayName(dia.DayOfWeek);
-            diaSemana = char.ToUpper(diaSemana[0]) + diaSemana.Substring(1); 
+            diaSemana = char.ToUpper(diaSemana[0]) + diaSemana.Substring(1);
 
             resultado.Add(new JustificacionComparativaPorDiaGrafico
             {
@@ -112,9 +113,40 @@ public class ResultadosController : ControllerBase
     }
 
 
+    [HttpGet("CantidadAsitenciasCurso")]
+    public async Task<IActionResult> CursosCompletadosGrafico()
+    {
+        var cursos = _context.Curso
+        .Include(c => c.Certificado)
+        .AsQueryable();
+
+        var resultado = await cursos
+        .Select(c => new CursosCompletadosGrafico
+        {
+            NombreCurso = c.Nombre,
+            TotalAsistidos = c.AsistenciaCapacitacion.Count(a => a.Asistencia == true),
+            TotalCertificados = c.Certificado.Count()
+        })
+        .ToListAsync();
+
+        return Ok(resultado);
+    }
 
 
+    [HttpGet("CantidadEmpleadosPorPuestos")]
+    public async Task<IActionResult> EmpleadosPorPuestoGrafico()
+    {
+        var resultado = await _context.Puesto
+        .Include(p => p.Empleados)
+        .Select(p => new EmpleadosPorPuestoGrafico
+        {
+            NombrePuesto = p.Descripcion,
+            TotalEmpleados = p.Empleados.Count()
+        })
+        .ToListAsync();
 
+        return Ok(resultado);
+    }
 
 
 }

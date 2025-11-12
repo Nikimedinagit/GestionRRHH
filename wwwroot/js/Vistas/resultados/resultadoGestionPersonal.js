@@ -133,10 +133,118 @@ async function cargarJustificacionesPorDia() {
     });
 }
 
+// =================================== Asistencias y Certificados por Curso ===================================
+async function cargarCursosCompletados() {
+    const res = await authFetch('Resultados/CantidadAsitenciasCurso');
+    const data = await res.json();
 
+    const nombreCurso = data.map(x => x.nombreCurso.replace(/ y /g, '\n'));
+    const asistidos = data.map(x => x.totalAsistidos);
+    const certificados = data.map(x => x.totalCertificados);
 
+    const canvas = document.getElementById("graficoCursosCompletados");
+    if (!canvas) return;
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: nombreCurso,
+            datasets: [
+                {
+                    label: 'Total Asistencias',
+                    data: asistidos,
+                    backgroundColor: coloresPasteles[0]
+                },
+                 {
+                    label: 'Total Certificados',
+                    data: certificados,
+                    backgroundColor: coloresPasteles[2]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Asistencias y Certificados por Curso' }
+            },
+            
+            scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    precision: 0
+                }
+            },
+                x: { stacked: false,
+                    ticks: {
+                    font: {
+                        size: 10
+                    }
+                }
+                 },
+
+        }
+        }
+    });
+}
+
+// =================================== Cantidada de Empleados por Puesto ===================================
+async function cargarEmpleadosPorPuesto() {
+    const res = await authFetch('Resultados/CantidadEmpleadosPorPuestos');
+    const data = await res.json();
+
+    const nombrePuesto = data.map(x => x.nombrePuesto.replace(/ y /g, '\n'));
+    const empleados = data.map(x => x.totalEmpleados);
+
+    const canvas = document.getElementById("graficoEmpleadosPuesto");
+    if (!canvas) return;
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: nombrePuesto,
+            datasets: [
+                {
+                    label: 'Total Empleados',
+                    data: empleados,
+                    backgroundColor: coloresPasteles[2]
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Empleados Por Puesto' }
+            },
+            
+            scales: {
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    precision: 0
+                }
+            },
+                y: { stacked: false,
+                    ticks: {
+                    font: {
+                        size: 10
+                    }
+                }
+                 },
+
+        }
+        }
+    });
+}
 cargarEvolucionEmpleados();
 cargarAsistenciaMensual();
 cargarJustificacionesPorDia();
+cargarCursosCompletados();
+cargarEmpleadosPorPuesto();
 
 
