@@ -280,7 +280,7 @@ function MostrarDetalleEmpleado(id) {
   document.getElementById("detalleDireccion").textContent =
     empleado.direccion || "";
   document.getElementById("detalleEstadoCivil").textContent =
-  obtenerEstadoCivilTexto(empleado.estadoCivilesString || "-", empleado.tipoSexo);
+    obtenerEstadoCivilTexto(empleado.estadoCivilesString || "-", empleado.tipoSexo);
   document.getElementById("detalleCantidadHijos").textContent =
     empleado.cantidadHijos || 0;
   document.getElementById("detallePuesto").textContent =
@@ -1363,6 +1363,192 @@ function MostrarDetalleHistorial(index) {
   const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
   offcanvas.show();
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA GENERA UN INFORME PARA EMPLEADOS SEGUN SU FILTRO //////////////
+////////////////////////////////////////////////////////////////////////////////
+async function GenerarInformePdfEmpleado() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
+  let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
+  let nroLegajo = document.getElementById("NroLegajoFiltro").value;
+  let estadoCivilEmpleado = document.getElementById("EstadoCivilEmpleadoFiltro").value;
+  let estadoCivil = estadoCivilEmpleado !== "0" && estadoCivilEmpleado !== "" ? parseInt(estadoCivilEmpleado) : null;
+  let tipoSexoEmpleado = document.getElementById("TipoSexoEmpleadoFiltro").value;
+  let tipoSexo = tipoSexoEmpleado !== "0" && tipoSexoEmpleado !== "" ? parseInt(tipoSexoEmpleado) : null;
+  let localidadFiltro = document.getElementById("IdLocalidadFiltro").value;
+  let localidadNombre = document.getElementById("IdLocalidadFiltro").selectedOptions[0]?.text || "";
+  let puestoFiltro = document.getElementById("IdPuestoFiltro").value;
+  let puestoNombre = document.getElementById("IdPuestoFiltro").selectedOptions[0]?.text || "";
+
+  let filtro = {
+    nombreCompleto: nombreCompleto,
+    dNI: dniEmpleado ? Number(dniEmpleado) : null,
+    nroLegajo: nroLegajo,
+    estadoCiviles: estadoCivil,
+    tipoSexo: tipoSexo,
+    localidadId: localidadFiltro === "0" ? null : Number(localidadFiltro),
+    puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
+  };
+
+  const res = await authFetch("Empleados/GenerarInformePdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
+  });
+
+  const { empleados, resumen } = await res.json();
+
+
+  let filtrosAplicadosArray = [];
+
+  if (filtro.dNI) filtrosAplicadosArray.push(`[DNI: ${filtro.dNI}]`);
+  if (filtro.nombreCompleto) filtrosAplicadosArray.push(`[Nombre: ${filtro.nombreCompleto}]`);
+  if (filtro.nroLegajo) filtrosAplicadosArray.push(`[Legajo: ${filtro.nroLegajo}]`);
+
+  if (filtro.estadoCiviles !== null) {
+    const estadoCivilTexto =
+      filtro.estadoCiviles === 1
+        ? "Soltero"
+        : filtro.estadoCiviles === 2
+          ? "Casado"
+          : filtro.estadoCiviles === 3
+            ? "Divorciado"
+            : filtro.estadoCiviles === 4
+              ? "Viudo"
+              : "Otro";
+    filtrosAplicadosArray.push(`[Estado Civil: ${estadoCivilTexto}]`);
+  }
+
+  if (filtro.tipoSexo !== null) {
+    const sexoTexto =
+      filtro.tipoSexo === 1
+        ? "Masculino"
+        : filtro.tipoSexo === 2
+          ? "Femenino"
+          : filtro.tipoSexo === 3
+            ? "No Binario"
+            : "Otro";
+    filtrosAplicadosArray.push(`[Sexo: ${sexoTexto}]`);
+  }
+
+  if (filtro.localidadId) filtrosAplicadosArray.push(`[Localidad: ${localidadNombre}]`);
+  if (filtro.puestoId) filtrosAplicadosArray.push(`[Puesto: ${puestoNombre}]`);
+
+  const filtrosAplicados =
+    filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Empleados", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Empleados:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.total}`, 45, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Hombres:", 49, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.hombres}`, 69, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Mujeres:", 73, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.mujeres}`, 91, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| No Binario:", 95, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.noBinario}`, 117, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Otros:", 121, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.otros}`, 135, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 45, y);
+  y += filtrosText.length * 6 + 0;
+
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (empleados.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
+  } else {
+    doc.setTextColor(0, 0, 0);
+    const anchoPagina = doc.internal.pageSize.getWidth() - 30;
+
+    empleados.forEach((e) => {
+      if (y > 180) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.text(e.nombreCompleto.toUpperCase(), 14, y);
+      y += 5;
+
+      const textoEmpleado = `DNI: ${e.dni} | Legajo: ${e.nroLegajo} | Edad: ${e.edad} | CUIL: ${e.cuil} | Dirección: ${e.direccion} | Localidad: ${e.localidadIdString} | Puesto: ${e.puestoIdString} | Estado Civil: ${e.estadoCivilesString} | Sexo: ${e.tipoSexoString} | Email: ${e.email} | Teléfono: ${e.telefono} | Hijos: ${e.cantidadHijos}`;
+      const lineas = doc.splitTextToSize(textoEmpleado, anchoPagina);
+
+      doc.setFont("helvetica", "normal");
+      doc.text(lineas, 20, y, { maxWidth: anchoPagina });
+      y += lineas.length * 4 + 4;
+    });
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+    doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const string = doc.output("datauristring");
+  const html = `
+    <html>
+      <head><title>Informe de Empleados</title></head>
+      <body style="margin:0">
+        <iframe width="100%" height="100%" src="${string}"></iframe>
+      </body>
+    </html>`;
+  const x = window.open();
+  x.document.open();
+  x.document.write(html);
+  x.document.close();
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
