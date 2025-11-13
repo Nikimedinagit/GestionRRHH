@@ -33,11 +33,13 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public string Telefono { get; set; }
 
+        public int Edad { get; set; }
+
         public long Cuil { get; set; }
 
         public int CantidadHijos { get; set; }
 
-        public byte[]? FaceDescriptor { get; set; }
+        public byte[] FaceDescriptor { get; set; }
 
         [NotMapped]
         public string TipoSexoString { get { return TipoSexo.ToString(); } }
@@ -102,6 +104,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public int CantidadHijos { get; set; }
         public string TipoSexoString { get; set; }
         public TipoSexo TipoSexo { get; set; }
+        public int Edad { get; set; }
         public string LocalidadIdString { get; set; }
         public int LocalidadId { get; set; }
         public string PuestoIdString { get; set; }

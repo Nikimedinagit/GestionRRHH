@@ -154,7 +154,6 @@ async function CargarNotificaciones() {
   }
 }
 
-
 async function MarcarComoLeida(id) {
   try {
     const response = await authFetch(`Notificaciones/${id}/Leer`, {

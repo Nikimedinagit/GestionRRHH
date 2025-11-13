@@ -48,36 +48,13 @@ function CerrarPanelEmpleado() {
 //INICIO ONCHANGE DE FILTROS ////////////////////////////////
 /////////////////////////////////////////////////////////////
 $(document).ready(function () {
+  const filtros = "#EmpleadoIdBuscar, #DniEmpleadoFiltro, #EstadoCivilEmpleadoFiltro, #TipoSexoEmpleadoFiltro, #IdLocalidadFiltro, #IdPuestoFiltro, #NroLegajoFiltro";
+
+  $(filtros).on("input change", ObtenerEmpleados);
+
   ObtenerEmpleados();
-
-  $("#EmpleadoIdBuscar").on("input", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#DniEmpleadoFiltro").on("input", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#EstadoCivilEmpleadoFiltro").on("change", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#TipoSexoEmpleadoFiltro").on("change", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#IdLocalidadFiltro").on("change", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#IdPuestoFiltro").on("change", function () {
-    ObtenerEmpleados();
-  });
-
-  $("#NroLegajoFiltro").on("input", function () {
-    ObtenerEmpleados();
-  });
 });
+
 
 
 /////////////////////////////////////////////////////////////
@@ -120,31 +97,18 @@ async function ComboParaFiltrarLocalidadPuesto() {
 // OBTENER DATOS DE LA API /////////////////////////////////////
 /////////////////////////////////////////////////////////////
 async function ObtenerEmpleados() {
+  let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
-
   let nroLegajo = document.getElementById("NroLegajoFiltro").value;
-
-  let estadoCivilEmpleado = document.getElementById(
-    "EstadoCivilEmpleadoFiltro"
-  ).value;
-  let estadoCivil =
-    estadoCivilEmpleado !== "0" && estadoCivilEmpleado !== ""
-      ? parseInt(estadoCivilEmpleado)
-      : null;
-
-  let tipoSexoEmpleado = document.getElementById(
-    "TipoSexoEmpleadoFiltro"
-  ).value;
-  let tipoSexo =
-    tipoSexoEmpleado !== "0" && tipoSexoEmpleado !== ""
-      ? parseInt(tipoSexoEmpleado)
-      : null;
-
+  let estadoCivilEmpleado = document.getElementById("EstadoCivilEmpleadoFiltro").value;
+  let estadoCivil = estadoCivilEmpleado !== "0" && estadoCivilEmpleado !== "" ? parseInt(estadoCivilEmpleado) : null;
+  let tipoSexoEmpleado = document.getElementById("TipoSexoEmpleadoFiltro").value;
+  let tipoSexo = tipoSexoEmpleado !== "0" && tipoSexoEmpleado !== "" ? parseInt(tipoSexoEmpleado) : null;
   let localidadFiltro = document.getElementById("IdLocalidadFiltro").value;
   let puestoFiltro = document.getElementById("IdPuestoFiltro").value;
 
   let filtro = {
-    nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+    nombreCompleto: nombreCompleto,
     dNI: dniEmpleado ? Number(dniEmpleado) : null,
     nroLegajo: nroLegajo,
     estadoCiviles: estadoCivil,
@@ -159,14 +123,36 @@ async function ObtenerEmpleados() {
   })
     .then((response) => response.json())
     .then((data) => {
+
       MostrarEmpleados(data);
       LimpiarFormularioEmpleado();
       CerrarPanelEmpleado();
+      ObtenerTotalEmpleados();
     })
     .catch((error) => {
       MostrarErrorCatch();
     });
 }
+
+
+///////////////////////////////////////////////////////////////////
+// FUNCION PARA OBTENER EL ESTADO CIVIL EN TEXTO SEGUN SEXO /////////////////////
+/////////////////////////////////////////////////////////////////////
+function obtenerEstadoCivilTexto(estadoCivil, tipoSexo) {
+  switch (estadoCivil.toUpperCase()) {
+    case "SOLTERO":
+      return tipoSexo === 2 ? "SOLTERA" : "SOLTERO";
+    case "CASADO":
+      return tipoSexo === 2 ? "CASADA" : "CASADO";
+    case "DIVORCIADO":
+      return tipoSexo === 2 ? "DIVORCIADA" : "DIVORCIADO";
+    case "VIUDO":
+      return tipoSexo === 2 ? "VIUDA" : "VIUDO";
+    default:
+      return estadoCivil.toUpperCase();
+  }
+}
+
 
 
 /////////////////////////////////////////////////////////////
@@ -191,16 +177,17 @@ function MostrarEmpleados(data) {
     const email = item.email || "-";
     const telefono = item.telefono || "-";
     const dni = item.dni || "-";
-    const estadoCivil = item.estadoCivilesString || "-";
+
+    let estadoCivil = obtenerEstadoCivilTexto(item.estadoCivilesString || "-", item.tipoSexo);
+
 
     const activo = item.eliminado == false;
-
     const textoEstado = activo ? "A" : "D";
     const tooltipEstadoBadge = activo ? "Activo" : "Desactivado";
     const claseEstado = activo
       ? "badge-empleado-activo"
       : "badge-empleado-desactivado";
-  
+
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
         <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
@@ -274,6 +261,13 @@ function MostrarDetalleEmpleado(id) {
   const empleado = empleadosData.find((e) => e.id === id);
   if (!empleado) return;
 
+  const tipoSexoMap = {
+    1: "MASCULINO",
+    2: "FEMENINO",
+    3: "NO BINARIO",
+    4: "OTRO",
+  };
+
   document.getElementById("detalleNombre").textContent =
     empleado.nombreCompleto || "";
   document.getElementById("detalleDni").textContent = empleado.dni || "";
@@ -286,17 +280,19 @@ function MostrarDetalleEmpleado(id) {
   document.getElementById("detalleDireccion").textContent =
     empleado.direccion || "";
   document.getElementById("detalleEstadoCivil").textContent =
-    empleado.estadoCivilesString || "";
+  obtenerEstadoCivilTexto(empleado.estadoCivilesString || "-", empleado.tipoSexo);
   document.getElementById("detalleCantidadHijos").textContent =
     empleado.cantidadHijos || 0;
   document.getElementById("detallePuesto").textContent =
     empleado.puestoIdString || "";
   document.getElementById("detalleLegajo").textContent =
     empleado.nroLegajo || "";
+  document.getElementById("detalleEdad").textContent =
+    empleado.edad || "";
   document.getElementById("detalleLocalidad").textContent =
     empleado.localidadIdString || "";
   document.getElementById("detalleSexo").textContent =
-    empleado.tipoSexoString || "";
+    tipoSexoMap[empleado.tipoSexo] || "";
   document.getElementById("detalleNombreCreador").textContent =
     empleado.usuarioNombreCreador || "";
   document.getElementById("detalleEmailCreador").textContent =
@@ -335,6 +331,7 @@ async function MostrarModalEditarEmpleado(id) {
   document.getElementById("EmailEmpleado").disabled = true;
   document.getElementById("FechaNacimientoEmpleado").disabled = true;
   document.getElementById("CuilEmpleado").disabled = true;
+  document.getElementById("NombreEmpleado").disabled = true;
 
   AbrirPanelEmpleado();
 }
@@ -1042,7 +1039,8 @@ function LimpiarFormularioEmpleado() {
   document.getElementById("DniEmpleado").disabled = false;
   document.getElementById("EmailEmpleado").disabled = false;
   document.getElementById("FechaNacimientoEmpleado").disabled = false;
-  document.getElementById("TipoSexoEmpleado").disabled = false;
+  document.getElementById("CuilEmpleado").disabled = false;
+  document.getElementById("NombreEmpleado").disabled = false;
 }
 
 

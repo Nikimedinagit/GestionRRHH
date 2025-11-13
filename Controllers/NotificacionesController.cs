@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR,RRHH,SUPERVISOR,EMPLEADO")] 
+    [Authorize(Roles = "ADMINISTRADOR,RRHH,SUPERVISOR,EMPLEADO")]
     [Route("api/[controller]")]
     [ApiController]
     public class NotificacionesController : ControllerBase

@@ -48,7 +48,7 @@ namespace API_RRHH_TESIS2025.Controllers
             return texto;
         }
 
-        
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LA INFO DEL USUARIO LOGUEADO /////////////////////////////////////////////
@@ -78,6 +78,7 @@ namespace API_RRHH_TESIS2025.Controllers
                     Cuil = e.Cuil,
                     CantidadHijos = e.CantidadHijos,
                     TipoSexoString = e.TipoSexo.ToString(),
+                    Edad = DateTime.Now.Year - e.FechaNacimiento.Year,
                     LocalidadIdString = e.Localidad.Nombre,
                     PuestoIdString = e.Puesto.Descripcion,
                     NroLegajo = e.NroLegajo
@@ -199,10 +200,13 @@ namespace API_RRHH_TESIS2025.Controllers
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (rol == "SUPERVISOR" || rol == "EMPLEADO")
 
-                if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-                    obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+            if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
+            {
+                var nombreFiltro = filtro.NombreCompleto.ToLower();
+                obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(nombreFiltro));
+            }
+
 
             if (filtro.DNI.HasValue)
                 obtenerEmpleados = obtenerEmpleados.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
@@ -240,6 +244,7 @@ namespace API_RRHH_TESIS2025.Controllers
                     Email = e.Email,
                     Telefono = e.Telefono,
                     Cuil = e.Cuil,
+                    Edad = e.Edad,
                     CantidadHijos = e.CantidadHijos,
                     TipoSexoString = e.TipoSexo.ToString(),
                     TipoSexo = e.TipoSexo,
@@ -288,6 +293,7 @@ namespace API_RRHH_TESIS2025.Controllers
             empleado.Direccion = empleado.Direccion?.ToUpper();
             empleado.Email = empleado.Email?.ToLower();
             empleado.Telefono = empleado.Telefono?.ToLower();
+            empleado.Edad = DateTime.Now.Year - empleado.FechaNacimiento.Year - (DateTime.Now.DayOfYear < empleado.FechaNacimiento.DayOfYear ? 1 : 0);
             empleado.UsuarioId = userId;
             empleado.Eliminado = true;
 
@@ -381,12 +387,12 @@ namespace API_RRHH_TESIS2025.Controllers
                 });
             }
 
-            empelados.NombreCompleto = empleado.NombreCompleto;
+            empelados.FechaNacimiento = empleado.FechaNacimiento;
             empelados.Direccion = empleado.Direccion;
             empelados.Telefono = empleado.Telefono;
-            empelados.Cuil = empleado.Cuil;
             empelados.EstadoCiviles = empleado.EstadoCiviles;
             empelados.CantidadHijos = empleado.CantidadHijos;
+            empelados.TipoSexo = empleado.TipoSexo;
             empelados.LocalidadId = empleado.LocalidadId;
             empelados.PuestoId = empleado.PuestoId;
 
@@ -487,6 +493,7 @@ namespace API_RRHH_TESIS2025.Controllers
                 TipoSexoString = empleado.TipoSexoString,
                 LocalidadIdString = empleado.LocalidadIdString,
                 PuestoIdString = empleado.PuestoIdString,
+                Edad = empleado.Edad,
                 UsuarioId = empleado.UsuarioId,
                 Eliminado = empleado.Eliminado
             };

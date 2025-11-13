@@ -19,23 +19,48 @@ public class CardsEstadisticasController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE REGISTRO EMPLEADOS////
     /////////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("EmpleadosEstadisticas")]
-    public async Task<ActionResult<object>> GetEmpleadosEstadisticas()
+    [HttpPost("EmpleadosEstadisticas")]
+    public async Task<ActionResult<object>> GetEmpleadosEstadisticas([FromBody] FiltrarEmpleado filtro)
     {
-        var totalEmpleados = await _context.Empleado.Where(e => e.Eliminado == false).CountAsync();
-        var totalEmpleadosMasculinos = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.MASCULINO).CountAsync();
-        var totalEmpleadosFemeninos = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.FEMENINO).CountAsync();
-        var totalEmpleadosNoBinarios = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.NO_BINARIO).CountAsync();
-        var totalEmpleadosOtro = await _context.Empleado.Where(e => e.Eliminado == false && e.TipoSexo == TipoSexo.OTRO).CountAsync();
-        return new
+        IQueryable<Empleado> obtenerEmpleados = _context.Empleado.Where(e => !e.Eliminado);
+
+        if (!string.IsNullOrEmpty(filtro.NombreCompleto))
+            obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+
+        if (filtro.DNI.HasValue)
+            obtenerEmpleados = obtenerEmpleados.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            obtenerEmpleados = obtenerEmpleados.Where(e => e.NroLegajo.StartsWith(filtro.NroLegajo));
+
+        if (filtro.EstadoCiviles.HasValue)
+            obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+
+        if (filtro.TipoSexo.HasValue)
+            obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.TipoSexo == filtro.TipoSexo);
+
+        if (filtro.LocalidadId.HasValue)
+            obtenerEmpleados = obtenerEmpleados.Where(e => e.LocalidadId == filtro.LocalidadId.Value);
+
+        if (filtro.PuestoId.HasValue)
+            obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
+
+        var totalEmpleados = await obtenerEmpleados.CountAsync();
+        var totalEmpleadosMasculinos = await obtenerEmpleados.Where(e => e.TipoSexo == TipoSexo.MASCULINO).CountAsync();
+        var totalEmpleadosFemeninos = await obtenerEmpleados.Where(e => e.TipoSexo == TipoSexo.FEMENINO).CountAsync();
+        var totalEmpleadosNoBinarios = await obtenerEmpleados.Where(e => e.TipoSexo == TipoSexo.NO_BINARIO).CountAsync();
+        var totalEmpleadosOtro = await obtenerEmpleados.Where(e => e.TipoSexo == TipoSexo.OTRO).CountAsync();
+
+        return Ok(new
         {
             TotalEmpleados = totalEmpleados,
             Masculinos = totalEmpleadosMasculinos,
             Femeninos = totalEmpleadosFemeninos,
             NoBinarios = totalEmpleadosNoBinarios,
             Otros = totalEmpleadosOtro
-        };
+        });
     }
+
 
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE CONTROL DE ASISTENCIA////
@@ -247,7 +272,7 @@ public class CardsEstadisticasController : ControllerBase
         };
     }
 
-    
+
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE GESTOR DE JUSTIFICACIONES //////////
     /////////////////////////////////////////////////////////////////////////////////////////
