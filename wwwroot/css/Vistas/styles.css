@@ -169,8 +169,8 @@ hr {
 }
 
 .btn-generar-pdf {
-  background: #28A745 !important;
-  color: #fff !important;
+  background: #fff !important;
+  color: #000 !important;
   font-weight: 600;
   border-radius: 7px;
   border: none;
@@ -178,7 +178,8 @@ hr {
   transition: background 0.2s;
 }
 .btn-generar-pdf:hover {
-  background: #e53935 !important;
+  background: #28A745 !important;
+  color: #fff !important;
 }
 
 .btn-generar-excel {

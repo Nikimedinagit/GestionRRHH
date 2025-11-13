@@ -27,9 +27,9 @@
                     <span>Filtros</span>
                 </button>
 
-                <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+                <button  class="btn btn-generar-pdf responsive-buttons" onclick="GenerarPDF()">
                     <i class="fa-solid fa-file-lines me-1"></i>
-                    <span>Generar</span>
+                    <span>Generar Informe</span>
                 </button>
             </div>
         </div>
@@ -48,7 +48,7 @@
                     <label for="EstadoIdBuscar" class="form-label-fija">Estado</label>
                     <select id="EstadoIdBuscar" class="form-control filtro-select">
                         <option value="0">[Todos]</option>
-                        <option value="1">PEDNDIENTES</option>
+                        <option value="1">PENDIENTES</option>
                         <option value="2">APROBADAS</option>
                         <option value="3">RECHAZADAS</option>
                         <option value="4">EXPIRADAS</option>
@@ -79,19 +79,6 @@
                     <label for="FechaFinBuscar" class="form-label-fija">Hasta</label>
                     <input type="date" class="form-control filtro-select" id="FechaFinBuscar" />
                 </div>
-
-            </div>
-        </div>
-
-        <!-- ======================================= Contenedor Generar ====================================== -->
-        <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
-            <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
-                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
-                </button>
-                <button class="btn btn-generar-excel" onclick="GenerarExcel()">
-                    <i class="fa-solid fa-file-excel me-1"></i> Excel
-                </button>
 
             </div>
         </div>
@@ -359,6 +346,9 @@
 
 
 </div>
+
+<script src="../lib/jspdf/jspdf.umd.min.js"></script>
+<script src="../lib/jspdf/jspdf.plugin.autotable.min.js"></script>
 
 <script src="../js/Vistas/estadisticas/estadisticasLicencias.js"></script>
 <script src="../js/Vistas/common/obtenerEmpleado.js"></script>
