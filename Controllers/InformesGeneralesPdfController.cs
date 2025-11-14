@@ -22,7 +22,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA GENERAR EL INFORME PDF DE EMPLEADOS SEGUN FILTRO /////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [HttpPost("GenerarInformePdf")]
+        [HttpPost("GenerarInformeEmpleados")]
         public IActionResult FiltrarEmpleados([FromBody] FiltrarEmpleado filtro)
         {
             var obtenerEmpleados = _context.Empleado

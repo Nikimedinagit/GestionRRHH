@@ -1399,7 +1399,7 @@ async function GenerarInformePdfEmpleado() {
     puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
   };
 
-  const res = await authFetch("InformesGeneralesPdf/GenerarInformePdf", {
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeEmpleados", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(filtro)
