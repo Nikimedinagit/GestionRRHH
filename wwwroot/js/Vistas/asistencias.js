@@ -9,10 +9,10 @@ var asistenciasData = [];
 //INICIO ONCHANGE DE FILTROS ////////////////////////////////
 /////////////////////////////////////////////////////////////
 $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #FechaBuscar")
-  .on("input change", () => {
-    ObtenerAsistencias();
-    ObtenerTotalAsitenciasHoy();
-});
+    .on("input change", () => {
+        ObtenerAsistencias();
+        ObtenerTotalAsitenciasHoy();
+    });
 
 
 /////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ async function ObtenerAsistencias() {
     } catch (error) {
         MostrarErrorCatch();
     }
-} 
+}
 
 
 /////////////////////////////////////////////////////////////
@@ -224,6 +224,145 @@ function MostrarDetalleAsistencia(id) {
     );
 
     new bootstrap.Offcanvas(document.getElementById('offcanvasDetalleAsistencia')).show();
+}
+
+
+
+
+//////////////////////////////////////////////////////////////
+// GENERAR INFORME PDF DE ASISTENCIAS //////////////////////////
+//////////////////////////////////////////////////////////////
+async function GenerarInformePdfAsistencias() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("landscape");
+
+    let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
+    if (estadoAsistencia === "0") estadoAsistencia = null;
+    else estadoAsistencia = Number(estadoAsistencia);
+
+    let dniEmpleado = document.getElementById("DniBuscar").value;
+    let nroLegajo = document.getElementById("NroLegajoBuscar").value;
+    let fechaFiltro = document.getElementById("FechaBuscar").value;
+
+    const filtro = {
+        NombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+        DNI: dniEmpleado ? Number(dniEmpleado) : null,
+        NroLegajo: nroLegajo,
+        Fecha: fechaFiltro ? fechaFiltro : null,
+        EstadoAsistencia: estadoAsistencia
+    };
+
+    const res = await authFetch("InformesGeneralesPdf/GenerarInformeAsistencias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filtro)
+    });
+
+    const { asistencias, resumen } = await res.json();
+
+    let filtrosAplicadosArray = [];
+    if (filtro.DNI) filtrosAplicadosArray.push(`[DNI: ${filtro.DNI}]`);
+    if (filtro.NombreCompleto) filtrosAplicadosArray.push(`[Nombre: ${filtro.NombreCompleto}]`);
+    if (filtro.NroLegajo) filtrosAplicadosArray.push(`[Legajo: ${filtro.NroLegajo}]`);
+    if (filtro.Fecha) filtrosAplicadosArray.push(`[Fecha: ${new Date(filtro.Fecha).toLocaleDateString("es-AR")}]`);
+    if (filtro.EstadoAsistencia !== null) {
+        const estadoTexto =
+            filtro.EstadoAsistencia === 1 ? "Completa" :
+                filtro.EstadoAsistencia === 2 ? "Incompleta" :
+                    filtro.EstadoAsistencia === 3 ? "Ausente" :
+                        filtro.EstadoAsistencia === 4 ? "Tarde" :
+                            filtro.EstadoAsistencia === 5 ? "Fuera de Horario" :
+                                "Desconocido";
+        filtrosAplicadosArray.push(`[Estado: ${estadoTexto}]`);
+    }
+    const filtrosAplicados =
+        filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+
+    doc.setTextColor(19, 115, 204);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Informe de Asistencias", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    let y = 29;
+    const fechaHoy = new Date().toLocaleString("es-AR");
+
+    doc.text("Generado:", 14, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(fechaHoy, 33, y);
+    y += 6;
+
+    doc.setFont("helvetica", "normal");
+    doc.text("Total Asistencias:", 14, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${resumen.total}`, 45, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("| Ausentes:", 48, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${resumen.ausentes}`, 68, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("| Llegadas Tarde:", 72, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${resumen.llegadasTarde}`, 103, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("| Total Horas Trabajadas:", 107, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${resumen.totalHorasTrabajadas.toFixed(2)} hs`, 152, y);
+    y += 6;
+
+    doc.setFont("helvetica", "normal");
+    doc.text("Filtros Aplicados:", 14, y);
+    doc.setFont("helvetica", "bold");
+    const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+    doc.text(filtrosText, 44, y);
+    y += filtrosText.length * 6 + 2;
+
+    doc.setDrawColor(180);
+    doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+    y += 7;
+
+    if (asistencias.length === 0) {
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(180, 0, 0);
+        doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
+    } else {
+        doc.autoTable({
+            startY: y,
+            head: [["Empleado", "Estado", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+            body: asistencias.map(a => [
+                a.empleadoNombre,
+                a.estado,
+                a.primerEntrada ? a.primerEntrada : "-",
+                a.primerSalida ? a.primerSalida : "-",
+                a.segundaEntrada ? a.segundaEntrada : "-",
+                a.segundaSalida ? a.segundaSalida : "-"
+            ]),
+            styles: { font: "helvetica", fontSize: 10 },
+            headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+            margin: { left: 14, right: 14 }
+        });
+    }
+
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(100);
+        doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+        doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const string = doc.output("datauristring");
+    const html = `<html><head><title>Informe de Asistencias</title></head><body style="margin:0"><iframe width="100%" height="100%" src="${string}"></iframe></body></html>`;
+    const x = window.open();
+    x.document.open();
+    x.document.write(html);
+    x.document.close();
 }
 
 

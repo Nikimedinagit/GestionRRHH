@@ -73,7 +73,78 @@ namespace API_NET_CORE8_RRHH.Controllers
 
 
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE ASISTENCIAS SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeAsistencias")]
+        public async Task<IActionResult> GenerarInformeAsistencias([FromBody] FiltrarAsistencia filtro)
+        {
+            var obtenerAsistencias = _context.Asistencia
+                .Include(a => a.Empleado)
+                .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
+                obtenerAsistencias = obtenerAsistencias
+                    .Where(a => a.Empleado.NombreCompleto.ToLower()
+                    .Contains(filtro.NombreCompleto.ToLower()));
+
+            if (filtro.DNI.HasValue)
+                obtenerAsistencias = obtenerAsistencias
+                    .Where(a => a.Empleado.DNI.ToString()
+                    .StartsWith(filtro.DNI.Value.ToString()));
+
+            if (!string.IsNullOrEmpty(filtro.NroLegajo))
+                obtenerAsistencias = obtenerAsistencias
+                    .Where(a => a.Empleado.NroLegajo.StartsWith(filtro.NroLegajo));
+
+            if (filtro.EstadoAsistencia.HasValue)
+                obtenerAsistencias = obtenerAsistencias
+                    .Where(a => (int)a.Estado == filtro.EstadoAsistencia.Value);
+
+            var fechaSeleccionada = filtro.Fecha ?? DateTime.Today;
+            var fechaSiguiente = fechaSeleccionada.AddDays(1);
+            obtenerAsistencias = obtenerAsistencias
+                .Where(a => a.Fecha >= fechaSeleccionada && a.Fecha < fechaSiguiente);
+
+            var asistencias = await obtenerAsistencias
+                .Select(a => new
+                {
+                    a.Id,
+                    EmpleadoNombre = a.Empleado.NombreCompleto,
+                    Estado = a.Estado.ToString(),
+
+                    PrimerEntrada = a.PrimerEntrada,
+                    PrimerSalida = a.PrimerSalida,
+                    SegundaEntrada = a.SegundaEntrada,
+                    SegundaSalida = a.SegundaSalida
+                })
+                .ToListAsync();
+
+            double totalHorasTrabajadas = asistencias.Sum(a =>
+            {
+                double h1 = (a.PrimerEntrada != null && a.PrimerSalida != null)
+                    ? (a.PrimerSalida.Value - a.PrimerEntrada.Value).TotalHours
+                    : 0;
+
+                double h2 = (a.SegundaEntrada != null && a.SegundaSalida != null)
+                    ? (a.SegundaSalida.Value - a.SegundaEntrada.Value).TotalHours
+                    : 0;
+
+                return h1 + h2;
+            });
+
+            var resumen = new
+            {
+                Total = asistencias.Count,
+                Ausentes = asistencias.Count(a => a.Estado == "AUSENTE"),
+                LlegadasTarde = asistencias.Count(a => a.Estado == "TARDE"),
+                TotalHorasTrabajadas = totalHorasTrabajadas,
+                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                Filtros = filtro
+            };
+
+            return Ok(new { Asistencias = asistencias, Resumen = resumen });
+        }
 
 
 
