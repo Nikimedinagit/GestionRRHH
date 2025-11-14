@@ -1019,189 +1019,180 @@ function MostrarOpcionesLicenciasPorRol() {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-MostrarOpcionesLicenciasPorRol();
-ComboParaFiltrarTiposDeLicencia();
 
-function GenerarPDF() {
+////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA GENERA UN INFORME PARA EMPLEADOS SEGUN SU FILTRO //////////////
+////////////////////////////////////////////////////////////////////////////////
+async function GenerarInformePdfLicencias() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p", "mm", "a4");
+  const doc = new jsPDF("landscape");
 
-  const formatearFecha = (fechaString) => {
-    if (!fechaString) return "-";
-    let f = fechaString.replace(/\n/g, " ").trim().toLowerCase();
+  let empleadoNombre = document.getElementById("EmpleadoIdBuscar").value;
+  let tipoLicencia = document.getElementById("TipoDeLicenciaIdBuscar").value;
+  let estadoLicencia = document.getElementById("EstadoIdBuscar").value;
+  let fechaInicio = document.getElementById("FechaInicioBuscar").value;
+  let fechaFin = document.getElementById("FechaFinBuscar").value;
+  let tipoLicenciaNombre =
+    document.getElementById("TipoDeLicenciaIdBuscar").selectedOptions[0]?.text || "";
 
-    const meses = {
-      ene: "01",
-      feb: "02",
-      mar: "03",
-      abr: "04",
-      may: "05",
-      jun: "06",
-      jul: "07",
-      ago: "08",
-      sep: "09",
-      oct: "10",
-      nov: "11",
-      dic: "12",
-    };
-
-    const patronFecha = /(\d{1,2})\s+de\s+([a-z]+)\s+de\s+(\d{4})/i;
-    const resultado = f.match(patronFecha);
-    if (resultado) {
-      const dia = resultado[1].padStart(2, "0");
-      const mes = meses[resultado[2]] || "00";
-      const año = resultado[3];
-      return `${dia}/${mes}/${año}`;
-    }
-    return fechaString;
+  let filtro = {
+    empleadoTexto: empleadoNombre,
+    tipoDeLicenciaId: tipoLicencia !== "0" ? Number(tipoLicencia) : null,
+    estado: estadoLicencia !== "0" ? Number(estadoLicencia) : null,
+    fechaInicio: fechaInicio || null,
+    fechaFin: fechaFin || null
   };
 
-  const licencias = document.querySelectorAll(
-    "#licenciasContainer > div[id^='licencia-']"
-  );
-  const data = [];
-  licencias.forEach((card) => {
-    const empleado =
-      card.querySelector("p i.bi-person + span")?.innerText || "-";
-    const tipo = card.querySelector("h5")?.innerText || "-";
-    const fechas =
-      card.querySelector("p i.bi-calendar3 + span")?.innerText || "-";
-    let [inicio, fin] = fechas.split("\n");
-    inicio = formatearFecha(inicio);
-    fin = formatearFecha(fin);
-    const estado = card.querySelector(".badge")?.innerText || "-";
-    data.push([empleado, tipo, inicio, fin, estado]);
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeLicencias", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
   });
 
-  const totalLicencias = data.length;
-  const totalAprobadas = data.filter((l) => l[4] === "APROBADA").length;
-  const totalRechazadas = data.filter((l) => l[4] === "RECHAZADA").length;
-  const totalPendientes = data.filter((l) => l[4] === "PENDIENTE").length;
-  const totalExpiradas = data.filter((l) => l[4] === "EXPIRADA").length;
+  const { licencias, resumen } = await res.json();
 
-  const esFiltroActivo = (valor) => valor !== "" && valor !== "0";
+  let filtrosAplicadosArray = [];
 
-  const filtroEmpleado = (
-    document.querySelector("#EmpleadoIdBuscar")?.value || ""
-  ).trim();
-  const filtroEstado = (
-    document.querySelector("#EstadoIdBuscar")?.value || ""
-  ).trim();
-  const filtroTipoLicencia = (
-    document.querySelector("#TipoDeLicenciaIdBuscar")?.value || ""
-  ).trim();
-  const filtrarFechaSelect = document.querySelector(
-    "#filtrarFechaSelect"
-  )?.value;
-  const fechaInicio = (
-    document.querySelector("#FechaInicioBuscar")?.value || ""
-  ).trim();
-  const fechaFin = (
-    document.querySelector("#FechaFinBuscar")?.value || ""
-  ).trim();
-  const filtroFechaActivo =
-    filtrarFechaSelect === "si" && fechaInicio !== "" && fechaFin !== "";
+  if (filtro.empleadoTexto) filtrosAplicadosArray.push(`[Empleado: ${filtro.empleadoTexto}]`);
+  if (filtro.tipoDeLicenciaId) filtrosAplicadosArray.push(`[Tipo Licencia: ${tipoLicenciaNombre}]`);
+  if (filtro.estado !== null) {
+    const estadoLicenciaTexto =
+      filtro.estado === 1
+        ? "Pendiente"
+        : filtro.estado === 2
+          ? "Aprobada"
+          : filtro.estado === 3
+            ? "Rechazada"
+            : filtro.estado === 4
+              ? "Expirada"
+              : null;
+    filtrosAplicadosArray.push(`[Estado: ${estadoLicenciaTexto}]`);
+  }
+  if (filtro.fechaInicio) filtrosAplicadosArray.push(`[Desde: ${filtro.fechaInicio}]`);
+  if (filtro.fechaFin) filtrosAplicadosArray.push(`[Hasta: ${filtro.fechaFin}]`);
 
-  let filtrosAplicadosDetalle = [];
-  if (esFiltroActivo(filtroEmpleado)) {
-    const empleadoText = document.querySelector("#EmpleadoIdBuscar option:checked") ?.text.trim();
-    filtrosAplicadosDetalle.push(`Empleado: ${empleadoText}`);
-  }
-  if (esFiltroActivo(filtroEstado)) {
-    const estadoText = document.querySelector("#EstadoIdBuscar option:checked")?.text.trim();
-    filtrosAplicadosDetalle.push(`Estado: ${estadoText}`);
-  }
-  if (esFiltroActivo(filtroTipoLicencia)) {
-    const tipoText = document.querySelector("#TipoDeLicenciaIdBuscar option:checked")?.text.trim();
-    filtrosAplicadosDetalle.push(`Tipo de Licencia: ${tipoText}`);
-  }
-  if (filtroFechaActivo) {
-    filtrosAplicadosDetalle.push(`Fecha: ${fechaInicio} a ${fechaFin}`);
-  }
-
-  const filtrosAplicados = filtrosAplicadosDetalle.length > 0 ? filtrosAplicadosDetalle.join(" | ") : "No se aplicaron";
+  const filtrosAplicados =
+    filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
 
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Informe de Gestor de Licencia", 105, 20, { align: "center" });
+  doc.text("Informe de Licencias", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
 
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
 
-  let y = 35;
-  const fechaHoy = new Date();
-  const now = `${fechaHoy.getDate().toString().padStart(2, "0")}/${(
-    fechaHoy.getMonth() + 1
-  )
-    .toString()
-    .padStart(2, "0")}/${fechaHoy.getFullYear()}`;
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Generado: ", 14, y);
+  doc.text("Generado:", 14, y);
   doc.setFont("helvetica", "bold");
-  doc.text(now, 33, y);
+  doc.text(fechaHoy, 33, y);
   y += 6;
 
-  doc.setFont("helvetica", "normal");
+doc.setFont("helvetica", "normal");
   doc.text("Total Licencias:", 14, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${totalLicencias}`, 42, y);
+  doc.text(`${resumen.total}`, 42, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("|   Aprobadas:", 50, y);
+  doc.text("| Pendientes:", 49, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${totalAprobadas}`, 75, y);
+  doc.text(`${resumen.pendientes}`, 73, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("|   Rechazadas:", 83, y);
+  doc.text("| Aprobadas:", 80, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${totalRechazadas}`, 111, y);
+  doc.text(`${resumen.aprobadas}`, 104, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("|   Pendientes:", 120, y);
+  doc.text("| Rechazadas:", 112, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${totalPendientes}`, 146, y);
+  doc.text(`${resumen.rechazadas}`, 139, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("|   Expiradas:", 150, y);
+  doc.text("| Expiradas:", 147, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${totalExpiradas}`, 175, y);
+  doc.text(`${resumen.expiradas}`, 169, y);
+
   y += 6;
 
   doc.setFont("helvetica", "normal");
   doc.text("Filtros Aplicados:", 14, y);
   doc.setFont("helvetica", "bold");
-  doc.text(filtrosAplicados, 44, y);
-  y += 10;
 
-  if (data.length === 0) {
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "italic");
-    doc.text("No hay licencias para mostrar.", 105, y + 20, {
-      align: "center",
-    });
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 45, y);
+  y += filtrosText.length * 6 + 0;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (licencias.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text("No hay resultados para los filtros aplicados.",
+      doc.internal.pageSize.getWidth() / 2,
+      y + 10,
+      { align: "center" }
+    );
   } else {
-    doc.autoTable({
-      startY: y,
-      head: [["Empleado", "Tipo de Licencia", "Inicio", "Fin", "Estado"]],
-      body: data,
-      headStyles: {
-        fillColor: [19, 115, 204],
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
-      styles: {
-        font: "helvetica",
-        fontSize: 10,
-        cellPadding: 3,
-      },
-      theme: "plain",
+    doc.setTextColor(0, 0, 0);
+    const anchoPagina = doc.internal.pageSize.getWidth() - 30;
+    licencias.forEach( (l) => {
+      if (y > 180) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setFont("helvetica", "bold");
+doc.text(l.empleado.nombreCompleto.toUpperCase(), 14, y);
+y += 5;
+
+  const datosLicencia = [
+  ["Tipo Licencia", l.tipoDeLicencia.nombre],
+  ["Fecha Inicio", l.fechaInicioString],
+  ["Fecha Fin", l.fechaFinString],
+  ["Estado", l.estadoString]
+];
+
+      let xPos = 20;
+      const margenDerecho = doc.internal.pageSize.getWidth() - 20;
+      const espacioEntre = 8; // espacio horizontal entre pares
+
+        datosLicencia.forEach(([label, valor], idx) => {
+        const textoLabel = `${label}:`;
+        const textoValor = `${valor}`;
+        const textoCompleto = idx < datosLicencia.length - 1
+          ? `${textoLabel} ${textoValor} |`
+          : `${textoLabel} ${textoValor}`;
+
+        const anchoTexto = doc.getTextWidth(textoCompleto);
+
+        if (xPos + anchoTexto > margenDerecho) {
+          xPos = 20;
+          y += 6;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text(textoLabel, xPos, y);
+
+        const anchoLabel = doc.getTextWidth(textoLabel + " ");
+        doc.setFont("helvetica", "normal");
+        doc.text(textoValor, xPos + anchoLabel, y);
+
+        if (idx < datosLicencia.length - 1) {
+          const anchoValor = doc.getTextWidth(textoValor + " ");
+          doc.text("|", xPos + anchoLabel + anchoValor, y);
+        }
+
+        xPos += anchoTexto + espacioEntre;
+      });
+
+       y += 10;
     });
+  
   }
 
   const pageCount = doc.internal.getNumberOfPages();
@@ -1209,23 +1200,31 @@ function GenerarPDF() {
     doc.setPage(i);
     doc.setFontSize(9);
     doc.setTextColor(100);
-    doc.text(`Página ${i} de ${pageCount}`, 195, 287, { align: "right" });
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+    doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
   }
 
   const string = doc.output("datauristring");
   const html = `
-<html>
-<head>
-<title>Informe de Gestor de Licencias</title>
-</head>
-<body style="margin:0">
-<iframe width="100%" height="100%" src="${string}"></iframe>
-</body>
-</html>
-`;
+    <html>
+      <head><title>Informe de Licencias</title></head>
+      <body style="margin:0">
+        <iframe width="100%" height="100%" src="${string}"></iframe>
+      </body>
+    </html>`;
   const x = window.open();
   x.document.open();
   x.document.write(html);
   x.document.close();
 }
 
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+MostrarOpcionesLicenciasPorRol();
+ComboParaFiltrarTiposDeLicencia();

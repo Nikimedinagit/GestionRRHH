@@ -146,7 +146,51 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(new { Asistencias = asistencias, Resumen = resumen });
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE ASISTENCIAS SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeLicencias")]
+        public IActionResult LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
+        {
+            var obtenerLicencias = _context.Licencia
+                .Include(l => l.TipoDeLicencia)
+                .Include(l => l.Empleado)
+                .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(filtro.EmpleadoTexto))
+            {
+                var nombreEmpleadoFiltro = filtro.EmpleadoTexto.ToLower();
+                obtenerLicencias = obtenerLicencias.Where(l => l.Empleado.NombreCompleto.ToLower().Contains(nombreEmpleadoFiltro));
+            }
+
+            if (filtro.TipoDeLicenciaId.HasValue)
+                obtenerLicencias = obtenerLicencias.Where(l => l.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+
+            if (filtro.Estado.HasValue)
+                obtenerLicencias = obtenerLicencias.Where(l => (int)l.Estado == filtro.Estado);
+
+            if (filtro.FechaInicio.HasValue && filtro.FechaFin.HasValue)
+            {
+                var fechaInicio = filtro.FechaInicio.Value.Date;
+                var fechaFin = filtro.FechaFin.Value.Date;
+                obtenerLicencias = obtenerLicencias.Where(l => l.FechaInicio >= fechaInicio && l.FechaFin <= fechaFin);
+            }
+
+            var licencias = obtenerLicencias.ToList();
+
+            var resumen = new
+            {
+                Total = licencias.Count,
+                Pendientes = licencias.Count(l => l.Estado == EstadoLicencia.PENDIENTE),
+                Aprobadas = licencias.Count(l => l.Estado == EstadoLicencia.APROBADA),
+                Rechazadas = licencias.Count(l => l.Estado == EstadoLicencia.RECHAZADA),
+                Expiradas = licencias.Count(l => l.Estado == EstadoLicencia.EXPIRADA),
+                Filtros = filtro,
+                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+
+            return Ok(new { Licencias = licencias, Resumen = resumen });
+        }
 
 
     }
