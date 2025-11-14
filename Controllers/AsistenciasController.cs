@@ -60,11 +60,12 @@ namespace API_NET_CORE8_RRHH.Controllers
                 obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.NroLegajo.ToString().StartsWith(legajoFiltro));
             }
 
-            if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            if (filtro.EstadoAsistencia.HasValue)
             {
                 obtenerAsistencias = obtenerAsistencias
-                    .Where(a => a.Empleado.NroLegajo.StartsWith(filtro.NroLegajo));
+                    .Where(a => (int)a.Estado == filtro.EstadoAsistencia.Value);
             }
+
 
             var vista = await obtenerAsistencias
                 .Select(a => new VistaAsistencia

@@ -65,15 +65,47 @@ public class CardsEstadisticasController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE CONTROL DE ASISTENCIA////
     /////////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("AsistenciasEstadisticas")]
-    public async Task<ActionResult<object>> GetAsistenciasEstadisticas()
+    [HttpPost("AsistenciasEstadisticas")]
+    public async Task<ActionResult<object>> GetAsistenciasEstadisticas([FromBody] FiltrarAsistencia filtro)
     {
-        var totalAsistenciasHoy = await _context.Asistencia.CountAsync(a => a.Fecha == DateTime.Today);
+        var obtenerAsistencias = _context.Asistencia
+            .Include(a => a.Empleado)
+            .AsQueryable();
 
-        var totalMinutosTrabajados = await _context.Asistencia
+        if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
+        {
+            var nombreFiltro = filtro.NombreCompleto.ToLower();
+            obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.NombreCompleto.ToLower().Contains(nombreFiltro));
+        }
+
+        if (filtro.DNI.HasValue)
+        {
+            var dniFiltro = filtro.DNI.Value.ToString();
+            obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.DNI.ToString().StartsWith(dniFiltro));
+        }
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+        {
+            var legajoFiltro = filtro.NroLegajo.ToString();
+            obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.NroLegajo.ToString().StartsWith(legajoFiltro));
+        }
+
+        if (filtro.EstadoAsistencia.HasValue)
+        {
+            obtenerAsistencias = obtenerAsistencias.Where(a => (int)a.Estado == filtro.EstadoAsistencia.Value);
+        }
+
+        var fechaSeleccionada = filtro.Fecha ?? DateTime.Today;
+        var fechaSiguiente = fechaSeleccionada.AddDays(1);
+
+        var asistenciasFiltradas = obtenerAsistencias
+            .Where(a => a.Fecha >= fechaSeleccionada && a.Fecha < fechaSiguiente);
+
+        var totalAsistenciasHoy = await asistenciasFiltradas.CountAsync();
+
+        var totalMinutosTrabajados = await asistenciasFiltradas
             .Where(a =>
                 a.HorarioId.HasValue &&
-                a.Fecha == DateTime.Today &&
                 a.PrimerEntrada.HasValue &&
                 a.PrimerSalida.HasValue &&
                 a.SegundaEntrada.HasValue &&
@@ -83,8 +115,11 @@ public class CardsEstadisticasController : ControllerBase
                 EF.Functions.DateDiffMinute(a.SegundaEntrada.Value, a.SegundaSalida.Value))
             .SumAsync();
 
-        var empleadosAusentes = await _context.Asistencia.CountAsync(a => a.Estado == EstadoAsistencia.AUSENTE && a.Fecha == DateTime.Today);
-        var empleadosLLegadasTardes = await _context.Asistencia.CountAsync(a => a.Estado == EstadoAsistencia.TARDE && a.Fecha == DateTime.Today);
+        var empleadosAusentes = await asistenciasFiltradas
+            .CountAsync(a => a.Estado == EstadoAsistencia.AUSENTE);
+
+        var empleadosLLegadasTardes = await asistenciasFiltradas
+            .CountAsync(a => a.Estado == EstadoAsistencia.TARDE);
 
         string horasFormateadas;
         if (totalMinutosTrabajados < 60)
@@ -95,7 +130,7 @@ public class CardsEstadisticasController : ControllerBase
         {
             var horas = totalMinutosTrabajados / 60;
             var minutos = totalMinutosTrabajados % 60;
-            horasFormateadas = $"{horas}:{minutos.ToString("D2")} hs";
+            horasFormateadas = $"{horas}:{minutos:D2} hs";
         }
 
         return new
@@ -107,6 +142,7 @@ public class CardsEstadisticasController : ControllerBase
             EmpleadosLLegadasTardes = empleadosLLegadasTardes
         };
     }
+
 
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE ASIGNACION DE HORARIOS////

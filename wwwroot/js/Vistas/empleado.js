@@ -50,9 +50,13 @@ function CerrarPanelEmpleado() {
 $(document).ready(function () {
   const filtros = "#EmpleadoIdBuscar, #DniEmpleadoFiltro, #EstadoCivilEmpleadoFiltro, #TipoSexoEmpleadoFiltro, #IdLocalidadFiltro, #IdPuestoFiltro, #NroLegajoFiltro";
 
-  $(filtros).on("input change", ObtenerEmpleados);
+  $(filtros).on("input change", () => {
+    ObtenerEmpleados();
+    ObtenerTotalEmpleados();
+  });
 
   ObtenerEmpleados();
+  ObtenerTotalEmpleados();
 });
 
 
@@ -288,7 +292,7 @@ function MostrarDetalleEmpleado(id) {
   document.getElementById("detalleLegajo").textContent =
     empleado.nroLegajo || "";
   document.getElementById("detalleEdad").textContent =
-    empleado.edad || "";
+    empleado.edad + " AÑOS" || "";
   document.getElementById("detalleLocalidad").textContent =
     empleado.localidadIdString || "";
   document.getElementById("detalleSexo").textContent =
@@ -1395,7 +1399,7 @@ async function GenerarInformePdfEmpleado() {
     puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
   };
 
-  const res = await authFetch("Empleados/GenerarInformePdf", {
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformePdf", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(filtro)
@@ -1506,7 +1510,6 @@ async function GenerarInformePdfEmpleado() {
   } else {
     doc.setTextColor(0, 0, 0);
     const anchoPagina = doc.internal.pageSize.getWidth() - 30;
-
     empleados.forEach((e) => {
       if (y > 180) {
         doc.addPage();
@@ -1515,15 +1518,60 @@ async function GenerarInformePdfEmpleado() {
 
       doc.setFont("helvetica", "bold");
       doc.text(e.nombreCompleto.toUpperCase(), 14, y);
-      y += 5;
+      y += 6;
 
-      const textoEmpleado = `DNI: ${e.dni} | Legajo: ${e.nroLegajo} | Edad: ${e.edad} | CUIL: ${e.cuil} | Dirección: ${e.direccion} | Localidad: ${e.localidadIdString} | Puesto: ${e.puestoIdString} | Estado Civil: ${e.estadoCivilesString} | Sexo: ${e.tipoSexoString} | Email: ${e.email} | Teléfono: ${e.telefono} | Hijos: ${e.cantidadHijos}`;
-      const lineas = doc.splitTextToSize(textoEmpleado, anchoPagina);
+      const datosEmpleado = [
+        ["DNI", e.dni],
+        ["Legajo", e.nroLegajo],
+        ["Edad", e.edad],
+        ["CUIL", e.cuil],
+        ["Dirección", e.direccion],
+        ["Localidad", e.localidadIdString],
+        ["Puesto", e.puestoIdString],
+        ["Estado Civil", e.estadoCivilesString],
+        ["Sexo", e.tipoSexoString],
+        ["Email", e.email],
+        ["Teléfono", e.telefono],
+        ["Hijos", e.cantidadHijos]
+      ];
 
-      doc.setFont("helvetica", "normal");
-      doc.text(lineas, 20, y, { maxWidth: anchoPagina });
-      y += lineas.length * 4 + 4;
+      let xPos = 20;
+      const margenDerecho = doc.internal.pageSize.getWidth() - 20;
+      const espacioEntre = 8; // espacio horizontal entre pares
+
+      datosEmpleado.forEach(([label, valor], idx) => {
+        const textoLabel = `${label}:`;
+        const textoValor = `${valor}`;
+        const textoCompleto = idx < datosEmpleado.length - 1
+          ? `${textoLabel} ${textoValor} |`
+          : `${textoLabel} ${textoValor}`;
+
+        const anchoTexto = doc.getTextWidth(textoCompleto);
+
+        if (xPos + anchoTexto > margenDerecho) {
+          xPos = 20;
+          y += 6;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text(textoLabel, xPos, y);
+
+        const anchoLabel = doc.getTextWidth(textoLabel + " ");
+        doc.setFont("helvetica", "normal");
+        doc.text(textoValor, xPos + anchoLabel, y);
+
+        if (idx < datosEmpleado.length - 1) {
+          const anchoValor = doc.getTextWidth(textoValor + " ");
+          doc.text("|", xPos + anchoLabel + anchoValor, y);
+        }
+
+        xPos += anchoTexto + espacioEntre;
+      });
+
+      y += 10;
     });
+
+
   }
 
   const pageCount = doc.internal.getNumberOfPages();

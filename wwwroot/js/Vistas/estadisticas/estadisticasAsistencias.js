@@ -1,3 +1,4 @@
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA FORMATEAR LAS HORAS TRABAJADAS /////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +18,26 @@ function formatearTiempo(minutos) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTotalAsitenciasHoy() {
   try {
-    const response = await authFetch("CardsEstadisticas/AsistenciasEstadisticas");
+
+    let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
+    if (estadoAsistencia === "0") estadoAsistencia = null;
+    else estadoAsistencia = Number(estadoAsistencia);
+
+    let dniEmpleado = document.getElementById("DniBuscar").value;
+    let nroLegajo = document.getElementById("NroLegajoBuscar").value;
+    let fechaFiltro = document.getElementById("FechaBuscar").value;
+
+    const asistenciasFiltradas = {
+      nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+      DNI: dniEmpleado ? Number(dniEmpleado) : null,
+      nroLegajo: nroLegajo,
+      fecha: fechaFiltro ? fechaFiltro : null,
+      estadoAsistencia: estadoAsistencia
+    };
+    const response = await authFetch("CardsEstadisticas/AsistenciasEstadisticas", {
+      method: "POST",
+      body: JSON.stringify(asistenciasFiltradas)
+    });
     const data = await response.json();
 
     document.getElementById("totalAsistenciasHoy").textContent = data.totalAsistenciasHoy;

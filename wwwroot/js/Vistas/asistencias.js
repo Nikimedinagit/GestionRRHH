@@ -8,8 +8,10 @@ var asistenciasData = [];
 /////////////////////////////////////////////////////////////
 //INICIO ONCHANGE DE FILTROS ////////////////////////////////
 /////////////////////////////////////////////////////////////
-$(document).ready(function () {
-    $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #FechaBuscar").on("input", ObtenerAsistencias);
+$("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #FechaBuscar")
+  .on("input change", () => {
+    ObtenerAsistencias();
+    ObtenerTotalAsitenciasHoy();
 });
 
 
