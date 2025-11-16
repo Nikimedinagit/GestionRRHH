@@ -20,9 +20,9 @@
           <span>Filtros</span>
         </button>
 
-        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="AbrilPanelGenerar('contenedorGenerar')">
+        <button class="btn btn-generar-pdf responsive-buttons" onclick="GenerarInformePdfLicenciasAprobadas()">
           <i class="fa-solid fa-file-lines me-1"></i>
-          <span>Generar</span>
+          <span>Generar Informe</span>
         </button>
       </div>
     </div>
@@ -43,19 +43,6 @@
           <input type="date" id="FechaAprobacionBuscar" class="form-control filtro-select" />
         </div>
 
-      </div>
-    </div>
-
-
-    <!-- ======================================= Contenedor Generar ====================================== -->
-    <div id="contenedorGenerar" class="generar-panel mb-3 d-none">
-      <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-generar-pdf" onclick="GenerarPDF()">
-          <i class="fa-solid fa-file-pdf me-1"></i> PDF
-        </button>
-        <button class="btn btn-generar-excel" onclick="GenerarExcel()">
-          <i class="fa-solid fa-file-excel me-1"></i> Excel
-        </button>
       </div>
     </div>
 

@@ -147,7 +147,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// METODO PARA GENERAR EL INFORME DE ASISTENCIAS SEGUN SUS FILTROS /////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE LICENCIAS SEGUN SUS FILTROS /////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost("GenerarInformeLicencias")]
         public IActionResult LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
@@ -191,6 +191,44 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(new { Licencias = licencias, Resumen = resumen });
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE LICENCIAS APROBADAS SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeLicenciasAprobadas")]
+        public IActionResult FiltrarAprobacionDeLicencia([FromBody] FiltrarAprobacionDeLicencia filtro)
+        {
+            var obtenerLicenciasAprobadas = _context.AprobacionDeLicencia
+                .Include(l => l.Licencia)
+                .ThenInclude(l => l.Estado)
+                .AsQueryable();
+
+            if (filtro.FechaAprobacion.HasValue)
+            {
+                var fechaInicio = filtro.FechaAprobacion.Value.Date;
+                var fechaFin = fechaInicio.AddDays(1);
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
+            }
+
+            if (filtro.TipoDeLicenciaId.HasValue)
+            {
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+            }
+
+
+            var licenciasAprobadas = obtenerLicenciasAprobadas.ToList();
+
+            var resumen = new
+            {
+                TotalAprobadas = licenciasAprobadas.Count,
+                Filtros = filtro,
+                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+
+            return Ok(new { LicenciasAprobadas = licenciasAprobadas, Resumen = resumen });
+        }
+
 
 
     }
