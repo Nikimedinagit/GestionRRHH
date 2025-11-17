@@ -357,12 +357,19 @@ async function GenerarInformePdfAsistencias() {
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
     }
 
-    const string = doc.output("datauristring");
-    const html = `<html><head><title>Informe de Asistencias</title></head><body style="margin:0"><iframe width="100%" height="100%" src="${string}"></iframe></body></html>`;
-    const x = window.open();
-    x.document.open();
-    x.document.write(html);
-    x.document.close();
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+
+    const html = `<html><head><title>Informe de Asistencias</title></head>
+        <body class="pdf-body">
+        <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+        </body></html>`;
+
+    const w = window.open();
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+
 }
 
 

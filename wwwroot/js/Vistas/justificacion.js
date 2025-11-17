@@ -32,6 +32,7 @@ $(document).ready(function () {
     "input",
     function () {
       ObtenerJustificaciones();
+      ObtenerTotalJustificaciones();
     }
   );
 });
@@ -185,14 +186,18 @@ function MostrarJustificacionesDesktop(data) {
     const descripcionDetalle = $(`
       <div class="panelJustificacion px-3 pb-2" style="display: none;">
         <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Detalle del Evento</h3>
+          <h3 class="titulo-sub-seccion">Detalle de la Justificación</h3>
         </div>
         <hr style="margin-bottom: 1rem;" />
         <div class="d-flex gap-3 mb-3">
-          <div class="p-3 rounded" style="flex: 2; background-color: #f8fbfd;" id="motivoDiv">
-            <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">MOTIVO</small>
-            <hr style="margin: 0.2rem;" />
-            <div>${element.motivo || "Sin motivo"}</div>
+          <div class="p-3 rounded" 
+              style="flex: 2; background-color: #f8fbfd;
+                      max-height: 200px; overflow-y: auto;
+                      word-wrap: break-word;" 
+              id="motivoDiv">
+              <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">MOTIVO</small>
+              <hr style="margin: 0.2rem;" />
+              <div>${element.motivo || "Sin motivo"}</div>
           </div>
           <div class="p-3 rounded" style="flex: 1; background-color: #f8fbfd;" id="documentoDiv">
             <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">DOCUMENTO ADJUNTO</small>
@@ -264,7 +269,6 @@ function MostrarJustificacionesMobile(data) {
       `
       : "No se adjuntó ningún documento";
 
-    // BOTONES
     let botonesHtml = "";
 
     if (estadoNombre === "PENDIENTE") {
@@ -278,7 +282,6 @@ function MostrarJustificacionesMobile(data) {
         if (hoy <= limite) {
           botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
 
-          // EDITAR y ELIMINAR: todos los roles mientras esté pendiente y dentro de los 7 días
           if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR" || rol === "EMPLEADO") {
             botonesHtml += `
               <button class="btn-editar" style="background: none; border: none;" 
@@ -292,7 +295,6 @@ function MostrarJustificacionesMobile(data) {
             `;
           }
 
-          // ACCIÓN solo ADMIN/RRHH
           if (rol === "ADMINISTRADOR" || rol === "RRHH") {
             botonesHtml += `
               <button class="btn-accionLicencia" style="background:none; border:none;" 
@@ -337,22 +339,30 @@ function MostrarJustificacionesMobile(data) {
     const descripcionDetalle = $(`
       <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
         <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Detalle del Evento</h3>
+          <h3 class="titulo-sub-seccion">Detalle de la Justificacion</h3>
         </div>
         <hr style="margin-bottom: 1rem;" />
         <div class="d-flex flex-column gap-3 mb-3">
-          <div class="p-3 rounded" style="background-color: #f8fbfd;">
+
+          <div class="p-3 rounded" 
+              style="background-color: #f8fbfd;
+                      max-height: 200px;
+                      overflow-y: auto;
+                      word-wrap: break-word;">
             <small class="fw-bold d-block mb-1">MOTIVO</small>
             <hr style="margin: 0.2rem;" />
             <div>${element.motivo || "Sin motivo"}</div>
           </div>
+
           <div class="p-3 rounded" style="background-color: #f8fbfd;">
             <small class="fw-bold d-block mb-1">DOCUMENTO ADJUNTO</small>
             <div>${documentoHtml}</div>
           </div>
+
         </div>
       </div>
     `);
+
 
     $(card).find(".btn-ver-descripcion").on("click", function () {
       const icono = $(this).find("i");
@@ -1095,6 +1105,153 @@ function MostrarOpcionesJustificacionesPorRol() {
     $("#JustificacionCreadoPorTercero, #JustificacionCreadoPorUsuario, #JustificacionAccion").addClass("d-none")
   }
 }
+
+
+
+async function GenerarInformePdfJustificaciones() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  const fechaEl = document.getElementById("FechaBuscar");
+  const estadoEl = document.getElementById("EstadoJustificacionBuscar");
+  const empleadoEl = document.getElementById("EmpleadoIdBuscar");
+
+  const fecha = fechaEl ? fechaEl.value : null;
+  const estado = estadoEl ? parseInt(estadoEl.value) : null;
+  const empleado = empleadoEl ? empleadoEl.value : "";
+
+  const filtro = {
+    fechaJustificacion: fecha || null,
+    estadoJustificacion: estado || null,
+    empleadoTexto: empleado,
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeJustificaciones", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
+  });
+
+  const { justificaciones, resumen } = await res.json();
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Justificaciones", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Justificaciones:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.total}`, 51, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Aprobadas:", 56, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.aprobadas}`, 79, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Pendientes:", 83, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.pendientes}`, 107, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Rechazadas:", 111, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.rechazadas}`, 137, y);
+  y += 6;
+
+  let filtrosAplicadosArray = [];
+  if (filtro.empleadoTexto) filtrosAplicadosArray.push(`[Empleado: ${filtro.empleadoTexto}]`);
+  if (filtro.estadoJustificacion !== null) {
+    const estadoTexto =
+      filtro.estadoJustificacion === 1 ? "Pendiente" :
+        filtro.estadoJustificacion === 2 ? "Aprobada" :
+          filtro.estadoJustificacion === 3 ? "Rechazada" : "Desconocido";
+    filtrosAplicadosArray.push(`[Estado: ${estadoTexto}]`);
+  }
+  if (filtro.fechaJustificacion) filtrosAplicadosArray.push(`[Fecha: ${filtro.fechaJustificacion}]`);
+
+  const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+
+  doc.setFont("helvetica", "bold");
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 44, y);
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (justificaciones.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
+  } else {
+    doc.autoTable({
+      startY: y,
+      head: [["Empleado", "Fecha", "Estado", "Motivo"]],
+      body: justificaciones.map(j => [
+        j.empleadoString,
+        j.fechaString,
+        j.estadoString,
+        j.motivo
+      ]),
+      styles: { font: "helvetica", fontSize: 10 },
+      headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+      margin: { left: 14, right: 14 },
+
+      tableWidth: "auto",
+
+      columnStyles: {
+        0: { minCellWidth: 40 },
+        1: { minCellWidth: 30 },
+        2: { minCellWidth: 30 },
+        3: { cellWidth: "auto" }
+      }
+    });
+
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+    doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Justificaciones</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARRGAR LA VISTA ////////////////////////////////////////

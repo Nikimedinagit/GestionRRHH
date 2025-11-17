@@ -147,17 +147,32 @@ public class CardsEstadisticasController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE ASIGNACION DE HORARIOS////
     /////////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("HorariosEstadisticas")]
-    public async Task<ActionResult<object>> GetHorariosEstadisticas()
+    [HttpPost("HorariosEstadisticas")]
+    public async Task<ActionResult<object>> GetHorariosEstadisticas([FromBody] FiltrarHorario filtro)
     {
-        var totalHorariosAsignados = await _context.Horario.Where(h => h.Empleado.Eliminado == false).CountAsync();
+        var horariosQuery = _context.Horario
+            .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+            .AsQueryable();
 
-        var totalMinutosSemanales = await _context.Horario
-            .Where(h =>
-                h.Empleado != null &&
-                !h.Empleado.Eliminado &&
-                (h.Lunes || h.Martes || h.Miercoles || h.Jueves || h.Viernes || h.Sabado || h.Domingo)
-            )
+        if (filtro.TipoHorario.HasValue)
+            horariosQuery = horariosQuery.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
+
+        if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
+            horariosQuery = horariosQuery.Where(h => h.HorarioInicio >= horarioInicioTs);
+
+        if (!string.IsNullOrEmpty(filtro.HorarioFin) && TimeSpan.TryParse(filtro.HorarioFin, out var horarioFinTs))
+            horariosQuery = horariosQuery.Where(h => h.HorarioFin <= horarioFinTs);
+
+        if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+        {
+            var texto = filtro.EmpleadoTexto.ToLower();
+            horariosQuery = horariosQuery.Where(h => h.Empleado.NombreCompleto.ToLower().Contains(texto));
+        }
+
+        var totalHorariosAsignados = await horariosQuery.CountAsync();
+
+        var totalMinutosSemanales = await horariosQuery
+            .Where(h => h.Lunes || h.Martes || h.Miercoles || h.Jueves || h.Viernes || h.Sabado || h.Domingo)
             .Select(h =>
                 (
                     EF.Functions.DateDiffMinute(h.HorarioInicio, h.HorarioFin) +
@@ -175,8 +190,8 @@ public class CardsEstadisticasController : ControllerBase
             )
             .SumAsync();
 
-        var trabajanFindesSemana = await _context.Horario
-            .Where(h => h.Empleado.Eliminado == false && h.Sabado || h.Domingo)
+        var trabajanFindesSemana = await horariosQuery
+            .Where(h => h.Sabado || h.Domingo)
             .CountAsync();
 
         string horasFormateadas;
@@ -312,13 +327,35 @@ public class CardsEstadisticasController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////
     /// METODOS PARA OBTENER DATOS PARA LAS CARD DE GESTOR DE JUSTIFICACIONES //////////
     /////////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("JustificacionesEstadisticas")]
-    public async Task<ActionResult<object>> GetJustificacionesEstadisticas()
+    [HttpPost("JustificacionesEstadisticas")]
+    public async Task<ActionResult<object>> GetJustificacionesEstadisticas([FromBody] JustificacionFiltrar filtro)
     {
-        var totalJustificaciones = await _context.Justificacion.Where(j => j.Empleado != null && !j.Empleado.Eliminado).CountAsync();
-        var justificacionesPendientes = await _context.Justificacion.Where(j => j.Estados == EstadoJustificacion.PENDIENTE && j.Empleado != null && !j.Empleado.Eliminado).CountAsync();
-        var justificacionesAprobadas = await _context.Justificacion.Where(j => j.Estados == EstadoJustificacion.APROBADA && j.Empleado != null && !j.Empleado.Eliminado).CountAsync();
-        var justificacionesRechazadas = await _context.Justificacion.Where(j => j.Estados == EstadoJustificacion.RECHAZADA && j.Empleado != null && !j.Empleado.Eliminado).CountAsync();
+        var obtenerJustificaciones = _context.Justificacion
+            .Where(j => j.Empleado != null && !j.Empleado.Eliminado)
+            .AsQueryable();
+
+        if (filtro.EstadoJustificacion.HasValue)
+        {
+            obtenerJustificaciones = obtenerJustificaciones.Where(j => (int)j.Estados == filtro.EstadoJustificacion.Value);
+        }
+
+        if (filtro.FechaJustificacion.HasValue)
+        {
+            var fecha = filtro.FechaJustificacion.Value.Date;
+            obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Fecha.Date == fecha);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+        {
+            var texto = filtro.EmpleadoTexto.ToLower();
+            obtenerJustificaciones = obtenerJustificaciones.Where(j => j.Empleado.NombreCompleto.ToLower().Contains(texto));
+        }
+
+        var totalJustificaciones = await obtenerJustificaciones.CountAsync();
+        var justificacionesPendientes = await obtenerJustificaciones.Where(j => j.Estados == EstadoJustificacion.PENDIENTE).CountAsync();
+        var justificacionesAprobadas = await obtenerJustificaciones.Where(j => j.Estados == EstadoJustificacion.APROBADA).CountAsync();
+        var justificacionesRechazadas = await obtenerJustificaciones.Where(j => j.Estados == EstadoJustificacion.RECHAZADA).CountAsync();
+
         return new
         {
             totalJustificaciones,
@@ -326,7 +363,10 @@ public class CardsEstadisticasController : ControllerBase
             justificacionesAprobadas,
             justificacionesRechazadas
         };
-
     }
+
+
+
+
 }
 

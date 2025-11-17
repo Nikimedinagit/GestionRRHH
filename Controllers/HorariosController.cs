@@ -140,6 +140,19 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Horario.Add(horario);
             await _context.SaveChangesAsync();
 
+            var notificacion = new Notificaciones
+            {
+                Titulo = "Nuevo Horario Asignado",
+                Mensaje = $"Se te ha asignado un nuevo horario. Por favor, verifique los detalles en su perfil.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = horario.EmpleadoId.ToString(), 
+                Leida = false
+            };
+
+            _context.Notificaciones.Add(notificacion);
+            await _context.SaveChangesAsync();
+
+
             return CreatedAtAction("GetHorario", new { id = horario.Id }, horario);
         }
 
@@ -179,6 +192,18 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             await _context.SaveChangesAsync();
 
+            var notificacion = new Notificaciones
+            {
+                Titulo = "Horario Modificado",
+                Mensaje = $"Tu horario ha sido modificado. Por favor, verifica los nuevos detalles en tu perfil.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = horarioDb.EmpleadoId.ToString(), 
+                Leida = false
+            };
+
+            _context.Notificaciones.Add(notificacion);
+            await _context.SaveChangesAsync();
+
             return Ok(horarioDb);
         }
 
@@ -197,6 +222,8 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(horario);
         }
+
+
 
 
         private bool HorarioExists(int id)

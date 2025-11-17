@@ -146,6 +146,155 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(new { Asistencias = asistencias, Resumen = resumen });
         }
 
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR INFORME DE HORARIOS SEGUN SU FILTRO //////////////////////////////////////////////////////
+        /// ////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeHorarios")]
+        public async Task<IActionResult> GenerarInformeHorarios([FromBody] FiltrarHorario filtro)
+        {
+            var obtenerHorarios = _context.Horario
+                .Include(h => h.Empleado)
+                .ThenInclude(e => e.Puesto)
+                .Where(h => h.Empleado != null && !h.Empleado.Eliminado)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+            {
+                var texto = filtro.EmpleadoTexto.ToLower();
+                obtenerHorarios = obtenerHorarios.Where(h => h.Empleado.NombreCompleto.ToLower().Contains(texto));
+            }
+
+            if (filtro.TipoHorario.HasValue)
+                obtenerHorarios = obtenerHorarios.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
+
+            if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
+                obtenerHorarios = obtenerHorarios.Where(h => h.HorarioInicio >= horarioInicioTs);
+
+            if (!string.IsNullOrEmpty(filtro.HorarioFin) && TimeSpan.TryParse(filtro.HorarioFin, out var horarioFinTs))
+                obtenerHorarios = obtenerHorarios.Where(h => h.HorarioFin <= horarioFinTs);
+
+            var listaHorariosRaw = await obtenerHorarios
+                .OrderBy(h => h.Empleado.NombreCompleto)
+                .ThenBy(h => h.HorarioInicio)
+                .Select(h => new
+                {
+                    NombreCompleto = h.Empleado.NombreCompleto,
+                    Puesto = h.Empleado.Puesto != null ? h.Empleado.Puesto.Descripcion : "Sin puesto",
+                    TipoHorario = h.TipoHorario.ToString(),
+                    Lunes = h.Lunes,
+                    Martes = h.Martes,
+                    Miercoles = h.Miercoles,
+                    Jueves = h.Jueves,
+                    Viernes = h.Viernes,
+                    Sabado = h.Sabado,
+                    Domingo = h.Domingo,
+                    HorarioInicioTs = h.HorarioInicio,
+                    HorarioFinTs = h.HorarioFin,
+                    SegundoHorarioInicioTs = h.SegundoHorarioInicio,
+                    SegundoHorarioFinTs = h.SegundoHorarioFin
+                })
+                .ToListAsync();
+
+            string FormatHora(TimeSpan ts) => ts == TimeSpan.Zero ? "-" : ts.ToString(@"hh\:mm");
+
+            var listaHorarios = listaHorariosRaw
+                .Select(h => new
+                {
+                    NombreCompleto = h.NombreCompleto,
+                    Puesto = h.Puesto,
+                    TipoHorario = h.TipoHorario,
+                    Lunes = h.Lunes,
+                    Martes = h.Martes,
+                    Miercoles = h.Miercoles,
+                    Jueves = h.Jueves,
+                    Viernes = h.Viernes,
+                    Sabado = h.Sabado,
+                    Domingo = h.Domingo,
+                    HorarioInicio = FormatHora(h.HorarioInicioTs),
+                    HorarioFin = FormatHora(h.HorarioFinTs),
+                    SegundoHorarioInicio = FormatHora(h.SegundoHorarioInicioTs),
+                    SegundoHorarioFin = FormatHora(h.SegundoHorarioFinTs)
+                })
+                .ToList();
+
+            var totalHorasSemanales = listaHorariosRaw.Sum(h =>
+            {
+                double primerRango = 0;
+                double segundoRango = 0;
+
+                if (h.HorarioFinTs > h.HorarioInicioTs)
+                    primerRango = (h.HorarioFinTs - h.HorarioInicioTs).TotalMinutes;
+
+                if (h.SegundoHorarioFinTs > h.SegundoHorarioInicioTs)
+                    segundoRango = (h.SegundoHorarioFinTs - h.SegundoHorarioInicioTs).TotalMinutes;
+
+                int dias = (h.Lunes ? 1 : 0) + (h.Martes ? 1 : 0) + (h.Miercoles ? 1 : 0) +
+                           (h.Jueves ? 1 : 0) + (h.Viernes ? 1 : 0) + (h.Sabado ? 1 : 0) + (h.Domingo ? 1 : 0);
+
+                return (primerRango + segundoRango) * dias;
+            });
+
+            var resumen = new
+            {
+                TotalHorariosAsignados = listaHorarios.Count,
+                TotalHorasSemanales = totalHorasSemanales,
+                TotalHorasFormateadas = $"{(int)(totalHorasSemanales / 60)}:{((int)totalHorasSemanales % 60):D2} hs",
+                EmpleadosFindes = listaHorarios.Count(h => h.Sabado || h.Domingo),
+                Filtros = filtro,
+                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+
+            return Ok(new { Horarios = listaHorarios, Resumen = resumen });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE JUSTIFICACIONES SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeJustificaciones")]
+        public async Task<IActionResult> GenerarInformeJustificaciones([FromBody] JustificacionFiltrar filtro)
+        {
+            var query = _context.Justificacion
+                .Include(j => j.Empleado)
+                .Where(j => j.Empleado != null && !j.Empleado.Eliminado)
+                .AsQueryable();
+
+            if (filtro.EstadoJustificacion.HasValue)
+                query = query.Where(j => (int)j.Estados == filtro.EstadoJustificacion.Value);
+
+            if (filtro.FechaJustificacion.HasValue)
+                query = query.Where(j => j.Fecha.Date == filtro.FechaJustificacion.Value.Date);
+
+            if (!string.IsNullOrEmpty(filtro.EmpleadoTexto))
+            {
+                var texto = filtro.EmpleadoTexto.ToLower();
+                query = query.Where(j => j.Empleado.NombreCompleto.ToLower().Contains(texto));
+            }
+
+            var lista = await query
+                .OrderBy(j => j.Fecha)
+                .Select(j => new
+                {
+                    EmpleadoString = j.Empleado.NombreCompleto,
+                    FechaString = j.Fecha.ToString("dd/MM/yyyy"),
+                    EstadoString = j.Estados.ToString(),
+                    Motivo = j.Motivo
+                })
+                .ToListAsync();
+
+            var resumen = new
+            {
+                total = lista.Count,
+                aprobadas = lista.Count(j => j.EstadoString == "APROBADA"),
+                pendientes = lista.Count(j => j.EstadoString == "PENDIENTE"),
+                rechazadas = lista.Count(j => j.EstadoString == "RECHAZADA")
+            };
+
+            return Ok(new { Justificaciones = lista, Resumen = resumen });
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA GENERAR EL INFORME DE LICENCIAS SEGUN SUS FILTROS /////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,43 +302,53 @@ namespace API_NET_CORE8_RRHH.Controllers
         public IActionResult LicenciaFiltrar([FromBody] LicenciaFiltrar filtro)
         {
             var obtenerLicencias = _context.Licencia
-                .Include(l => l.TipoDeLicencia)
                 .Include(l => l.Empleado)
+                .Include(l => l.TipoDeLicencia)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filtro.EmpleadoTexto))
             {
-                var nombreEmpleadoFiltro = filtro.EmpleadoTexto.ToLower();
-                obtenerLicencias = obtenerLicencias.Where(l => l.Empleado.NombreCompleto.ToLower().Contains(nombreEmpleadoFiltro));
+                var texto = filtro.EmpleadoTexto.ToLower();
+                obtenerLicencias = obtenerLicencias.Where(l => l.Empleado.NombreCompleto.ToLower().Contains(texto));
             }
 
             if (filtro.TipoDeLicenciaId.HasValue)
-                obtenerLicencias = obtenerLicencias.Where(l => l.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+                obtenerLicencias = obtenerLicencias.Where(l => l.TipoDeLicenciaId == filtro.TipoDeLicenciaId);
 
             if (filtro.Estado.HasValue)
                 obtenerLicencias = obtenerLicencias.Where(l => (int)l.Estado == filtro.Estado);
 
             if (filtro.FechaInicio.HasValue && filtro.FechaFin.HasValue)
             {
-                var fechaInicio = filtro.FechaInicio.Value.Date;
-                var fechaFin = filtro.FechaFin.Value.Date;
-                obtenerLicencias = obtenerLicencias.Where(l => l.FechaInicio >= fechaInicio && l.FechaFin <= fechaFin);
+                var fi = filtro.FechaInicio.Value.Date;
+                var ff = filtro.FechaFin.Value.Date;
+                obtenerLicencias = obtenerLicencias.Where(l => l.FechaInicio >= fi && l.FechaFin <= ff);
             }
 
-            var licencias = obtenerLicencias.ToList();
+            var licencias = obtenerLicencias
+                .Select(l => new
+                {
+                    id = l.Id,
+                    empleadoNombre = l.Empleado.NombreCompleto,
+                    tipoDeLicenciaNombre = l.TipoDeLicencia.Nombre,
+                    fechaInicio = l.FechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFin = l.FechaFin.ToString("dd/MM/yyyy"),
+                    estado = l.Estado.ToString()
+                })
+                .ToList();
 
             var resumen = new
             {
-                Total = licencias.Count,
-                Pendientes = licencias.Count(l => l.Estado == EstadoLicencia.PENDIENTE),
-                Aprobadas = licencias.Count(l => l.Estado == EstadoLicencia.APROBADA),
-                Rechazadas = licencias.Count(l => l.Estado == EstadoLicencia.RECHAZADA),
-                Expiradas = licencias.Count(l => l.Estado == EstadoLicencia.EXPIRADA),
-                Filtros = filtro,
-                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                total = licencias.Count,
+                pendientes = licencias.Count(l => l.estado == "PENDIENTE"),
+                aprobadas = licencias.Count(l => l.estado == "APROBADA"),
+                rechazadas = licencias.Count(l => l.estado == "RECHAZADA"),
+                expiradas = licencias.Count(l => l.estado == "EXPIRADA"),
+                filtros = filtro,
+                fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
             };
 
-            return Ok(new { Licencias = licencias, Resumen = resumen });
+            return Ok(new { licencias, resumen });
         }
 
 

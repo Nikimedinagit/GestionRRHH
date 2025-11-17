@@ -1460,3 +1460,19 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
+/* INICIO ESTILO PARA SCROOL DEL PDF */
+.pdf-body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+}
+
+.pdf-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    overflow: hidden;
+}
+/* FIN ESTILO PARA SCROOL DEL PDF */

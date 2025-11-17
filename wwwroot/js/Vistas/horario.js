@@ -81,12 +81,11 @@ document
 $(document).ready(function () {
   ObtenerHorarios();
 
-  // Filtros principales
   $("#EmpleadoIdBuscar, #TipoHorarioBuscar").on("input change", function () {
     ObtenerHorarios();
+    ObtenerTotalHorarios()
   });
 
-  // Filtros por horario
   $("#HorarioInicioBuscar, #HorarioFinBuscar").on("input change", function () {
     let inicio = $("#HorarioInicioBuscar").val();
     let fin = $("#HorarioFinBuscar").val();
@@ -102,6 +101,7 @@ $(document).ready(function () {
 
     if ($("#filtrarHorarioSelect").val() === "si") {
       ObtenerHorarios();
+      ObtenerTotalHorarios()
     }
   });
 
@@ -115,6 +115,7 @@ $(document).ready(function () {
     }
 
     ObtenerHorarios();
+    ObtenerTotalHorarios();
   });
 });
 
@@ -148,9 +149,10 @@ async function ObtenerHorarios() {
   })
     .then((response) => response.json())
     .then((data) => {
+      window.horariosData = data;
       MostrarHorarios(data);
       LimpiarModalHorario();
-
+      ObtenerTotalHorarios();
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -667,7 +669,7 @@ function ValidarFormularioHorario() {
       const inicio = new Date(0, 0, 0, hiH, hiM);
       const fin = new Date(0, 0, 0, hfH, hfM);
 
-      if(fin <= inicio) fin.setDate(fin.getDate() + 1)
+      if (fin <= inicio) fin.setDate(fin.getDate() + 1)
 
       const duracion = (fin - inicio) / (1000 * 60);
       if (duracion <= 0) {
@@ -742,7 +744,7 @@ function ValidarFormularioHorario() {
       if (primerFinDate <= primerInicioDate) primerFinDate.setDate(primerFinDate.getDate() + 1);
 
       const segundoInicioDate = new Date(0, 0, 0, siH, siM);
-      if(segundoInicioDate <= primerFinDate) {
+      if (segundoInicioDate <= primerFinDate) {
         segundoInicioDate.setDate(segundoInicioDate.getDate() + 1);
       }
       if (segundoInicioDate <= primerFinDate) {
@@ -834,8 +836,8 @@ document.getElementById("horarioContinuo").addEventListener("input", () => {
     errorHorarioFin.style.display = "block";
     errorHorarioFin.textContent = "Ingrese hora de fin.";
     return;
-  } 
-  
+  }
+
   if (inputHorarioInicio.value && inputHorarioFin.value) {
     const [hiH, hiM] = inputHorarioInicio.value.split(":").map(Number);
     const [hfH, hfM] = inputHorarioFin.value.split(":").map(Number);
@@ -876,7 +878,7 @@ document.getElementById("horarioAlterno").addEventListener("input", () => {
     error.textContent = "";
     valores[item.id] = input.value;
 
-      if (!input.value) {
+    if (!input.value) {
       input.classList.add("is-invalid");
       error.textContent = "Ingrese hora.";
       error.style.display = "block";
@@ -1169,6 +1171,140 @@ async function EliminarSiHorario(id) {
   } catch (error) {
     MostrarErrorCatch();
   }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA GENERAR INFORME PDF DE HORARIOS /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+async function GenerarInformePdfHorarios() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  let tipoHorario = document.getElementById("TipoHorarioBuscar").value;
+  let tipo = tipoHorario !== "0" && tipoHorario !== "" ? parseInt(tipoHorario) : null;
+  let horarioInicioRaw = document.getElementById("HorarioInicioBuscar").value;
+  let horarioFinRaw = document.getElementById("HorarioFinBuscar").value;
+  let horarioInicio = horarioInicioRaw ? `${horarioInicioRaw}:00` : null;
+  let horarioFin = horarioFinRaw ? `${horarioFinRaw}:00` : null;
+  let empleadoTexto = document.getElementById("EmpleadoIdBuscar").value;
+
+  let filtro = {
+    tipoHorario: tipo,
+    horarioInicio: horarioInicio,
+    horarioFin: horarioFin,
+    empleadoTexto: empleadoTexto,
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeHorarios", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
+  });
+
+  const { horarios, resumen } = await res.json();
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Horarios", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Horarios Asignados:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.totalHorariosAsignados}`, 60, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Total Horas Semanales:", 64, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.totalHorasFormateadas}`, 109, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Empleados trabajan fines de semana:", 128, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.empleadosFindes}`, 196, y);
+  y += 6;
+
+  let filtrosAplicadosArray = [];
+  if (filtro.empleadoTexto) filtrosAplicadosArray.push(`[Empleado: ${filtro.empleadoTexto}]`);
+  if (filtro.tipoHorario) filtrosAplicadosArray.push(`[Tipo Horario: ${filtro.tipoHorario === 1 ? "Continuo" : "Alterno"}]`);
+  if (filtro.horarioInicio) filtrosAplicadosArray.push(`[Horario Inicio: ${filtro.horarioInicio}]`);
+  if (filtro.horarioFin) filtrosAplicadosArray.push(`[Horario Fin: ${filtro.horarioFin}]`);
+
+  const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 44, y);
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (horarios.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
+  } else {
+    doc.autoTable({
+      startY: y,
+      head: [["Empleado", "Puesto", "Tipo Horario", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+      body: horarios.map(h => [
+        h.nombreCompleto,
+        h.puesto,
+        h.tipoHorario,
+        h.lunes ? "X" : "",
+        h.martes ? "X" : "",
+        h.miercoles ? "X" : "",
+        h.jueves ? "X" : "",
+        h.viernes ? "X" : "",
+        h.sabado ? "X" : "",
+        h.domingo ? "X" : "",
+        h.horarioInicio,
+        h.horarioFin,
+        h.segundoHorarioInicio,
+        h.segundoHorarioFin
+      ]),
+      styles: { font: "helvetica", fontSize: 10 },
+      headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+      margin: { left: 14, right: 14 }
+    });
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+    doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Horarios</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+
 }
 
 

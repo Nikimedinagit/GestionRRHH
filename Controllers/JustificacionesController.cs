@@ -136,6 +136,9 @@ namespace API_NET_CORE8_RRHH.Controllers
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            justificacion.Motivo = justificacion.Motivo?.ToUpper();
+
+
             if (rol == "SUPERVISOR" || rol == "EMPLEADO")
             {
                 var usuario = await _context.Users.FindAsync(userId);
@@ -178,8 +181,35 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Justificacion.Add(justificacion);
             await _context.SaveChangesAsync();
 
+            var empleadoDueño = await _context.Empleado.FindAsync(justificacion.EmpleadoId);
+
+            _context.Notificaciones.Add(new Notificaciones
+            {
+                Titulo = "Nueva Solicitud de Justificación",
+                Mensaje = $"El empleado {empleadoDueño.NombreCompleto} ha solicitado una justificación.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = null,
+                DestinatarioRol = "ADMINISTRADOR,RRHH",
+                Leida = false
+            });
+
+            if (empleadoDueño.Puesto?.Descripcion?.ToUpper() == "RRHH")
+            {
+                _context.Notificaciones.Add(new Notificaciones
+                {
+                    Titulo = "Nueva Solicitud de Justificación",
+                    Mensaje = $"El empleado {empleadoDueño.NombreCompleto} ha solicitado una justificación.",
+                    FechaCreacion = DateTime.Now,
+                    UsuarioId = justificacion.EmpleadoId.ToString(),
+                    Leida = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetJustificacion), new { id = justificacion.Id }, justificacion);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +220,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<IActionResult> PutJustificacion(int id, [FromForm] Justificacion justificacion, [FromForm] IFormFile DocumentoAdjunto)
         {
             var justificacionOriginal = await _context.Justificacion.FindAsync(id);
-
+            justificacion.Motivo = justificacion.Motivo?.ToUpper();
             justificacionOriginal.Motivo = justificacion.Motivo;
             justificacionOriginal.DocumentoAdjunto = justificacion.DocumentoAdjunto;
 
@@ -221,6 +251,19 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Justificacion.Remove(justificacion);
             await _context.SaveChangesAsync();
 
+            var notificacion = new Notificaciones
+            {
+                UsuarioId = justificacion.EmpleadoId.ToString(),
+                Titulo = "Justificación Eliminada",
+                Mensaje = $"Su justificación del {justificacion.Fecha:dd/MM/yyyy} ha sido eliminada.",
+                FechaCreacion = DateTime.Now,
+                Leida = false
+            };
+
+            _context.Notificaciones.Add(notificacion);
+            await _context.SaveChangesAsync();
+
+
             return Ok(justificacion);
         }
 
@@ -240,6 +283,18 @@ namespace API_NET_CORE8_RRHH.Controllers
             justificacion.Estados = EstadoJustificacion.APROBADA;
             _context.Justificacion.Update(justificacion);
 
+            await _context.SaveChangesAsync();
+
+            var notificacion = new Notificaciones
+            {
+                UsuarioId = justificacion.EmpleadoId.ToString(),
+                Titulo = "Justificación Aprobada",
+                Mensaje = $"Su justificación del {justificacion.Fecha:dd/MM/yyyy} ha sido aprobada.",
+                FechaCreacion = DateTime.Now,
+                Leida = false
+            };
+
+            _context.Notificaciones.Add(notificacion);
             await _context.SaveChangesAsync();
 
             return Ok(justificacion);
@@ -263,8 +318,29 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             await _context.SaveChangesAsync();
 
+            var notificacion = new Notificaciones
+            {
+                UsuarioId = justificacion.EmpleadoId.ToString(),
+                Titulo = "Justificación Rechazada",
+                Mensaje = $"Su justificación del {justificacion.Fecha:dd/MM/yyyy} ha sido rechazada.",
+                FechaCreacion = DateTime.Now,
+                Leida = false
+            };
+
+            _context.Notificaciones.Add(notificacion);
+            await _context.SaveChangesAsync();
+
             return Ok(justificacion);
         }
+
+
+
+
+
+     
+
+
+
 
 
         private bool JustificacionExists(int id)

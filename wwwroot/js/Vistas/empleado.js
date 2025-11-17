@@ -1537,7 +1537,7 @@ async function GenerarInformePdfEmpleado() {
 
       let xPos = 20;
       const margenDerecho = doc.internal.pageSize.getWidth() - 20;
-      const espacioEntre = 8; // espacio horizontal entre pares
+      const espacioEntre = 8;
 
       datosEmpleado.forEach(([label, valor], idx) => {
         const textoLabel = `${label}:`;
@@ -1583,26 +1583,25 @@ async function GenerarInformePdfEmpleado() {
     doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
   }
 
-  const string = doc.output("datauristring");
-  const html = `
-    <html>
-      <head><title>Informe de Empleados</title></head>
-      <body style="margin:0">
-        <iframe width="100%" height="100%" src="${string}"></iframe>
-      </body>
-    </html>`;
-  const x = window.open();
-  x.document.open();
-  x.document.write(html);
-  x.document.close();
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Empleados</title></head>
+  <body class="pdf-body">
+  <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+  </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+
 }
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-ComboParaFiltrarLocalidadPuesto();
+  //////////////////////////////////////////////////////////////////////////////////////////
+  // INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  ComboParaFiltrarLocalidadPuesto();
 
 
 

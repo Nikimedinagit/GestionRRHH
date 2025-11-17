@@ -184,8 +184,8 @@ namespace API_NET_CORE8_RRHH.Controllers
             {
                 _context.Notificaciones.Add(new Notificaciones
                 {
-                    Titulo = "Nueva Solicitud de Licencia (RRHH)",
-                    Mensaje = $"Tu solicitud de licencia fue registrada como empleado de RRHH.",
+                    Titulo = "Nueva Solicitud de Licencia",
+                    Mensaje = $"El empleado {empleadoDueño.NombreCompleto} ha solicitado una nueva licencia.",
                     FechaCreacion = DateTime.Now,
                     UsuarioId = licencia.EmpleadoId.ToString(),
                     Leida = false
