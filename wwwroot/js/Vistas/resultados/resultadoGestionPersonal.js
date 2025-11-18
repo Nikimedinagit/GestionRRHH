@@ -1,6 +1,6 @@
 
 
-const coloresPasteles = ["#A8DADC", "#F1FAEE", "#FFE5D9", "#FFCAD4", "#B5EAEA", "#FFEE93", "#CDB4DB"];
+
 
 // =================================== Evolución de empleados ===================================
 async function cargarEvolucionEmpleados() {
@@ -88,6 +88,9 @@ async function cargarJustificacionesPorDia() {
 
     const canvas = document.getElementById("graficoJustificacionesPorDia");
     if (!canvas) return;
+
+const coloresPasteles = ["#A8DADC", "#F1FAEE", "#FFE5D9", "#FFCAD4", "#B5EAEA", "#FFEE93", "#CDB4DB"];
+
 
     new Chart(canvas, {
         type: 'bar',

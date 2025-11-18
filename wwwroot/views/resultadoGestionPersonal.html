@@ -15,29 +15,66 @@
 
 
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
+        <div class="mt-2 mb-2 text-center" style="width: 89%;">
+            <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
+                data-bs-toggle="collapse" data-bs-target="#contenedorResultados" aria-expanded="false"
+                aria-controls="contenedorResultados">
+                <i class="fa-solid fa-list me-2"></i> Más Resultados
+            </button>
+        </div>
+
+        <div class="collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
+            style="border-left: 4px solid #6A5ACD !important">
+            <div class="sidebar-resultados shadow-sm p-2 border-3 d-flex justify-content-center align-items-center">
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoAsistenciaPorEmpleado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-user-check me-2"></i> Asistencias por Empleado
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoJustificacionPorSector"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-building me-2"></i> Justificaciones por Sector
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoEmpleadosPorSector"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                        <i class="fa-solid fa-diagram-project me-2"></i> Empleados por Sector
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <i class="fa-solid fa-id-card me-2"></i> Historial Laboral de Empleados
+                    </li>
+                </ul>
+            </div>
+        </div>
+
 
 
         <!-- ======================================= Contendor de Graficos ====================================== -->
-        <div style="background-color: white; border-radius: 5px; padding: 20px;">
-    <div class="row">
+        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+            <div class="row">
 
-        <div class="col-md-12 mb-4 border p-2 shadow-sm">
-            <h5>Evolución de Empleados</h5>
-            <canvas id="graficoEvolucionEmpleados" height="90"></canvas>
+                <div class="col-md-12 mb-4 border p-2 shadow-sm">
+                    <h5>Evolución de Empleados</h5>
+                    <canvas id="graficoEvolucionEmpleados" height="90"></canvas>
+                </div>
+
+                <div class="col-md-12 mb-4 border p-2 shadow-sm">
+                    <h5>Asistencia Mensual</h5>
+                    <canvas id="graficoAsistenciaMensual" height="90"></canvas>
+                </div>
+
+                <div class="col-md-12 mb-4 border p-2 shadow-sm">
+                    <h5>Justificacion por Dias (Semanal)</h5>
+                    <canvas id="graficoJustificacionesPorDia" height="90"></canvas>
+                </div>
+
+            </div>
         </div>
-
-        <div class="col-md-12 mb-4 border p-2 shadow-sm">
-            <h5>Asistencia Mensual</h5>
-            <canvas id="graficoAsistenciaMensual" height="90"></canvas>
-        </div>
-
-        <div class="col-md-12 mb-4 border p-2 shadow-sm">
-            <h5>Justificacion por Dias (Semanal)</h5>
-            <canvas id="graficoJustificacionesPorDia" height="90"></canvas>
-        </div>
-
-    </div>
-</div>
 
 
 

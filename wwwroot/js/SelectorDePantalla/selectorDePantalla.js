@@ -52,6 +52,7 @@ function CargarVista(view) {
 function CargarVistaPorHash() {
   const vista = window.location.hash.replace('#', '') || 'inicio';
   CargarVista(vista);
+  
 }
 
 // Función para actualizar la clase "active" en el menú

@@ -79,6 +79,21 @@ hr {
 .btn i {
   font-size: 1rem;
 }
+
+.btn-resultados:hover {
+  background-color: #6A5ACD;
+  color: #fff;
+}
+
+.btn-volver{
+  background-color: #fff !important;
+}
+
+.btn-volver:hover{
+  background-color: #A0522D !important;
+  color: #fff;
+
+}
 /* FIN BOTONES */
 
 
@@ -182,31 +197,6 @@ hr {
   color: #fff !important;
 }
 
-.btn-generar-excel {
-  background: #28A745 !important;
-  color: #fff !important;
-  font-weight: 600;
-  border-radius: 7px;
-  border: none;
-  padding: 6px 16px;
-  transition: background 0.2s;
-}
-.btn-generar-excel:hover {
-  background: #38853b !important;
-}
-
-.btn-generar-grafico {
-  background: #28A745 !important;
-  color: #fff !important;
-  font-weight: 600;
-  border-radius: 7px;
-  border: none;
-  padding: 6px 16px;
-  transition: background 0.2s;
-}
-.btn-generar-grafico:hover {
-  background: #2563eb !important;
-}
 /* FIN PANEL GENERAL*/
 
 
@@ -1476,3 +1466,12 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
     overflow: hidden;
 }
 /* FIN ESTILO PARA SCROOL DEL PDF */
+
+
+/* INICIO ESTILO PARA CONTENDOR DE RESULTADOS */
+.hover-bold:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* FIN ESTILO PARA CONTENDOR DE RESULTADOS */
