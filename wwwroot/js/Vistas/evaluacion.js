@@ -1101,6 +1101,228 @@ function MostrarOpcionesEvaluacionesPorRol() {
 }
 
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA GENERA UN INFORME PARA EVALUACIONES SEGUN SU FILTRO //////////////
+////////////////////////////////////////////////////////////////////////////////
+async function GenerarInformePdfEvaluacion() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margen = 14;
+  const anchoUtil = pageWidth - (margen * 2);
+
+  let empleadoBuscar = document.getElementById("EmpleadoIdBuscar")?.value || "";
+  let calificacion = document.getElementById("CalificacionBuscar")?.value || 0;
+  let fechaEval = document.getElementById("FechaEvalBuscar")?.value || null;
+
+  const filtro = {
+    nombreEmpleado: empleadoBuscar.trim() || null,
+    fecha: fechaEval || null,
+    calificacion: calificacion !== "0" ? Number(calificacion) : null,
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeEvaluaciones", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro),
+  });
+
+  const data = await res.json();
+  const evaluaciones = data.evaluacion || [];
+  const resumen = data.resumen;
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Evaluación", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Evaluaciones:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.total}`, 49, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Excelente:", 60, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.evaluacionCalificacion["Excelente"]}`,82, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Buena:", 94, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.evaluacionCalificacion["Buena"]}`, 110, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Muy Buena:", 123, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.evaluacionCalificacion["Muy Buena"]}`, 147, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Mala:", 160, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.evaluacionCalificacion["Mala"]}`, 173, y);
+
+  y += 6;
+
+  const filtrosAplicadosArray = [];
+  if (filtro.nombreEmpleado) filtrosAplicadosArray.push(`[Empleado: ${filtro.nombreEmpleado}]`);
+  if (filtro.calificacion) {
+    let calificacionNombre = document.getElementById("CalificacionBuscar").selectedOptions[0]?.text || calificacion;
+    filtrosAplicadosArray.push(`[Calificación: ${calificacionNombre}]`);
+  }
+  if (filtro.fecha) filtrosAplicadosArray.push(`[Fecha: ${filtro.fecha}]`);
+
+  const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, margen + 32, y);
+
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (evaluaciones.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text("No hay resultados para los filtros aplicados.", pageWidth / 2, y + 10, { align: "center" });
+
+    const pages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(100);
+      doc.text(`Página ${i} de ${pages}`, margen, doc.internal.pageSize.getHeight() - 10);
+    }
+
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+    const w = window.open();
+    w.document.write(`<iframe width='100%' height='100%' src='${url}'></iframe>`);
+    return;
+  }
+
+  const colEvaluacion = {
+    0: { cellWidth: anchoUtil / 3 },  
+    1: { cellWidth: anchoUtil / 3 },
+    2: { cellWidth: anchoUtil / 3 },  
+  };
+
+  const colCriterios = {
+    0: { cellWidth: anchoUtil / 2 }, 
+    1: { cellWidth: anchoUtil / 2 },
+  };
+
+  for (let index = 0; index < evaluaciones.length; index++) {
+    const evaluacion = evaluaciones[index];
+
+    const calificacionTexto = evaluacion.calificacionStr
+      ? evaluacion.calificacionStr.replace(/,/g, " | ")
+      : evaluacion.calificacion ?? "-";
+
+    const tablaEvaluacionBody = [
+      [
+        evaluacion.fecha ? new Date(evaluacion.fecha).toLocaleDateString("es-AR") : "-",
+        evaluacion.calificacion ?? "-",
+        evaluacion.empleado ?? "-",
+      ],
+    ];
+
+    doc.autoTable({
+      startY: y,
+      head: index === 0 ? [["Fecha", "Calificación", "Empleado"]] : [],
+      body: tablaEvaluacionBody,
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles: index === 0 ? { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" } : {},
+      margin: { left: margen, right: margen },
+      columnStyles: colEvaluacion,
+      tableWidth: anchoUtil,
+      didParseCell: function (data) {
+        if (data.section === "body") {
+          data.cell.styles.fillColor = [210, 230, 255];  
+          data.cell.styles.textColor = 0;
+        }
+      },
+    });
+
+    y = doc.lastAutoTable.finalY + -1; 
+
+    if (evaluacion.criterios && evaluacion.criterios.length > 0) {
+      const tablaCriteriosBody = evaluacion.criterios.map((criterio) => [
+        criterio.criterioNombre ?? "-",  
+        criterio.criterioDescripcion ?? "-"  
+      ]);
+
+      doc.autoTable({
+        startY: y,
+        head: [["Criterio", "Descripción"]],
+        body: tablaCriteriosBody,
+        styles: { fontSize: 9, cellPadding: 2 },
+        headStyles: { fillColor: [225, 225, 225], textColor: 0, fontStyle: "bold" },
+        margin: { left: margen, right: margen },
+        columnStyles: colCriterios,
+        tableWidth: anchoUtil, 
+        didParseCell: function (data) {
+          if (data.section === "body") {
+            data.cell.styles.fillColor = [255, 255, 255]; 
+            data.cell.styles.textColor = 0;
+          }
+        },
+      });
+
+      y = doc.lastAutoTable.finalY + -1; 
+    }
+
+    if (y > 185) {
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
+    doc.text("www.WorkSync.com", pageWidth - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+  const html = `<html><head><title>Informe de Evaluaciones</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA EVALUACIONES ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

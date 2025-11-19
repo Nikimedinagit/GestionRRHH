@@ -356,37 +356,200 @@ namespace API_NET_CORE8_RRHH.Controllers
         /// METODO PARA GENERAR EL INFORME DE LICENCIAS APROBADAS SEGUN SUS FILTROS /////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost("GenerarInformeLicenciasAprobadas")]
-        public IActionResult FiltrarAprobacionDeLicencia([FromBody] FiltrarAprobacionDeLicencia filtro)
+        public async Task<IActionResult> GenerarInformeLicenciasAprobadas([FromBody] FiltrarAprobacionDeLicencia filtro)
         {
             var obtenerLicenciasAprobadas = _context.AprobacionDeLicencia
-                .Include(l => l.Licencia)
-                .ThenInclude(l => l.Estado)
+                .Include(a => a.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
                 .AsQueryable();
 
             if (filtro.FechaAprobacion.HasValue)
             {
                 var fechaInicio = filtro.FechaAprobacion.Value.Date;
                 var fechaFin = fechaInicio.AddDays(1);
-                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas
+                    .Where(a => a.FechDeAprobacion >= fechaInicio && a.FechDeAprobacion < fechaFin);
             }
 
             if (filtro.TipoDeLicenciaId.HasValue)
             {
-                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas.Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+                obtenerLicenciasAprobadas = obtenerLicenciasAprobadas
+                    .Where(a => a.Licencia.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
             }
 
+            var vista = await obtenerLicenciasAprobadas
+                .Select(a => new
+                {
+                    a.Id,
+                    LicenciaString = a.Licencia.TipoDeLicencia.Nombre,
+                    a.LicenciaId,
+                    a.FechDeAprobacion,
+                    a.Estado,
+                    a.UsuarioAprobador
+                })
+                .ToListAsync();
 
-            var licenciasAprobadas = obtenerLicenciasAprobadas.ToList();
+            var licenciasAprobadas = vista.Select(a => new VistaAprobacionDeLicencia
+            {
+                Id = a.Id,
+                LicenciaString = a.LicenciaString,
+                LicenciaId = a.LicenciaId,
+                FechaDeAprobacion = a.FechDeAprobacion.ToString("dd/MM/yyyy"),
+                EstadoString = a.Estado.ToString(),
+                Estado = a.Estado,
+                NombreUsuarioAprobador = _context.Users.FirstOrDefault(u => u.Id == a.UsuarioAprobador)?.NombreCompleto,
+                EmailUsuarioAprobador = _context.Users.FirstOrDefault(u => u.Id == a.UsuarioAprobador)?.Email
+            }).ToList();
 
             var resumen = new
             {
-                TotalAprobadas = licenciasAprobadas.Count,
-                Filtros = filtro,
-                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                totalAprobadas = licenciasAprobadas.Count,
+                filtros = filtro,
+                fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
             };
 
             return Ok(new { LicenciasAprobadas = licenciasAprobadas, Resumen = resumen });
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE CURSOS SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeCursos")]
+        public async Task<IActionResult> GenerarInformeCursos([FromBody] FiltroCurso filtro)
+        {
+            var obtenerCursos = _context.Curso
+                .Include(c => c.AsistenciaCapacitacion)
+                    .ThenInclude(a => a.Empleado)
+                .Include(c => c.Certificado)
+                    .ThenInclude(cert => cert.Empleado)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filtro.NombreCurso))
+                obtenerCursos = obtenerCursos.Where(c => EF.Functions.Like(c.Nombre, $"%{filtro.NombreCurso.Trim()}%"));
+
+            if (filtro.Modalidad.HasValue && filtro.Modalidad.Value != 0)
+                obtenerCursos = obtenerCursos.Where(c => (int)c.Modalidad == filtro.Modalidad.Value);
+
+            if (filtro.Fecha.HasValue)
+                obtenerCursos = obtenerCursos.Where(c => c.FechaInicio.Date == filtro.Fecha.Value.Date);
+
+            var cursos = await obtenerCursos
+                .Select(c => new
+                {
+                    id = c.Id,
+                    NombreCurso = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    FechaInicio = c.FechaInicio,
+                    FechaFinalizacion = c.FechaFinalizacion,
+                    Modalidad = c.Modalidad,
+                    ModalidadStr = c.Modalidad.ToString(),
+                    Finalizado = c.Finalizado,
+                    Empleados = c.AsistenciaCapacitacion
+                        .Select(a => new
+                        {
+                            NombreEmpleado = a.Empleado.NombreCompleto ?? "-",
+                            Asistio = a.Asistencia,
+                            Resultado = a.Resultado,
+                            Certificado = c.Certificado
+                                .Where(cert => cert.EmpleadoId == a.EmpleadoId)
+                                .Select(cert => new
+                                {
+                                    url = cert.DocumentoNombre,
+                                    archivo = cert.DocumentoAdjunto != null ? cert.DocumentoNombre : "-"
+                                })
+                                .FirstOrDefault()
+                        }).ToList()
+                })
+                .ToListAsync();
+
+            var resumen = new
+            {
+                total = cursos.Count,
+                presencial = cursos.Count(c => c.Modalidad == Modalidades.PRESENCIAL),
+                online = cursos.Count(c => c.Modalidad == Modalidades.VIRTUAL),
+                mixto = cursos.Count(c => c.Modalidad == Modalidades.MIXTO),
+                filtros = filtro,
+                fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+
+            return Ok(new { cursos, resumen });
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA GENERAR EL INFORME DE CURSOS SEGUN SUS FILTROS /////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost("GenerarInformeEvaluaciones")]
+        public async Task<IActionResult> GenerarInformeEvaluaciones([FromBody] EvaluacionFiltro filtro)
+        {
+
+            var obtenerEvaluaciones = _context.Evaluacion
+                .Include(e => e.CriterioDeEvaluacion)
+                .Include(e => e.Empleado)
+                .AsQueryable();
+
+
+
+            if (!string.IsNullOrEmpty(filtro.NombreEmpleado))
+                obtenerEvaluaciones = obtenerEvaluaciones
+                    .Where(e => e.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.ToLower()));
+
+            if (filtro.Fecha.HasValue)
+            {
+                var fecha = filtro.Fecha.Value.Date;
+                var fechaSiguiente = fecha.AddDays(1);
+                obtenerEvaluaciones = obtenerEvaluaciones
+                    .Where(e => e.Fecha >= fecha && e.Fecha < fechaSiguiente);
+            }
+            if (filtro.Calificacion.HasValue)
+            {
+                obtenerEvaluaciones = filtro.Calificacion.Value switch
+                {
+                    1 => obtenerEvaluaciones.Where(e => e.Calificacion < 5),
+                    2 => obtenerEvaluaciones.Where(e => e.Calificacion >= 5 && e.Calificacion < 7),
+                    3 => obtenerEvaluaciones.Where(e => e.Calificacion >= 7 && e.Calificacion < 9),
+                    4 => obtenerEvaluaciones.Where(e => e.Calificacion >= 9),
+                    _ => obtenerEvaluaciones
+                };
+            }
+
+
+            var evaluacion = await obtenerEvaluaciones
+                .Select(e => new
+                {
+                    id = e.Id,
+                    Fecha = e.Fecha,
+                    Calificacion = e.Calificacion,
+                    Empleado = e.Empleado.NombreCompleto,
+                    Criterios = e.CriterioDeEvaluacion.Select(c => new
+                    {
+                        CriterioId = c.Id,
+                        CriterioNombre = c.TipoDeCriterio.Nombre,
+                        CriterioDescripcion = c.Descripcion
+                    })
+                })
+                .ToListAsync();
+
+            var evaluacionCalificacion = new Dictionary<string, int>
+    {
+        { "Excelente", evaluacion.Count(e => e.Calificacion >= 9) },
+        { "Buena", evaluacion.Count(e => e.Calificacion >= 7 && e.Calificacion < 9) },
+        { "Muy Buena", evaluacion.Count(e => e.Calificacion >= 5 && e.Calificacion < 7) },
+        { "Mala", evaluacion.Count(e => e.Calificacion < 5) }
+    };
+
+            var resumen = new
+            {
+                total = evaluacion.Count,
+                evaluacionCalificacion,
+                filtros = filtro,
+                fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+
+            return Ok(new { evaluacion, resumen });
+        }
+
 
 
 

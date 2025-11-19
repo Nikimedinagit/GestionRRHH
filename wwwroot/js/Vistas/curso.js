@@ -1928,6 +1928,289 @@ function MostrarOpcionesCursosPorRol() {
 
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA GENERA UN INFORME PARA CURSOS SEGUN SU FILTRO //////////////
+////////////////////////////////////////////////////////////////////////////////
+async function GenerarInformePdfCursos() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margen = 14;
+  const anchoUtil = pageWidth - margen * 2;
+
+  let nombreCurso = document.getElementById("NombreCursoBuscar")?.value || "";
+  let modalidad = document.getElementById("ModalidadBuscar")?.value || 0;
+  let fechaCurso = document.getElementById("FechaCursoBuscar")?.value || null;
+
+  const filtro = {
+    nombreCurso: nombreCurso.trim() || null,
+    modalidad: modalidad != "0" ? Number(modalidad) : null,
+    fecha: fechaCurso || null,
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeCursos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro),
+  });
+
+  const data = await res.json();
+  const cursos = data.cursos || [];
+  const resumen = data.resumen;
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Cursos", doc.internal.pageSize.getWidth() / 2, 20, {
+    align: "center",
+  });
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Cursos:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.total}`, 39, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Presencial:", 48, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.presencial}`, 71, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Virtual:", 80, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.online}`, 96, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Mixto:", 105, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.mixto}`, 119, y);
+
+  y += 6;
+
+  const filtrosAplicadosArray = [];
+
+  if (filtro.nombreCurso)
+    filtrosAplicadosArray.push(`[Nombre: ${filtro.nombreCurso}]`);
+  if (filtro.modalidad) {
+    let modalidadNombre =
+      document.getElementById("ModalidadBuscar").selectedOptions[0]?.text ||
+      modalidad;
+    filtrosAplicadosArray.push(`[Modalidad: ${modalidadNombre}]`);
+  }
+  if (filtro.fecha) filtrosAplicadosArray.push(`[Fecha: ${filtro.fecha}]`);
+
+  const filtrosAplicados =
+    filtrosAplicadosArray.length > 0
+      ? filtrosAplicadosArray.join("  |  ")
+      : "No se aplicaron";
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, margen + 32, y);
+
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (cursos.length === 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text(
+      "No hay resultados para los filtros aplicados.",
+      pageWidth / 2,
+      y + 10,
+      { align: "center" }
+    );
+
+    const pages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(100);
+      doc.text(
+        `Página ${i} de ${pages}`,
+        margen,
+        doc.internal.pageSize.getHeight() - 10
+      );
+    }
+
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+    const w = window.open();
+    w.document.write(
+      `<iframe width='100%' height='100%' src='${url}'></iframe>`
+    );
+    return;
+  }
+
+  const colCurso = {
+    0: { cellWidth: 45 },
+    1: { cellWidth: 120 },
+    2: { cellWidth: 30 },
+    3: { cellWidth: 25 },
+    4: { cellWidth: 25 },
+    5: { cellWidth: 24 },
+  };
+
+  const colAsistencia = {
+    0: { cellWidth: 30 },
+    1: { cellWidth: 120 },
+    2: { cellWidth: 40 },
+    3: { cellWidth: 79 },
+  };
+
+  for (let index = 0; index < cursos.length; index++) {
+    const curso = cursos[index];
+
+    const modalidadTexto = curso.modalidadStr
+      ? curso.modalidadStr.replace(/,/g, " | ")
+      : curso.modalidad ?? "-";
+
+    const tablaCursoBody = [
+      [
+        curso.nombreCurso,
+        curso.descripcion,
+        modalidadTexto,
+        curso.fechaInicio
+          ? new Date(curso.fechaInicio).toLocaleDateString("es-AR")
+          : "-",
+        curso.fechaFinalizacion
+          ? new Date(curso.fechaFinalizacion).toLocaleDateString("es-AR")
+          : "-",
+        curso.finalizado ? "Sí" : "No",
+      ],
+    ];
+
+    doc.autoTable({
+      startY: y,
+      head:
+        index === 0
+          ? [
+              [
+                "Curso",
+                "Descripción",
+                "Modalidad",
+                "Inicio",
+                "Fin",
+                "Finalizado",
+              ],
+            ]
+          : [],
+      body: tablaCursoBody,
+      styles: { fontSize: 10, cellPadding: 2 },
+      headStyles:
+        index === 0
+          ? { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" }
+          : {},
+      margin: { left: margen, right: margen },
+      columnStyles: colCurso,
+      tableWidth: anchoUtil,
+
+      didParseCell: function (data) {
+        if (data.section === "body") {
+          data.cell.styles.fillColor = [210, 230, 255];
+          data.cell.styles.textColor = 0;
+        }
+      },
+    });
+
+    y = doc.lastAutoTable.finalY + -1;
+
+    if ((curso.empleados || []).length > 0) {
+      const tablaAsistenciaBody = curso.empleados.map((e) => [
+        e.asistio ? "Sí" : "No",
+        e.nombreEmpleado,
+        Number(e.resultado) >= 6 ? "Aprobado" : "Desaprobado",
+        e.certificado?.archivo ? "Sí" : "No",
+      ]);
+
+      doc.autoTable({
+        startY: y,
+        head: [["Asistió", "Empleado", "Resultado", "Certificado"]],
+        body: tablaAsistenciaBody,
+        styles: { fontSize: 9, cellPadding: 2 },
+
+        headStyles: {
+          fillColor: [225, 225, 225],
+          textColor: 0,
+          fontStyle: "bold",
+        },
+
+        margin: { left: margen, right: margen },
+        columnStyles: colAsistencia,
+        tableWidth: anchoUtil,
+
+        didParseCell: function (data) {
+          if (data.section === "body") {
+            data.cell.styles.fillColor = [255, 255, 255]; 
+            data.cell.styles.textColor = 0;
+          }
+        },
+      });
+
+      y = doc.lastAutoTable.finalY + -1;
+    }
+
+    if (y > 185) {
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(
+      `Página ${i} de ${pageCount}`,
+      14,
+      doc.internal.pageSize.getHeight() - 10
+    );
+    doc.text(
+      "www.WorkSync.com",
+      doc.internal.pageSize.getWidth() - 20,
+      doc.internal.pageSize.getHeight() - 10,
+      { align: "right" }
+    );
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Cursos</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////

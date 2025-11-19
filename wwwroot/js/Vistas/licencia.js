@@ -1019,7 +1019,7 @@ function MostrarOpcionesLicenciasPorRol() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// FUNCION PARA GENERA UN INFORME PARA EMPLEADOS SEGUN SU FILTRO //////////////
+/// FUNCION PARA GENERA UN INFORME PARA LICENCIAS SEGUN SU FILTRO //////////////
 ////////////////////////////////////////////////////////////////////////////////
 async function GenerarInformePdfLicencias() {
   const { jsPDF } = window.jspdf;

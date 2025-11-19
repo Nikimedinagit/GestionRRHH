@@ -144,9 +144,128 @@ function MostrarDetalleLicenciaAprobada(index) {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA GENERA UN INFORME PARA LAS LICENCIAS APROBADAS SEGUN SU FILTRO //////////////
+////////////////////////////////////////////////////////////////////////////////
 async function GenerarInformePdfLicenciasAprobadas() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("landscape");
+
+  let tipoLicencia = document.getElementById("TipoDeLicenciaIdBuscar").value;
+  let fechaAprobacion = document.getElementById("FechaAprobacionBuscar").value;
+  let tipoLicenciaNombre = document.getElementById("TipoDeLicenciaIdBuscar").selectedOptions[0]?.text || "";
+
+  let filtro = {
+    tipoDeLicenciaId: tipoLicencia !== "0" ? Number(tipoLicencia) : null,
+    fechaAprobacion: fechaAprobacion || null,
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeLicenciasAprobadas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
+  });
+
+  const { licenciasAprobadas, resumen } = await res.json();
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Licencias Aprobadas", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Licencias Aprobadas:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.totalAprobadas}`, 63, y);
+
+  y += 6;
+
+  const filtrosAplicadosArray = [];
+
+  if (filtro.tipoDeLicenciaId) filtrosAplicadosArray.push(`[Tipo Licencia: ${tipoLicenciaNombre}]`);
+  if (filtro.fechaAprobacion) filtrosAplicadosArray.push(`[Fecha Aprobacion: ${filtro.fechaAprobacion}]`);
+
+  const filtrosAplicados = filtrosAplicadosArray.length > 0
+    ? filtrosAplicadosArray.join("  |  ")
+    : "No se aplicaron";
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 45, y);
+
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (licenciasAprobadas.length > 0) {
+    doc.autoTable({
+      startY: y,
+      head: [["Fecha Aprobacion", "Estado", "Licencia ", "Responsable"]],
+      body: licenciasAprobadas.map(l => [
+        l.fechaDeAprobacion,
+        l.estadoString,
+        l.licenciaString,
+        `${l.nombreUsuarioAprobador}\n${l.emailUsuarioAprobador}`
+      ]),
+      styles: { font: "helvetica", fontSize: 10 },
+      headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+      margin: { left: 14, right: 14 },
+      tableWidth: "auto"
+    });
+  } else {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text(
+      "No hay resultados para los filtros aplicados.",
+      doc.internal.pageSize.getWidth() / 2,
+      y + 10,
+      { align: "center" }
+    );
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
+    doc.text(
+      "www.WorkSync.com",
+      doc.internal.pageSize.getWidth() - 20,
+      doc.internal.pageSize.getHeight() - 10,
+      { align: "right" }
+    );
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Licencias Aprobadas</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
 }
 
 
