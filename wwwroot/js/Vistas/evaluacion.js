@@ -1157,24 +1157,24 @@ async function GenerarInformePdfEvaluacion() {
   doc.text(`${resumen.total}`, 49, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Excelente:", 60, y);
+  doc.text("| Excelente:", 55, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.evaluacionCalificacion["Excelente"]}`,82, y);
+  doc.text(`${resumen.evaluacionCalificacion["Excelente"]}`,76, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Buena:", 94, y);
+  doc.text("| Buena:", 81, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.evaluacionCalificacion["Buena"]}`, 110, y);
+  doc.text(`${resumen.evaluacionCalificacion["Buena"]}`, 96, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Muy Buena:", 123, y);
+  doc.text("| Muy Buena:", 101, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.evaluacionCalificacion["Muy Buena"]}`, 147, y);
+  doc.text(`${resumen.evaluacionCalificacion["Muy Buena"]}`, 125, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Mala:", 160, y);
+  doc.text("| Mala:", 130, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.evaluacionCalificacion["Mala"]}`, 173, y);
+  doc.text(`${resumen.evaluacionCalificacion["Mala"]}`, 142, y);
 
   y += 6;
 
@@ -1222,7 +1222,12 @@ async function GenerarInformePdfEvaluacion() {
 
   const colEvaluacion = {
     0: { cellWidth: anchoUtil / 3 },  
-    1: { cellWidth: anchoUtil / 3 },
+    1: { 
+      cellWidth: anchoUtil / 3, 
+      halign: "left",       
+      valign: "top",        
+      cellPadding: { left: 10, top: 2, right: 0 } 
+    },
     2: { cellWidth: anchoUtil / 3 },  
   };
 

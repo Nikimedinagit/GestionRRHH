@@ -1,9 +1,7 @@
-
 //////////////////////////////////////////////////////////////////////////////////////
 // DEFINIMOS VARIABLES PARA USAR EN LOS EVENTOS DE LOS BOTONES DE LAS VISTAS
 //////////////////////////////////////////////////////////////////////////////////////
 var cursoIdSeleccionado;
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE CURSOS  /////////////////////////////////////////////////
@@ -20,7 +18,6 @@ function abrirPanelCursos() {
   }, 400);
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CERRAR PANEL DE CURSOS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +28,6 @@ function cerrarPanelCursos() {
 
   LimpiarModalCursos();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE ASISTENCIAS  /////////////////////////////////////////////////
@@ -53,7 +49,6 @@ $(document).on("click", ".crearAsistencias", function () {
   abrirPanelAsistencias();
 });
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CERRAR PANEL DE ASISTENCIAS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +59,6 @@ function cerrarPanelAsistencias() {
 
   LimpiarModalAsistencias();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE CERTIFICADOS  /////////////////////////////////////////////////
@@ -78,7 +72,6 @@ function abrirPanelCertificados() {
     const inputEmpleadoId = document.getElementById("EmpleadoId");
     if (inputEmpleadoId) inputEmpleadoId.focus();
   }, 400);
-
 }
 
 $(document).on("click", ".crearCertificado", function () {
@@ -86,7 +79,6 @@ $(document).on("click", ".crearCertificado", function () {
   cursoIdSeleccionado = cursoId;
   abrirPanelCertificados();
 });
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA CERRRAR EL PANEL DE FORMULARIO DE CERTIFICADOS
@@ -98,16 +90,17 @@ function cerrarPanelCertificados() {
   LimpiarModalCertificado();
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR LOS ONCHANGES DE LOS FILTROS ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  $("#NombreCursoBuscar, #ModalidadBuscar, #FechaCursoBuscar").on("input", function () {
-    ObtenerCursos();
-  });
-})
-
+  $("#NombreCursoBuscar, #ModalidadBuscar, #FechaCursoBuscar").on(
+    "input",
+    function () {
+      ObtenerCursos();
+    }
+  );
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA OBTENER LOS CURSOS ////////////////////////////////////////////////////////////
@@ -115,7 +108,8 @@ $(document).ready(function () {
 async function ObtenerCursos() {
   let nombreCurso = document.getElementById("NombreCursoBuscar").value;
   let modalidadCurso = document.getElementById("ModalidadBuscar").value;
-  let modalidad = modalidadCurso !== "0" && modalidadCurso !== "" ? modalidadCurso : null;
+  let modalidad =
+    modalidadCurso !== "0" && modalidadCurso !== "" ? modalidadCurso : null;
   let fecha = document.getElementById("FechaCursoBuscar").value;
 
   const filtro = {
@@ -138,7 +132,6 @@ async function ObtenerCursos() {
     });
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA MOSTRAR LOS CURSOS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +143,6 @@ function MostrarCursos(data) {
   }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA MOSTRAR LOS CURSOS DESKTOP /////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,26 +153,38 @@ function MostrarCursosDesktop(data) {
   const rol = getRol()?.toUpperCase();
 
   if (data.length === 0) {
-    contenedor.append("<div class='text-center text-muted py-3'>No hay cursos para mostrar.</div>");
+    contenedor.append(
+      "<div class='text-center text-muted py-3'>No hay cursos para mostrar.</div>"
+    );
     return;
   }
 
   const modalidades = { 1: "PRESENCIAL", 2: "VIRTUAL", 3: "MIXTO" };
-  const modalidadColor = { PRESENCIAL: "badge-presencial", VIRTUAL: "badge-virtual", MIXTO: "badge-mixto" };
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+  };
 
-  data.forEach(element => {
+  data.forEach((element) => {
     const fechaIni = new Date(element.fechaInicio);
     const fechaFin = new Date(element.fechaFinalizacion);
 
     const fechaInicioFormateada =
       fechaIni.toLocaleDateString("es-AR") +
       " " +
-      fechaIni.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+      fechaIni.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
     const fechaFinalizacionFormateada =
       fechaFin.toLocaleDateString("es-AR") +
       " " +
-      fechaFin.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+      fechaFin.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
     const modalidadNombre = modalidades[element.modalidad] || "Desconocida";
 
@@ -209,12 +213,16 @@ function MostrarCursosDesktop(data) {
       }
 
       const item = $(`
-        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${element.id}">
+        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${
+          element.id
+        }">
           <div class="d-flex align-items-start" style="gap: 10px; flex-grow: 1; min-width: 0;">
             ${botonEditar}
             <div class="d-flex flex-column" style="min-width: 0;">
-              <div class="fw-bold" title="${element.nombre || 'Sin nombre'}" style="white-space: normal; word-break: break-word;">
-                ${element.nombre || 'Sin nombre'}
+              <div class="fw-bold" title="${
+                element.nombre || "Sin nombre"
+              }" style="white-space: normal; word-break: break-word;">
+                ${element.nombre || "Sin nombre"}
               </div>
               <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;"">
                 ${fechaInicioFormateada} || ${fechaFinalizacionFormateada}
@@ -222,14 +230,15 @@ function MostrarCursosDesktop(data) {
             </div>
           </div>
           <div class="d-flex align-items-center" style="gap: 20px;">
-            <div class="badge ${modalidadColor[modalidadNombre]}" title="${modalidadNombre}">${modalidadNombre}</div>
+            <div class="badge ${
+              modalidadColor[modalidadNombre]
+            }" title="${modalidadNombre}">${modalidadNombre}</div>
             <div class="d-flex align-items-center" style="gap: 10px;">
               ${botonesAccion}
             </div>
           </div>
         </div>
       `);
-
 
       const descripcionDetalle = $(`
         <div class="panelCriterios px-3 pb-2" style="display: none;">
@@ -308,10 +317,14 @@ function MostrarCursosDesktop(data) {
         btn.on("click", function (e) {
           e.stopPropagation();
 
-          $(".panelCriterios, .panelCertificados, .panelAsistencias").not(panel).slideUp(200).removeClass("mostrar");
+          $(".panelCriterios, .panelCertificados, .panelAsistencias")
+            .not(panel)
+            .slideUp(200)
+            .removeClass("mostrar");
 
           if (tipo === "descripcion") {
-            $(".btn-ver-descripcion i").not(btn.find("i"))
+            $(".btn-ver-descripcion i")
+              .not(btn.find("i"))
               .removeClass("bi-chevron-up")
               .addClass("bi-chevron-down");
           }
@@ -322,28 +335,51 @@ function MostrarCursosDesktop(data) {
 
           if (tipo === "descripcion") {
             const icono = btn.find("i");
-            if (icono.hasClass("bi-chevron-down") || icono.hasClass("bi-chevron-up")) {
+            if (
+              icono.hasClass("bi-chevron-down") ||
+              icono.hasClass("bi-chevron-up")
+            ) {
               icono.toggleClass("bi-chevron-down bi-chevron-up");
             }
           }
         });
       }
 
-      togglePanel(item, descripcionDetalle, item.find(".btn-ver-descripcion"), "descripcion");
-      togglePanel(item, certificadoDetalle, item.find(".btn-ver-certificados"), "fijo");
-      togglePanel(item, asistenciaDetalle, item.find(".btn-ver-asistencias"), "fijo");
+      togglePanel(
+        item,
+        descripcionDetalle,
+        item.find(".btn-ver-descripcion"),
+        "descripcion"
+      );
+      togglePanel(
+        item,
+        certificadoDetalle,
+        item.find(".btn-ver-certificados"),
+        "fijo"
+      );
+      togglePanel(
+        item,
+        asistenciaDetalle,
+        item.find(".btn-ver-asistencias"),
+        "fijo"
+      );
 
-
-      contenedor.append(item, descripcionDetalle, certificadoDetalle, asistenciaDetalle);
+      contenedor.append(
+        item,
+        descripcionDetalle,
+        certificadoDetalle,
+        asistenciaDetalle
+      );
 
       ObtenerAsistencia(element.id);
       ObtenerCertificados(element.id);
-    }
-    else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
+    } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
       const resultado = parseFloat(element.resultado);
       const aprobado = !isNaN(resultado) && resultado >= 6;
       const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
-      const borderColor = aprobado ? "border-bottom: 3px solid #28a745;" : "border-bottom: 3px solid #dc3545;";
+      const borderColor = aprobado
+        ? "border-bottom: 3px solid #28a745;"
+        : "border-bottom: 3px solid #dc3545;";
 
       const descripcionCorta = element.descripcion
         ? element.descripcion.length > 100
@@ -351,11 +387,18 @@ function MostrarCursosDesktop(data) {
           : element.descripcion
         : "Sin descripción";
 
-      const fechaIni = new Date(element.fechaInicio).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
-      const fechaFin = new Date(element.fechaFinalizacion).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const fechaIni = new Date(element.fechaInicio).toLocaleDateString(
+        "es-AR",
+        { day: "2-digit", month: "2-digit", year: "numeric" }
+      );
+      const fechaFin = new Date(element.fechaFinalizacion).toLocaleDateString(
+        "es-AR",
+        { day: "2-digit", month: "2-digit", year: "numeric" }
+      );
 
-      const botonDescargar = aprobado && element.certificadoId
-        ? `
+      const botonDescargar =
+        aprobado && element.certificadoId
+          ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
             <button onclick="DescargarDocumento(${element.certificadoId})" 
                     class="document-link d-flex align-items-center gap-1" 
@@ -366,22 +409,28 @@ function MostrarCursosDesktop(data) {
             </button>
         </p>
         `
-        : "Certificado no disponible";
+          : "Certificado no disponible";
 
       const card = $(`
           <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
               <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
-                  <h5 class="fw-bold mb-2" title="${element.nombre || 'Sin nombre'}">${element.nombre || 'Sin nombre'}</h5>
+                  <h5 class="fw-bold mb-2" title="${
+                    element.nombre || "Sin nombre"
+                  }">${element.nombre || "Sin nombre"}</h5>
                   <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
 
                   <!-- Contenedor modalidad + fecha -->
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
-                      <span class="badge ${modalidadColor[modalidadNombre]} mb-1 mb-md-0">${modalidadNombre}</span>
+                      <span class="badge ${
+                        modalidadColor[modalidadNombre]
+                      } mb-1 mb-md-0">${modalidadNombre}</span>
                       <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
                   </div>
 
                   <div class="d-flex justify-content-between align-items-center mt-3">
-                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"}</span>
+                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${
+        aprobado ? "Aprobado" : "Desaprobado"
+      }</span>
                       ${botonDescargar}
                   </div>
               </div>
@@ -390,12 +439,14 @@ function MostrarCursosDesktop(data) {
 
       contenedor.append(card);
     }
-
   });
 
-  tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA MOSTRAR LOS CURSOS MOBILE /////////////////////////////////////////////////////
@@ -413,17 +464,30 @@ function MostrarCursosMobile(data) {
   }
 
   const modalidades = { 1: "PRESENCIAL", 2: "VIRTUAL", 3: "MIXTO" };
-  const modalidadColor = { PRESENCIAL: "badge-presencial", VIRTUAL: "badge-virtual", MIXTO: "badge-mixto" };
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+  };
 
   data.forEach((element) => {
     const modalidadNombre = modalidades[element.modalidad] || "SIN MODALIDAD";
-    const claseModalidad = modalidadColor[modalidadNombre] || "bg-light text-dark";
+    const claseModalidad =
+      modalidadColor[modalidadNombre] || "bg-light text-dark";
 
-    const fechaInicio = element.fechaInicio ? new Date(element.fechaInicio) : null;
-    const fechaFin = element.fechaFinalizacion ? new Date(element.fechaFinalizacion) : null;
+    const fechaInicio = element.fechaInicio
+      ? new Date(element.fechaInicio)
+      : null;
+    const fechaFin = element.fechaFinalizacion
+      ? new Date(element.fechaFinalizacion)
+      : null;
 
-    const fechaInicioStr = fechaInicio ? fechaInicio.toLocaleDateString("es-AR") : "Sin fecha";
-    const fechaFinStr = fechaFin ? fechaFin.toLocaleDateString("es-AR") : "Sin fecha";
+    const fechaInicioStr = fechaInicio
+      ? fechaInicio.toLocaleDateString("es-AR")
+      : "Sin fecha";
+    const fechaFinStr = fechaFin
+      ? fechaFin.toLocaleDateString("es-AR")
+      : "Sin fecha";
 
     if (rol === "ADMINISTRADOR" || rol === "RRHH") {
       let botonesIzquierda = `
@@ -444,11 +508,14 @@ function MostrarCursosMobile(data) {
       `;
 
       const card = document.createElement("div");
-      card.className = "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
+      card.className =
+        "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
       card.innerHTML = `
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
           <div class="flex-grow-1 d-flex flex-column">
-            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.nombre || "Sin nombre"}</h5>
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${
+              element.nombre || "Sin nombre"
+            }</h5>
             <small class="text-muted mb-1" style="font-size: 0.90rem;">
               <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
             </small>
@@ -471,7 +538,9 @@ function MostrarCursosMobile(data) {
             <table class="table table-bordered">
               <tbody>
                 <tr>
-                  <td id="DescripcionCurso_${element.id}" style="white-space: normal; word-wrap: break-word;">
+                  <td id="DescripcionCurso_${
+                    element.id
+                  }" style="white-space: normal; word-wrap: break-word;">
                     ${element.descripcion ?? "Sin descripción"}
                   </td>
                 </tr>
@@ -481,45 +550,65 @@ function MostrarCursosMobile(data) {
         </div>
       `);
 
-      $(card).find(".btn-ver-descripcion").on("click", function () {
-        $(".panelDescripcionCurso:visible").not(descripcionDetalle).slideUp(200);
-        descripcionDetalle.slideToggle(200);
+      $(card)
+        .find(".btn-ver-descripcion")
+        .on("click", function () {
+          $(".panelDescripcionCurso:visible")
+            .not(descripcionDetalle)
+            .slideUp(200);
+          descripcionDetalle.slideToggle(200);
 
-        const icono = $(this).find("i");
-        $(".btn-ver-descripcion i").not(icono).removeClass("bi-chevron-up").addClass("bi-chevron-down");
-        icono.toggleClass("bi-chevron-down bi-chevron-up");
-      });
+          const icono = $(this).find("i");
+          $(".btn-ver-descripcion i")
+            .not(icono)
+            .removeClass("bi-chevron-up")
+            .addClass("bi-chevron-down");
+          icono.toggleClass("bi-chevron-down bi-chevron-up");
+        });
 
-      $(card).find(".btn-ver-certificados").on("click", function () {
-        cursoIdSeleccionado = element.id;
-        ObtenerCertificados(element.id);
+      $(card)
+        .find(".btn-ver-certificados")
+        .on("click", function () {
+          cursoIdSeleccionado = element.id;
+          ObtenerCertificados(element.id);
 
-        const offcanvasAsist = bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasAsistencias"));
-        if (offcanvasAsist) offcanvasAsist.hide();
+          const offcanvasAsist = bootstrap.Offcanvas.getInstance(
+            document.getElementById("offcanvasAsistencias")
+          );
+          if (offcanvasAsist) offcanvasAsist.hide();
 
-        const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasCertificados"));
-        offcanvas.show();
-      });
+          const offcanvas = new bootstrap.Offcanvas(
+            document.getElementById("offcanvasCertificados")
+          );
+          offcanvas.show();
+        });
 
-      $(card).find(".btn-ver-asistencias").on("click", function () {
-        cursoIdSeleccionado = element.id;
-        ObtenerAsistencia(element.id);
+      $(card)
+        .find(".btn-ver-asistencias")
+        .on("click", function () {
+          cursoIdSeleccionado = element.id;
+          ObtenerAsistencia(element.id);
 
-        const offcanvasCert = bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasCertificados"));
-        if (offcanvasCert) offcanvasCert.hide();
+          const offcanvasCert = bootstrap.Offcanvas.getInstance(
+            document.getElementById("offcanvasCertificados")
+          );
+          if (offcanvasCert) offcanvasCert.hide();
 
-        const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasAsistencias"));
-        offcanvas.show();
-      });
+          const offcanvas = new bootstrap.Offcanvas(
+            document.getElementById("offcanvasAsistencias")
+          );
+          offcanvas.show();
+        });
 
       contenedor.appendChild(card);
       contenedor.appendChild(descripcionDetalle[0]);
-
     } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
       const resultado = parseFloat(element.resultado);
       const aprobado = !isNaN(resultado) && resultado >= 6;
       const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
-      const borderColor = aprobado ? "border-bottom: 3px solid #28a745;" : "border-bottom: 3px solid #dc3545;";
+      const borderColor = aprobado
+        ? "border-bottom: 3px solid #28a745;"
+        : "border-bottom: 3px solid #dc3545;";
 
       const descripcionCorta = element.descripcion
         ? element.descripcion.length > 100
@@ -530,8 +619,9 @@ function MostrarCursosMobile(data) {
       const fechaIni = fechaInicioStr;
       const fechaFin = fechaFinStr;
 
-      const botonDescargar = aprobado && element.certificadoId
-        ? `
+      const botonDescargar =
+        aprobado && element.certificadoId
+          ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
             <button onclick="DescargarDocumento(${element.certificadoId})" 
                     class="document-link d-flex align-items-center gap-1" 
@@ -542,19 +632,25 @@ function MostrarCursosMobile(data) {
             </button>
         </p>
         `
-        : "";
+          : "";
 
       const card = $(` 
         <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
           <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
-            <h5 class="fw-bold mb-2" title="${element.nombre || 'Sin nombre'}">${element.nombre || 'Sin nombre'}</h5>
+            <h5 class="fw-bold mb-2" title="${
+              element.nombre || "Sin nombre"
+            }">${element.nombre || "Sin nombre"}</h5>
             <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
-              <span class="badge ${modalidadColor[modalidadNombre]} mb-1 mb-md-0">${modalidadNombre}</span>
+              <span class="badge ${
+                modalidadColor[modalidadNombre]
+              } mb-1 mb-md-0">${modalidadNombre}</span>
               <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-3">
-              <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"}</span>
+              <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${
+        aprobado ? "Aprobado" : "Desaprobado"
+      }</span>
               ${botonDescargar}
             </div>
           </div>
@@ -572,17 +668,15 @@ function MostrarCursosMobile(data) {
   });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL MODAL DE EDICION DE LA CURSO ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
-  const res = await authFetch(`Cursos/${id}`,
-    {
-      method: "GET"
-    })
-    .then(response => response.json())
-    .then((data => {
+  const res = await authFetch(`Cursos/${id}`, {
+    method: "GET",
+  })
+    .then((response) => response.json())
+    .then((data) => {
       document.getElementById("IdCurso").value = data.id;
       document.getElementById("NombreCurso").value = data.nombre;
       document.getElementById("ModalidadCurso").value = data.modalidad;
@@ -591,9 +685,8 @@ async function MostrarModalEditar(id) {
       document.getElementById("FechaFinCurso").value = data.fechaFinalizacion;
 
       abrirPanelCursos();
-    }))
+    });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA BUSCAR EL ID DEL CURSO Y LLAMAR A LA FUNCIÓN DE EDICION O CREACIÓN ///////////////////////////////////////////////
@@ -607,7 +700,6 @@ function BuscarCursoId() {
     EditarCurso(id);
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA LIMPIAR EL FORMULARIO DE LA CURSO ///////////////////////////////////////////////
@@ -637,17 +729,21 @@ function LimpiarModalCursos() {
   const selectErrorModalidad = document.getElementById("errorModalidadCurso");
   selectErrorModalidad.textContent = "";
   selectErrorModalidad.style.display = "none";
-  const inputErrorDescripcion = document.getElementById("errorDescripcionCurso");
+  const inputErrorDescripcion = document.getElementById(
+    "errorDescripcionCurso"
+  );
   inputErrorDescripcion.textContent = "";
   inputErrorDescripcion.style.display = "none";
-  const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
+  const inputErrorFechaInicio = document.getElementById(
+    "errorFechaInicioCurso"
+  );
   inputErrorFechaInicio.textContent = "";
   inputErrorFechaInicio.style.display = "none";
-  const inputErrorFechaFinalizacion = document.getElementById("errorFechaFinCurso");
+  const inputErrorFechaFinalizacion =
+    document.getElementById("errorFechaFinCurso");
   inputErrorFechaFinalizacion.textContent = "";
   inputErrorFechaFinalizacion.style.display = "none";
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA LIMPIAR EL FORMULARIO DE LA CURSO ///////////////////////////////////////////////
@@ -660,20 +756,37 @@ function ValidarFormularioCursos() {
   const selectErrorModalidad = document.getElementById("errorModalidadCurso");
 
   const inputDescripcion = document.getElementById("DescripcionCurso");
-  const inputErrorDescripcion = document.getElementById("errorDescripcionCurso");
+  const inputErrorDescripcion = document.getElementById(
+    "errorDescripcionCurso"
+  );
 
   const inputFechaInicio = document.getElementById("FechaInicioCurso");
-  const inputErrorFechaInicio = document.getElementById("errorFechaInicioCurso");
+  const inputErrorFechaInicio = document.getElementById(
+    "errorFechaInicioCurso"
+  );
 
   const inputFechaFinalizacion = document.getElementById("FechaFinCurso");
-  const inputErrorFechaFinalizacion = document.getElementById("errorFechaFinCurso");
+  const inputErrorFechaFinalizacion =
+    document.getElementById("errorFechaFinCurso");
 
   const esEdicion = !!document.getElementById("IdCurso").value;
 
-  [inputNombre, selectModalidad, inputDescripcion, inputFechaInicio, inputFechaFinalizacion].forEach(el => {
+  [
+    inputNombre,
+    selectModalidad,
+    inputDescripcion,
+    inputFechaInicio,
+    inputFechaFinalizacion,
+  ].forEach((el) => {
     el.classList.remove("is-invalid", "is-valid");
   });
-  [inputErrorNombre, selectErrorModalidad, inputErrorDescripcion, inputErrorFechaInicio, inputErrorFechaFinalizacion].forEach(el => {
+  [
+    inputErrorNombre,
+    selectErrorModalidad,
+    inputErrorDescripcion,
+    inputErrorFechaInicio,
+    inputErrorFechaFinalizacion,
+  ].forEach((el) => {
     el.style.display = "none";
     el.textContent = "";
   });
@@ -735,7 +848,8 @@ function ValidarFormularioCursos() {
     if (!esEdicion && inicio < hoy) {
       inputFechaInicio.classList.add("is-invalid");
       inputErrorFechaInicio.style.display = "block";
-      inputErrorFechaInicio.textContent = "La fecha de inicio no puede ser anterior a hoy.";
+      inputErrorFechaInicio.textContent =
+        "La fecha de inicio no puede ser anterior a hoy.";
       esValid = false;
     } else {
       inputFechaInicio.classList.add("is-valid");
@@ -747,10 +861,14 @@ function ValidarFormularioCursos() {
     inputErrorFechaFinalizacion.style.display = "block";
     inputErrorFechaFinalizacion.textContent = "Campo obligatorio.";
     esValid = false;
-  } else if (fechaInicio && new Date(fechaFinalizacion) <= new Date(fechaInicio)) {
+  } else if (
+    fechaInicio &&
+    new Date(fechaFinalizacion) <= new Date(fechaInicio)
+  ) {
     inputFechaFinalizacion.classList.add("is-invalid");
     inputErrorFechaFinalizacion.style.display = "block";
-    inputErrorFechaFinalizacion.textContent = "La fecha de fin debe ser posterior a la fecha de inicio.";
+    inputErrorFechaFinalizacion.textContent =
+      "La fecha de fin debe ser posterior a la fecha de inicio.";
     esValid = false;
   } else {
     inputFechaFinalizacion.classList.add("is-valid");
@@ -758,7 +876,6 @@ function ValidarFormularioCursos() {
 
   return esValid;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// VALIDACION EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE ///////////////////////////////////////////////
@@ -846,12 +963,12 @@ document.getElementById("FechaInicioCurso").addEventListener("change", () => {
     if (!esEdicion && inicio < hoy) {
       inputInicio.classList.add("is-invalid");
       errorInicio.style.display = "block";
-      errorInicio.textContent = "La fecha de inicio no puede ser anterior a hoy.";
+      errorInicio.textContent =
+        "La fecha de inicio no puede ser anterior a hoy.";
     } else {
       inputInicio.classList.add("is-valid");
     }
   }
-
 });
 
 document.getElementById("FechaFinCurso").addEventListener("change", () => {
@@ -873,13 +990,12 @@ document.getElementById("FechaFinCurso").addEventListener("change", () => {
   } else if (fin <= inicio) {
     inputFin.classList.add("is-invalid");
     errorFin.style.display = "block";
-    errorFin.textContent = "La fecha de fin debe ser posterior a la fecha de inicio.";
+    errorFin.textContent =
+      "La fecha de fin debe ser posterior a la fecha de inicio.";
   } else {
     inputFin.classList.add("is-valid");
   }
-
 });
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// VALIDACION DE CURSOS EXISTENTES ///////////////////////////////////////////////
@@ -893,13 +1009,12 @@ function ValidarCursoExistente(mensaje) {
   inputNombre.classList.add("is-invalid");
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CREAR UN NUEVO CURSO //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearCurso() {
   if (!ValidarFormularioCursos()) {
-    return
+    return;
   }
 
   const curso = {
@@ -946,14 +1061,11 @@ async function CrearCurso() {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR UN CURSO ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function EditarCurso(id) {
-
-  if (!ValidarFormularioCursos())
-    return;
+  if (!ValidarFormularioCursos()) return;
 
   const curso = {
     id: document.getElementById("IdCurso").value,
@@ -964,9 +1076,9 @@ async function EditarCurso(id) {
     fechaFinalizacion: document.getElementById("FechaFinCurso").value,
   };
   const res = await authFetch(`Cursos/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(curso),
   })
@@ -998,18 +1110,14 @@ async function EditarCurso(id) {
       }
     })
     .catch((error) => {
-      ;
       MostrarErrorCatch();
     });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALAIR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 ObtenerCursos();
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION APRA OBTENER  LOS DATOS DE LA API //////////////////////////////////////
@@ -1018,17 +1126,15 @@ async function ObtenerAsistencia(cursoId) {
   const res = await authFetch("AsistenciasCapacitacion", {
     method: "GET",
   })
-    .then(response => response.json())
-    .then(data => {
-      const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
+    .then((response) => response.json())
+    .then((data) => {
+      const cursosFiltrados = data.filter((c) => c.cursoId === cursoId);
       MostrarAsistencias(cursoId, cursosFiltrados);
     })
     .catch((error) => {
-      ;
       MostrarErrorCatch();
     });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS ASISTENCIAS /////////////////////////////////////////////
@@ -1052,7 +1158,7 @@ function MostrarAsistencias(cursoId, data) {
       return;
     }
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const resultado = Number(item.resultado);
       const aprobado = resultado >= 6;
       const etiqueta = aprobado ? "Aprobado" : "Desaprobado";
@@ -1090,15 +1196,15 @@ function MostrarAsistencias(cursoId, data) {
         </div>
       `);
       cardsContenedor.append(card);
-
     });
 
-    $(".checkbox-asistio-card").off("change").on("change", function () {
-      const asistenciaId = $(this).data("id");
-      const nuevoEstado = $(this).is(":checked");
-      MarcarAsistencia(asistenciaId, nuevoEstado);
-    });
-
+    $(".checkbox-asistio-card")
+      .off("change")
+      .on("change", function () {
+        const asistenciaId = $(this).data("id");
+        const nuevoEstado = $(this).is(":checked");
+        MarcarAsistencia(asistenciaId, nuevoEstado);
+      });
   } else {
     if (!tablaBody.length) return;
     tablaBody.empty();
@@ -1119,9 +1225,13 @@ function MostrarAsistencias(cursoId, data) {
       tablaBody.append(`
         <tr>
           <td class='text-center align-middle'>
-            <input type="checkbox" class="checkbox-asistio" data-id="${item.id}" ${item.asistencia ? "checked" : ""} />
+            <input type="checkbox" class="checkbox-asistio" data-id="${
+              item.id
+            }" ${item.asistencia ? "checked" : ""} />
           </td>
-          <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto}'>
+          <td class='align-middle nombre-empleado' title='${
+            item.empleado.nombreCompleto
+          }'>
             ${item.empleado.nombreCompleto}
           </td>
           <td class='text-center align-middle'>
@@ -1129,7 +1239,9 @@ function MostrarAsistencias(cursoId, data) {
           </td>
           <td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
-              onclick='EliminarAsistencia(${item.id})' data-tippy-content='Eliminar'>
+              onclick='EliminarAsistencia(${
+                item.id
+              })' data-tippy-content='Eliminar'>
               <i class='bi bi-trash3 icono-elimina-detalle'></i>
             </button>
           </td>
@@ -1137,11 +1249,13 @@ function MostrarAsistencias(cursoId, data) {
       `);
     });
 
-    $(".checkbox-asistio").off("change").on("change", function () {
-      const asistenciaId = $(this).data("id");
-      const nuevoEstado = $(this).is(":checked");
-      MarcarAsistencia(asistenciaId, nuevoEstado);
-    });
+    $(".checkbox-asistio")
+      .off("change")
+      .on("change", function () {
+        const asistenciaId = $(this).data("id");
+        const nuevoEstado = $(this).is(":checked");
+        MarcarAsistencia(asistenciaId, nuevoEstado);
+      });
   }
 
   tippy("[data-tippy-content]", {
@@ -1151,7 +1265,6 @@ function MostrarAsistencias(cursoId, data) {
   });
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA LIMPIAR EL FORMULARIO DE LA ASISTENCIA //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1160,7 +1273,9 @@ function ValidarFormularioAsistencia() {
   const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
 
   const selectResultado = document.getElementById("ResultadoAsistencia");
-  const selectErrorResultado = document.getElementById("errorResultadoAsistencia");
+  const selectErrorResultado = document.getElementById(
+    "errorResultadoAsistencia"
+  );
 
   const empleadoId = selectEmpleadoId.value;
   const resultado = parseInt(selectResultado.value);
@@ -1191,7 +1306,6 @@ function ValidarFormularioAsistencia() {
   return esValid;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // VALIDACIONES EN VIVO  PARA EL FORMULARIO DE ASISTENCIAS ///////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1217,24 +1331,25 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
   return esValid;
 });
 
-document.getElementById("ResultadoAsistencia").addEventListener("change", () => {
-  const selectResultado = document.getElementById("ResultadoAsistencia");
-  const errorResultado = document.getElementById("errorResultadoAsistencia");
-  const valor = parseInt(selectResultado.value);
+document
+  .getElementById("ResultadoAsistencia")
+  .addEventListener("change", () => {
+    const selectResultado = document.getElementById("ResultadoAsistencia");
+    const errorResultado = document.getElementById("errorResultadoAsistencia");
+    const valor = parseInt(selectResultado.value);
 
-  selectResultado.classList.remove("is-invalid", "is-valid");
+    selectResultado.classList.remove("is-invalid", "is-valid");
 
-  if (isNaN(valor) || valor === 0) {
-    selectResultado.classList.add("is-invalid");
-    errorResultado.style.display = "block";
-    errorResultado.textContent = "Campo obligatorio.";
-  } else {
-    selectResultado.classList.add("is-valid");
-    errorResultado.style.display = "none";
-    errorResultado.textContent = "";
-  }
-});
-
+    if (isNaN(valor) || valor === 0) {
+      selectResultado.classList.add("is-invalid");
+      errorResultado.style.display = "block";
+      errorResultado.textContent = "Campo obligatorio.";
+    } else {
+      selectResultado.classList.add("is-valid");
+      errorResultado.style.display = "none";
+      errorResultado.textContent = "";
+    }
+  });
 
 //////////////////////////////////////////////////////////////////////////////////////
 // LIMPIAR FORMULARIO DE ASISTENCIA //////////////////////////////////////////////////
@@ -1243,7 +1358,9 @@ function LimpiarModalAsistencias() {
   document.getElementById("IdAsistencia").value = "";
   const inputEmpleado = document.getElementById("EmpleadoId");
   inputEmpleado.value = "";
-  const inputResultadoAsistencia = document.getElementById("ResultadoAsistencia");
+  const inputResultadoAsistencia = document.getElementById(
+    "ResultadoAsistencia"
+  );
   inputResultadoAsistencia.value = 0;
 
   inputEmpleado.classList.remove("is-invalid", "is-valid");
@@ -1252,7 +1369,9 @@ function LimpiarModalAsistencias() {
   const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
   inputErrorEmpleado.textContent = "";
   inputErrorEmpleado.style.display = "none";
-  const inputErrorResultado = document.getElementById("errorResultadoAsistencia");
+  const inputErrorResultado = document.getElementById(
+    "errorResultadoAsistencia"
+  );
   inputErrorResultado.textContent = "";
   inputErrorResultado.style.display = "none";
 }
@@ -1265,7 +1384,6 @@ function ValidarAsistenciaExistente(mensaje) {
   errorEmpleadoId.style.display = "block";
   inputEmpleadoId.classList.add("is-invalid");
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CREAR ASISTENCIA //////////////////////////////////////////////////////////////////
@@ -1282,7 +1400,7 @@ async function CrearAsistencia() {
     cursoId: cursoIdSeleccionado,
   };
   const res = await authFetch("AsistenciasCapacitacion", {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(asistencia),
   })
     .then((response) => response.json())
@@ -1313,11 +1431,9 @@ async function CrearAsistencia() {
       }
     })
     .catch((error) => {
-      ;
       MostrarErrorCatch();
     });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // MODAL CONFIRMAR ELIMINAR ASISTENCIA /////////////////////////////////////////////////
@@ -1344,33 +1460,31 @@ function EliminarAsistencia(id) {
     },
     background: "#fff",
     color: "#22223b",
-  })
-    .then((result) => {
-      if (result.isConfirmed) {
-        EliminarSiAsistencia(id);
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({
-          title: "Acción Cancelada",
-          text: "Permanece registrado.",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#fef8f4",
-          color: "#5f4339",
-          icon: "info",
-          iconColor: "#ff914d",
-          customClass: {
-            popup: "swal2-toast-status",
-            title: "swal2-toast-title",
-            content: "swal2-toast-content",
-          },
-        });
-      }
-    })
+  }).then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiAsistencia(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece registrado.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
+    }
+  });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // ELIMINAR ASISTENCIA ////////////////////////////////////////////////////////////////
@@ -1381,7 +1495,7 @@ async function EliminarSiAsistencia(id) {
       method: "DELETE",
     });
 
-    const data = await res.json(); 
+    const data = await res.json();
     ObtenerAsistencia(cursoIdSeleccionado);
 
     if (res.ok) {
@@ -1431,11 +1545,11 @@ async function EliminarSiAsistencia(id) {
 //////////////////////////////////////////////////////////////////////////////////////
 async function MarcarAsistencia(id, nuevoEstado) {
   const res = await authFetch(`AsistenciasCapacitacion/CambiarEstado/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(nuevoEstado)
+    body: JSON.stringify(nuevoEstado),
   })
     .then(() => {
       if (nuevoEstado) {
@@ -1456,8 +1570,7 @@ async function MarcarAsistencia(id, nuevoEstado) {
             icon: "swal2-toast-success-icon",
           },
         });
-      }
-      else {
+      } else {
         ObtenerAsistencia(cursoIdSeleccionado);
         Swal.fire({
           title: "¡No Asistio Empleado!",
@@ -1478,17 +1591,14 @@ async function MarcarAsistencia(id, nuevoEstado) {
       }
     })
     .catch((error) => {
-      ;
       MostrarErrorCatch();
     });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // INICILAIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 ObtenerAsistencia(cursoIdSeleccionado);
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS CERTIFICADOS ///////////////////////////////////////////////
@@ -1497,13 +1607,12 @@ async function ObtenerCertificados(cursoId) {
   const res = await authFetch("Certificados", {
     method: "GET",
   })
-    .then(response => response.json())
-    .then(data => {
-      const cursosFiltrados = data.filter(c => c.cursoId === cursoId);
+    .then((response) => response.json())
+    .then((data) => {
+      const cursosFiltrados = data.filter((c) => c.cursoId === cursoId);
       MostrarCertificados(cursoId, cursosFiltrados);
     })
     .catch((error) => {
-      ;
       MostrarErrorCatch();
     });
 }
@@ -1530,7 +1639,7 @@ function MostrarCertificados(cursoId, data) {
       return;
     }
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const documentoHtml = item.documentoNombre
         ? `
         <p class="text-muted d-flex align-items-center gap-2 mb-2">
@@ -1558,10 +1667,8 @@ function MostrarCertificados(cursoId, data) {
           </div>
         `);
 
-
       cardsContenedor.append(card);
     });
-
   } else {
     if (!tablaBody.length) return;
     tablaBody.empty();
@@ -1607,7 +1714,6 @@ function MostrarCertificados(cursoId, data) {
 
   MostrarOpcionesCursosPorRol();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA DESCARGAR UN CERTIFICADO ///////////////////////////////////////////////
@@ -1656,7 +1762,9 @@ function LimpiarModalCertificado() {
   const archivoActual = document.getElementById("archivoAdjuntoActual");
   if (archivoActual) archivoActual.textContent = "";
 
-  const inputErrorEmpleado = document.getElementById("errorEmpleadoIdCertificado");
+  const inputErrorEmpleado = document.getElementById(
+    "errorEmpleadoIdCertificado"
+  );
   inputErrorEmpleado.textContent = "";
   inputErrorEmpleado.style.display = "none";
 
@@ -1664,22 +1772,23 @@ function LimpiarModalCertificado() {
   inputErrorDocumento.textContent = "";
   inputErrorDocumento.style.display = "none";
 
-  const inputErrorArchivoAdjunto = document.getElementById("errorArchivoAdjunto");
+  const inputErrorArchivoAdjunto = document.getElementById(
+    "errorArchivoAdjunto"
+  );
   if (inputErrorArchivoAdjunto) {
     inputErrorArchivoAdjunto.textContent = "";
     inputErrorArchivoAdjunto.style.display = "none";
   }
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA VALIDAR EL FORMULARIO DE CERTIFICADO //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioCertificado() {
   const selectEmpleadoId = document.getElementById("EmpleadoIdCertificado");
-  const selectErrorEmpleadoId = document.getElementById("errorEmpleadoIdCertificado");
+  const selectErrorEmpleadoId = document.getElementById(
+    "errorEmpleadoIdCertificado"
+  );
 
   const inputDocumento = document.getElementById("DocumentoAdjunto");
   const inputErrorDocumento = document.getElementById("errorDocumentoAdjunto");
@@ -1711,27 +1820,28 @@ function ValidarFormularioCertificado() {
   return esValid;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // VALIDACIÓN EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE ///////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-document.getElementById("EmpleadoIdCertificado").addEventListener("input", () => {
-  const input = document.getElementById("EmpleadoIdCertificado");
-  const error = document.getElementById("errorEmpleadoIdCertificado");
-  const valor = input.value.trim();
+document
+  .getElementById("EmpleadoIdCertificado")
+  .addEventListener("input", () => {
+    const input = document.getElementById("EmpleadoIdCertificado");
+    const error = document.getElementById("errorEmpleadoIdCertificado");
+    const valor = input.value.trim();
 
-  input.classList.remove("is-invalid", "is-valid");
-  error.style.display = "none";
-  error.textContent = "";
+    input.classList.remove("is-invalid", "is-valid");
+    error.style.display = "none";
+    error.textContent = "";
 
-  if (valor === "" || valor === "0") {
-    input.classList.add("is-invalid");
-    error.style.display = "block";
-    error.textContent = "Campo obligatorio.";
-  } else {
-    input.classList.add("is-valid");
-  }
-});
+    if (valor === "" || valor === "0") {
+      input.classList.add("is-invalid");
+      error.style.display = "block";
+      error.textContent = "Campo obligatorio.";
+    } else {
+      input.classList.add("is-valid");
+    }
+  });
 
 document.getElementById("DocumentoAdjunto").addEventListener("change", () => {
   const input = document.getElementById("DocumentoAdjunto");
@@ -1751,7 +1861,6 @@ document.getElementById("DocumentoAdjunto").addEventListener("change", () => {
   }
 });
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA VALIDAR EL EXISTENCIA DE CERTIFICADO //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1764,7 +1873,6 @@ function ValidarCertificadoExistente(mensaje) {
   inputEmpleadoId.classList.add("is-invalid");
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CREAR UN CERTIFICADO //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1774,7 +1882,10 @@ async function CrearCertificado() {
   }
 
   const formData = new FormData();
-  formData.append("EmpleadoId", document.getElementById("EmpleadoIdCertificado").value);
+  formData.append(
+    "EmpleadoId",
+    document.getElementById("EmpleadoIdCertificado").value
+  );
   formData.append("CursoId", cursoIdSeleccionado);
 
   const archivo = document.getElementById("DocumentoAdjunto").files[0];
@@ -1819,7 +1930,6 @@ async function CrearCertificado() {
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // MOSTRAR EL MODAL DE ELIMINAR UN CERTIFICADO ////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1845,41 +1955,39 @@ function EliminarCertificado(id) {
     },
     background: "#fff",
     color: "#22223b",
-  })
-    .then((result) => {
-      if (result.isConfirmed) {
-        EliminarSiCertificado(id);
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({
-          title: "Acción Cancelada",
-          text: "Permanece registrado.",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#fef8f4",
-          color: "#5f4339",
-          icon: "info",
-          iconColor: "#ff914d",
-          customClass: {
-            popup: "swal2-toast-status",
-            title: "swal2-toast-title",
-            content: "swal2-toast-content",
-          },
-        });
-      }
-    })
+  }).then((result) => {
+    if (result.isConfirmed) {
+      EliminarSiCertificado(id);
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire({
+        title: "Acción Cancelada",
+        text: "Permanece registrado.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#fef8f4",
+        color: "#5f4339",
+        icon: "info",
+        iconColor: "#ff914d",
+        customClass: {
+          popup: "swal2-toast-status",
+          title: "swal2-toast-title",
+          content: "swal2-toast-content",
+        },
+      });
+    }
+  });
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // ELIMINAR SI EL CERTIFICADO //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiCertificado(id) {
   const res = await authFetch(`Certificados/${id}`, {
-    method: 'DELETE',
-  })
+    method: "DELETE",
+  });
   if (!res.ok) {
     throw new Error("No se pudo eliminar el certificado");
   }
@@ -1901,13 +2009,10 @@ async function EliminarSiCertificado(id) {
       title: "swal2-toast-success-title",
       icon: "swal2-toast-success-icon",
     },
-  })
-    .catch((error) => {
-      ;
-      MostrarErrorCatch();
-    });
+  }).catch((error) => {
+    MostrarErrorCatch();
+  });
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LAS OPCIONES DE CURSO POR ROL /////////////////////////////////////////////
@@ -1917,17 +2022,21 @@ function MostrarOpcionesCursosPorRol() {
   if (!rol) return;
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    $("#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso").removeClass("d-none");
-    $("#PresencialRA, #VirtualRA, #MixtoRA, #AprobadoRA, #DesaprobadoRA, #AsistenciaRA, #CertificadoRA, #DescripcionRA, #EditarRA, #AsistioRA, #DescargarRA").removeClass("d-none");
-
+    $(
+      "#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso"
+    ).removeClass("d-none");
+    $(
+      "#PresencialRA, #VirtualRA, #MixtoRA, #AprobadoRA, #DesaprobadoRA, #AsistenciaRA, #CertificadoRA, #DescripcionRA, #EditarRA, #AsistioRA, #DescargarRA"
+    ).removeClass("d-none");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
-    $("#tituloCursos").text("Visualizá los cursos en los que participaste y descargá los certificados disponibles.");
-    $("#AprobadoES, #DesaprobdoES, #PresencialES, #VirtualES, #MixtoES, #CertificadoES, #FechaES").removeClass("d-none")
+    $("#tituloCursos").text(
+      "Visualizá los cursos en los que participaste y descargá los certificados disponibles."
+    );
+    $(
+      "#AprobadoES, #DesaprobdoES, #PresencialES, #VirtualES, #MixtoES, #CertificadoES, #FechaES"
+    ).removeClass("d-none");
   }
 }
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA GENERA UN INFORME PARA CURSOS SEGUN SU FILTRO //////////////
@@ -1985,19 +2094,19 @@ async function GenerarInformePdfCursos() {
   doc.text(`${resumen.total}`, 39, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Presencial:", 48, y);
+  doc.text("| Presencial:", 44, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.presencial}`, 71, y);
+  doc.text(`${resumen.presencial}`, 66, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Virtual:", 80, y);
+  doc.text("| Virtual:", 72, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.online}`, 96, y);
+  doc.text(`${resumen.online}`, 87, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Mixto:", 105, y);
+  doc.text("| Mixto:", 91, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.mixto}`, 119, y);
+  doc.text(`${resumen.mixto}`, 104, y);
 
   y += 6;
 
@@ -2122,9 +2231,11 @@ async function GenerarInformePdfCursos() {
           ? { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" }
           : {},
       margin: { left: margen, right: margen },
-      columnStyles: colCurso,
+      columnStyles: {
+        ...colCurso,
+        5: { halign: "center" },
+      },
       tableWidth: anchoUtil,
-
       didParseCell: function (data) {
         if (data.section === "body") {
           data.cell.styles.fillColor = [210, 230, 255];
@@ -2161,7 +2272,7 @@ async function GenerarInformePdfCursos() {
 
         didParseCell: function (data) {
           if (data.section === "body") {
-            data.cell.styles.fillColor = [255, 255, 255]; 
+            data.cell.styles.fillColor = [255, 255, 255];
             data.cell.styles.textColor = 0;
           }
         },
@@ -2208,13 +2319,8 @@ async function GenerarInformePdfCursos() {
   w.document.close();
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 ObtenerCertificados(cursoIdSeleccionado);
 MostrarOpcionesCursosPorRol();
-
-

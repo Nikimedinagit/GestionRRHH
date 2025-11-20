@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+
+
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
@@ -11,10 +15,16 @@ namespace API_NET_CORE8_RRHH.Controllers
     public class InformesGeneralesPdfController : ControllerBase
     {
         private readonly Context _context;
+        private readonly RoleManager<IdentityRole> _rolManager;
 
-        public InformesGeneralesPdfController(Context context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public InformesGeneralesPdfController(Context context, RoleManager<IdentityRole> rolManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _context = context;
+            _rolManager = rolManager;
+            _userManager = userManager;
 
         }
 
@@ -549,6 +559,81 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return Ok(new { evaluacion, resumen });
         }
+
+
+        [HttpPost("GenerarInformeActivacionEmpleados")]
+        public async Task<IActionResult> GenerarInformeActivacionEmpleados([FromBody] FiltrarActivacionEmpleado filtro)
+        {
+            var obtenerActivaciones = _context.ActivacionEmpleado
+                .Include(a => a.Empleado)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filtro.Nombre))
+            {
+                obtenerActivaciones = obtenerActivaciones.Where(a =>
+                    a.Empleado.NombreCompleto.ToLower().Contains(filtro.Nombre.Trim().ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(filtro.Email))
+            {
+                obtenerActivaciones = obtenerActivaciones.Where(a =>
+                    a.Empleado.Email.ToLower().Contains(filtro.Email.Trim().ToLower()));
+            }
+            if (filtro.DNI.HasValue)
+            {
+                string dniFiltro = filtro.DNI.Value.ToString();
+                obtenerActivaciones = obtenerActivaciones.Where(a =>
+                    a.Empleado.DNI.ToString().StartsWith(dniFiltro));
+            }
+
+            if (filtro.Activo.HasValue)
+            {
+                bool activo = filtro.Activo.Value == 1;
+                obtenerActivaciones = obtenerActivaciones.Where(a => a.Activo == activo);
+            }
+
+            var activaciones = await obtenerActivaciones
+                .OrderBy(a => !a.Activo)
+                .ThenBy(a => a.Empleado.NombreCompleto)
+                .ToListAsync();
+
+            var listaFinal = new List<VistaActivacionEmpleado>();
+
+            foreach (var a in activaciones)
+            {
+                var usuario = await _userManager.FindByEmailAsync(a.Empleado.Email);
+                string rol = "SIN ROL";
+
+                if (usuario != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(usuario);
+                    rol = roles.FirstOrDefault() ?? "SIN ROL";
+                }
+
+                listaFinal.Add(new VistaActivacionEmpleado
+                {
+                    Id = a.Id,
+                    EmpleadoNombreString = a.Empleado.NombreCompleto,
+                    EmpleadoEmailString = a.Empleado.Email,
+                    EmpleadoDNIString = a.Empleado.DNI.ToString(),
+                    FechaActivacionString = a.FechaActivacion?.ToString("yyyy-MM-dd") ?? "",
+                    Activo = a.Activo ,
+                    EmpleadoId = a.EmpleadoId,
+                    Rol = rol
+                });
+            }
+
+            var resumen = new
+            {
+                total = listaFinal.Count,
+                activos = listaFinal.Count(a => a.Activo),
+                inactivos = listaFinal.Count(a => !a.Activo),
+                filtros = filtro,
+                fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+            };
+            return Ok(new { activaciones = listaFinal, resumen });
+        }
+
 
 
 

@@ -39,6 +39,7 @@ namespace API_RRHH_TESIS2025.Models.General
         public string FechaActivacionString { get; set; }
         public bool Activo { get; set; }
         public int EmpleadoId { get; set; }
+        public string Rol { get; set; }
     }
 
 

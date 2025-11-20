@@ -503,14 +503,22 @@ function ValidarFormularioLicencia() {
   } else {
     const [anioI, mesI, diaI] = inputFechaInicio.value.split("-");
     const fechaInicio = new Date(anioI, mesI - 1, diaI);
-    fechaInicio.setHours(0, 0, 0, 0);
+    fechaInicio.setHours(0, 0, 0, 0); 
 
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    if (fechaInicio < hoy) {
+    const fechaLimite = new Date(hoy);
+    fechaLimite.setDate(hoy.getDate() - 7); 
+
+    if (fechaInicio > hoy) {
       inputErrorFechaInicio.style.display = "block";
-      inputErrorFechaInicio.textContent = "No se permiten fechas anteriores a hoy.";
+      inputErrorFechaInicio.textContent = "No se pueden solicitar licencias para fechas futuras.";
+      inputFechaInicio.classList.add("is-invalid");
+      valido = false;
+    } else if (fechaInicio < fechaLimite) {
+      inputErrorFechaInicio.style.display = "block";
+      inputErrorFechaInicio.textContent = "El plazo para solicitar la licencia dentro de los 7 días ya venció.";
       inputFechaInicio.classList.add("is-invalid");
       valido = false;
     } else {
@@ -527,7 +535,7 @@ function ValidarFormularioLicencia() {
   } else if (fechaInicioValida) {
     const [anioF, mesF, diaF] = inputFechaFin.value.split("-");
     const fechaFin = new Date(anioF, mesF - 1, diaF);
-    fechaFin.setHours(0, 0, 0, 0);
+    fechaFin.setHours(0, 0, 0, 0); 
 
     if (fechaFin < fechaInicioValida) {
       inputErrorFechaFin.style.display = "block";
@@ -541,6 +549,7 @@ function ValidarFormularioLicencia() {
 
   return valido;
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -588,25 +597,32 @@ document.getElementById("FechaInicio").addEventListener("input", () => {
     return;
   }
 
-  // Parseo seguro usando constructor numérico
-  const [anio, mes, dia] = input.value.split("-"); // formato yyyy-mm-dd
+  const [anio, mes, dia] = input.value.split("-");
   const fechaIngresada = new Date(anio, mes - 1, dia);
   fechaIngresada.setHours(0, 0, 0, 0);
 
   const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
+  hoy.setHours(0, 0, 0, 0); 
 
-  if (fechaIngresada < hoy) {
+  const fechaLimite = new Date(hoy);
+  fechaLimite.setDate(hoy.getDate() - 7); 
+
+  if (fechaIngresada > hoy) {
     input.classList.add("is-invalid");
     input.classList.remove("is-valid");
     error.style.display = "block";
-    error.textContent = "No se permiten fechas anteriores a hoy.";
+    error.textContent = "No se pueden solicitar licencias para fechas futuras.";
+  } else if (fechaIngresada < fechaLimite) {
+    input.classList.add("is-invalid");
+    input.classList.remove("is-valid");
+    error.style.display = "block";
+    error.textContent = "El plazo para solicitar la licencia dentro de los 7 días ya venció.";
   } else {
     input.classList.remove("is-invalid");
     input.classList.add("is-valid");
     error.style.display = "none";
   }
-});
+}); 
 
 
 

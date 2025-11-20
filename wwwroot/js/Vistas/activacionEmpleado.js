@@ -362,6 +362,145 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
 }
 
 
+async function GenerarInformePdfActivaciones() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  let nombre = document.getElementById("FiltroNombre").value;
+  let email = document.getElementById("FiltroEmail").value;
+  let dni = document.getElementById("FiltroDNI").value;
+  let estado = document.getElementById("FiltroActivo").value;
+
+  let filtro = {
+    nombre: nombre || null,
+    email: email || null,
+    dni: dni ? Number(dni) : null,
+    activo: estado && estado !== "0" ? Number(estado) : null
+  };
+
+  const res = await authFetch("InformesGeneralesPdf/GenerarInformeActivacionEmpleados", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filtro)
+  });
+
+  const { activaciones, resumen } = await res.json();
+
+  doc.setTextColor(19, 115, 204);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("Informe de Activación de Empleados", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  let y = 29;
+  const fechaHoy = new Date().toLocaleString("es-AR");
+
+  doc.text("Generado:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(fechaHoy, 33, y);
+  y += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Total Empleados:", 14, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.total}`, 45, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Activos:", 50, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.activos}`, 66, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("| Inactivos:", 70, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${resumen.inactivos}`, 89, y);
+  y += 6;
+
+  const filtrosAplicadosArray = [];
+  if (filtro.nombre) filtrosAplicadosArray.push(`[Nombre: ${filtro.nombre}]`);
+  if (filtro.email) filtrosAplicadosArray.push(`[Email: ${filtro.email}]`);
+  if (filtro.dni) filtrosAplicadosArray.push(`[DNI: ${filtro.dni}]`);
+  if (filtro.activo !== null) {
+    filtrosAplicadosArray.push(`[Estado: ${filtro.activo === 1 ? "Activo" : "Inactivo"}]`);
+  }
+
+  const filtrosAplicados = filtrosAplicadosArray.length > 0
+    ? filtrosAplicadosArray.join("  |  ")
+    : "No se aplicaron";
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Filtros Aplicados:", 14, y);
+  doc.setFont("helvetica", "bold");
+
+  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+  doc.text(filtrosText, 45, y);
+
+  y += filtrosText.length * 6 + 2;
+
+  doc.setDrawColor(180);
+  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+  y += 7;
+
+  if (activaciones.length > 0) {
+    doc.autoTable({
+      startY: y,
+      head: [["Nombre", "Email", "DNI", "Rol", "Fecha Activación", "Estado"]],
+      body: activaciones.map(a => [
+        a.empleadoNombreString,
+        a.empleadoEmailString,
+        a.empleadoDNIString,
+        a.rol,             
+        a.fechaActivacionString,
+        a.activo ? "Activo" : "Inactivo" 
+      ]),
+      styles: { font: "helvetica", fontSize: 10 },
+      headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+      margin: { left: 14, right: 14 },
+      tableWidth: "auto"
+    });
+  } else {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 0, 0);
+    doc.text(
+      "No hay resultados para los filtros aplicados.",
+      doc.internal.pageSize.getWidth() / 2,
+      y + 10,
+      { align: "center" }
+    );
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
+    doc.text(
+      "www.WorkSync.com",
+      doc.internal.pageSize.getWidth() - 20,
+      doc.internal.pageSize.getHeight() - 10,
+      { align: "right" }
+    );
+  }
+
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+
+  const html = `<html><head><title>Informe de Activación</title></head>
+    <body class="pdf-body">
+    <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+    </body></html>`;
+
+  const w = window.open();
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
