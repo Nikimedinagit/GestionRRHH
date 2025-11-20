@@ -3,58 +3,32 @@
 // =========================================================================================
 $(document).ready(function () {
 
-    $("#EmpleadoIdBuscar, #NroLegajoFiltro, #IdSectorFiltro").on("input change", function () {
-        ObtenerEmpleadosPorSector();
+    $("#EmpleadoIdBuscar, #NroLegajoFiltro").on("input change", function () {
+        ObtenerHistorialPorEmpleado();
     });
 });
 
 
-
-// =========================================================================================
-// ========================== Completar Selec de Sector Para Poder Filtrar =================
-// =========================================================================================
-async function ComboParaFiltrarSector() {
-    const resLocalidades = await authFetch("Sector/Activos", {
-        method: "GET",
-    });
-    const localidades = await resLocalidades.json();
-
-    const $comboLocalidad = $("#IdSectorFiltro");
-    $comboLocalidad.empty();
-
-    let opciones = `<option value="0">[Todos]</option>`;
-    localidades.forEach((item) => {
-        opciones += `<option value="${item.id}">${item.nombre}</option>`;
-    });
-    $comboLocalidad.html(opciones);
-
-
-
-    ObtenerEmpleadosPorSector();
-}
-
 // =========================================================================================
 // =========================== Obtener Listado desde la API =================================
 // =========================================================================================
-async function ObtenerEmpleadosPorSector() {
+async function ObtenerHistorialPorEmpleado() {
 
-    const sectorFiltro = document.getElementById("IdSectorFiltro").value;
 
     const filtro = {
         nombre: document.getElementById("EmpleadoIdBuscar").value,
         nroLegajo: document.getElementById("NroLegajoFiltro").value,
-        sector: sectorFiltro === "0" ? null : Number(sectorFiltro)
     };
 
     try {
-        const response = await authFetch("Resultados/SectorEmpleadoN2", {
+        const response = await authFetch("Resultados/EmpleadoHistorialLaboralN2", {
             method: "POST",
             body: JSON.stringify(filtro)
         });
 
         const data = await response.json();
 
-        MostrarEmpleadosPorSector(data);
+        MostrarHistorialPorEmpleado(data);
 
         return data;
 
@@ -63,71 +37,79 @@ async function ObtenerEmpleadosPorSector() {
     }
 }
 
+
 // =========================================================================================
 // ======================== Detectar Responsividad con collapse =============================
 // =========================================================================================
-var mediaQueryTablet = window.matchMedia("(max-width: 767px)"); // tablet o móvil
+var mediaQueryTablet = window.matchMedia("(max-width: 767px)");
 var mediaQueryMobile = window.matchMedia("(max-width: 575px)");
 
-function reRenderIfCache() {
-    if (window._cacheEmpleadosSector) {
-        MostrarEmpleadosPorSector(window._cacheEmpleadosSector);
+function reRenderIfCacheHistorial() {
+    if (window._cacheHistorialEmpleado) {
+        MostrarHistorialPorEmpleado(window._cacheHistorialEmpleado);
     }
 }
 
-mediaQueryTablet.addEventListener("change", reRenderIfCache);
-mediaQueryMobile.addEventListener("change", reRenderIfCache);
+mediaQueryTablet.addEventListener("change", reRenderIfCacheHistorial);
+mediaQueryMobile.addEventListener("change", reRenderIfCacheHistorial);
 
 
 // =========================================================================================
-// ========================== Renderizar Tabla de Resultados =================================
+// ======================= Renderizar Tabla de Resultados ===================================
 // =========================================================================================
-function MostrarEmpleadosPorSector(data) {
-    window._cacheEmpleadosSector = data;
-    const tabla = $("#listadoEmpeladoPorSector");
+function MostrarHistorialPorEmpleado(data) {
+
+    window._cacheHistorialEmpleado = data;
+
+    const tabla = $("#listadoHistorialPorEmpleado");
     tabla.empty();
 
     if (!data || data.length === 0) {
-        tabla.html(`<tr><td colspan="3" class="text-start">No se encontraron resultados</td></tr>`);
+        tabla.html(`<tr><td colspan="5" class="text-start">No se encontraron resultados</td></tr>`);
         return;
     }
 
     const collapseEnabled = mediaQueryTablet.matches;
     const isMobile = mediaQueryMobile.matches;
 
-    data.forEach((sector, indexSector) => {
+    data.forEach((emp, indexEmp) => {
+
         tabla.append(`
             <tr style="background:#b7d3ff !important;">
-                <td colspan="3" class="fw-bold text-wrap">
-                    Sector: ${sector.nombre}
+                <td colspan="5" class="fw-bold text-wrap">
+                    ${emp.nombre} (Legajo: ${emp.nroLegajo})
                 </td>
             </tr>
         `);
 
-        sector.empleados.forEach((emp, indexEmp) => {
-            const collapseId = `collapse${indexSector}_${indexEmp}`;
+        emp.historial.forEach((h, indexHis) => {
 
+            const collapseId = `collapseH${indexEmp}_${indexHis}`;
             const toggleAttrs = collapseEnabled
                 ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;"`
                 : `style="cursor:default;"`;
 
             tabla.append(`
                 <tr ${toggleAttrs}>
-                    <td class="text-start align-middle">${emp.nombre}</td>
-                    <td class="text-center align-middle d-none d-sm-table-cell">${emp.nroLegajo}</td>
-                    <td class="text-start align-middle d-none d-md-table-cell">${emp.puesto}</td>
+                    <td class="text-center align-middle">${h.periodo}</td>
+                    <td class="text-start align-middle text-wrap">${h.puestoActual}</td>
+                    <td class="text-start align-middle text-wrap d-none d-sm-table-cell">${h.puestoAnterior}</td>
+                    <td class="text-start align-middle text-wrap d-none d-md-table-cell">${h.sectorActual}</td>
+                    <td class="text-start align-middle text-wrap d-none d-md-table-cell">${h.sectorAnterior}</td>
                 </tr>
             `);
 
             if (collapseEnabled) {
+
                 let collapseContent = "";
 
-                if (isMobile) collapseContent += `<b>Legajo:</b> ${emp.nroLegajo}<br>`;
-                collapseContent += `<b>Puesto:</b> ${emp.puesto}`;
+                if (isMobile) collapseContent += `<b>Puesto Anterior:</b> ${h.puestoAnterior}<br>`;
+                collapseContent += `<b>Sector Actual:</b> ${h.sectorActual}<br>`;
+                collapseContent += `<b>Sector Anterior:</b> ${h.sectorAnterior}`;
 
                 tabla.append(`
                     <tr>
-                        <td colspan="3" class="p-0">
+                        <td colspan="5" class="p-0">
                             <div id="${collapseId}" class="collapse">
                                 <div class="p-2 bg-light text-wrap">
                                     ${collapseContent}
@@ -143,26 +125,14 @@ function MostrarEmpleadosPorSector(data) {
 
 
 
-
 // =========================================================================================
-// ========================== Formatear Nombre de los Select=========================================
+// ========================== Generar Informe en PDF ========================================
 // =========================================================================================
-function Capitalizar(texto) {
-    if (!texto) return "";
-    return texto
-        .toLowerCase()
-        .replace(/\b\w/g, char => char.toUpperCase());
-}
+async function GenerarInformePdfListadoHistorialPorEmpleado() {
 
-
-// =========================================================================================
-// ========================== Generar Informe en PDF =========================================
-// =========================================================================================
-async function GenerarInformePdfListadoEmpleadoPorSector() {
-
-    const sectores = await ObtenerEmpleadosPorSector();
-
-    if (!sectores || !Array.isArray(sectores) || sectores.length === 0) {
+    const data = window._cacheHistorialEmpleado;
+    
+      if (!data || !Array.isArray(data) || data.length === 0) {
         ErrorGeneralInformePdf();
         return;
     }
@@ -173,10 +143,11 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
     doc.setTextColor(19, 115, 204);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("Informe de Empleados por Sector", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+    doc.text("Informe de Historial por Empleado", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
 
     let y = 29;
     const fechaHoy = new Date().toLocaleString("es-AR");
+
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(11);
 
@@ -186,37 +157,33 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
     doc.text(fechaHoy, 33, y);
     y += 6;
 
-    const totalSectores = sectores.length;
-    const totalEmpleados = sectores.reduce((a, s) => a + s.empleados.length, 0);
+    const totalEmpleados = data.length;
+    const totalMovimientos = data.reduce((a, e) => a + e.historial.length, 0);
 
     doc.setFont("helvetica", "normal");
-    doc.text("Total Sectores:", 14, y);
+    doc.text("Total Empleados:", 14, y);
     doc.setFont("helvetica", "bold");
-    doc.text(`${totalSectores}`, 42, y);
+    doc.text(`${totalEmpleados}`, 46, y);
 
     doc.setFont("helvetica", "normal");
-    doc.text("| Total Empleados:", 46, y);
+    doc.text("| Total Movimientos:", 50, y);
     doc.setFont("helvetica", "bold");
-    doc.text(`${totalEmpleados}`, 80, y);
+    doc.text(`${totalMovimientos}`, 89, y);
     y += 6;
 
     let nombreFiltro = $("#EmpleadoIdBuscar").val();
     let legajoFiltro = $("#NroLegajoFiltro").val();
-    let sectorFiltro = $("#IdSectorFiltro").val();
 
     let filtros = [];
     if (nombreFiltro) filtros.push(`[Nombre: ${nombreFiltro}]`);
     if (legajoFiltro) filtros.push(`[Legajo: ${legajoFiltro}]`);
-    if (sectorFiltro && sectorFiltro !== "0") {
-        const sectorNombreRaw = $("#IdSectorFiltro option:selected").text();
-        const sectorNombre = Capitalizar(sectorNombreRaw);
-        filtros.push(`[Sector: ${sectorNombre}]`);
-    }
+
     const filtrosText = filtros.length > 0 ? filtros.join("  |  ") : "No se aplicaron";
 
     doc.setFont("helvetica", "normal");
     doc.text("Filtros Aplicados:", 14, y);
     doc.setFont("helvetica", "bold");
+
     const filtrosSplit = doc.splitTextToSize(filtrosText, 260);
     doc.text(filtrosSplit, 44, y);
     y += filtrosSplit.length * 6 + 2;
@@ -225,24 +192,33 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
     doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
     y += 7;
 
+
     const body = [];
-    sectores.forEach(sector => {
+
+    data.forEach(emp => {
+
         body.push([{
-            content: `Sector: ${sector.nombre}`,
-            colSpan: 3,
+            content: `${emp.nombre}   (Legajo: ${emp.nroLegajo})`,
+            colSpan: 5,
             styles: { fillColor: [183, 211, 255], fontStyle: "bold" }
         }]);
 
-        sector.empleados.forEach(emp => {
-            body.push([emp.nombre, emp.nroLegajo, emp.puesto]);
+        emp.historial.forEach(h => {
+            body.push([
+                h.periodo,
+                h.puestoActual,
+                h.puestoAnterior || "-",
+                h.sectorActual,
+                h.sectorAnterior || "-"
+            ]);
         });
     });
 
-    if (sectores.length === 0 || body.length === 0) {
+    if (body.length === 0) {
         doc.setFont("helvetica", "bold");
         doc.setTextColor(180, 0, 0);
         doc.text(
-            "No hay resultados para los filtros aplicados.",
+            "No hay historial cargado para los filtros aplicados.",
             doc.internal.pageSize.getWidth() / 2,
             y + 10,
             { align: "center" }
@@ -250,7 +226,7 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
     } else {
         doc.autoTable({
             startY: y,
-            head: [["Nombre", "Legajo", "Puesto"]],
+            head: [["Periodo", "Puesto Actual", "Puesto Anterior", "Sector Actual", "Sector Anterior"]],
             body: body,
             styles: { font: "helvetica", fontSize: 10 },
             headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
@@ -263,7 +239,7 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
         doc.setPage(i);
         doc.setFontSize(9);
         doc.setTextColor(100);
-        doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
+        doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
     }
 
@@ -280,8 +256,10 @@ async function GenerarInformePdfListadoEmpleadoPorSector() {
     const w = window.open("", "_blank");
     w.document.open();
     w.document.write(html);
-    w.document.title = "Informe de Empleados por Sector";
+    w.document.title = "Informe Historial por Empleado";
     w.document.close();
 }
 
-ComboParaFiltrarSector();
+
+
+ObtenerHistorialPorEmpleado();

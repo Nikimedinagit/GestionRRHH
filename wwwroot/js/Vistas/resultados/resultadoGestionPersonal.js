@@ -3,19 +3,19 @@
 
 
 // =================================== Evolución de empleados ===================================
-async function cargarEvolucionEmpleados() {
-    const res = await authFetch('Resultados/EvolucionEmpleados');
+async function cargarEvolucionPersonal() {
+    const res = await authFetch('Resultados/EvolucionPersonal');
     const data = await res.json();
 
     const meses = data.map(x => x.mes);
     const cantidad = data.map(x => x.cantidad);
 
-    new Chart(document.getElementById("graficoEvolucionEmpleados"), {
+    new Chart(document.getElementById("graficoEvolucionPersonal"), {
         type: 'line',
         data: {
             labels: meses,
             datasets: [{
-                label: 'Empleados Activos',
+                label: 'Personal Activo',
                 data: cantidad,
                 backgroundColor: "rgba(168, 218, 220, 0.3)",
                 borderColor: "#A8DADC",
@@ -27,19 +27,22 @@ async function cargarEvolucionEmpleados() {
         },
         options: {
             responsive: true,
-            plugins: { legend: { display: true } },
-           scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    precision: 0
+            plugins: { 
+                legend: { display: true },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
                 }
             }
         }
-        }
     });
 }
+
 
 // =================================== Asistencia mensual ===================================
 async function cargarAsistenciaMensual() {
@@ -137,7 +140,7 @@ const coloresPasteles = ["#A8DADC", "#F1FAEE", "#FFE5D9", "#FFCAD4", "#B5EAEA", 
 }
 
 
-cargarEvolucionEmpleados();
+cargarEvolucionPersonal();
 cargarAsistenciaMensual();
 cargarJustificacionesPorDia();
 

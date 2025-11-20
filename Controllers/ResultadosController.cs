@@ -27,7 +27,7 @@ public class ResultadosController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LA EVOLUCION DE EMPLEADOS ACTIVOS EN LOS ULTIMOS 12 MESES (GRAFICO) ///
     /////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("EvolucionEmpleados")]
+    [HttpGet("EvolucionPersonal")]
     public async Task<IActionResult> EvolucionEmpleados()
     {
         var hoy = DateTime.Today;
@@ -36,23 +36,32 @@ public class ResultadosController : ControllerBase
         for (int i = 11; i >= 0; i--)
         {
             var mes = hoy.AddMonths(-i);
-            int cantidadActivos = await _context.Empleado
-                .Where(e => !e.Eliminado && e.HistorialLaboral
-                    .Any(h => h.FechaModificacion <= mes.AddMonths(1).AddDays(-1)))
+
+            var inicioMes = new DateTime(mes.Year, mes.Month, 1);
+            var finMes = inicioMes.AddMonths(1).AddDays(-1);
+
+            int activacionesMes = await _context.ActivacionEmpleado
+                .Where(a =>
+                    a.Activo == true &&
+                    a.FechaActivacion != null &&
+                    a.FechaActivacion >= inicioMes &&
+                    a.FechaActivacion <= finMes)
                 .CountAsync();
 
             string nombreMes = mes.ToString("MMM", new CultureInfo("es-ES"));
             nombreMes = char.ToUpper(nombreMes[0]) + nombreMes.Substring(1);
 
+
             resultado.Add(new EvolucionEmpleadoGrafico
             {
                 Mes = nombreMes,
-                Cantidad = cantidadActivos
+                Cantidad = activacionesMes,
             });
         }
 
         return Ok(resultado);
     }
+
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +232,9 @@ public class ResultadosController : ControllerBase
         return Ok(AgruparPorSector);
     }
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LISATDO DE EMEPLADO POR SECTOR - NIVEL 2 /////////////////////////////////////////////////  
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     [HttpPost("SectorEmpleadoN2")]
     public async Task<ActionResult<List<SectorEmpeladoListadoN2>>> ObtenerInformeEmpleado([FromBody] FiltrarListadoSectorEmpelado filtro)
     {
@@ -262,6 +273,116 @@ public class ResultadosController : ControllerBase
         return Ok(AgruparPorSector);
 
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LISATDO DE HISTORIAL LABORAL POR EMEPLADO - NIVEL 2 /////////////////////////////////////////////////  
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("EmpleadoHistorialLaboralN2")]
+    public async Task<ActionResult<List<EmpleadoHistorialLaboralListadoN2>>> ObtenerHistorialLaboral([FromBody] FiltrarEmpleadoHistorialLaboral filtro)
+    {
+        var Historial = _context.HistorialLaboral
+            .Include(h => h.Empleado)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            Historial = Historial.Where(h => h.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            Historial = Historial.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        var ObtenerHistorial = await Historial
+        .OrderBy(o => o.Empleado.NroLegajo)
+        .ThenBy(o => o.FechaModificacion)
+        .ToListAsync();
+
+        var Puesto = await _context.Puesto.Include(p => p.Sector).ToListAsync();
+
+        var AgruparPorEmpelado = ObtenerHistorial
+            .GroupBy(h => h.Empleado)
+            .Select(empleadoGrupo => new EmpleadoHistorialLaboralListadoN2
+            {
+                Nombre = empleadoGrupo.Key.NombreCompleto,
+                NroLegajo = empleadoGrupo.Key.NroLegajo,
+                Historial = empleadoGrupo
+                .Select(historialGrupo => new HistorialLaboralListadoN2
+                {
+                    Periodo = historialGrupo.FechaModificacion.ToString("dd/MM/yyyy"),
+                    PuestoAnterior = historialGrupo.PuestoAnterior,
+                    PuestoActual = historialGrupo.PuestoActual,
+                    SectorAnterior = Puesto.FirstOrDefault(p => p.Descripcion == historialGrupo.PuestoAnterior)?.Sector.Nombre,
+                    SectorActual = Puesto.FirstOrDefault(p => p.Descripcion == historialGrupo.PuestoActual)?.Sector.Nombre
+                }).ToList(),
+            }).ToList();
+
+        return Ok(AgruparPorEmpelado);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER ESTADITICO GENERAL DE EMPELADO, ASISTENCIA Y JUSTIFICACION DE LOS ULTIMO 12 MESES /////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("GlobalN1")]
+    public async Task<ActionResult<List<GlobalEstadisticoN1>>> ObtenerEstadisticaGlobal()
+    {
+        var Hoy = DateTime.Today;
+        var Desde = Hoy.AddMonths(-11);
+
+        var ListaActivaciones = await _context.ActivacionEmpleado.ToListAsync();
+        var ObtenerAsistencia = await _context.Asistencia.Where(a => a.Fecha >= Desde).ToListAsync();
+        var ObtenerJustificaicon = await _context.Justificacion.Where(a => a.Fecha >= Desde).ToListAsync();
+
+        var TotalResultado = new List<GlobalEstadisticoN1>();
+
+        for (int i = 0; i < 12; i++)
+        {
+            var FechaDelMes = Desde.AddMonths(i);
+            var NombreDelMes = FechaDelMes.ToString("MMMM yyyy", new CultureInfo("es-AR")).ToUpper();
+
+            var fechaFinMes = new DateTime(FechaDelMes.Year, FechaDelMes.Month, DateTime.DaysInMonth(FechaDelMes.Year, FechaDelMes.Month));
+
+            var ObtenerEmpleado = ListaActivaciones
+                .Where(a => a.FechaActivacion <= fechaFinMes)
+                .GroupBy(a => a.EmpleadoId)
+                .Select(g => g.OrderByDescending(a => a.FechaActivacion).FirstOrDefault())
+                .Where(a => a != null && a.Activo)
+                .Count();
+
+            var AsistenciaDelmes = ObtenerAsistencia
+                .Where(a => a.Fecha.Month == FechaDelMes.Month && a.Fecha.Year == FechaDelMes.Year)
+                .ToList();
+
+            var JustificacionDelmes = ObtenerJustificaicon
+                .Where(j => j.Fecha.Month == FechaDelMes.Month && j.Fecha.Year == FechaDelMes.Year)
+                .Count();
+
+            int Presente = AsistenciaDelmes.Count(a => a.Estado == EstadoAsistencia.COMPLETA);
+            int Ausente = AsistenciaDelmes.Count(a => a.Estado == EstadoAsistencia.AUSENTE);
+            int Tarde = AsistenciaDelmes.Count(a => a.Estado == EstadoAsistencia.TARDE);
+            int Incompleta = AsistenciaDelmes.Count(a => a.Estado == EstadoAsistencia.INCOMPLETA);
+            int FueraDeHorario = AsistenciaDelmes.Count(a => a.Estado == EstadoAsistencia.FUERADEHORARIO);
+
+            decimal Presentismo = ObtenerEmpleado == 0 ? 0 : Math.Round((decimal)Presente / ObtenerEmpleado * 100, 2);
+            decimal Ausentismo = ObtenerEmpleado == 0 ? 0 : Math.Round((decimal)Ausente / ObtenerEmpleado * 100, 2);
+
+            TotalResultado.Add(new GlobalEstadisticoN1
+            {
+                Mes = NombreDelMes,
+                Activos = ObtenerEmpleado,
+                Presentes = Presente,
+                Ausentes = Ausente,
+                Tarde = Tarde,
+                Incompletas = Incompleta,
+                FueraDeHorario = FueraDeHorario,
+                Justificaciones = JustificacionDelmes,
+                PorcentajePresentismo = Presentismo,
+                PorcentajeAusentismo = Ausentismo,
+                FechaOrden = FechaDelMes
+            });
+        }
+
+        return TotalResultado.OrderByDescending(x => x.FechaOrden).ToList();
+    }
+
 
 
 

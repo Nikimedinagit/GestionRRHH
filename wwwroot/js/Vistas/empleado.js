@@ -1374,6 +1374,7 @@ function MostrarDetalleHistorial(index) {
 /// FUNCION PARA GENERA UN INFORME PARA EMPLEADOS SEGUN SU FILTRO //////////////
 ////////////////////////////////////////////////////////////////////////////////
 async function GenerarInformePdfEmpleado() {
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("landscape");
 
@@ -1407,6 +1408,10 @@ async function GenerarInformePdfEmpleado() {
 
   const { empleados, resumen } = await res.json();
 
+  if (!empleados || !Array.isArray(empleados) || empleados.length === 0) {
+    ErrorGeneralInformePdf();
+    return;
+  }
 
   let filtrosAplicadosArray = [];
 
@@ -1503,76 +1508,72 @@ async function GenerarInformePdfEmpleado() {
   doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
   y += 7;
 
-  if (empleados.length === 0) {
+
+  doc.setTextColor(0, 0, 0);
+  const anchoPagina = doc.internal.pageSize.getWidth() - 30;
+  empleados.forEach((e) => {
+    if (y > 180) {
+      doc.addPage();
+      y = 20;
+    }
+
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(180, 0, 0);
-    doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
-  } else {
-    doc.setTextColor(0, 0, 0);
-    const anchoPagina = doc.internal.pageSize.getWidth() - 30;
-    empleados.forEach((e) => {
-      if (y > 180) {
-        doc.addPage();
-        y = 20;
+    doc.text(e.nombreCompleto.toUpperCase(), 14, y);
+    y += 6;
+
+    const datosEmpleado = [
+      ["DNI", e.dni],
+      ["Legajo", e.nroLegajo],
+      ["Edad", e.edad],
+      ["CUIL", e.cuil],
+      ["Dirección", e.direccion],
+      ["Localidad", e.localidadIdString],
+      ["Puesto", e.puestoIdString],
+      ["Estado Civil", e.estadoCivilesString],
+      ["Sexo", e.tipoSexoString],
+      ["Email", e.email],
+      ["Teléfono", e.telefono],
+      ["Hijos", e.cantidadHijos]
+    ];
+
+    let xPos = 20;
+    const margenDerecho = doc.internal.pageSize.getWidth() - 20;
+    const espacioEntre = 8;
+
+    datosEmpleado.forEach(([label, valor], idx) => {
+      const textoLabel = `${label}:`;
+      const textoValor = `${valor}`;
+      const textoCompleto = idx < datosEmpleado.length - 1
+        ? `${textoLabel} ${textoValor} |`
+        : `${textoLabel} ${textoValor}`;
+
+      const anchoTexto = doc.getTextWidth(textoCompleto);
+
+      if (xPos + anchoTexto > margenDerecho) {
+        xPos = 20;
+        y += 6;
       }
 
       doc.setFont("helvetica", "bold");
-      doc.text(e.nombreCompleto.toUpperCase(), 14, y);
-      y += 6;
+      doc.text(textoLabel, xPos, y);
 
-      const datosEmpleado = [
-        ["DNI", e.dni],
-        ["Legajo", e.nroLegajo],
-        ["Edad", e.edad],
-        ["CUIL", e.cuil],
-        ["Dirección", e.direccion],
-        ["Localidad", e.localidadIdString],
-        ["Puesto", e.puestoIdString],
-        ["Estado Civil", e.estadoCivilesString],
-        ["Sexo", e.tipoSexoString],
-        ["Email", e.email],
-        ["Teléfono", e.telefono],
-        ["Hijos", e.cantidadHijos]
-      ];
+      const anchoLabel = doc.getTextWidth(textoLabel + " ");
+      doc.setFont("helvetica", "normal");
+      doc.text(textoValor, xPos + anchoLabel, y);
 
-      let xPos = 20;
-      const margenDerecho = doc.internal.pageSize.getWidth() - 20;
-      const espacioEntre = 8;
+      if (idx < datosEmpleado.length - 1) {
+        const anchoValor = doc.getTextWidth(textoValor + " ");
+        doc.text("|", xPos + anchoLabel + anchoValor, y);
+      }
 
-      datosEmpleado.forEach(([label, valor], idx) => {
-        const textoLabel = `${label}:`;
-        const textoValor = `${valor}`;
-        const textoCompleto = idx < datosEmpleado.length - 1
-          ? `${textoLabel} ${textoValor} |`
-          : `${textoLabel} ${textoValor}`;
-
-        const anchoTexto = doc.getTextWidth(textoCompleto);
-
-        if (xPos + anchoTexto > margenDerecho) {
-          xPos = 20;
-          y += 6;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.text(textoLabel, xPos, y);
-
-        const anchoLabel = doc.getTextWidth(textoLabel + " ");
-        doc.setFont("helvetica", "normal");
-        doc.text(textoValor, xPos + anchoLabel, y);
-
-        if (idx < datosEmpleado.length - 1) {
-          const anchoValor = doc.getTextWidth(textoValor + " ");
-          doc.text("|", xPos + anchoLabel + anchoValor, y);
-        }
-
-        xPos += anchoTexto + espacioEntre;
-      });
-
-      y += 10;
+      xPos += anchoTexto + espacioEntre;
     });
 
+    y += 10;
+  });
 
-  }
+
+
 
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
@@ -1598,10 +1599,10 @@ async function GenerarInformePdfEmpleado() {
 
 }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  // INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////
-  ComboParaFiltrarLocalidadPuesto();
+//////////////////////////////////////////////////////////////////////////////////////////
+// INICILIAZMOS AL CARGAR LA VISTA /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+ComboParaFiltrarLocalidadPuesto();
 
 
 

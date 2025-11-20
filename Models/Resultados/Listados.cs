@@ -25,8 +25,8 @@ public class AsistenciaListadoN2
 // ========================== Para Filtrar en el Listado ============================ //
 public class FiltrarListadoAsistenciaEmpleado
 {
-    public DateTime? FechaDesde {get; set;}
-    public DateTime? FechaHasta {get; set;}
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,33 +42,33 @@ public class FiltrarListadoAsistenciaEmpleado
 // ========================== Armamos Primer Grupo Sector ============================ //
 public class SectorEmpleadoJustificacionListadoN3
 {
-    public string Nombre {get; set;}
-    public List<EmpleadoJustificacionListadoN3> Empleado {get; set;}
+    public string Nombre { get; set; }
+    public List<EmpleadoJustificacionListadoN3> Empleado { get; set; }
 }
 
 // ========================== Armamos Segundo Grupo Empleado ============================ //
 public class EmpleadoJustificacionListadoN3
 {
-    public string Nombre{get; set;}
-    public string NroLegajo {get; set;}
-    public List<JustificacionListadoN3> Justificaciones {get; set;}
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<JustificacionListadoN3> Justificaciones { get; set; }
 
 }
 
 // ========================== Armamos Tercer Grupo Justificacion ============================ //
 public class JustificacionListadoN3
 {
-    public DateTime? Fecha{get; set;}
-    public string Motivo {get; set;}
-    public string Estado {get; set;}
+    public DateTime? Fecha { get; set; }
+    public string Motivo { get; set; }
+    public string Estado { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
 public class FiltrarListadoSectorEmpeladoJustificacion
 {
-    public DateTime? FechaDesde {get; set;}
-    public DateTime? FechaHasta {get; set;}
-    public int? Estado {get; set;}
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public int? Estado { get; set; }
 
 }
 
@@ -84,26 +84,58 @@ public class FiltrarListadoSectorEmpeladoJustificacion
 // ========================== Armamos primer Grupo Sector ============================ //
 public class SectorEmpeladoListadoN2
 {
-    public string Nombre {get; set;}
-    public List<EmpleadoListadoN2> Empleados {get; set;}
+    public string Nombre { get; set; }
+    public List<EmpleadoListadoN2> Empleados { get; set; }
 }
 
 // ========================== Armamos Segundo Grupo Empleado ============================ //
 public class EmpleadoListadoN2
 {
-    public string Nombre {get; set;}
-    public string NroLegajo {get; set;}
-    public string Puesto {get; set;}
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public string Puesto { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
 public class FiltrarListadoSectorEmpelado
 {
     public string? Nombre { get; set; }
-    public int? Sector {get; set;}
-    public string NroLegajo {get; set;}
+    public int? Sector { get; set; }
+    public string NroLegajo { get; set; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /// FIN DE CLASES PARA EL LISTADO DE EMPLEADO POR SECTOR - NIVEL 2
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA EL LISTADO DE HISTORIAL LABORAL POR EMPELADO - NIVEL2
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ========================== Armamos primer Grupo Empelado ============================ //
+public class EmpleadoHistorialLaboralListadoN2
+{
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<HistorialLaboralListadoN2> Historial { get; set; }
+}
+
+// ========================== Armamos Segundo Grupo Historial ============================ //
+public class HistorialLaboralListadoN2
+{
+    public string Periodo { get; set; }
+    public string PuestoAnterior { get; set; }
+    public string PuestoActual { get; set; }
+    public string SectorAnterior { get; set; }
+    public string SectorActual { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarEmpleadoHistorialLaboral
+{
+    public string? Nombre { get; set; }
+    public string? NroLegajo { get; set; }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA EL LISTADO DE HISTORIAL LABORAL POR EMPELADO - NIVEL2
 ///////////////////////////////////////////////////////////////////////////////////////////////

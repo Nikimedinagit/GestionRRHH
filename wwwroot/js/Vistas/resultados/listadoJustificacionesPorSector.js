@@ -169,6 +169,11 @@ async function GenerarInformePdfListadoJustificacionPorSector() {
 
     const sectores = await ObtenerJustificacionesPorSector();
 
+   if (!sectores || !Array.isArray(sectores) || sectores.length === 0) {
+        ErrorGeneralInformePdf();
+        return;
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF("landscape");
 

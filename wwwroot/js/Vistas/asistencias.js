@@ -260,6 +260,11 @@ async function GenerarInformePdfAsistencias() {
 
     const { asistencias, resumen } = await res.json();
 
+    if (!asistencias || !Array.isArray(asistencias) || asistencias.length === 0) {
+        ErrorGeneralInformePdf();
+        return;
+    }
+
     let filtrosAplicadosArray = [];
     if (filtro.DNI) filtrosAplicadosArray.push(`[DNI: ${filtro.DNI}]`);
     if (filtro.NombreCompleto) filtrosAplicadosArray.push(`[Nombre: ${filtro.NombreCompleto}]`);
@@ -326,27 +331,23 @@ async function GenerarInformePdfAsistencias() {
     doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
     y += 7;
 
-    if (asistencias.length === 0) {
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(180, 0, 0);
-        doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
-    } else {
-        doc.autoTable({
-            startY: y,
-            head: [["Empleado", "Estado", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
-            body: asistencias.map(a => [
-                a.empleadoNombre,
-                a.estado,
-                a.primerEntrada ? a.primerEntrada : "-",
-                a.primerSalida ? a.primerSalida : "-",
-                a.segundaEntrada ? a.segundaEntrada : "-",
-                a.segundaSalida ? a.segundaSalida : "-"
-            ]),
-            styles: { font: "helvetica", fontSize: 10 },
-            headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
-            margin: { left: 14, right: 14 }
-        });
-    }
+
+    doc.autoTable({
+        startY: y,
+        head: [["Empleado", "Estado", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+        body: asistencias.map(a => [
+            a.empleadoNombre,
+            a.estado,
+            a.primerEntrada ? a.primerEntrada : "-",
+            a.primerSalida ? a.primerSalida : "-",
+            a.segundaEntrada ? a.segundaEntrada : "-",
+            a.segundaSalida ? a.segundaSalida : "-"
+        ]),
+        styles: { font: "helvetica", fontSize: 10 },
+        headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+        margin: { left: 14, right: 14 }
+    });
+
 
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {

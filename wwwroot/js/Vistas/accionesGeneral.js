@@ -117,3 +117,26 @@ function toggleAyuda() {
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR EL ERROR GENERAR INFORMES VACIOS///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function ErrorGeneralInformePdf() {
+    Swal.fire({
+        title: "No es posible generar el informe",
+        html: `
+          <div class="text-center">
+            <p>No se encontraron resultados con los filtros aplicados.</p>
+            <p>Modificá los criterios de búsqueda e intentá nuevamente.</p>
+          </div>
+        `,
+        confirmButtonText: "Entendido",
+        customClass: {
+            popup: "shadow rounded-3 p-3",
+            confirmButton: "btn btn-danger",
+            title: "fs-5 text-dark mb-2",
+            htmlContainer: "text-muted fs-6",
+        },
+        buttonsStyling: false,
+    });
+}

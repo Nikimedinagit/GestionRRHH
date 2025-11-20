@@ -150,6 +150,11 @@ async function GenerarInformePdfListadoAsistenciaPorEmpleado() {
 
   const empleados = await ObtenerAsistenciaPorEmpleado();
 
+   if (!empleados || !Array.isArray(empleados) || empleados.length === 0) {
+        ErrorGeneralInformePdf();
+        return;
+    }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("landscape");
 

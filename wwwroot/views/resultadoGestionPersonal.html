@@ -25,32 +25,82 @@
 
         <div class="collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
             style="border-left: 4px solid #6A5ACD !important">
-            <div class="sidebar-resultados shadow-sm p-2 border-3 d-flex justify-content-center align-items-center">
-                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
+            <div class="sidebar-resultados shadow-sm p-3">
+
+                <!-- 🔹 SECCIÓN: LISTADOS JERÁRQUICOS -->
+                <h6 class="text-muted text-uppercase fw-bold small mb-2">
+                    <i class="fa-solid fa-layer-group me-2"></i> Listados Jerárquicos
+                </h6>
+
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoAsistenciaPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-user-check me-2"></i> Asistencias por Empleado
                         </a>
                     </li>
+
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoJustificacionPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-building me-2"></i> Justificaciones por Sector
                         </a>
                     </li>
+
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoEmpleadosPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                        <i class="fa-solid fa-diagram-project me-2"></i> Empleados por Sector
+                            <i class="fa-solid fa-diagram-project me-2"></i> Empleados por Sector
                         </a>
                     </li>
+
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <i class="fa-solid fa-id-card me-2"></i> Historial Laboral de Empleados
+                        <a href="#resultadoHistorialPorEmpleado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-id-card me-2"></i> Historial Laboral
+                        </a>
                     </li>
                 </ul>
+
+                <hr class="my-3">
+
+                <h6 class="text-muted text-uppercase fw-bold small mb-2">
+                    <i class="fa-solid fa-chart-column me-2"></i> Estadísticos
+                </h6>
+
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoGlobalGestionEmpleado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chart-line me-2"></i> Global
+                        </a>
+                    </li>
+
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoDepartamentoEstado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-sitemap me-2"></i> Departamento → Estado
+                        </a>
+                    </li>
+
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoDepartamentoEmpleadoEstado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-users-line me-2"></i> Departamento → Empleado → Estado
+                        </a>
+                    </li>
+
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoJustificaciones"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-clipboard-list me-2"></i> Justificaciones (Últimos 12 Meses)
+                        </a>
+                    </li>
+                </ul>
+
             </div>
         </div>
+
 
 
 
@@ -59,8 +109,8 @@
             <div class="row">
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                    <h5>Evolución de Empleados</h5>
-                    <canvas id="graficoEvolucionEmpleados" height="90"></canvas>
+                    <h5>Evolución de Personal</h5>
+                    <canvas id="graficoEvolucionPersonal" height="90"></canvas>
                 </div>
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">

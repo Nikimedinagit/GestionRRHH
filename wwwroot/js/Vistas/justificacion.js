@@ -1134,6 +1134,11 @@ async function GenerarInformePdfJustificaciones() {
 
   const { justificaciones, resumen } = await res.json();
 
+  if (!justificaciones || !Array.isArray(justificaciones) || justificaciones.length === 0) {
+        ErrorGeneralInformePdf();
+        return;
+    }
+
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");

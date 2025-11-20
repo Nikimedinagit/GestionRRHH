@@ -1204,6 +1204,11 @@ async function GenerarInformePdfHorarios() {
 
   const { horarios, resumen } = await res.json();
 
+   if (!horarios || !Array.isArray(horarios) || horarios.length === 0) {
+        ErrorGeneralInformePdf();
+        return;
+    }
+
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
@@ -1253,11 +1258,6 @@ async function GenerarInformePdfHorarios() {
   doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
   y += 7;
 
-  if (horarios.length === 0) {
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(180, 0, 0);
-    doc.text("No hay resultados para los filtros aplicados.", doc.internal.pageSize.getWidth() / 2, y + 10, { align: "center" });
-  } else {
     doc.autoTable({
       startY: y,
       head: [["Empleado", "Puesto", "Tipo Horario", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
@@ -1281,7 +1281,6 @@ async function GenerarInformePdfHorarios() {
       headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
       margin: { left: 14, right: 14 }
     });
-  }
 
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {

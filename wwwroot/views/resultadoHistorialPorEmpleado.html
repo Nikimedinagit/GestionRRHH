@@ -3,8 +3,8 @@
 
     <!-- ======================================= Título ====================================== -->
     <div class="mb-3">
-        <h3 class="titulo-seccion">Listado de Asistencia por Empleado</h3>
-        <p class="text-muted mb-3">Visualiza los registros de asistencia de cada empleado.</p>
+        <h3 class="titulo-seccion">Listado de Historial Laboral por Empleado</h3>
+        <p class="text-muted mb-3">Visualizá los cambios de puestos y sectores de cada empleado..</p>
     </div>
 
     <hr />
@@ -25,7 +25,7 @@
                     <span>Filtros</span>
                 </button>
 
-                <button class="btn btn-informe" onclick="GenerarInformePdfListadoEmpleadoPorSector()">
+                <button class="btn btn-informe" onclick="GenerarInformePdfListadoHistorialPorEmpleado()">
                     <i class="fa-solid fa-file-lines me-1"></i>
                     <span>Generar Informe</span>
                 </button>
@@ -49,13 +49,6 @@
                         placeholder="Buscar..." />
                 </div>
 
-                <div class="col-12 col-md-3">
-                    <label for="IdSectorFiltro" class="form-label-fija">Sector</label>
-                    <select id="IdSectorFiltro" class="form-control filtro-select">
-                        <option value="0">[Todos]</option>
-                    </select>
-                </div>
-
             </div>
         </div>
 
@@ -66,12 +59,15 @@
             <table class="table table-bordered table-hover align-middle">
                 <thead>
                     <tr>
-                        <th class="text-start">Nombre</th>
-                        <th class="text-center d-none d-sm-table-cell">Nro Legajo</th>
-                        <th class="text-start d-none d-md-table-cell">Puesto</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-start">Puesto Actual</th>
+                        <th class="text-start d-none d-sm-table-cell">Puesto Anterior</th>
+                        <th class="text-start d-none d-md-table-cell">Sector Actual</th>
+                        <th class="text-start d-none d-md-table-cell">Sector Anterior</th>
+
                     </tr>
                 </thead>
-                <tbody id="listadoEmpeladoPorSector"></tbody>
+                <tbody id="listadoHistorialPorEmpleado"></tbody>
             </table>
         </div>
 
@@ -80,4 +76,4 @@
 
 </div>
 
-<script src="../js/Vistas/resultados/listadoEmpleadosPorSector.js"></script>
+<script src="../js/Vistas/resultados/listadoHistorialPorEmpleado.js"></script>
