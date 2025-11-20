@@ -616,7 +616,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                     EmpleadoNombreString = a.Empleado.NombreCompleto,
                     EmpleadoEmailString = a.Empleado.Email,
                     EmpleadoDNIString = a.Empleado.DNI.ToString(),
-                    FechaActivacionString = a.FechaActivacion?.ToString("yyyy-MM-dd") ?? "",
+                    FechaActivacionString = a.FechaActivacion?.ToString("dd/MM/yyyy") ?? "",
                     Activo = a.Activo ,
                     EmpleadoId = a.EmpleadoId,
                     Rol = rol

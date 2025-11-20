@@ -1132,7 +1132,8 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   .columna-estado,
   .columna-responsable,
   .columna-fecha-activacion,
-  .columna-dni-activacion {
+  .columna-dni-activacion,
+  .columna-rol-activacion {
     display: none;
   }
 

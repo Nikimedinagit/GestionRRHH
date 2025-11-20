@@ -38,53 +38,61 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<ActionResult<IEnumerable<VistaActivacionEmpleado>>> FiltrarActivacionEmpleado([FromBody] FiltrarActivacionEmpleado filtro)
         {
             var obtenerActivacionEmpleado = _context.ActivacionEmpleado
+                .Include(x => x.Empleado)
                 .AsNoTracking()
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filtro.Nombre))
-            {
-                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(x =>
-                    EF.Functions.Like(x.Empleado.NombreCompleto, $"%{filtro.Nombre.Trim()}%"));
-            }
+                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(a =>
+                    EF.Functions.Like(a.Empleado.NombreCompleto, $"%{filtro.Nombre.Trim()}%"));
 
             if (!string.IsNullOrWhiteSpace(filtro.Email))
-            {
-                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(x =>
-                    EF.Functions.Like(x.Empleado.Email, $"%{filtro.Email.Trim()}%"));
-            }
+                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(a =>
+                    EF.Functions.Like(a.Empleado.Email, $"%{filtro.Email.Trim()}%"));
 
             if (filtro.DNI.HasValue)
-            {
-                string dniFiltro = filtro.DNI.Value.ToString();
-                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(e => e.Empleado.DNI.ToString().StartsWith(dniFiltro));
-            }
+                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(a =>
+                    a.Empleado.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
 
             if (filtro.Activo.HasValue)
             {
                 bool activo = filtro.Activo.Value == 1;
-                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(c => c.Activo == activo);
+                obtenerActivacionEmpleado = obtenerActivacionEmpleado.Where(a => a.Activo == activo);
             }
 
             var resultado = await obtenerActivacionEmpleado
-                .Include(x => x.Empleado)
-                .OrderBy(x => !x.Activo)
-                .ThenBy(x => x.Empleado.NombreCompleto)
-                .ThenBy(x => x.FechaActivacion)
-                .Select(x => new VistaActivacionEmpleado
-                {
-                    Id = x.Id,
-                    EmpleadoNombreString = x.Empleado.NombreCompleto,
-                    EmpleadoEmailString = x.Empleado.Email,
-                    EmpleadoDNIString = x.Empleado.DNI.ToString(),
-                    FechaActivacionString = x.FechaActivacion.HasValue
-                        ? x.FechaActivacion.Value.ToString("yyyy-MM-dd")
-                        : "",
-                    EmpleadoId = x.EmpleadoId,
-                    Activo = x.Activo
-                })
+                .OrderBy(a => !a.Activo)
+                .ThenBy(a => a.Empleado.NombreCompleto)
+                .ThenBy(a => a.FechaActivacion)
                 .ToListAsync();
 
-            return Ok(resultado);
+            var listaFinal = new List<VistaActivacionEmpleado>();
+
+            foreach (var a in resultado)
+            {
+                var usuario = await _userManager.FindByEmailAsync(a.Empleado.Email);
+                string rol = "SIN ROL";
+
+                if (usuario != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(usuario);
+                    rol = roles.FirstOrDefault() ?? "SIN ROL";
+                }
+
+                listaFinal.Add(new VistaActivacionEmpleado
+                {
+                    Id = a.Id,
+                    EmpleadoNombreString = a.Empleado.NombreCompleto,
+                    EmpleadoEmailString = a.Empleado.Email,
+                    EmpleadoDNIString = a.Empleado.DNI.ToString(),
+                    FechaActivacionString = a.FechaActivacion?.ToString("yyyy-MM-dd") ?? "",
+                    EmpleadoId = a.EmpleadoId,
+                    Rol = rol,
+                    Activo = a.Activo
+                });
+            }
+
+            return Ok(listaFinal);
         }
 
 

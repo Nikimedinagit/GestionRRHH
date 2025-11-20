@@ -81,6 +81,7 @@ function MostrarEmpleadosActivacion(data) {
         <td class="text-start ${filaClass}">${item.empleadoNombreString}</td>
         <td class="text-start ${filaClass} columna-email-activacion">${item.empleadoEmailString}</td>
         <td class="text-center ${filaClass} columna-dni-activacion">${item.empleadoDNIString}</td>
+        <td class="text-center ${filaClass} columna-rol-activacion">${item.rol}</td>
         <td class="text-center">
           <button class="btn-editar icono-ver-detalle-empleado-activacion d-md-none" style="background: none; border: none;" 
               onclick="MostrarDetalleEmpleadoActivacion(${index})" data-tippy-content="Ver más">
@@ -115,6 +116,7 @@ function MostrarDetalleEmpleadoActivacion(index) {
   document.getElementById("detalleEmpleadoNombre").textContent = item.empleadoNombreString || "-";
   document.getElementById("detalleEmpleadoEmail").textContent = item.empleadoEmailString || "-";
   document.getElementById("detalleEmpleadoDNI").textContent = item.empleadoDNIString || "-";
+  document.getElementById("detalleEmpleadoRol").textContent = item.rol || "-";
   document.getElementById("detalleEmpleadoEstado").textContent = item.activo ? "Activo" : "Inactivo";
 
   const offcanvasElement = document.getElementById("offcanvasDetalleEmpleadoActivacion");
