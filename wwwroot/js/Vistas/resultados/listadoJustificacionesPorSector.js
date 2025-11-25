@@ -169,7 +169,7 @@ async function GenerarInformePdfListadoJustificacionPorSector() {
 
     const sectores = await ObtenerJustificacionesPorSector();
 
-   if (!sectores || !Array.isArray(sectores) || sectores.length === 0) {
+    if (!sectores || !Array.isArray(sectores) || sectores.length === 0) {
         ErrorGeneralInformePdf();
         return;
     }
@@ -266,7 +266,6 @@ async function GenerarInformePdfListadoJustificacionPorSector() {
         });
     });
 
-    // Después de armar el body pero antes de doc.autoTable
     if (sectores.length === 0 || body.length === 0) {
         doc.setFont("helvetica", "bold");
         doc.setTextColor(180, 0, 0);
@@ -307,11 +306,11 @@ async function GenerarInformePdfListadoJustificacionPorSector() {
         </body>
         </html>
     `;
-   const w = window.open("", "_blank"); 
-w.document.open();
-w.document.write(html);
-w.document.title = "Informe de Justificaciones por Sector";
-w.document.close();
+    const w = window.open("", "_blank");
+    w.document.open();
+    w.document.write(html);
+    w.document.title = "Informe de Justificaciones por Sector";
+    w.document.close();
 
 }
 

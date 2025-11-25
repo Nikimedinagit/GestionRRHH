@@ -27,7 +27,6 @@
             style="border-left: 4px solid #6A5ACD !important">
             <div class="sidebar-resultados shadow-sm p-3">
 
-                <!-- 🔹 SECCIÓN: LISTADOS JERÁRQUICOS -->
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
                     <i class="fa-solid fa-layer-group me-2"></i> Listados Jerárquicos
                 </h6>
@@ -40,14 +39,14 @@
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoJustificacionPorSector">
                         <a href="#resultadoJustificacionPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-building me-2"></i> Justificaciones por Sector
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoEmpleadosPorSector">
                         <a href="#resultadoEmpleadosPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-diagram-project me-2"></i> Empleados por Sector
@@ -72,26 +71,19 @@
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoGlobalGestionEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-chart-line me-2"></i> Global
+                            <i class="fa-solid fa-chart-line me-2"></i> General (Últimos 12 Meses)
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href="#resultadoDepartamentoEstado"
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoAsistenciaPorSector">
+                        <a href="#resultadoAsistenciaPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-sitemap me-2"></i> Departamento → Estado
+                            <i class="fa-solid fa-sitemap me-2"></i> Asistencia Por Sector
                         </a>
                     </li>
 
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href="#resultadoDepartamentoEmpleadoEstado"
-                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-users-line me-2"></i> Departamento → Empleado → Estado
-                        </a>
-                    </li>
-
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href="#resultadoJustificaciones"
+                        <a href="#resultadoJustificaciones12Meses"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-clipboard-list me-2"></i> Justificaciones (Últimos 12 Meses)
                         </a>
@@ -110,20 +102,21 @@
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">
                     <h5>Evolución de Personal</h5>
-                    <canvas id="graficoEvolucionPersonal" height="90"></canvas>
+                    <canvas id="graficoEvolucionPersonal" class="grafico-fijo"></canvas>
                 </div>
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">
                     <h5>Asistencia Mensual</h5>
-                    <canvas id="graficoAsistenciaMensual" height="90"></canvas>
+                    <canvas id="graficoAsistenciaMensual" class="grafico-fijo"></canvas>
                 </div>
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">
                     <h5>Justificacion por Dias (Semanal)</h5>
-                    <canvas id="graficoJustificacionesPorDia" height="90"></canvas>
+                    <canvas id="graficoJustificacionesPorDia" class="grafico-fijo"></canvas>
                 </div>
 
             </div>
+
         </div>
 
 

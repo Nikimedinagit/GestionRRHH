@@ -157,6 +157,7 @@ namespace API_RRHH_TESIS2025.Controllers
                     e.Eliminado,
                     EstadoCivil = e.EstadoCiviles.ToString(),
                     TipoSexo = e.TipoSexo.ToString(),
+                    Edad = e.Edad,
                     Puesto = e.Puesto.Descripcion,
                     Localidad = e.Localidad.Nombre,
                     Horario = e.Horario

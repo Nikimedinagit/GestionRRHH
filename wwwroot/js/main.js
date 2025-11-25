@@ -89,7 +89,7 @@ function MostrarOpcionesSidebarPorRol() {
 
   else if (rol === "SUPERVISOR") {
     $("#miPanelPersonal").removeClass("d-none");
-    $("#justificacionGeneral, #personalACargo").removeClass("d-none");
+    $("#justificacionGeneral, #personalACargo, #resultadoGestionPersonal").removeClass("d-none");
   }
 
   else if (rol === "EMPLEADO") {

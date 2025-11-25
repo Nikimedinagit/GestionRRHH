@@ -148,127 +148,127 @@ function MostrarAsistenciaPorEmpleado(data) {
 
 async function GenerarInformePdfListadoAsistenciaPorEmpleado() {
 
-  const empleados = await ObtenerAsistenciaPorEmpleado();
+    const empleados = await ObtenerAsistenciaPorEmpleado();
 
-   if (!empleados || !Array.isArray(empleados) || empleados.length === 0) {
+    if (!empleados || !Array.isArray(empleados) || empleados.length === 0) {
         ErrorGeneralInformePdf();
         return;
     }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("landscape");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("landscape");
 
-  doc.setTextColor(19, 115, 204);
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
-  doc.text("Informe de Asistencias por Empleado", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+    doc.setTextColor(19, 115, 204);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Informe de Asistencias por Empleado", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
 
-  let y = 29;
-  const fechaHoy = new Date().toLocaleString("es-AR");
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(11);
+    let y = 29;
+    const fechaHoy = new Date().toLocaleString("es-AR");
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(11);
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Generado:", 14, y);
-  doc.setFont("helvetica", "bold");
-  doc.text(fechaHoy, 33, y);
-  y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.text("Generado:", 14, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(fechaHoy, 33, y);
+    y += 6;
 
-  const totalEmpleados = empleados.length;
-  const totalAsistencias = empleados.reduce((acc, emp) => acc + emp.asistencias.length, 0);
+    const totalEmpleados = empleados.length;
+    const totalAsistencias = empleados.reduce((acc, emp) => acc + emp.asistencias.length, 0);
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Total Empleados:", 14, y);
-  doc.setFont("helvetica", "bold");
-  doc.text(`${totalEmpleados}`, 46, y);
+    doc.setFont("helvetica", "normal");
+    doc.text("Total Empleados:", 14, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${totalEmpleados}`, 46, y);
 
-  doc.setFont("helvetica", "normal");
-  doc.text("| Total Asistencias:", 50, y);
-  doc.setFont("helvetica", "bold");
-  doc.text(`${totalAsistencias}`, 84, y);
-  y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.text("| Total Asistencias:", 50, y);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${totalAsistencias}`, 84, y);
+    y += 6;
 
-  let fechaInicioRaw = document.getElementById("FechaInicioBuscar").value;
-  let fechaFinRaw = document.getElementById("FechaFinBuscar").value;
+    let fechaInicioRaw = document.getElementById("FechaInicioBuscar").value;
+    let fechaFinRaw = document.getElementById("FechaFinBuscar").value;
 
-  let filtrosAplicadosArray = [];
-  if (fechaInicioRaw) filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
-  if (fechaFinRaw) filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
+    let filtrosAplicadosArray = [];
+    if (fechaInicioRaw) filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
+    if (fechaFinRaw) filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
 
-  const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
+    const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Filtros Aplicados:", 14, y);
-  doc.setFont("helvetica", "bold");
-  const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
-  doc.text(filtrosText, 45, y);
-  y += filtrosText.length * 6 + 2;
+    doc.setFont("helvetica", "normal");
+    doc.text("Filtros Aplicados:", 14, y);
+    doc.setFont("helvetica", "bold");
+    const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
+    doc.text(filtrosText, 45, y);
+    y += filtrosText.length * 6 + 2;
 
-  doc.setDrawColor(180);
-  doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
-  y += 7;
+    doc.setDrawColor(180);
+    doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
+    y += 7;
 
-  const body = [];
+    const body = [];
 
-  empleados.forEach(emp => {
-    body.push([
-      {
-        content: `${emp.nombre} (Legajo: ${emp.nroLegajo}, Puesto: ${emp.puesto})`,
-        colSpan: 6,
-        styles: {
-          halign: "left",
-          fillColor: [220, 230, 241],
-          textColor: [0, 0, 0],
-          fontStyle: "bold"
-        }
-      }
-    ]);
+    empleados.forEach(emp => {
+        body.push([
+            {
+                content: `${emp.nombre} (Legajo: ${emp.nroLegajo}, Puesto: ${emp.puesto})`,
+                colSpan: 6,
+                styles: {
+                    halign: "left",
+                    fillColor: [220, 230, 241],
+                    textColor: [0, 0, 0],
+                    fontStyle: "bold"
+                }
+            }
+        ]);
 
-    emp.asistencias.forEach(a => {
-      body.push([
-        a.fecha,
-        a.estado,
-        a.primerEntrada || "-",
-        a.primeraSalida || "-",
-        a.segundaEntrada || "-",
-        a.segundaSalida || "-"
-      ]);
+        emp.asistencias.forEach(a => {
+            body.push([
+                a.fecha,
+                a.estado,
+                a.primerEntrada || "-",
+                a.primeraSalida || "-",
+                a.segundaEntrada || "-",
+                a.segundaSalida || "-"
+            ]);
+        });
     });
-  });
 
-  doc.autoTable({
-    startY: y,
-    head: [["Fecha", "Estado", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
-    body: body,
-    styles: { font: "helvetica", fontSize: 10 },
-    headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
-    margin: { left: 14, right: 14 }
-  });
+    doc.autoTable({
+        startY: y,
+        head: [["Fecha", "Estado", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+        body: body,
+        styles: { font: "helvetica", fontSize: 10 },
+        headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+        margin: { left: 14, right: 14 }
+    });
 
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
-    doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
-  }
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(100);
+        doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
+        doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
 
-  const blob = doc.output("blob");
-  const url = URL.createObjectURL(blob);
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
 
-  const html = `
-  <html>
-    <head><title>Informe de Asistencias</title></head>
-    <body class="pdf-body">
-      <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
-    </body>
-  </html>`;
-
-  const w = window.open();
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
+    const html = `
+        <html>
+        <body class="pdf-body">
+            <iframe class="pdf-frame" width="100%" height="100%" src="${url}"></iframe>
+        </body>
+        </html>
+    `;
+    const w = window.open("", "_blank");
+    w.document.open();
+    w.document.write(html);
+    w.document.title = "Informe de Asistencia por Empelado";
+    w.document.close();
 }
 
 

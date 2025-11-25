@@ -1,8 +1,18 @@
 
+// ===================================== Detecta si está en móvil ==================
+function esMobile() {
+    return window.innerWidth < 767;
+}
+
+
+//============ Guarda instancias de los gráficos para poder destruirlos =========================
+var chartEvolucion = null;
+var chartAsistencia = null;
+var chartJustificaciones = null;
 
 
 
-// =================================== Evolución de empleados ===================================
+// ===================================== Grafico Evolucion Del Personal ========================
 async function cargarEvolucionPersonal() {
     const res = await authFetch('Resultados/EvolucionPersonal');
     const data = await res.json();
@@ -10,7 +20,9 @@ async function cargarEvolucionPersonal() {
     const meses = data.map(x => x.mes);
     const cantidad = data.map(x => x.cantidad);
 
-    new Chart(document.getElementById("graficoEvolucionPersonal"), {
+    if (chartEvolucion) chartEvolucion.destroy();
+
+    chartEvolucion = new Chart(document.getElementById("graficoEvolucionPersonal"), {
         type: 'line',
         data: {
             labels: meses,
@@ -27,24 +39,13 @@ async function cargarEvolucionPersonal() {
         },
         options: {
             responsive: true,
-            plugins: { 
-                legend: { display: true },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        precision: 0
-                    }
-                }
-            }
+            maintainAspectRatio: false,
         }
     });
 }
 
 
-// =================================== Asistencia mensual ===================================
+// ===================================== Grafico Asistencia mensual ===================================
 async function cargarAsistenciaMensual() {
     const res = await authFetch('Resultados/AsistenciaMensual');
     const data = await res.json();
@@ -53,7 +54,9 @@ async function cargarAsistenciaMensual() {
     const asistencias = data.map(x => x.asistenciasCompletas);
     const ausencias = data.map(x => x.ausencias);
 
-    new Chart(document.getElementById("graficoAsistenciaMensual"), {
+    if (chartAsistencia) chartAsistencia.destroy();
+
+    chartAsistencia = new Chart(document.getElementById("graficoAsistenciaMensual"), {
         type: 'bar',
         data: {
             labels: meses,
@@ -64,85 +67,87 @@ async function cargarAsistenciaMensual() {
         },
         options: {
             responsive: true,
-            plugins: { legend: { position: 'top' } },
+            maintainAspectRatio: false,
+            indexAxis: esMobile() ? 'y' : 'x',
             scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    precision: 0
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, precision: 0 }
                 }
             }
-        }
         }
     });
 }
 
-// =================================== Ausencias por motivo ===================================
+
+
+// ===================================== Grafico Justificacion Por Dia ======================
 async function cargarJustificacionesPorDia() {
     const res = await authFetch('Resultados/JustificacionPorDia');
     const data = await res.json();
 
-    const dias = data.map(x => x.diaSemana); 
-
+    const dias = data.map(x => x.diaSemana);
     const justificaciones = data.map(x => x.totalJustificaciones);
     const aprobadas = data.map(x => x.totalAprobadas);
     const rechazadas = data.map(x => x.totalRechazadas);
 
-    const canvas = document.getElementById("graficoJustificacionesPorDia");
-    if (!canvas) return;
+    const colores = ["#A8DADC", "#F1FAEE", "#FFE5D9"];
 
-const coloresPasteles = ["#A8DADC", "#F1FAEE", "#FFE5D9", "#FFCAD4", "#B5EAEA", "#FFEE93", "#CDB4DB"];
+    if (chartJustificaciones) chartJustificaciones.destroy();
 
-
-    new Chart(canvas, {
+    chartJustificaciones = new Chart(document.getElementById("graficoJustificacionesPorDia"), {
         type: 'bar',
         data: {
             labels: dias,
             datasets: [
-                {
-                    label: 'Aprobadas',
-                    data: aprobadas,
-                    backgroundColor: coloresPasteles[1]
-                },
-                 {
-                    label: 'Justificaciones',
-                    data: justificaciones,
-                    backgroundColor: coloresPasteles[0]
-                },
-                {
-                    label: 'Rechazadas',
-                    data: rechazadas,
-                    backgroundColor: coloresPasteles[2]
-                }
+                { label: 'Aprobadas', data: aprobadas, backgroundColor: colores[1] },
+                { label: 'Justificaciones', data: justificaciones, backgroundColor: colores[0] },
+                { label: 'Rechazadas', data: rechazadas, backgroundColor: colores[2] }
             ]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Comparativa Diaria de Justificaciones' }
-            },
-            
+            maintainAspectRatio: false,
+            indexAxis: esMobile() ? 'y' : 'x',
             scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    precision: 0
-                }
-            },
-                x: { stacked: false },
-
-        }
+                y: { beginAtZero: true }
+            }
         }
     });
 }
 
 
-cargarEvolucionPersonal();
-cargarAsistenciaMensual();
-cargarJustificacionesPorDia();
+// ===================================== Inicialziar Los Graficos ====================
+async function cargarTodo() {
+    await cargarEvolucionPersonal();
+    await cargarAsistenciaMensual();
+    await cargarJustificacionesPorDia();
+}
+
+cargarTodo();
 
 
 
+// ===================================== Redibujar Si Cambia El Tamaño de la Pantalla ================
+var timeoutResize;
+window.addEventListener("resize", () => {
+    clearTimeout(timeoutResize);
+    timeoutResize = setTimeout(() => {
+        cargarTodo(); 
+    }, 300);
+});
+
+
+
+// ===================================== Mostrar Listados  Por Rol  ==========
+function MostrarOpcionesResultadosPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+  if (rol === "SUPERVISOR") {
+    $("#resultadoJustificacionPorSector, #resultadoEmpleadosPorSector, #resultadoAsistenciaPorSector").addClass("d-none");
+
+  }
+}
+
+MostrarOpcionesResultadosPorRol();

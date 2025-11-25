@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API_NET_CORE8_RRHH.Controllers
 {
-    [Authorize(Roles = "ADMINISTRADOR, RRHH")]
+    [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
     [Route("api/[controller]")]
     [ApiController]
     public class InformesGeneralesPdfController : ControllerBase
@@ -33,13 +33,36 @@ namespace API_NET_CORE8_RRHH.Controllers
         /// METODO PARA GENERAR EL INFORME PDF DE EMPLEADOS SEGUN FILTRO /////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost("GenerarInformeEmpleados")]
-        public IActionResult FiltrarEmpleados([FromBody] FiltrarEmpleado filtro)
+        public async Task<IActionResult> FiltrarEmpleados([FromBody] FiltrarEmpleado filtro)
         {
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
             var obtenerEmpleados = _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
                 .Where(e => !e.Eliminado)
                 .AsQueryable();
+
+            string? sectorSupervisor = null;
+
+            if (rolActual == "SUPERVISOR")
+            {
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .ThenInclude(p => p.Sector)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+                if (supervisor != null)
+                {
+                    var sectorId = supervisor.Puesto.SectorId;
+                    obtenerEmpleados = obtenerEmpleados.Where(e => e.Puesto.SectorId == sectorId);
+
+                    sectorSupervisor = supervisor.Puesto.Sector?.Nombre;
+                }
+            }
+
 
             if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
             {
@@ -65,7 +88,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (filtro.PuestoId.HasValue)
                 obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
 
-            var empleados = obtenerEmpleados.ToList();
+            var empleados = await obtenerEmpleados.ToListAsync();
 
             var resumen = new
             {
@@ -75,7 +98,8 @@ namespace API_NET_CORE8_RRHH.Controllers
                 NoBinario = empleados.Count(e => e.TipoSexo == TipoSexo.NO_BINARIO),
                 Otros = empleados.Count(e => e.TipoSexo == TipoSexo.OTRO),
                 Filtros = filtro,
-                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                SectorSupervisor = sectorSupervisor
             };
 
             return Ok(new { Empleados = empleados, Resumen = resumen });
@@ -617,7 +641,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                     EmpleadoEmailString = a.Empleado.Email,
                     EmpleadoDNIString = a.Empleado.DNI.ToString(),
                     FechaActivacionString = a.FechaActivacion?.ToString("dd/MM/yyyy") ?? "",
-                    Activo = a.Activo ,
+                    Activo = a.Activo,
                     EmpleadoId = a.EmpleadoId,
                     Rol = rol
                 });

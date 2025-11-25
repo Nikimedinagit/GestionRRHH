@@ -1075,39 +1075,11 @@ async function EliminarSiJustificacion(id) {
     MostrarErrorCatch();
   }
 }
+
+
 //////////////////////////////////////////////////////////////////////////////
-// FUNCION PARA MOSTRAR JUTIFICACIONES SEGUN ROL /////////////////////////////
+// FUNCION PARA GENERAR PDF   /////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-function MostrarOpcionesJustificacionesPorRol() {
-  const rol = getRol()?.toUpperCase();
-  if (!rol) return;
-
-
-  if (rol === "ADMINISTRADOR") {
-
-    $(
-      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
-    ).removeClass("d-none");
-
-  }
-
-  else if (rol === "RRHH") {
-    $(
-      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
-    ).removeClass("d-none");
-
-  }
-
-  else if (rol === "EMPLEADO" || rol === "SUPERVISOR") {
-    $("#tituloJustificacion").text(
-      "Consultá tus justificaciones, verificá su estado y gestioná nuevas solicitudes."
-    );
-    $("#JustificacionCreadoPorTercero, #JustificacionCreadoPorUsuario, #JustificacionAccion").addClass("d-none")
-  }
-}
-
-
-
 async function GenerarInformePdfJustificaciones() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("landscape");
@@ -1255,6 +1227,42 @@ async function GenerarInformePdfJustificaciones() {
   w.document.close();
 
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCION PARA MOSTRAR JUTIFICACIONES SEGUN ROL /////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+function MostrarOpcionesJustificacionesPorRol() {
+  const rol = getRol()?.toUpperCase();
+  if (!rol) return;
+
+
+  if (rol === "ADMINISTRADOR") {
+
+    $(
+      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
+    ).removeClass("d-none");
+
+  }
+
+  else if (rol === "RRHH") {
+    $(
+      "#seleccionEmpleadoJustificacion, #EmpleadoIdBuscar, #EstadoJustificacionBuscar, #contenedorEstadisticasJustificaciones, #btnMostrarGenerar"
+    ).removeClass("d-none");
+
+  }
+
+  else if (rol === "EMPLEADO" || rol === "SUPERVISOR") {
+    $("#tituloJustificacion").text(
+      "Consultá tus justificaciones, verificá su estado y gestioná nuevas solicitudes."
+    );
+    $("#JustificacionCreadoPorTercero, #JustificacionCreadoPorUsuario, #JustificacionAccion, #conetendorBotonesJustificaciones").addClass("d-none")
+  }
+}
+
+
+
 
 
 

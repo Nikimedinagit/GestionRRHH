@@ -1479,3 +1479,15 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
+/* INICIO ESTILO APRA CONTEENDOR DE GARFICOS FIJO */
+.grafico-fijo {
+    width: 100% !important;
+    height: 350px !important;  
+}
+
+@media (max-width: 768px) {
+    .grafico-fijo {
+        height: 260px !important;
+    }
+}
+/* FIN ESTILO APRA CONTEENDOR DE GARFICOS FIJO */

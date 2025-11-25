@@ -1,8 +1,6 @@
 
 
-// =========================================================================================
 // =========================== Obtener Listado desde la API =================================
-// =========================================================================================
 async function ObtenerEstadisticaGlobal() {
     try {
         const res = await authFetch("Resultados/GlobalN1", {
@@ -18,9 +16,7 @@ async function ObtenerEstadisticaGlobal() {
 }
 
 
-// =========================================================================================
 // ======================== Detectar Responsividad con collapse =============================
-// =========================================================================================
 function reRenderIfCacheGlobal() {
     if (window._cacheEstadisticoGlobal) {
         MostrarEstadisticoGlobal(window._cacheEstadisticoGlobal);
@@ -29,9 +25,7 @@ function reRenderIfCacheGlobal() {
 window.addEventListener("resize", reRenderIfCacheGlobal);
 
 
-// =========================================================================================
 // ======================= Renderizar Tabla de Resultados ===================================
-// =========================================================================================
 function MostrarEstadisticoGlobal(data) {
 
     window._cacheEstadisticoGlobal = data;
@@ -175,9 +169,7 @@ function MostrarEstadisticoGlobal(data) {
 }
 
 
-// =========================================================================================
 // ========================== Generar Informe en PDF ========================================
-// =========================================================================================
 async function GenerarInformePdfEstadisticoGlobal() {
 
     const data = window._cacheEstadisticoGlobal || await ObtenerEstadisticaGlobal();
@@ -193,7 +185,7 @@ async function GenerarInformePdfEstadisticoGlobal() {
     doc.setTextColor(19, 115, 204);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("Informe Estadístico Global", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+    doc.text("Informe Estadístico Global (Últimos 12 meses)", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
 
     let y = 29;
     const fechaHoy = new Date().toLocaleString("es-AR");
