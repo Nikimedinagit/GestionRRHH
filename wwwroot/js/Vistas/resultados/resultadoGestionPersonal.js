@@ -17,6 +17,25 @@ async function cargarEvolucionPersonal() {
     const res = await authFetch('Resultados/EvolucionPersonal');
     const data = await res.json();
 
+        if (!data || data.length === 0) {
+        $('#contenedorEvolucionPersonal').html(`
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777;
+                font-size: 16px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                text-align: center;
+            ">
+                No hay resultados para mostrar.
+            </div>
+        `);
+        return;
+    }
+
+    $('#contenedorEvolucionPersonal').html('<canvas id="graficoEvolucionPersonal"></canvas>');
+
     const meses = data.map(x => x.mes);
     const cantidad = data.map(x => x.cantidad);
 
@@ -49,6 +68,25 @@ async function cargarEvolucionPersonal() {
 async function cargarAsistenciaMensual() {
     const res = await authFetch('Resultados/AsistenciaMensual');
     const data = await res.json();
+
+     if (!data || data.length === 0) {
+        $('#contenedorAsistenciaMensual').html(`
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777;
+                font-size: 16px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                text-align: center;
+            ">
+                No hay resultados para mostrar.
+            </div>
+        `);
+        return;
+    }
+
+    $('#contenedorAsistenciaMensual').html('<canvas id="graficoAsistenciaMensual"></canvas>');
 
     const meses = data.map(x => x.mes);
     const asistencias = data.map(x => x.asistenciasCompletas);
@@ -85,6 +123,26 @@ async function cargarAsistenciaMensual() {
 async function cargarJustificacionesPorDia() {
     const res = await authFetch('Resultados/JustificacionPorDia');
     const data = await res.json();
+
+    if (!data || data.length === 0) {
+        $('#contenedorJustificacionesPorDia').html(`
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777;
+                font-size: 16px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                text-align: center;
+            ">
+                No hay resultados para mostrar.
+            </div>
+        `);
+        return;
+    }
+
+    $('#contenedorJustificacionesPorDia').html('<canvas id="graficoJustificacionesPorDia"></canvas>');
+
 
     const dias = data.map(x => x.diaSemana);
     const justificaciones = data.map(x => x.totalJustificaciones);

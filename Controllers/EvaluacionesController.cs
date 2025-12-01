@@ -94,10 +94,11 @@ namespace API_NET_CORE8_RRHH.Controllers
             }
 
             var evaluaciones = await obtenerEvaluaciones
-                .OrderBy(e => e.Fecha)
-                .ThenByDescending(e => e.Calificacion)
-                .ThenByDescending(e => e.Empleado.NombreCompleto)
-                .ToListAsync();
+                    .OrderByDescending(e => e.Fecha)
+                    .ThenByDescending(e => e.Calificacion)
+                    .ThenBy(e => e.Empleado.NombreCompleto)
+                    .ToListAsync();
+
 
             var listaVista = new List<EvaluacionVista>();
 
@@ -118,24 +119,24 @@ namespace API_NET_CORE8_RRHH.Controllers
                 {
                     case "ADMINISTRADOR":
                         esEditable = true;
-                        claseBorde = "";  
+                        claseBorde = "";
                         esPropia = true;
                         break;
 
                     case "RRHH":
-                        if (e.UsuarioId == userId) 
+                        if (e.UsuarioId == userId)
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id) 
+                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id)
                         {
                             esEditable = false;
                             claseBorde = "blue";
                             esParaEl = true;
                         }
-                        else 
+                        else
                         {
                             esEditable = false;
                             claseBorde = "yellow";
@@ -144,26 +145,27 @@ namespace API_NET_CORE8_RRHH.Controllers
                         break;
 
                     case "SUPERVISOR":
-                        if (empleadoActual != null &&
-                            e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId && e.UsuarioId == userId) 
+
+                        if (e.UsuarioId == userId)
                         {
                             esEditable = true;
                             claseBorde = "green";
                             esPropia = true;
                         }
-                        else if (empleadoActual != null && e.Empleado.Puesto.SectorId == empleadoActual.Puesto.SectorId) 
+                        else if (empleadoActual != null && e.EmpleadoId == empleadoActual.Id)
                         {
                             esEditable = false;
                             claseBorde = "blue";
                             esParaEl = true;
                         }
-                        else 
+                        else
                         {
                             esEditable = false;
                             claseBorde = "yellow";
                             esPropia = false;
                         }
                         break;
+
 
                     case "EMPLEADO":
                         esEditable = false;
@@ -260,8 +262,58 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context.Evaluacion.Add(evaluacion);
             await _context.SaveChangesAsync();
 
+            var empleadoEvaluado = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Id == evaluacion.EmpleadoId);
+
+            if (empleadoEvaluado == null)
+                return BadRequest(new { codigo = 0, mensaje = "Empleado no encontrado." });
+
+            var usuarioEvaluador = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            _context.Notificaciones.Add(new Notificaciones
+            {
+                Titulo = "Nueva Evaluación",
+                Mensaje = $"Has recibido una nueva evaluación realizada por {usuarioEvaluador?.NombreCompleto ?? "un evaluador"}.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = empleadoEvaluado.Id.ToString(), 
+                Leida = false
+            });
+
+            _context.Notificaciones.Add(new Notificaciones
+            {
+                Titulo = "Evaluación registrada",
+                Mensaje = $"El empleado {empleadoEvaluado?.NombreCompleto} ha sido evaluado por {usuarioEvaluador?.NombreCompleto}.",
+                FechaCreacion = DateTime.Now,
+                UsuarioId = null,
+                DestinatarioRol = "RRHH,ADMINISTRADOR",
+                Leida = false
+            });
+
+            var supervisorSector = await _context.Empleado
+                .Include(e => e.Puesto)
+                .Where(e => e.Puesto.SectorId == empleadoEvaluado.Puesto.SectorId
+                            && e.Puesto.Descripcion.ToUpper() == "SUPERVISOR")
+                .FirstOrDefaultAsync();
+
+            if (supervisorSector != null)
+            {
+                _context.Notificaciones.Add(new Notificaciones
+                {
+                    Titulo = "Evaluación registrada en tu sector",
+                    Mensaje = $"El empleado {empleadoEvaluado?.NombreCompleto} de tu sector ha sido evaluado.",
+                    FechaCreacion = DateTime.Now,
+                    UsuarioId = supervisorSector.UsuarioId.ToString(),
+                    Leida = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
         }
+
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,8 @@ using System.Text.Json;
 using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-
+using System.Security.Claims;
+[Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
 [ApiController]
 [Route("api/[controller]")]
 public class CardsEstadisticasController : ControllerBase
@@ -22,28 +23,70 @@ public class CardsEstadisticasController : ControllerBase
     [HttpPost("EmpleadosEstadisticas")]
     public async Task<ActionResult<object>> GetEmpleadosEstadisticas([FromBody] FiltrarEmpleado filtro)
     {
-        IQueryable<Empleado> obtenerEmpleados = _context.Empleado.Where(e => !e.Eliminado);
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+            {
+                return Ok(new
+                {
+                    TotalEmpleados = 0,
+                    Masculinos = 0,
+                    Femeninos = 0,
+                    NoBinarios = 0,
+                    Otros = 0
+                });
+            }
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        IQueryable<Empleado> obtenerEmpleados = _context.Empleado
+            .Include(e => e.Puesto)
+            .Where(e => !e.Eliminado);
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            obtenerEmpleados = obtenerEmpleados
+                .Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
 
         if (!string.IsNullOrEmpty(filtro.NombreCompleto))
-            obtenerEmpleados = obtenerEmpleados.Where(e => e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                e.NombreCompleto.ToLower().Contains(filtro.NombreCompleto.ToLower()));
 
         if (filtro.DNI.HasValue)
-            obtenerEmpleados = obtenerEmpleados.Where(e => e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                e.DNI.ToString().StartsWith(filtro.DNI.Value.ToString()));
 
         if (!string.IsNullOrEmpty(filtro.NroLegajo))
-            obtenerEmpleados = obtenerEmpleados.Where(e => e.NroLegajo.StartsWith(filtro.NroLegajo));
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                e.NroLegajo.StartsWith(filtro.NroLegajo));
 
         if (filtro.EstadoCiviles.HasValue)
-            obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.EstadoCiviles == filtro.EstadoCiviles);
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                (int)e.EstadoCiviles == filtro.EstadoCiviles);
 
         if (filtro.TipoSexo.HasValue)
-            obtenerEmpleados = obtenerEmpleados.Where(e => (int)e.TipoSexo == filtro.TipoSexo);
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                (int)e.TipoSexo == filtro.TipoSexo);
 
         if (filtro.LocalidadId.HasValue)
-            obtenerEmpleados = obtenerEmpleados.Where(e => e.LocalidadId == filtro.LocalidadId.Value);
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                e.LocalidadId == filtro.LocalidadId.Value);
 
         if (filtro.PuestoId.HasValue)
-            obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
+            obtenerEmpleados = obtenerEmpleados.Where(e =>
+                e.PuestoId == filtro.PuestoId);
 
         var totalEmpleados = await obtenerEmpleados.CountAsync();
         var totalEmpleadosMasculinos = await obtenerEmpleados.Where(e => e.TipoSexo == TipoSexo.MASCULINO).CountAsync();
@@ -60,6 +103,7 @@ public class CardsEstadisticasController : ControllerBase
             Otros = totalEmpleadosOtro
         });
     }
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -222,17 +266,55 @@ public class CardsEstadisticasController : ControllerBase
     [HttpGet("EvaluacionesEstadisticas")]
     public async Task<ActionResult<object>> GetEvaluacionesEstadisticas()
     {
-        var totalEvaluaciones = await _context.Evaluacion.Where(e => e.Empleado.Eliminado == false).CountAsync();
-        var promedioEvaluaciones = await _context.Evaluacion
-            .Where(e => e.Empleado.Eliminado == false)
-            .Select(e => e.Calificacion)
-            .AverageAsync();
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
 
-        var totalEmpleadosEvaluados = await _context.Evaluacion
-            .Where(e => e.EmpleadoId != null && e.Empleado.Eliminado == false)
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+            {
+                return Ok(new
+                {
+                    totalEvaluaciones = 0,
+                    promedioEvaluaciones = 0,
+                    totalEmpleadosEvaluados = 0
+                });
+            }
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var EvaluacionesQuery = _context.Evaluacion
+            .Include(e => e.Empleado)
+            .ThenInclude(e => e.Puesto)
+            .Where(e => e.Empleado.Eliminado == false)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            EvaluacionesQuery = EvaluacionesQuery
+                .Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var listaEvaluaciones = await EvaluacionesQuery.ToListAsync();
+
+        int totalEvaluaciones = listaEvaluaciones.Count;
+        double promedioEvaluaciones = listaEvaluaciones.Any()
+            ? Math.Round(listaEvaluaciones.Average(e => e.Calificacion), 2)
+            : 0;
+
+        int totalEmpleadosEvaluados = listaEvaluaciones
+            .Where(e => e.EmpleadoId != null)
             .Select(e => e.EmpleadoId)
             .Distinct()
-            .CountAsync();
+            .Count();
 
         return new
         {
@@ -241,6 +323,8 @@ public class CardsEstadisticasController : ControllerBase
             totalEmpleadosEvaluados
         };
     }
+
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////

@@ -115,6 +115,7 @@ async function ObtenerEmpleadosSupervisor() {
     .then((response) => response.json())
     .then((data) => {
       MostrarEmpleadosSupervisor(data);
+      ObtenerTotalEmpleados();
     })
     .catch((error) => {
       MostrarErrorCatch();

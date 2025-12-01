@@ -40,7 +40,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// MERODO PARA CREAR UN CRITERIO DE EVALUACION //////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpPost]
         public async Task<ActionResult<CriterioDeEvaluacion>> PostCriterioDeEvaluacion(CriterioDeEvaluacion criterioDeEvaluacion)
         {

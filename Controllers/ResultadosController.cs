@@ -90,8 +90,6 @@ public class ResultadosController : ControllerBase
     }
 
 
-
-
     ///////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LA ASISTENCIA MENSUAL EN LOS ULTIMOS 6 MESES (GRAFICO) //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -687,18 +685,232 @@ public class ResultadosController : ControllerBase
         return TotalEstadistica.OrderByDescending(x => x.FechaOrden).ToList();
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE PERSONAL - GRAFICOS Y LISTADOS ///
+    /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE PERSONAL - GRAFICOS Y LISTADOS ///
+    ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE DESEMPEÑO - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER DESEMPEÑO POR SECTOR (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("DesempenoPorPuesto")]
+    public async Task<ActionResult<IEnumerable<DesempenoPorPuestoGrafico>>> GetDesempenoPorPuesto()
+    {
+        var hoy = DateTime.Now;
+        var meses = new List<DateTime>();
+
+        for (int i = 5; i >= 0; i--)
+        {
+            meses.Add(new DateTime(hoy.Year, hoy.Month, 1).AddMonths(-i));
+        }
+
+        var evaluaciones = await _context.Empleado
+            .Where(e => !e.Eliminado && e.Puesto != null)
+            .SelectMany(e => e.Evaluacion, (empleado, eval) => new
+            {
+                Puesto = empleado.Puesto.Descripcion,
+                eval.Calificacion,
+                eval.Fecha
+            })
+            .Where(x => x.Fecha >= meses.First())
+            .ToListAsync();
+
+        var puestos = await _context.Puesto
+            .Select(p => p.Descripcion)
+            .ToListAsync();
+
+        var resultado = new List<DesempenoPorPuestoGrafico>();
+
+        foreach (var mes in meses)
+        {
+            var mesStr = mes.ToString("MMM", System.Globalization.CultureInfo.CurrentCulture);
+
+            var promediosMes = puestos.Select(puesto =>
+            {
+                var registros = evaluaciones
+                    .Where(e => e.Puesto == puesto && e.Fecha.Month == mes.Month && e.Fecha.Year == mes.Year)
+                    .ToList();
+
+                var promedio = registros.Any() ? registros.Average(r => r.Calificacion) : 0;
+                var cantidad = registros.Count;
+
+                var puestoCapitalizado = System.Globalization.CultureInfo
+                    .CurrentCulture
+                    .TextInfo
+                    .ToTitleCase(puesto.ToLower());
+
+                return new DesempenoPorPuestoGrafico
+                {
+                    Puesto = puestoCapitalizado,
+                    Mes = mesStr,
+                    PromedioCalificacion = promedio,
+                    CantidadEvaluaciones = cantidad
+                };
+            })
+            .OrderByDescending(x => x.PromedioCalificacion)
+            .FirstOrDefault();
+
+            if (promediosMes != null)
+                resultado.Add(promediosMes);
+        }
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER DISTRIBUCION DE CALIFICACIONES (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("DistribucionCalificaciones")]
+    public async Task<ActionResult<IEnumerable<DistribucionCalificacionesGrafico>>> GetDistribucionCalificaciones()
+    {
+        var calificaciones = await _context.Evaluacion
+            .Where(e => !e.Empleado.Eliminado)
+            .Select(e => e.Calificacion)
+            .ToListAsync();
+
+        var resultado = Enumerable.Range(1, 10)
+            .Select(n => new DistribucionCalificacionesGrafico
+            {
+                Calificacion = n,
+                Cantidad = calificaciones.Count(c => c == n)
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LOS MEJORES CRITERIOS DE MAYOR PROMEDIO A 7 (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("MejoresCriterios")]
+    public async Task<ActionResult<IEnumerable<CriterioDesempenoGrafico>>> GetMejoresCriterios()
+    {
+        double umbralMejores = 7; 
+
+        var datos = await _context.CriterioDeEvaluacion
+            .Where(c => !c.TipoDeCriterio.Eliminado)
+            .Select(c => new
+            {
+                Criterio = c.TipoDeCriterio.Nombre,
+                Calificacion = c.Evaluacion.Calificacion
+            })
+            .ToListAsync();
+
+        var resultado = datos
+            .GroupBy(x => x.Criterio)
+            .Select(g => new CriterioDesempenoGrafico
+            {
+                Criterio = CultureInfo.CurrentCulture.TextInfo
+                            .ToTitleCase(g.Key.ToLower()),
+                Promedio = g.Average(x => x.Calificacion)
+            })
+            .Where(x => x.Promedio >= umbralMejores) 
+            .OrderByDescending(x => x.Promedio)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LOS PEORES CRITERIOS MENOR A 4 (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("PeoresCriterios")]
+    public async Task<ActionResult<IEnumerable<CriterioDesempenoGrafico>>> GetPeoresCriterios()
+    {
+        double umbralPeores = 4; 
+
+        var datos = await _context.CriterioDeEvaluacion
+            .Where(c => !c.TipoDeCriterio.Eliminado)
+            .Select(c => new
+            {
+                Criterio = c.TipoDeCriterio.Nombre,
+                Calificacion = c.Evaluacion.Calificacion
+            })
+            .ToListAsync();
+
+        var resultado = datos
+            .GroupBy(x => x.Criterio)
+            .Select(g => new CriterioDesempenoGrafico
+            {
+                Criterio = CultureInfo.CurrentCulture.TextInfo
+                            .ToTitleCase(g.Key.ToLower()),
+                Promedio = g.Average(x => x.Calificacion)
+            })
+            .Where(x => x.Promedio <= umbralPeores) 
+            .OrderBy(x => x.Promedio)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA EVOLUCION DE DESEMPEÑO DE LOS ULTIMOS 12 MESES (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("EvolucionDesempenoUltimos6Meses")]
+    public async Task<ActionResult<IEnumerable<EvolucionDesempenoGrafico>>> GetEvolucionDesempenoUltimos6Meses()
+    {
+        DateTime hoy = DateTime.Today;
+
+        var meses = Enumerable.Range(0, 6)
+            .Select(i => hoy.AddMonths(-i))
+            .Select(f => new { f.Year, f.Month })
+            .Reverse()
+            .ToList();
+
+        var datos = await _context.Evaluacion
+            .Where(e => e.Fecha >= new DateTime(meses.First().Year, meses.First().Month, 1))
+            .Select(e => new
+            {
+                Anio = e.Fecha.Year,
+                Mes = e.Fecha.Month,
+                Calificacion = e.Calificacion
+            })
+            .ToListAsync();
+
+        var agrupado = datos
+            .GroupBy(x => new { x.Anio, x.Mes })
+            .ToDictionary(
+                g => $"{g.Key.Anio}-{g.Key.Mes}",
+                g => g.Average(x => x.Calificacion)
+            );
+
+        var resultado = meses.Select(m => new EvolucionDesempenoGrafico
+        {
+            Anio = m.Year,
+            Mes = m.Month,
+            Promedio = agrupado.ContainsKey($"{m.Year}-{m.Month}") ? agrupado[$"{m.Year}-{m.Month}"] : 0
+        })
+        .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE DESEMPEÑO - GRAFICOS Y LISTADOS ///
     /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-}
 
+}
 
 
 

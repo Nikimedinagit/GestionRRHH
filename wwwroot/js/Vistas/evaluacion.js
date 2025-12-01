@@ -108,6 +108,7 @@ async function ObtenerEvaluaciones() {
       MostrarEvaluaciones(data);
       LimpiarModalEvaluacion();
       cerrarPanelEvaluaciones();
+      ObtenerTotalEvaluaciones();
     }))
 
     .catch((error) => {
@@ -127,6 +128,11 @@ function MostrarEvaluaciones(data) {
     MostrarEvaluacionesDesktop(data);
   }
 }
+
+window.addEventListener("resize", function () {
+    ObtenerEvaluaciones();
+});
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,13 +176,22 @@ function MostrarEvaluacionesDesktop(data) {
          </button>`
       : "";
 
-    const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoNombre
-      : element.usuarioNombreEvaluador;
+    let nombreMostrar = "";
+    let rolMostrar = "";
 
-    const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoPuesto
-      : element.usuarioRolEvaluador;
+    if (rol === "ADMINISTRADOR") {
+      nombreMostrar = element.empleadoNombre;
+      rolMostrar = element.empleadoPuesto;
+    }
+    else {
+      if (element.claseBorde === "green" || element.claseBorde === "yellow") {
+        nombreMostrar = element.empleadoNombre;
+        rolMostrar = element.empleadoPuesto;
+      } else {
+        nombreMostrar = element.usuarioNombreEvaluador;
+        rolMostrar = element.usuarioRolEvaluador;
+      }
+    }
 
 
     const item = $(`
@@ -282,7 +297,6 @@ function MostrarEvaluacionesMobile(data) {
       ? element.fecha.split("T")[0].split("-").reverse().join("/")
       : "Sin fecha";
 
-    // Etiquetas de calificación
     let etiqueta = "REGULAR";
     let badgeClass = "badge-regular";
 
@@ -290,24 +304,24 @@ function MostrarEvaluacionesMobile(data) {
     else if (nota >= 7) { etiqueta = "MUY BUENA"; badgeClass = "badge-muybuena"; }
     else if (nota >= 5) { etiqueta = "BUENA"; badgeClass = "badge-buena"; }
 
-    // Clase de borde según color
     let bordeColor = "#dee2e6";
-    switch(element.claseBorde) {
-      case "green": bordeColor = "#198754"; break;  // propia
-      case "yellow": bordeColor = "#ffc107"; break; // de otros
-      case "blue": bordeColor = "#0d6efd"; break;   // destinada al usuario
+    switch (element.claseBorde) {
+      case "green": bordeColor = "#198754"; break;  
+      case "yellow": bordeColor = "#ffc107"; break; 
+      case "blue": bordeColor = "#0d6efd"; break;   
     }
 
     const esEditable = element.esEditable === true || element.esEditable === "true";
 
-    // Nombre y rol a mostrar según color
+    
     const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoNombre    // verde o amarillo → mostrar empleado evaluado
-      : element.usuarioNombreEvaluador; // azul → mostrar quien la realizó
+      ? element.empleadoNombre    
+      : element.usuarioNombreEvaluador; 
 
     const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoPuesto    // verde o amarillo → mostrar puesto del evaluado
-      : element.usuarioRolEvaluador; // azul → mostrar rol de quien la realizó
+      ? element.empleadoPuesto    
+      : element.usuarioRolEvaluador; 
+
 
     const botonEditarHTML = esEditable
       ? `<button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
@@ -736,20 +750,21 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
     }
     else {
       tablaBody.append(`
-        <tr>
-          <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
-          <td class='align-middle'>${item.descripcion || "Sin descripción"}</td>
-          ${esEditable
-          ? `<td class='d-flex justify-content-center align-items-center'>
-                  <button class='btn-eliminar' style='background: none; border: none;' 
-                    onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
-                    <i class='bi bi-trash3 icono-elimina-detalle'></i>
-                  </button>
-                </td>`
-          : ""
-        }
-        </tr>
-      `);
+  <tr>
+    <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
+    <td class='align-middle text-wrap'>${item.descripcion || "Sin descripción"}</td>
+    ${esEditable
+      ? `<td class='d-flex justify-content-center align-items-center'>
+            <button class='btn-eliminar' style='background: none; border: none;' 
+              onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content="Eliminar">
+              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+            </button>
+          </td>`
+      : ""
+    }
+  </tr>
+`);
+
     }
   });
 
@@ -787,12 +802,12 @@ async function MostrarDetalleCriterios(evaluacionId) {
             <div class="card-body detalle-criterio-seccion">
               <p class="detalle-criterio-titulo-seccion">Información del Criterio</p>
 
-              <div class="detalle-criterio-fila">
-                <span class="detalle-criterio-valor-nombre">${item.tipoDeCriterio.nombre}</span>
+              <div class="detalle-criterio-fila text-wrap">
+                <span class="detalle-criterio-valor-nombre text-wrap">${item.tipoDeCriterio.nombre}</span>
               </div>
 
-              <div class="detalle-criterio-fila">
-                <span class="detalle-criterio-valor">${item.descripcion || "Sin descripción"}</span>
+              <div class="detalle-criterio-fila text-wrap">
+                <span class="detalle-criterio-valor text-wrap">${item.descripcion || "Sin descripción"}</span>
               </div>
             </div>
           </div>
@@ -1087,7 +1102,7 @@ function MostrarOpcionesEvaluacionesPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
-  if (rol === "ADMINISTRADOR"  ){
+  if (rol === "ADMINISTRADOR") {
     $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
     $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida").addClass("d-none");
   }
@@ -1159,7 +1174,7 @@ async function GenerarInformePdfEvaluacion() {
   doc.setFont("helvetica", "normal");
   doc.text("| Excelente:", 55, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.evaluacionCalificacion["Excelente"]}`,76, y);
+  doc.text(`${resumen.evaluacionCalificacion["Excelente"]}`, 76, y);
 
   doc.setFont("helvetica", "normal");
   doc.text("| Buena:", 81, y);
@@ -1221,18 +1236,18 @@ async function GenerarInformePdfEvaluacion() {
   }
 
   const colEvaluacion = {
-    0: { cellWidth: anchoUtil / 3 },  
-    1: { 
-      cellWidth: anchoUtil / 3, 
-      halign: "left",       
-      valign: "top",        
-      cellPadding: { left: 10, top: 2, right: 0 } 
+    0: { cellWidth: anchoUtil / 3 },
+    1: {
+      cellWidth: anchoUtil / 3,
+      halign: "left",
+      valign: "top",
+      cellPadding: { left: 10, top: 2, right: 0 }
     },
-    2: { cellWidth: anchoUtil / 3 },  
+    2: { cellWidth: anchoUtil / 3 },
   };
 
   const colCriterios = {
-    0: { cellWidth: anchoUtil / 2 }, 
+    0: { cellWidth: anchoUtil / 2 },
     1: { cellWidth: anchoUtil / 2 },
   };
 
@@ -1262,18 +1277,18 @@ async function GenerarInformePdfEvaluacion() {
       tableWidth: anchoUtil,
       didParseCell: function (data) {
         if (data.section === "body") {
-          data.cell.styles.fillColor = [210, 230, 255];  
+          data.cell.styles.fillColor = [210, 230, 255];
           data.cell.styles.textColor = 0;
         }
       },
     });
 
-    y = doc.lastAutoTable.finalY + -1; 
+    y = doc.lastAutoTable.finalY + -1;
 
     if (evaluacion.criterios && evaluacion.criterios.length > 0) {
       const tablaCriteriosBody = evaluacion.criterios.map((criterio) => [
-        criterio.criterioNombre ?? "-",  
-        criterio.criterioDescripcion ?? "-"  
+        criterio.criterioNombre ?? "-",
+        criterio.criterioDescripcion ?? "-"
       ]);
 
       doc.autoTable({
@@ -1284,16 +1299,16 @@ async function GenerarInformePdfEvaluacion() {
         headStyles: { fillColor: [225, 225, 225], textColor: 0, fontStyle: "bold" },
         margin: { left: margen, right: margen },
         columnStyles: colCriterios,
-        tableWidth: anchoUtil, 
+        tableWidth: anchoUtil,
         didParseCell: function (data) {
           if (data.section === "body") {
-            data.cell.styles.fillColor = [255, 255, 255]; 
+            data.cell.styles.fillColor = [255, 255, 255];
             data.cell.styles.textColor = 0;
           }
         },
       });
 
-      y = doc.lastAutoTable.finalY + -1; 
+      y = doc.lastAutoTable.finalY + -1;
     }
 
     if (y > 185) {
