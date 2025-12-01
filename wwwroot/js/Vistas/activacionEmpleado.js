@@ -72,11 +72,18 @@ function MostrarEmpleadosActivacion(data) {
       iconColor = "text-success";
       tooltip = "Activar";
     }
-
+    const fechaMostrar = item.fechaActivacionString
+      ? (() => {
+          const partes = item.fechaActivacionString.split("T")[0].split("-");
+          return new Date(partes[0], partes[1] - 1, partes[2])
+                .toLocaleDateString("es-AR");
+        })()
+      : "No Activo";
      tbody.append(`
       <tr>
         <td class="text-center ${filaClass} columna-fecha-activacion">
-          ${item.fechaActivacionString ? new Date(item.fechaActivacionString).toLocaleDateString() : "No Activo"}
+          ${fechaMostrar}
+          
         </td>
         <td class="text-start ${filaClass}">${item.empleadoNombreString}</td>
         <td class="text-start ${filaClass} columna-email-activacion">${item.empleadoEmailString}</td>
