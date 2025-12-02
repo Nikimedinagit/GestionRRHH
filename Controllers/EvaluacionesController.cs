@@ -280,34 +280,6 @@ namespace API_NET_CORE8_RRHH.Controllers
                 Leida = false
             });
 
-            _context.Notificaciones.Add(new Notificaciones
-            {
-                Titulo = "Evaluación registrada",
-                Mensaje = $"El empleado {empleadoEvaluado?.NombreCompleto} ha sido evaluado por {usuarioEvaluador?.NombreCompleto}.",
-                FechaCreacion = DateTime.Now,
-                UsuarioId = null,
-                DestinatarioRol = "RRHH,ADMINISTRADOR",
-                Leida = false
-            });
-
-            var supervisorSector = await _context.Empleado
-                .Include(e => e.Puesto)
-                .Where(e => e.Puesto.SectorId == empleadoEvaluado.Puesto.SectorId
-                            && e.Puesto.Descripcion.ToUpper() == "SUPERVISOR")
-                .FirstOrDefaultAsync();
-
-            if (supervisorSector != null)
-            {
-                _context.Notificaciones.Add(new Notificaciones
-                {
-                    Titulo = "Evaluación registrada en tu sector",
-                    Mensaje = $"El empleado {empleadoEvaluado?.NombreCompleto} de tu sector ha sido evaluado.",
-                    FechaCreacion = DateTime.Now,
-                    UsuarioId = supervisorSector.UsuarioId.ToString(),
-                    Leida = false
-                });
-            }
-
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEvaluacion", new { id = evaluacion.Id }, evaluacion);
