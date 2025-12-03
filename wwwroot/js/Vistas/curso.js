@@ -1172,7 +1172,8 @@ function MostrarAsistencias(cursoId, data) {
               <input class="form-check-input checkbox-asistio-card me-2" 
                     type="checkbox" 
                     data-id="${item.id}" 
-                    ${item.asistencia ? "checked" : ""}/>
+                    ${item.asistencia ? "checked" : ""}
+                    ${item.asistencia ? 'style="pointer-events:none;"' : ""}/>
               
               <div class="d-flex flex-column">
                 <h6 class="fw-bold mb-1 text-truncate" style="max-width: 200px;">
@@ -1204,7 +1205,14 @@ function MostrarAsistencias(cursoId, data) {
         const asistenciaId = $(this).data("id");
         const nuevoEstado = $(this).is(":checked");
         MarcarAsistencia(asistenciaId, nuevoEstado);
+
+          if (nuevoEstado) {
+      $(this)
+        .prop("disabled", true)
+        .addClass("checkbox-verde");
+    }
       });
+
   } else {
     if (!tablaBody.length) return;
     tablaBody.empty();
@@ -1227,7 +1235,8 @@ function MostrarAsistencias(cursoId, data) {
           <td class='text-center align-middle'>
             <input type="checkbox" class="checkbox-asistio" data-id="${
               item.id
-            }" ${item.asistencia ? "checked" : ""} />
+            }" ${item.asistencia ? "checked" : ""}
+            ${item.asistencia ? 'style="pointer-events:none;"' : ""} />
           </td>
           <td class='align-middle nombre-empleado' title='${
             item.empleado.nombreCompleto
@@ -1255,6 +1264,12 @@ function MostrarAsistencias(cursoId, data) {
         const asistenciaId = $(this).data("id");
         const nuevoEstado = $(this).is(":checked");
         MarcarAsistencia(asistenciaId, nuevoEstado);
+
+          if (nuevoEstado) {
+      $(this)
+        .prop("disabled", true)
+        .addClass("checkbox-verde");
+    }
       });
   }
 

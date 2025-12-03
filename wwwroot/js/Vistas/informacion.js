@@ -117,13 +117,21 @@ function MostrarMiInformacion(empleado) {
               </span>
             </div>
             <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
-              <strong>Cuil:</strong> ${empleado.cuil || "-"}
+            <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                <strong>Cuil:</strong> ${empleado.cuil || "-"}
+              </span>
             </div>
             <div class="col-md-6 mb-2">
               <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
                 <strong>Fec. de Nacimiento:</strong> ${empleado.fechaNacimientoString || "-"}
               </span>
             </div>
+            <div class="col-md-6 mb-2">
+              <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
+                <strong>Edad:</strong> ${empleado.edad || "-"}
+              </span>
+            </div>
+    
             <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
               <strong>Localidad:</strong> ${empleado.localidadIdString || "-"}
             </div>
@@ -135,7 +143,7 @@ function MostrarMiInformacion(empleado) {
             </div>
             <div class="col-md-6 mb-2">
               <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
-                <strong>Estado Civil:</strong> ${empleado.tipoSexoString || "-"}
+                <strong>Estado Civil:</strong> ${empleado.estadoCivilesString || "-"}
               </span>
             </div>
           </div>
@@ -217,7 +225,7 @@ async function MostrarModalEditarEmpleado(id) {
   document.getElementById("DniEmpleado").disabled = true;
   document.getElementById("EmailEmpleado").disabled = true;
   document.getElementById("FechaNacimientoEmpleado").disabled = true;
-  document.getElementById("TipoSexoEmpleado").disabled = true;
+  document.getElementById("CuilEmpleado").disabled = true;
 
   AbrirPanelEmpleado();
 }

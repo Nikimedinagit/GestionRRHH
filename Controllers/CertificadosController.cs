@@ -94,7 +94,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                     a.Resultado >= 6);
 
             if (asistenciaAprobada == null)
-                return BadRequest(new { codigo = 0, mensaje = "El empleado no ha aprobado este curso." });
+                return BadRequest(new { codigo = 0, mensaje = "El empleado no aprobó o no asistió a este curso" });
 
             bool existeCertificado = await _context.Certificado
                 .AsNoTracking()

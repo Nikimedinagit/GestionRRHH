@@ -750,3 +750,23 @@ textarea.form-control {
 .curso-item:hover {
   box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3); 
 }
+
+
+/*Checkbok asistencia a cursos*/
+.checkbox-verde {
+  accent-color: #28a745 !important; 
+  cursor: not-allowed;
+}
+.checkbox-asistio:checked {
+  accent-color: #28a745; 
+}
+
+.checkbox-asistio-card:checked {
+  accent-color: #28a745; 
+}
+.checkbox-asistio:checked:disabled,
+.checkbox-asistio-card:checked:disabled {
+  accent-color: #28a745;
+  opacity: 1; 
+}
+

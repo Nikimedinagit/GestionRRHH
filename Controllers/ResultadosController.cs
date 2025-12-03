@@ -898,7 +898,59 @@ public class ResultadosController : ControllerBase
     }
 
 
+    [HttpGet("LicenciasMensualesGrafico6Meses")]
+    public async Task<ActionResult<IEnumerable<LicenciasMensualesGrafico>>> LicenciasMensualesGrafico6Meses()
+    {
+        DateTime hoy = DateTime.Today;
 
+        var meses = Enumerable.Range(0, 6)
+            .Select(i => hoy.AddMonths(-i))
+            .Select(f => new { f.Year, f.Month })
+            .Reverse()
+            .ToList();
+        var fechaInicio = new DateTime(meses.First().Year, meses.First().Month, 1);
+        var fechaFin = fechaInicio.AddMonths(6).AddDays(-1);
+
+        var datos = await _context.Licencia
+        .Where(l =>
+            l.FechaInicio <= fechaFin &&      
+            l.FechaFin >= fechaInicio         
+        )
+        .Select(l => new
+        {
+            Anio = l.FechaInicio.Year,
+            Mes = l.FechaInicio.Month,
+            Estado = l.Estado
+        })
+        .ToListAsync();
+
+        var agrupado = datos
+            .GroupBy(x => new { x.Anio, x.Mes })
+            .ToDictionary(
+        g => $"{g.Key.Anio}-{g.Key.Mes}",
+        g => new LicenciasMensualesGrafico
+        {
+            Anio = g.Key.Anio,
+            Mes = g.Key.Mes,
+            TotalLicencias = g.Count(),
+            TotalAprobadas = g.Count(x => x.Estado == EstadoLicencia.APROBADA),
+            TotalRechazadas = g.Count(x => x.Estado == EstadoLicencia.RECHAZADA)
+        }
+        );
+
+        var resultado = meses.Select(m => new LicenciasMensualesGrafico
+        {
+            Anio = m.Year,
+            Mes = m.Month,
+            TotalLicencias = agrupado.ContainsKey($"{m.Year}-{m.Month}") ? agrupado[$"{m.Year}-{m.Month}"].TotalLicencias : 0,
+            TotalAprobadas = agrupado.ContainsKey($"{m.Year}-{m.Month}") ? agrupado[$"{m.Year}-{m.Month}"].TotalAprobadas : 0,
+            TotalRechazadas = agrupado.ContainsKey($"{m.Year}-{m.Month}") ? agrupado[$"{m.Year}-{m.Month}"].TotalRechazadas : 0
+        })
+        .ToList();
+
+        return Ok(resultado);
+
+    }
 
 
 

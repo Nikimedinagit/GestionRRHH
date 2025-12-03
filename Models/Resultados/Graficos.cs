@@ -82,5 +82,14 @@ public class EvolucionDesempenoGrafico
     public double Promedio { get; set; }
 }
 
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CLASE PARA EL GRAFICO DE LICENCIAS ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+public class LicenciasMensualesGrafico
+{
+    public int Anio { get; set; }
+    public int Mes { get; set; }
+    public int TotalAprobadas { get; set; }
+    public int TotalRechazadas { get; set; }
+    public int TotalLicencias{ get; set; }
+}

@@ -79,12 +79,12 @@ function MostrarOpcionesSidebarPorRol() {
 
   if (rol === "ADMINISTRADOR") {
     $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica").removeClass("d-none");
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia").removeClass("d-none");
   }
 
   else if (rol === "RRHH") {
     $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica").removeClass("d-none");
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia").removeClass("d-none");
   }
 
   else if (rol === "SUPERVISOR") {

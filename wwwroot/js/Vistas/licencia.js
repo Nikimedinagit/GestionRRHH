@@ -511,9 +511,9 @@ function ValidarFormularioLicencia() {
     const fechaLimite = new Date(hoy);
     fechaLimite.setDate(hoy.getDate() - 7); 
 
-    if (fechaInicio > hoy) {
+    if (!inputFechaInicio.value) {
       inputErrorFechaInicio.style.display = "block";
-      inputErrorFechaInicio.textContent = "No se pueden solicitar licencias para fechas futuras.";
+      inputErrorFechaInicio.textContent = "Campo obligatorio.";
       inputFechaInicio.classList.add("is-invalid");
       valido = false;
     } else if (fechaInicio < fechaLimite) {
@@ -607,11 +607,11 @@ document.getElementById("FechaInicio").addEventListener("input", () => {
   const fechaLimite = new Date(hoy);
   fechaLimite.setDate(hoy.getDate() - 7); 
 
-  if (fechaIngresada > hoy) {
+  if (!input.value) {
     input.classList.add("is-invalid");
     input.classList.remove("is-valid");
     error.style.display = "block";
-    error.textContent = "No se pueden solicitar licencias para fechas futuras.";
+    error.textContent = "Campo obligatorio.";
   } else if (fechaIngresada < fechaLimite) {
     input.classList.add("is-invalid");
     input.classList.remove("is-valid");
@@ -1021,7 +1021,7 @@ function MostrarOpcionesLicenciasPorRol() {
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     estadisticasYFiltros.removeClass("d-none");
     seleccionEmpleado.removeClass("d-none");
-    titulo.text("Formulario de Licencia");
+    titulo.text("Visualizá, creá o gestioná licencias de los empleados de forma rápida.");
     tipoLicenciaGroup.css("grid-column", "span 1");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
     estadisticasYFiltros.addClass("d-none");
