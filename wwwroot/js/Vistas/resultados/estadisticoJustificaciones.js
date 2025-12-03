@@ -46,6 +46,17 @@ function MostrarEstadisticoJustificacion(data) {
     const isMobile = mqMobile.matches;
     const isTabletMobile = mqTabletMobile.matches;
 
+    const badgeBase = `
+        display:inline-block;
+        padding:0.35em 0.65em;
+        font-size:0.75rem;
+        font-weight:600;
+        border-radius:0.25rem;
+    `;
+
+    const badge = (valor, bg, color) =>
+        `<span style="${badgeBase} background:${bg}; color:${color};">${valor}</span>`;
+
     data.forEach((item, index) => {
 
         const collapseId = `justi_${index}`;
@@ -61,73 +72,47 @@ function MostrarEstadisticoJustificacion(data) {
             tabla.append(`
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="10" class="p-2 bg-light" style="font-size:12px;">
-                        
-                        <b class="mt-2 d-inline-block">Aprobadas:</b>
-                        <span class="badge badge-aprobada fw-bold" style="font-size:12px">${item.aprobadas}</span><br>
-
-                        <b class="mt-2 d-inline-block">Pendientes:</b>
-                        <span class="badge badge-aprobada fw-bold" style="font-size:12px">${item.pendientes}</span><br>
-
-                        <b class="mt-2 d-inline-block">Rechazadas:</b>
-                        <span class="badge badge-rechazada fw-bold" style="font-size:12px">${item.rechazadas}</span>
+                        <b>Aprobadas:</b> ${badge(item.aprobadas, "#d4edda", "#155724")}<br>
+                        <b>Pendientes:</b> ${badge(item.pendientes, "#fff3cd", "#856404")}<br>
+                        <b>Rechazadas:</b> ${badge(item.rechazadas, "#f8d7da", "#721c24")}
                     </td>
                 </tr>
             `);
-
             return;
         }
 
         if (isTabletMobile) {
-
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
                     <td class="fw-bold text-start text-wrap">${item.mes}</td>
-
-                    <td class="text-center">
-                        <span class="badge badge-aprobada fw-bold" style="font-size:12px">${item.aprobadas}</span>
-                    </td>
-
-                    <td class="text-center fw-bold" style="font-size:12px">${item.total}</td>
+                    <td class="text-center">${badge(item.aprobadas, "#d4edda", "#155724")}</td>
+                    <td class="text-center fw-bold">${item.total}</td>
                 </tr>
             `);
 
             tabla.append(`
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="10" class="p-2 bg-light" style="font-size:12px;">
-
-                        <b class="mt-2 d-inline-block">Pendientes:</b>
-                        <span class="badge badge-aprobada fw-bold" style="font-size:12px">${item.pendientes}</span><br>
-
-                        <b class="mt-2 d-inline-block">Rechazadas:</b>
-                        <span class="badge badge-rechazada fw-bold" style="font-size:12px">${item.rechazadas}</span>
+                        <b>Pendientes:</b> ${badge(item.pendientes, "#fff3cd", "#856404")}<br>
+                        <b>Rechazadas:</b> ${badge(item.rechazadas, "#f8d7da", "#721c24")}
                     </td>
                 </tr>
             `);
-
             return;
         }
 
         tabla.append(`
             <tr>
                 <td class="fw-bold text-start text-wrap">${item.mes}</td>
-
-                <td class="text-center">
-                    <span class="badge badge badge-aprobada fw-bold" style="font-size:12px">${item.aprobadas}</span>
-                </td>
-
-                <td class="text-center">
-                    <span class="badge badge-aprobada fw-bold" style="font-size:12px">${item.pendientes}</span>
-                </td>
-
-                <td class="text-center">
-                    <span class="badge badge-rechazada fw-bold" style="font-size:12px">${item.rechazadas}</span>
-                </td>
-
-                <td class="text-center fw-bold" style="font-size:12px;">${item.total}</td>
+                <td class="text-center">${badge(item.aprobadas, "#d4edda", "#155724")}</td>
+                <td class="text-center">${badge(item.pendientes, "#fff3cd", "#856404")}</td>
+                <td class="text-center">${badge(item.rechazadas, "#f8d7da", "#721c24")}</td>
+                <td class="text-center fw-bold">${item.total}</td>
             </tr>
         `);
     });
 }
+
 
 
 

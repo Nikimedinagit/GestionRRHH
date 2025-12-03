@@ -85,29 +85,21 @@ function MostrarAsistencias(data) {
     }
 
     const EstadoAsistenciaEstilo = {
-        COMPLETA: {
-            backgroundColor: "#a3dc9a72",
-            color: "#06923E"
-        },
-        INCOMPLETA: {
-            backgroundColor: "#fff3cd",
-            color: "#856404"
-        },
-        AUSENTE: {
-            backgroundColor: "#f8d7da",
-            color: "#c62828"
-        },
-        TARDE: {
-            backgroundColor: "#ffe5d0",
-            color: "#d35400"
-        },
-        "FUERA DE HORARIO": {
-            backgroundColor: "#e2e3e5",
-            color: "#495057"
-        }
+        COMPLETA: { backgroundColor: "#a3dc9a72", color: "#06923E" },
+        INCOMPLETA: { backgroundColor: "#fff3cd", color: "#856404" },
+        AUSENTE: { backgroundColor: "#f8d7da", color: "#c62828" },
+        TARDE: { backgroundColor: "#ffe5d0", color: "#d35400" },
+        "FUERA DE HORARIO": { backgroundColor: "#e2e3e5", color: "#495057" }
     };
 
-    const badgeBaseClass = "badge fw-bold fs-6 mb-2";
+    const badgeBase = `
+        display:inline-block;
+        padding:0.35em 0.65em;
+        font-size:0.75rem;
+        font-weight:600;
+        border-radius:0.25rem;
+        margin-top:4px;
+    `;
 
     data.forEach((item) => {
         let estadoRaw = item.estadoString || "";
@@ -115,13 +107,16 @@ function MostrarAsistencias(data) {
 
         if (estado.replace(/\s+/g, "") === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
 
-        const estilo = EstadoAsistenciaEstilo[estado] || {
-            backgroundColor: "#e2e3e5",
-            color: "#495057"
-        };
+        const estilo = EstadoAsistenciaEstilo[estado] || { backgroundColor: "#e2e3e5", color: "#495057" };
 
         const nombre = item.empleadoString || "Sin nombre";
         const foto = item.fotoUrl || "img/default.png";
+
+        const badgeHtml = `
+            <span style="${badgeBase} background-color:${estilo.backgroundColor}; color:${estilo.color};">
+                ${estado}
+            </span>
+        `;
 
         contenedor.append(`
             <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
@@ -133,9 +128,7 @@ function MostrarAsistencias(data) {
                         <h5 class="card-title mb-1" 
                             style="font-size: 1rem; font-weight:bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
                             title="${nombre}">${nombre}</h5>
-                        <span class="${badgeBaseClass}" style="background-color: ${estilo.backgroundColor}; color: ${estilo.color};">
-                            ${estado}
-                        </span>
+                        ${badgeHtml}
                         <button class="btn-ver" 
                                 style="background: none; border: none; cursor: pointer;" 
                                 onclick="MostrarDetalleAsistencia(${item.id})" 
@@ -150,6 +143,7 @@ function MostrarAsistencias(data) {
 
     tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
 }
+
 
 
 

@@ -276,7 +276,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 Titulo = "Nueva Evaluación",
                 Mensaje = $"Has recibido una nueva evaluación realizada por {usuarioEvaluador?.NombreCompleto ?? "un evaluador"}.",
                 FechaCreacion = DateTime.Now,
-                UsuarioId = empleadoEvaluado.Id.ToString(), 
+                UsuarioId = empleadoEvaluado.Id.ToString(),
                 Leida = false
             });
 
@@ -372,6 +372,25 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             return evaluacion;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         private bool EvaluacionExists(int id)

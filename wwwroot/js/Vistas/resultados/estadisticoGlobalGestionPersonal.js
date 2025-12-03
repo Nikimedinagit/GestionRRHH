@@ -44,7 +44,15 @@ function MostrarEstadisticoGlobal(data) {
     const isDesktop = width >= 992;
 
     const badge = (t, bg, color) =>
-        `<span class="badge px-3 py-2 fw-bold" style="background:${bg};color:${color};font-size:0.85rem;">${t}</span>`;
+        `<span style="
+            display:inline-block;
+            padding:0.35em 0.65em;
+            font-size:0.75rem;
+            font-weight:600;
+            border-radius:0.25rem;
+            background:${bg};
+            color:${color};
+        ">${t}</span>`;
 
     data.forEach((row, idx) => {
 
@@ -64,9 +72,7 @@ function MostrarEstadisticoGlobal(data) {
 
         const collapseId = `collapseGlobal_${idx}`;
 
-  
         if (isDesktop) {
-
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
                     <td class="text-start fw-bold">${mes}</td>
@@ -84,22 +90,18 @@ function MostrarEstadisticoGlobal(data) {
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="6" class="p-2 bg-light">
                         <div class="d-flex flex-column gap-2 small">
-
-                            <div><b style="font-size:12px">Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
-                            <div><b style="font-size:12px">Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
-                            <div><b style="font-size:12px">Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
-                            <div><b style="font-size:12px">Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
-
+                            <div><b>Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
+                            <div><b>Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
+                            <div><b>Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
+                            <div><b>Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
                         </div>
                     </td>
                 </tr>
             `);
-
             return;
         }
 
         if (isMobile) {
-
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
                     <td class="text-start fw-bold">${mes}</td>
@@ -111,34 +113,26 @@ function MostrarEstadisticoGlobal(data) {
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="2" class="p-2 bg-light">
                         <div class="d-flex flex-column gap-2 small">
-
-                            <div style="font-size:12px;" class="fw-bold"><b style="font-size:12px">Activos:</b> ${activos}</div>
-                            <div><b style="font-size:12px">Ausentismo:</b> ${badge(ausentismo, "#f8d7da", "#c62828")}</div>
-
-                            <div><b style="font-size:12px">Presentes:</b> ${badge(presentes, "#a3dc9a72", "#06923E")}</div>
-                            <div><b style="font-size:12px">Ausentes:</b> ${badge(ausentes, "#f8d7da", "#c62828")}</div>
-
-                            <div><b style="font-size:12px">Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
-                            <div><b style="font-size:12px">Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
-                            <div><b style="font-size:12px">Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
-                            <div><b style="font-size:12px">Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
-
+                            <div><b>Activos:</b> ${activos}</div>
+                            <div><b>Ausentismo:</b> ${badge(ausentismo, "#f8d7da", "#c62828")}</div>
+                            <div><b>Presentes:</b> ${badge(presentes, "#a3dc9a72", "#06923E")}</div>
+                            <div><b>Ausentes:</b> ${badge(ausentes, "#f8d7da", "#c62828")}</div>
+                            <div><b>Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
+                            <div><b>Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
+                            <div><b>Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
+                            <div><b>Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
                         </div>
                     </td>
                 </tr>
             `);
-
             return;
         }
 
-
         if (isTablet) {
-
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
                     <td class="text-start fw-bold">${mes}</td>
                     <td class="text-center fw-bold">${activos}</td>
-
                     <td class="text-center">${badge(presentismo, "#a3dc9a72", "#06923E")}</td>
                     <td class="text-center">${badge(ausentismo, "#f8d7da", "#c62828")}</td>
                 </tr>
@@ -148,25 +142,21 @@ function MostrarEstadisticoGlobal(data) {
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="4" class="p-2 bg-light">
                         <div class="d-flex flex-column gap-2 small">
-
-                            <div><b style="font-size:12px">Presentes:</b> ${badge(presentes, "#a3dc9a72", "#06923E")}</div>
-                            <div><b style="font-size:12px">Ausentes:</b> ${badge(ausentes, "#f8d7da", "#c62828")}</div>
-
-                            <div><b style="font-size:12px">Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
-                            <div><b style="font-size:12px">Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
-                            <div><b style="font-size:12px">Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
-                            <div><b style="font-size:12px">Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
-
+                            <div><b>Presentes:</b> ${badge(presentes, "#a3dc9a72", "#06923E")}</div>
+                            <div><b>Ausentes:</b> ${badge(ausentes, "#f8d7da", "#c62828")}</div>
+                            <div><b>Tarde:</b> ${badge(tarde, "#fff3cd", "#b68400")}</div>
+                            <div><b>Incompletas:</b> ${badge(incompletas, "#cfe2ff", "#084298")}</div>
+                            <div><b>Fuera de Horario:</b> ${badge(fueraHorario, "#e0bbff", "#5a189a")}</div>
+                            <div><b>Justificaciones:</b> ${badge(justificaciones, "#ececec", "#333333")}</div>
                         </div>
                     </td>
                 </tr>
             `);
-
             return;
         }
-
     });
 }
+
 
 
 // ========================== Generar Informe en PDF ========================================

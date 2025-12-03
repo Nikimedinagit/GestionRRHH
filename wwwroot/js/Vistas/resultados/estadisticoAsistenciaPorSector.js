@@ -2,7 +2,7 @@
 // =============== Inicializar Filtros al Cargar la Página =================================
 $(document).ready(function () {
 
-    $("#IdSectorFiltro").on("input change", function () {
+    $("#IdSectorFiltro, #EmpleadoIdBuscar, #NroLegajoFiltro").on("input change", function () {
         ObtenerAsistenciaPorSector();
     });
 });
@@ -37,7 +37,9 @@ async function ObtenerAsistenciaPorSector() {
     const sectorFiltro = document.getElementById("IdSectorFiltro").value;
 
     const filtro = {
-        sector: sectorFiltro === "0" ? null : Number(sectorFiltro)
+        sector: sectorFiltro === "0" ? null : Number(sectorFiltro),
+        nombre: document.getElementById("EmpleadoIdBuscar").value,
+        nroLegajo: document.getElementById("NroLegajoFiltro").value,
     }
 
     try {
@@ -93,6 +95,17 @@ function MostrarAsistenciaPorSector(data) {
         fuera: { bg: "#e2e3e5", color: "#495057" }
     };
 
+    const badgeBase = `
+        display:inline-block;
+        padding:0.35em 0.65em;
+        font-size:0.75rem;
+        font-weight:600;
+        border-radius:0.25rem;
+    `;
+
+    const badge = (valor, estilo) =>
+        `<span style="${badgeBase} background:${estilo.bg}; color:${estilo.color};">${valor}</span>`;
+
     const isMobile = mqMobile.matches;          
     const isTabletMobile = mqTabletMobile.matches; 
 
@@ -122,118 +135,48 @@ function MostrarAsistenciaPorSector(data) {
                 tabla.append(`
                     <tr class="collapse" id="${collapseId}">
                         <td colspan="6" class="p-2 bg-light" style="font-size:12px !important;">
-
-                            <b class="mt-2 d-inline-block">Presente:</b>
-                            <span class="badge fw-bold" style="background:${badgeStyle.presente.bg};color:${badgeStyle.presente.color}; font-size:12px;">
-                                ${emp.presente}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Ausente:</b>
-                            <span class="badge fw-bold" style="background:${badgeStyle.ausente.bg};color:${badgeStyle.ausente.color}; font-size:12px;">
-                                ${emp.ausentes}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Incompleta:</b>
-                            <span class="badge fw-bold" style="background:${badgeStyle.incompleta.bg};color:${badgeStyle.incompleta.color}; font-size:12px;">
-                                ${emp.incompletas}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Tarde:</b>
-                            <span class="badge fw-bold" style="background:${badgeStyle.tarde.bg};color:${badgeStyle.tarde.color}; font-size:12px;">
-                                ${emp.tarde}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Fuera de horario:</b>
-                            <span class="badge fw-bold" style="background:${badgeStyle.fuera.bg};color:${badgeStyle.fuera.color}; font-size:12px;">
-                                ${emp.fueraDeHorario}
-                            </span>
+                            <b>Presente:</b> ${badge(emp.presente, badgeStyle.presente)}<br>
+                            <b>Ausente:</b> ${badge(emp.ausentes, badgeStyle.ausente)}<br>
+                            <b>Incompleta:</b> ${badge(emp.incompletas, badgeStyle.incompleta)}<br>
+                            <b>Tarde:</b> ${badge(emp.tarde, badgeStyle.tarde)}<br>
+                            <b>Fuera de horario:</b> ${badge(emp.fueraDeHorario, badgeStyle.fuera)}
                         </td>
                     </tr>
                 `);
-
                 return;
             }
 
             if (isTabletMobile) {
-
                 tabla.append(`
                     <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
                         <td class="text-start text-wrap">
                             ${emp.nombre} (Legajo: ${emp.nroLegajo})
                         </td>
-
-                        <td class="text-center">
-                            <span class="badge fw-bold" style="background:${badgeStyle.presente.bg};color:${badgeStyle.presente.color}; font-size:12px;">
-                                ${emp.presente}
-                            </span>
-                        </td>
-
-                        <td class="text-center">
-                            <span class="badge fw-bold" style="background:${badgeStyle.ausente.bg};color:${badgeStyle.ausente.color}; font-size:12px;">
-                                ${emp.ausentes}
-                            </span>
-                        </td>
+                        <td class="text-center">${badge(emp.presente, badgeStyle.presente)}</td>
+                        <td class="text-center">${badge(emp.ausentes, badgeStyle.ausente)}</td>
                     </tr>
                 `);
 
                 tabla.append(`
                     <tr class="collapse" id="${collapseId}">
                         <td colspan="6" class="p-2 bg-light" style="font-size:12px;">
-
-                            <b class="mt-2 d-inline-block">Incompleta:</b>
-                            <span class="badge" style="background:${badgeStyle.incompleta.bg};color:${badgeStyle.incompleta.color}; font-size:12px;">
-                                ${emp.incompletas}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Tarde:</b>
-                            <span class="badge" style="background:${badgeStyle.tarde.bg};color:${badgeStyle.tarde.color}; font-size:12px;">
-                                ${emp.tarde}
-                            </span><br>
-
-                            <b class="mt-2 d-inline-block">Fuera de horario:</b>
-                            <span class="badge" style="background:${badgeStyle.fuera.bg};color:${badgeStyle.fuera.color}; font-size:12px;">
-                                ${emp.fueraDeHorario}
-                            </span>
+                            <b>Incompleta:</b> ${badge(emp.incompletas, badgeStyle.incompleta)}<br>
+                            <b>Tarde:</b> ${badge(emp.tarde, badgeStyle.tarde)}<br>
+                            <b>Fuera de horario:</b> ${badge(emp.fueraDeHorario, badgeStyle.fuera)}
                         </td>
                     </tr>
                 `);
-
                 return; 
             }
 
             tabla.append(`
                 <tr>
                     <td class="text-start text-wrap">${emp.nombre} (Legajo: ${emp.nroLegajo})</td>
-
-                    <td class="text-center">
-                        <span class="badge fw-bold" style="background:${badgeStyle.presente.bg};color:${badgeStyle.presente.color};font-size:12px;">
-                            ${emp.presente}
-                        </span>
-                    </td>
-
-                    <td class="text-center">
-                        <span class="badge fw-bold" style="background:${badgeStyle.ausente.bg};color:${badgeStyle.ausente.color};font-size:12px;">
-                            ${emp.ausentes}
-                        </span>
-                    </td>
-
-                    <td class="text-center">
-                        <span class="badge fw-bold" style="background:${badgeStyle.incompleta.bg};color:${badgeStyle.incompleta.color};font-size:12px;">
-                            ${emp.incompletas}
-                        </span>
-                    </td>
-
-                    <td class="text-center">
-                        <span class="badge fw-bold" style="background:${badgeStyle.tarde.bg};color:${badgeStyle.tarde.color};font-size:12px;">
-                            ${emp.tarde}
-                        </span>
-                    </td>
-
-                    <td class="text-center">
-                        <span class="badge fw-bold" style="background:${badgeStyle.fuera.bg};color:${badgeStyle.fuera.color};font-size:12px;">
-                            ${emp.fueraDeHorario}
-                        </span>
-                    </td> 
+                    <td class="text-center">${badge(emp.presente, badgeStyle.presente)}</td>
+                    <td class="text-center">${badge(emp.ausentes, badgeStyle.ausente)}</td>
+                    <td class="text-center">${badge(emp.incompletas, badgeStyle.incompleta)}</td>
+                    <td class="text-center">${badge(emp.tarde, badgeStyle.tarde)}</td>
+                    <td class="text-center">${badge(emp.fueraDeHorario, badgeStyle.fuera)}</td>
                 </tr>
             `);
         });

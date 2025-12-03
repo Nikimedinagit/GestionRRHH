@@ -5,7 +5,9 @@
 $(document).ready(function () {
     ObtenerAsistenciaPorEmpleado();
 
-    $("#FechaInicioBuscar, #FechaFinBuscar").on("change", function () {
+    $("#FechaInicioBuscar, #FechaFinBuscar, #EmpleadoIdBuscar, #NroLegajoFiltro")
+        .on("input change", function () {
+
         let fechaInicioRaw = $("#FechaInicioBuscar").val();
         let fechaFinRaw = $("#FechaFinBuscar").val();
 
@@ -17,11 +19,11 @@ $(document).ready(function () {
                 $("#FechaFinBuscar").val(fechaInicioRaw);
             }
         }
-        ObtenerAsistenciaPorEmpleado()
 
+        ObtenerAsistenciaPorEmpleado();
     });
-
 });
+
 
 
 
@@ -29,6 +31,8 @@ $(document).ready(function () {
 async function ObtenerAsistenciaPorEmpleado() {
 
     const filtro = {
+        nombre: document.getElementById("EmpleadoIdBuscar").value,
+        nroLegajo: document.getElementById("NroLegajoFiltro").value,
         fechaDesde: document.getElementById("FechaInicioBuscar").value || null,
         fechaHasta: document.getElementById("FechaFinBuscar").value || null,
     }
@@ -80,8 +84,6 @@ function MostrarAsistenciaPorEmpleado(data) {
         "FUERA DE HORARIO": { backgroundColor: "#e2e3e5", color: "#495057" }
     };
 
-    const badgeBaseClass = "badge fw-bold fs-6";
-
     const tabletsMobiless = mediaQuery.matches;
 
     data.forEach((empleado, indexEmp) => {
@@ -109,15 +111,26 @@ function MostrarAsistenciaPorEmpleado(data) {
                 ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;"`
                 : `style="cursor:default;"`;
 
+
+                const badgeHtml = `
+                <span class="fw-bold"
+                      style="
+                        display:inline-block;
+                        padding:0.35em 0.65em;
+                        font-size:0.7rem;
+                        font-weight:600;
+                        border-radius:0.25rem;
+                        background-color:${estilo.backgroundColor};
+                        color:${estilo.color};
+                      ">
+                    ${estado}
+                </span>
+            `;
+
             tabla.append(`
                 <tr ${toggleAttrs}>
                     <td class="text-center align-middle">${asistencia.fecha || "-"}</td>
-                    <td class="text-center align-middle">
-                        <span class="${badgeBaseClass}" 
-                              style="background-color:${estilo.backgroundColor}; color:${estilo.color};">
-                            ${estado}
-                        </span>
-                    </td>
+                    <td class="text-center align-middle">${badgeHtml}</td>
                     <td class="text-center align-middle d-none d-sm-table-cell">${asistencia.primerEntrada || "-"}</td>
                     <td class="text-center align-middle d-none d-sm-table-cell">${asistencia.primeraSalida || "-"}</td>
                     <td class="text-center align-middle d-none d-md-table-cell">${asistencia.segundaEntrada || "-"}</td>
@@ -144,6 +157,7 @@ function MostrarAsistenciaPorEmpleado(data) {
         });
     });
 }
+
 
 
 async function GenerarInformePdfListadoAsistenciaPorEmpleado() {

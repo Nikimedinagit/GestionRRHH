@@ -27,6 +27,10 @@ public class FiltrarListadoAsistenciaEmpleado
 {
     public DateTime? FechaDesde { get; set; }
     public DateTime? FechaHasta { get; set; }
+    public string? NroLegajo { get; set; }
+    public string? Nombre { get; set; }
+
+
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,3 +143,123 @@ public class FiltrarEmpleadoHistorialLaboral
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /// FIN DE CLASES PARA EL LISTADO DE HISTORIAL LABORAL POR EMPELADO - NIVEL2
 ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA EL LISTADO DE EVALAUCIONES POR EMPELADO - NIVEL2
+/////////////////////////////////////////////////////////////////////////////////////////////// 
+// ========================== Armamos primer Grupo Empelado ============================ //
+public class EmpleadoEvaluacionesListadoN2
+{
+    public string NroLegajo { get; set; }
+    public string Nombre { get; set; }
+    public List<EvaluacionListadoN2> Evaluaciones { get; set; }
+}
+
+// ========================== Armamos Segundo Grupo Evaluaciones ============================ //
+public class EvaluacionListadoN2
+{
+    public DateTime Fecha { get; set; }
+    public string Periodo { get; set; }
+    public int Calificacion { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarEmpleadoEvaluaciones
+{
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public string? NroLegajo { get; set; }
+    public string? Nombre { get; set; }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA EL LISTADO DE EVALAUCIONES POR EMPELADO - NIVEL2
+/////////////////////////////////////////////////////////////////////////////////////////////// 
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE EVALUACIONES POR EMEPALDOS Y SUS CRITERIOS - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// ========================== Armamos Primer Grupo Empleado ============================ //
+public class EmpleadoEvaluacionesListadoN3
+{
+    public string NroLegajo { get; set; }
+    public string Nombre { get; set; }
+    public List<EvaluacionCriteriosListadoN3> Evaluaciones { get; set; }
+}
+
+// ========================== Armamos Segundo Grupo Evaluacion ============================ //
+public class EvaluacionCriteriosListadoN3
+{
+    public DateTime Fecha { get; set; }
+    public string Periodo { get; set; }
+    public int Calificacion { get; set; }
+
+    public List<CriterioListadoN3> Criterios { get; set; }
+}
+
+// ========================== Armamos Tercer Grupo Criterio ============================ //
+public class CriterioListadoN3
+{
+    public string Nombre { get; set; }
+    public string Descripcion { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarEmpleadoEvaluacionesCriterios
+{
+    public string? Nombre { get; set; }
+    public string? NroLegajo { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE EVALUACIONES POR EMEPALDOS Y SUS CRITERIOS - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE PUESTO POR EVUALCIONES Y CRITERIOS - NIVEL 3
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Armamos Primer Grupo Puesto ============================ //
+public class PuestoEmpleadosEvaluacionesListadoN3
+{
+    public string Nombre { get; set; }
+    public List<EmpleadoEvaluacionListadoN3> Empleados { get; set; }
+}
+
+// ========================== Armamos Segundo Grupo Empleado ============================ //
+public class EmpleadoEvaluacionListadoN3
+{
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<EvaluacionListadoN3B> Evaluaciones { get; set; }
+}
+
+// ========================== Armamos Tercer Grupo Evaluacion ============================ //
+public class EvaluacionListadoN3B
+{
+    public DateTime Fecha { get; set; }
+    public string Periodo { get; set; }
+    public int Calificacion { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarPuestoEmpleadosEvaluaciones
+{
+    public int? Puesto { get; set; }
+    public string? NroLegajo { get; set; }
+    public string? Nombre { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE PUESTO POR EVUALCIONES Y CRITERIOS - NIVEL 3
+///////////////////////////////////////////////////////////////////////////////////////////////////////

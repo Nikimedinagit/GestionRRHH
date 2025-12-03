@@ -256,6 +256,12 @@ public class ResultadosController : ControllerBase
         if (filtro.FechaHasta.HasValue)
             Asistencias = Asistencias.Where(a => a.Fecha <= filtro.FechaHasta.Value);
 
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            Asistencias = Asistencias.Where(h => h.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            Asistencias = Asistencias.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
         if (sectorIdSupervisor.HasValue)
         {
             Asistencias = Asistencias.Where(a => a.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
@@ -586,6 +592,12 @@ public class ResultadosController : ControllerBase
         if (filtro.Sector.HasValue)
             Asistencias = Asistencias.Where(a => a.Empleado.Puesto.SectorId == filtro.Sector.Value);
 
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            Asistencias = Asistencias.Where(h => h.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            Asistencias = Asistencias.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
         var ObtenerAsistencias = await Asistencias.ToListAsync();
 
         var AgruparPorSector = ObtenerAsistencias
@@ -697,7 +709,7 @@ public class ResultadosController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE DESEMPEÑO - GRAFICOS Y LISTADOS ///
     /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     ///////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER DESEMPEÑO POR SECTOR (GRAFICO) //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -795,7 +807,7 @@ public class ResultadosController : ControllerBase
     [HttpGet("MejoresCriterios")]
     public async Task<ActionResult<IEnumerable<CriterioDesempenoGrafico>>> GetMejoresCriterios()
     {
-        double umbralMejores = 7; 
+        double umbralMejores = 7;
 
         var datos = await _context.CriterioDeEvaluacion
             .Where(c => !c.TipoDeCriterio.Eliminado)
@@ -814,7 +826,7 @@ public class ResultadosController : ControllerBase
                             .ToTitleCase(g.Key.ToLower()),
                 Promedio = g.Average(x => x.Calificacion)
             })
-            .Where(x => x.Promedio >= umbralMejores) 
+            .Where(x => x.Promedio >= umbralMejores)
             .OrderByDescending(x => x.Promedio)
             .ToList();
 
@@ -828,7 +840,7 @@ public class ResultadosController : ControllerBase
     [HttpGet("PeoresCriterios")]
     public async Task<ActionResult<IEnumerable<CriterioDesempenoGrafico>>> GetPeoresCriterios()
     {
-        double umbralPeores = 4; 
+        double umbralPeores = 4;
 
         var datos = await _context.CriterioDeEvaluacion
             .Where(c => !c.TipoDeCriterio.Eliminado)
@@ -847,7 +859,7 @@ public class ResultadosController : ControllerBase
                             .ToTitleCase(g.Key.ToLower()),
                 Promedio = g.Average(x => x.Calificacion)
             })
-            .Where(x => x.Promedio <= umbralPeores) 
+            .Where(x => x.Promedio <= umbralPeores)
             .OrderBy(x => x.Promedio)
             .ToList();
 
@@ -898,6 +910,200 @@ public class ResultadosController : ControllerBase
     }
 
 
+
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LISTADO DE EVALUACION POR EMPELADO - NIVEL 2
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("EmpleadoEvaluacionesN2")]
+    public async Task<ActionResult<List<EmpleadoEvaluacionesListadoN2>>> ObtenerEvaluacionesPorEmpleado([FromBody] FiltrarEmpleadoEvaluaciones filtro)
+    {
+        var evaluaciones = _context.Evaluacion
+            .Include(e => e.Empleado)
+            .Where(e => !e.Empleado.Eliminado)
+            .AsQueryable();
+
+
+        if (filtro.FechaDesde.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha <= filtro.FechaHasta.Value);
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            evaluaciones = evaluaciones.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            evaluaciones = evaluaciones.Where(e => e.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        var listaEvaluaciones = await evaluaciones.ToListAsync();
+
+
+        var resultado = listaEvaluaciones
+            .GroupBy(e => e.Empleado)
+            .OrderBy(g => g.Key.NroLegajo)
+            .Select(grupoEmpleado => new EmpleadoEvaluacionesListadoN2
+            {
+                NroLegajo = grupoEmpleado.Key.NroLegajo,
+                Nombre = grupoEmpleado.Key.NombreCompleto,
+
+                Evaluaciones = grupoEmpleado
+                    .OrderBy(ev => ev.Fecha)
+                    .Select(ev => new EvaluacionListadoN2
+                    {
+                        Fecha = ev.Fecha,
+                        Periodo = $"{ev.Fecha.ToString("MMMM").ToUpper()} {ev.Fecha.Year}",
+                        Calificacion = ev.Calificacion
+                    })
+                    .ToList()
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LISTADO DE EVALUACION POR EMPELADO Y SU CRITERIO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("EmpleadoEvaluacionesCriteriosN3")]
+    public async Task<ActionResult<List<EmpleadoEvaluacionesListadoN3>>> ObtenerEvaluacionesConCriterios([FromBody] FiltrarEmpleadoEvaluacionesCriterios filtro)
+    {
+        var evaluaciones = _context.Evaluacion
+            .Include(e => e.Empleado)
+            .Include(e => e.CriterioDeEvaluacion)
+                .ThenInclude(c => c.TipoDeCriterio)
+            .Where(e => !e.Empleado.Eliminado)
+            .AsQueryable();
+
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            evaluaciones = evaluaciones.Where(e => e.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            evaluaciones = evaluaciones.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.FechaDesde.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha <= filtro.FechaHasta.Value);
+
+        var lista = await evaluaciones.ToListAsync();
+
+
+        var resultado = lista
+            .GroupBy(e => e.Empleado)
+            .OrderBy(g => g.Key.NroLegajo)
+            .Select(grupoEmpleado => new EmpleadoEvaluacionesListadoN3
+            {
+                NroLegajo = grupoEmpleado.Key.NroLegajo,
+                Nombre = grupoEmpleado.Key.NombreCompleto,
+
+                Evaluaciones = grupoEmpleado
+                    .OrderBy(e => e.Fecha)
+                    .Select(ev => new EvaluacionCriteriosListadoN3
+                    {
+                        Fecha = ev.Fecha,
+                        Periodo = $"{ev.Fecha.ToString("MMMM").ToUpper()} {ev.Fecha.Year}",
+                        Calificacion = ev.Calificacion,
+
+                        Criterios = ev.CriterioDeEvaluacion
+                            .Select(c => new CriterioListadoN3
+                            {
+                                Nombre = c.TipoDeCriterio.Nombre,
+                                Descripcion = c.Descripcion
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LISTADO DE EVALUACION POR SECTOR Y EMPELADO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("PuestoEmpleadosEvaluacionesN3")]
+    public async Task<ActionResult<List<PuestoEmpleadosEvaluacionesListadoN3>>> ObtenerPuestoEmpleadosEvaluaciones([FromBody] FiltrarPuestoEmpleadosEvaluaciones filtro)
+    {
+        var evaluaciones = _context.Evaluacion
+            .Include(e => e.Empleado)
+                .ThenInclude(emp => emp.Puesto)
+            .Where(e => !e.Empleado.Eliminado)
+            .AsQueryable();
+
+
+        if (filtro.Puesto.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Empleado.PuestoId == filtro.Puesto.Value);
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            evaluaciones = evaluaciones.Where(h => h.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            evaluaciones = evaluaciones.Where(h => h.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.FechaDesde.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha <= filtro.FechaHasta.Value);
+
+        var lista = await evaluaciones.ToListAsync();
+
+
+        var resultado = lista
+            .GroupBy(e => e.Empleado.Puesto)
+            .OrderBy(g => g.Key.Descripcion)
+            .Select(grupoPuesto => new PuestoEmpleadosEvaluacionesListadoN3
+            {
+                Nombre = grupoPuesto.Key.Descripcion,
+
+                Empleados = grupoPuesto
+                    .GroupBy(e => e.Empleado)
+                    .OrderBy(g => g.Key.NroLegajo)
+                    .Select(grupoEmpleado => new EmpleadoEvaluacionListadoN3
+                    {
+                        Nombre = grupoEmpleado.Key.NombreCompleto,
+                        NroLegajo = grupoEmpleado.Key.NroLegajo,
+
+                        Evaluaciones = grupoEmpleado
+                            .OrderBy(e => e.Fecha)
+                            .Select(ev => new EvaluacionListadoN3B
+                            {
+                                Fecha = ev.Fecha,
+                                Periodo = $"{ev.Fecha.ToString("MMMM").ToUpper()} {ev.Fecha.Year}",
+                                Calificacion = ev.Calificacion
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE DESEMPEÑO - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
     [HttpGet("LicenciasMensualesGrafico6Meses")]
     public async Task<ActionResult<IEnumerable<LicenciasMensualesGrafico>>> LicenciasMensualesGrafico6Meses()
     {
@@ -913,8 +1119,8 @@ public class ResultadosController : ControllerBase
 
         var datos = await _context.Licencia
         .Where(l =>
-            l.FechaInicio <= fechaFin &&      
-            l.FechaFin >= fechaInicio         
+            l.FechaInicio <= fechaFin &&
+            l.FechaFin >= fechaInicio
         )
         .Select(l => new
         {
@@ -951,15 +1157,6 @@ public class ResultadosController : ControllerBase
         return Ok(resultado);
 
     }
-
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE DESEMPEÑO - GRAFICOS Y LISTADOS ///
-    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 
 }

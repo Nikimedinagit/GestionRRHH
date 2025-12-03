@@ -15,7 +15,7 @@
 
 
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-         <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
             <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
                 data-bs-toggle="collapse" data-bs-target="#contenedorResultados" aria-expanded="false"
                 aria-controls="contenedorResultados">
@@ -32,14 +32,28 @@
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href=""
+
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoEmpleadoEvaluaciones">
+                        <a href="#resultadoEmpleadoEvaluaciones"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-user-check me-2"></i> -------
+                            <i class="fa-solid fa-user-check me-2"></i> Evaluaciones Por Empleado
                         </a>
                     </li>
 
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoEmpleadoEvaluacionesCriterios">
+                        <a href="#resultadoEmpleadoEvaluacionesCriterios"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-user-gear me-2"></i> Evaluaciones con Criterios
+                        </a>
                     </li>
+
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoPuestoEmpleadoEvaluaciones">
+                        <a href="#resultadoPuestoEmpleadoEvaluaciones"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-briefcase me-2"></i>  Evaluaciones por Puesto y Empleados
+                        </a>
+                    </li>
+
                 </ul>
 
                 <hr class="my-3">
@@ -49,12 +63,39 @@
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href=""
+
+                    <!-- 1) Promedio de calificaciones por empleado -->
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoPromedioPorEmpleado">
+                        <a href="#resultadoPromedioPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-chart-line me-2"></i> ------
+                            <i class="fa-solid fa-chart-line me-2"></i> Promedio por Empleado
                         </a>
                     </li>
+
+                    <!-- 2) Promedio de calificaciones por puesto -->
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoPromedioPorPuesto">
+                        <a href="#resultadoPromedioPorPuesto"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chart-bar me-2"></i> Promedio por Puesto
+                        </a>
+                    </li>
+
+                    <!-- 3) Evolución del desempeño por año/trimestre -->
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoEvolucionDesempeno">
+                        <a href="#resultadoEvolucionDesempeno"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chart-area me-2"></i> Evolución Anual / Trimestral
+                        </a>
+                    </li>
+
+                    <!-- 4) Variación del desempeño (subió/bajó/mantuvo) -->
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoVariacionDesempeno">
+                        <a href="#resultadoVariacionDesempeno"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-arrow-trend-up me-2"></i> Variación del Desempeño
+                        </a>
+                    </li>
+
                 </ul>
 
             </div>
@@ -63,37 +104,38 @@
 
 
 
+
         <!-- ======================================= Contendor de Graficos ====================================== -->
-            <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
-                <div class="row">
+        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+            <div class="row">
 
-                    <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                        <h5>Promedio General de Desempeño por Puesto</h5>
-                        <div id="contenedorDesempenoPorPuesto" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Distribución de Calificaciones</h6>
-                        <div id="contenedorTortaDistribucion" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Criterios con Mejor Desempeño</h6>
-                        <div id="contenedorTortaCriteriosBuenos" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Criterios con Peor Desempeño</h6>
-                        <div id="contenedorCriteriosMalos" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                        <h5>Evolución Histórica del Desempeño</h5>
-                        <div id="contenedorEvolucionDesempeno" class="grafico-fijo"></div>
-                    </div>
-
+                <div class="col-md-12 mb-4 border p-2 shadow-sm">
+                    <h5>Promedio General de Desempeño por Puesto</h5>
+                    <div id="contenedorDesempenoPorPuesto" class="grafico-fijo"></div>
                 </div>
+
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Distribución de Calificaciones</h6>
+                    <div id="contenedorTortaDistribucion" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Criterios con Mejor Desempeño</h6>
+                    <div id="contenedorTortaCriteriosBuenos" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Criterios con Peor Desempeño</h6>
+                    <div id="contenedorCriteriosMalos" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-12 mb-4 border p-2 shadow-sm">
+                    <h5>Evolución Histórica del Desempeño</h5>
+                    <div id="contenedorEvolucionDesempeno" class="grafico-fijo"></div>
+                </div>
+
             </div>
+        </div>
 
 
 

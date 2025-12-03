@@ -92,12 +92,21 @@ function MostrarJustificacionesPorSector(data) {
     }
 
     const coloresEstado = {
-        PENDIENTE: "badge-pendiente",
-        APROBADA: "badge-aprobada",
-        RECHAZADA: "badge-rechazada",
+        PENDIENTE: { backgroundColor: "#fff3cd", color: "#856404" },
+        APROBADA: { backgroundColor: "#d4edda", color: "#155724" },
+        RECHAZADA: { backgroundColor: "#f8d7da", color: "#721c24" },
+        DEFAULT: { backgroundColor: "#e2e3e5", color: "#495057" }
     };
 
     let isMobile = mediaQuery.matches;
+
+    const badgeBaseStyle = `
+        display:inline-block;
+        padding:0.35em 0.65em;
+        font-size:0.7rem;
+        font-weight:600;
+        border-radius:0.25rem;
+    `;
 
     data.forEach((sector, indexSector) => {
 
@@ -122,26 +131,29 @@ function MostrarJustificacionesPorSector(data) {
             emp.justificaciones.forEach((j, indexJust) => {
 
                 const estado = j.estado?.toUpperCase() ?? "-";
-                const estilo = coloresEstado[estado] || "badge-default";
+                const estilo = coloresEstado[estado] || coloresEstado.DEFAULT;
 
                 const collapseId = `collapse${indexSector}_${indexEmp}_${indexJust}`;
                 const attrs = isMobile
                     ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;"`
                     : `style="cursor:default;"`;
 
+                // 👇 Badge con estilo base + colores dinámicos
+                const badgeHtml = `
+                    <span style="${badgeBaseStyle}
+                                 background-color:${estilo.backgroundColor};
+                                 color:${estilo.color};">
+                        ${estado}
+                    </span>
+                `;
+
                 tabla.append(`
                     <tr ${attrs}>
                         <td class="text-center align-middle">${j.fecha ? FormatearFecha(j.fecha) : "-"}</td>
-
                         <td class="text-start align-middle ${isMobile ? "d-none" : "text-wrap"}">
                             ${j.motivo}
                         </td>
-
-                        <td class="text-center align-middle">
-                            <span class="badge fw-bold fs-6 ${estilo}">
-                                ${estado}
-                            </span>
-                        </td>
+                        <td class="text-center align-middle">${badgeHtml}</td>
                     </tr>
                 `);
 
@@ -154,11 +166,11 @@ function MostrarJustificacionesPorSector(data) {
                         </tr>
                     `);
                 }
-
             });
         });
     });
 }
+
 
 
 

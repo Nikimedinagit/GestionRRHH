@@ -4,14 +4,14 @@
 // ========================== Armamos Primer Grupo Global  ============================ //
 public class GlobalEstadisticoN1
 {
-    public string Mes { get; set; }         
+    public string Mes { get; set; }
     public int Activos { get; set; }
     public int Presentes { get; set; }
     public int Ausentes { get; set; }
     public int Tarde { get; set; }
     public int Incompletas { get; set; }
     public int FueraDeHorario { get; set; }
-    public int Justificaciones { get; set; } 
+    public int Justificaciones { get; set; }
     public decimal PorcentajePresentismo { get; set; }
     public decimal PorcentajeAusentismo { get; set; }
     public DateTime FechaOrden { get; set; }
@@ -48,6 +48,8 @@ public class EmpleadoAsistenciaN2
 public class FiltrarEstadisticaAsistenciaEmpeladoSector
 {
     public int? Sector { get; set; }
+    public string? NroLegajo { get; set; }
+    public string? Nombre { get; set; }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /// FIN DE CLASES APRA EL ESTADISTICO ASISTENCOIA DE EMPLEADOS POR SECTOR - NIVEL 2
@@ -62,7 +64,7 @@ public class FiltrarEstadisticaAsistenciaEmpeladoSector
 // ========================== Armamos Primer Grupo Justificacion  ============================ //
 public class EstadisticaJustificacionMes
 {
-    public string Mes { get; set; }          
+    public string Mes { get; set; }
     public int Pendientes { get; set; }
     public int Aprobadas { get; set; }
     public int Rechazadas { get; set; }
