@@ -9,6 +9,7 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace API_RRHH_TESIS2025.Controllers
 {
@@ -126,11 +127,11 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPuesto(int id, [FromBody] Puesto puesto)
         {
-            
+
             string descripcionNormalizada = NormalizarTexto(puesto.Descripcion);
 
             var puestoOriginal = await _context.Puesto.FindAsync(id);
-            
+
             var puestos = await _context.Puesto
                 .AsNoTracking()
                 .Where(x => x.SectorId == puesto.SectorId && x.Id != id)
@@ -186,12 +187,39 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<Puesto>>> GetPuestosActivos()
         {
-            var puestosActivos = await _context.Puesto
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var puestos = _context.Puesto
                 .Where(p => !p.Eliminado)
+                .AsQueryable();
+
+            if (rolActual == "SUPERVISOR")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var email = usuario?.Email?.Trim().ToLower();
+
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == email);
+
+                if (supervisor == null || supervisor.Puesto == null)
+                {
+                    return Ok(new List<Puesto>());
+                }
+
+                var sectorId = supervisor.Puesto.SectorId;
+
+                puestos = puestos.Where(p => p.SectorId == sectorId);
+            }
+
+            var puestosActivos = await puestos
                 .OrderBy(p => p.Descripcion)
                 .ToListAsync();
-            return puestosActivos;
+
+            return Ok(puestosActivos);
         }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////

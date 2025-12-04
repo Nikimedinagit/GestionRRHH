@@ -1,0 +1,104 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Variación del Desempeño por Empleado</h3>
+        <p class="text-muted mb-3">
+            Visualizar la variación del desempeño de cada empleado comparando su última evaluación con la anterior,
+            mostrando si subió, bajó o se mantuvo, junto con las calificaciones y fechas correspondientes.
+        </p>
+    </div>
+
+
+    <hr />
+
+    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <a href="#resultadoGestionDesempeño" class="btn btn-volver">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                <span>Volver</span>
+            </a>
+
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button class="btn btn-informe" onclick="GenerarInformePdfEvolucionDesempeno()">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar Informe</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!--================================ Contenedor Filtros ===================================== -->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-3">
+                    <label for="IdPuestoFiltro" class="form-label-fija">Puesto</label>
+                    <select id="IdPuestoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label for="IdEmpleadoFiltro" class="form-label-fija">Empleado</label>
+                    <select id="IdEmpleadoFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="AnioFiltro" class="form-label-fija">Año</label>
+                    <input type="number" class="form-control filtro-select" id="AnioFiltro" min="2000" max="2100" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="TrimestreFiltro" class="form-label-fija">Trimestre</label>
+                    <select id="TrimestreFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                        <option value="1">1° Trimestre</option>
+                        <option value="2">2° Trimestre</option>
+                        <option value="3">3° Trimestre</option>
+                        <option value="4">4° Trimestre</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- ==================================== Tabla de Datos ===================================== -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-center">Año</th>
+                        <th class="text-center">Trimestre</th>
+                        <th class="d-none d-md-table-cell text-center">Promedio</th>
+                        <th class="d-none d-md-table-cell text-center">Cant. Eval.</th>
+                        <th class="d-none d-lg-table-cell text-center">Máx. Calificación</th>
+                        <th class="d-none d-lg-table-cell text-center">Mín. Calificación</th>
+                        <th class="d-none d-lg-table-cell text-center">Variación</th>
+                    </tr>
+                </thead>
+                <tbody id="listadoEvolucionDesempeno"></tbody>
+            </table>
+        </div>
+
+
+
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/resultados/estadisticoEvolucionDesempeno.js"></script>

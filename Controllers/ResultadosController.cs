@@ -716,16 +716,40 @@ public class ResultadosController : ControllerBase
     [HttpGet("DesempenoPorPuesto")]
     public async Task<ActionResult<IEnumerable<DesempenoPorPuestoGrafico>>> GetDesempenoPorPuesto()
     {
-        var hoy = DateTime.Now;
-        var meses = new List<DateTime>();
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
 
-        for (int i = 5; i >= 0; i--)
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
         {
-            meses.Add(new DateTime(hoy.Year, hoy.Month, 1).AddMonths(-i));
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null || supervisor.Puesto == null)
+                return Ok(new List<DesempenoPorPuestoGrafico>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
         }
 
-        var evaluaciones = await _context.Empleado
+        var hoy = DateTime.Now;
+        var meses = new List<DateTime>();
+        for (int i = 5; i >= 0; i--)
+            meses.Add(new DateTime(hoy.Year, hoy.Month, 1).AddMonths(-i));
+
+        var empleadosQuery = _context.Empleado
             .Where(e => !e.Eliminado && e.Puesto != null)
+            .Include(e => e.Puesto)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            empleadosQuery = empleadosQuery.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var evaluaciones = await empleadosQuery
             .SelectMany(e => e.Evaluacion, (empleado, eval) => new
             {
                 Puesto = empleado.Puesto.Descripcion,
@@ -735,8 +759,9 @@ public class ResultadosController : ControllerBase
             .Where(x => x.Fecha >= meses.First())
             .ToListAsync();
 
-        var puestos = await _context.Puesto
-            .Select(p => p.Descripcion)
+        var puestos = await empleadosQuery
+            .Select(e => e.Puesto.Descripcion)
+            .Distinct()
             .ToListAsync();
 
         var resultado = new List<DesempenoPorPuestoGrafico>();
@@ -778,14 +803,42 @@ public class ResultadosController : ControllerBase
     }
 
 
+
     ///////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER DISTRIBUCION DE CALIFICACIONES (GRAFICO) //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("DistribucionCalificaciones")]
     public async Task<ActionResult<IEnumerable<DistribucionCalificacionesGrafico>>> GetDistribucionCalificaciones()
     {
-        var calificaciones = await _context.Evaluacion
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null || supervisor.Puesto == null)
+                return Ok(new List<DistribucionCalificacionesGrafico>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var evaluacionesQuery = _context.Evaluacion
+            .Include(e => e.Empleado)
             .Where(e => !e.Empleado.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluacionesQuery = evaluacionesQuery.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var calificaciones = await evaluacionesQuery
             .Select(e => e.Calificacion)
             .ToListAsync();
 
@@ -801,6 +854,7 @@ public class ResultadosController : ControllerBase
     }
 
 
+
     ///////////////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LOS MEJORES CRITERIOS DE MAYOR PROMEDIO A 7 (GRAFICO) //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -809,8 +863,37 @@ public class ResultadosController : ControllerBase
     {
         double umbralMejores = 7;
 
-        var datos = await _context.CriterioDeEvaluacion
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null || supervisor.Puesto == null)
+                return Ok(new List<CriterioDesempenoGrafico>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var criteriosQuery = _context.CriterioDeEvaluacion
+            .Include(c => c.Evaluacion)
+                .ThenInclude(ev => ev.Empleado)
+                    .ThenInclude(emp => emp.Puesto)
             .Where(c => !c.TipoDeCriterio.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            criteriosQuery = criteriosQuery.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var datos = await criteriosQuery
             .Select(c => new
             {
                 Criterio = c.TipoDeCriterio.Nombre,
@@ -842,8 +925,37 @@ public class ResultadosController : ControllerBase
     {
         double umbralPeores = 4;
 
-        var datos = await _context.CriterioDeEvaluacion
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null || supervisor.Puesto == null)
+                return Ok(new List<CriterioDesempenoGrafico>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var criteriosQuery = _context.CriterioDeEvaluacion
+            .Include(c => c.Evaluacion)
+                .ThenInclude(ev => ev.Empleado)
+                    .ThenInclude(emp => emp.Puesto)
             .Where(c => !c.TipoDeCriterio.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            criteriosQuery = criteriosQuery.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var datos = await criteriosQuery
             .Select(c => new
             {
                 Criterio = c.TipoDeCriterio.Nombre,
@@ -873,6 +985,24 @@ public class ResultadosController : ControllerBase
     [HttpGet("EvolucionDesempenoUltimos6Meses")]
     public async Task<ActionResult<IEnumerable<EvolucionDesempenoGrafico>>> GetEvolucionDesempenoUltimos6Meses()
     {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null || supervisor.Puesto == null)
+                return Ok(new List<EvolucionDesempenoGrafico>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
         DateTime hoy = DateTime.Today;
 
         var meses = Enumerable.Range(0, 6)
@@ -881,8 +1011,18 @@ public class ResultadosController : ControllerBase
             .Reverse()
             .ToList();
 
-        var datos = await _context.Evaluacion
+        var evaluacionesQuery = _context.Evaluacion
+            .Include(e => e.Empleado)
+                .ThenInclude(emp => emp.Puesto)
             .Where(e => e.Fecha >= new DateTime(meses.First().Year, meses.First().Month, 1))
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluacionesQuery = evaluacionesQuery.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        var datos = await evaluacionesQuery
             .Select(e => new
             {
                 Anio = e.Fecha.Year,
@@ -913,17 +1053,41 @@ public class ResultadosController : ControllerBase
 
 
 
+
     //////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LISTADO DE EVALUACION POR EMPELADO - NIVEL 2
     //////////////////////////////////////////////////////////////////////////////
     [HttpPost("EmpleadoEvaluacionesN2")]
     public async Task<ActionResult<List<EmpleadoEvaluacionesListadoN2>>> ObtenerEvaluacionesPorEmpleado([FromBody] FiltrarEmpleadoEvaluaciones filtro)
     {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<EmpleadoEvaluacionesListadoN2>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
         var evaluaciones = _context.Evaluacion
             .Include(e => e.Empleado)
+            .ThenInclude(emp => emp.Puesto)
             .Where(e => !e.Empleado.Eliminado)
             .AsQueryable();
 
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluaciones = evaluaciones.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
 
         if (filtro.FechaDesde.HasValue)
             evaluaciones = evaluaciones.Where(e => e.Fecha >= filtro.FechaDesde.Value);
@@ -938,7 +1102,6 @@ public class ResultadosController : ControllerBase
             evaluaciones = evaluaciones.Where(e => e.Empleado.NombreCompleto.Contains(filtro.Nombre));
 
         var listaEvaluaciones = await evaluaciones.ToListAsync();
-
 
         var resultado = listaEvaluaciones
             .GroupBy(e => e.Empleado)
@@ -964,19 +1127,43 @@ public class ResultadosController : ControllerBase
     }
 
 
+
     //////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LISTADO DE EVALUACION POR EMPELADO Y SU CRITERIO - NIVEL 3
     //////////////////////////////////////////////////////////////////////////////
     [HttpPost("EmpleadoEvaluacionesCriteriosN3")]
     public async Task<ActionResult<List<EmpleadoEvaluacionesListadoN3>>> ObtenerEvaluacionesConCriterios([FromBody] FiltrarEmpleadoEvaluacionesCriterios filtro)
     {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<EmpleadoEvaluacionesListadoN3>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
         var evaluaciones = _context.Evaluacion
             .Include(e => e.Empleado)
+                .ThenInclude(emp => emp.Puesto)
             .Include(e => e.CriterioDeEvaluacion)
                 .ThenInclude(c => c.TipoDeCriterio)
             .Where(e => !e.Empleado.Eliminado)
             .AsQueryable();
 
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluaciones = evaluaciones.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
 
         if (!string.IsNullOrEmpty(filtro.Nombre))
             evaluaciones = evaluaciones.Where(e => e.Empleado.NombreCompleto.Contains(filtro.Nombre));
@@ -991,7 +1178,6 @@ public class ResultadosController : ControllerBase
             evaluaciones = evaluaciones.Where(e => e.Fecha <= filtro.FechaHasta.Value);
 
         var lista = await evaluaciones.ToListAsync();
-
 
         var resultado = lista
             .GroupBy(e => e.Empleado)
@@ -1025,18 +1211,41 @@ public class ResultadosController : ControllerBase
     }
 
 
+
     //////////////////////////////////////////////////////////////////////////////
     /// METODO PARA OBTENER LISTADO DE EVALUACION POR SECTOR Y EMPELADO - NIVEL 3
     //////////////////////////////////////////////////////////////////////////////
     [HttpPost("PuestoEmpleadosEvaluacionesN3")]
     public async Task<ActionResult<List<PuestoEmpleadosEvaluacionesListadoN3>>> ObtenerPuestoEmpleadosEvaluaciones([FromBody] FiltrarPuestoEmpleadosEvaluaciones filtro)
     {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<PuestoEmpleadosEvaluacionesListadoN3>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
         var evaluaciones = _context.Evaluacion
             .Include(e => e.Empleado)
                 .ThenInclude(emp => emp.Puesto)
             .Where(e => !e.Empleado.Eliminado)
             .AsQueryable();
 
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluaciones = evaluaciones.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
 
         if (filtro.Puesto.HasValue)
             evaluaciones = evaluaciones.Where(e => e.Empleado.PuestoId == filtro.Puesto.Value);
@@ -1054,7 +1263,6 @@ public class ResultadosController : ControllerBase
             evaluaciones = evaluaciones.Where(e => e.Fecha <= filtro.FechaHasta.Value);
 
         var lista = await evaluaciones.ToListAsync();
-
 
         var resultado = lista
             .GroupBy(e => e.Empleado.Puesto)
@@ -1087,6 +1295,358 @@ public class ResultadosController : ControllerBase
 
         return Ok(resultado);
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER PROMEDIO DE CALIFICACIONES POR EMPLEADO - NIVEL 2
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("PromedioCalificacionesEmpleadoN2")]
+    public async Task<ActionResult<List<PromedioCalificacionEmpleadoN2>>> ObtenerPromedioCalificacionesEmpleadoN2([FromBody] FiltrarPromedioCalificacionEmpleado filtro)
+    {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<PromedioCalificacionEmpleadoN2>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var empleados = _context.Empleado
+            .Include(e => e.Evaluacion)
+            .Include(e => e.Puesto)
+            .Where(e => !e.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            empleados = empleados.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            empleados = empleados.Where(e => e.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            empleados = empleados.Where(e => e.NroLegajo.Contains(filtro.NroLegajo));
+
+        var lista = await empleados.ToListAsync();
+
+        var resultado = lista
+            .Select(e =>
+            {
+                var evaluaciones = e.Evaluacion
+                    .Where(ev => (!filtro.FechaDesde.HasValue || ev.Fecha >= filtro.FechaDesde)
+                              && (!filtro.FechaHasta.HasValue || ev.Fecha <= filtro.FechaHasta))
+                    .OrderBy(ev => ev.Fecha)
+                    .ToList();
+
+                var promedios = new List<PromedioCalificacionN2>();
+
+                if (evaluaciones.Any())
+                {
+                    var promedio = (int)Math.Round(evaluaciones.Average(ev => ev.Calificacion));
+                    var cantidad = evaluaciones.Count;
+                    var mejor = evaluaciones.Max(ev => ev.Calificacion);
+                    var peor = evaluaciones.Min(ev => ev.Calificacion);
+                    var variacion = cantidad >= 2 ? evaluaciones.Last().Calificacion - evaluaciones.First().Calificacion : 0;
+                    var ultima = evaluaciones.Last().Fecha;
+
+                    promedios.Add(new PromedioCalificacionN2
+                    {
+                        Promedio = promedio,
+                        CantidadEvaluaciones = cantidad,
+                        MejorCalificacion = mejor,
+                        PeorCalificacion = peor,
+                        Variacion = variacion,
+                        UltimaEvaluacion = ultima
+                    });
+                }
+
+                return new PromedioCalificacionEmpleadoN2
+                {
+                    Nombre = e.NombreCompleto,
+                    NroLegajo = e.NroLegajo,
+                    Promedios = promedios
+                };
+            })
+            .OrderBy(r => r.NroLegajo)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER PROMEDIO DE CALIFICACIONES POR PUESTO - NIVEL 2
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("PromedioCalificacionesPuestoN2")]
+    public async Task<ActionResult<List<PromedioCalificacionPuestoN2>>> ObtenerPromedioCalificacionesPuesto([FromBody] FiltrarPromedioCalificacionPuestoN2 filtro)
+    {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<PromedioCalificacionPuestoN2>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var empleados = _context.Empleado
+            .Include(e => e.Evaluacion)
+            .Include(e => e.Puesto)
+            .Where(e => !e.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            empleados = empleados.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        if (filtro.Puesto.HasValue)
+            empleados = empleados.Where(e => e.PuestoId == filtro.Puesto.Value);
+
+        var lista = await empleados.ToListAsync();
+
+        var resultado = lista
+            .GroupBy(e => e.Puesto)
+            .Select(grupoPuesto =>
+            {
+                var todasEvaluaciones = grupoPuesto.SelectMany(e => e.Evaluacion
+                    .Where(ev => (!filtro.FechaDesde.HasValue || ev.Fecha >= filtro.FechaDesde)
+                              && (!filtro.FechaHasta.HasValue || ev.Fecha <= filtro.FechaHasta)));
+
+                var promediosEmpleados = grupoPuesto
+                    .Select(e => e.Evaluacion.Any() ? e.Evaluacion.Average(ev => ev.Calificacion) : 0)
+                    .ToList();
+
+                var promedioPuesto = new PromedioCalificacionPN2
+                {
+                    Promedio = todasEvaluaciones.Any() ? (int)Math.Round(todasEvaluaciones.Average(ev => ev.Calificacion)) : 0,
+                    CantidadEmpleados = grupoPuesto.Count(),
+                    CantidadEvaluaciones = todasEvaluaciones.Count(),
+                    MejorPromedioEmpleado = promediosEmpleados.Any() ? (int)Math.Round(promediosEmpleados.Max()) : 0,
+                    PeorPromedioEmpleado = promediosEmpleados.Any() ? (int)Math.Round(promediosEmpleados.Min()) : 0
+                };
+
+                return new PromedioCalificacionPuestoN2
+                {
+                    Puesto = grupoPuesto.Key.Descripcion,
+                    Promedios = new List<PromedioCalificacionPN2> { promedioPuesto }
+                };
+            })
+            .OrderBy(r => r.Puesto)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER EVOLUCION DEL DESEMPEÑO POR AÑO/TRIMESTRE - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("EvolucionDesempenoN3")]
+    public async Task<ActionResult<List<EvolucionDesempenoPeriodoN3>>> ObtenerEvolucionDesempeno([FromBody] FiltrarEvolucionDesempenoN3 filtro)
+    {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<EvolucionDesempenoPeriodoN3>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var evaluaciones = _context.Evaluacion
+            .Include(e => e.Empleado)
+                .ThenInclude(emp => emp.Puesto)
+            .Where(e => !e.Empleado.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            evaluaciones = evaluaciones.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        if (filtro.Puesto.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Empleado.PuestoId == filtro.Puesto);
+
+        if (filtro.Empleado.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.EmpleadoId == filtro.Empleado);
+
+        if (filtro.Año.HasValue)
+            evaluaciones = evaluaciones.Where(e => e.Fecha.Year == filtro.Año.Value);
+
+        if (filtro.Trimestre.HasValue)
+        {
+            evaluaciones = evaluaciones.Where(e => ((e.Fecha.Month - 1) / 3 + 1) == filtro.Trimestre.Value);
+        }
+
+        var lista = await evaluaciones.ToListAsync();
+
+        var grupos = lista
+            .GroupBy(ev => new { Año = ev.Fecha.Year, Trimestre = (ev.Fecha.Month - 1) / 3 + 1 })
+            .OrderBy(g => g.Key.Año).ThenBy(g => g.Key.Trimestre)
+            .ToList();
+
+        var resultado = grupos
+            .Select((grupo, index) =>
+            {
+                var promedio = (int)Math.Round(grupo.Average(ev => ev.Calificacion));
+                var anterior = index > 0 ? (int)Math.Round(grupos[index - 1].Average(ev => ev.Calificacion)) : 0;
+
+                return new EvolucionDesempenoPeriodoN3
+                {
+                    Año = grupo.Key.Año,
+                    Trimestre = grupo.Key.Trimestre,
+                    Promedio = promedio,
+                    CantidadEvaluaciones = grupo.Count(),
+                    MaxCalificacion = grupo.Max(ev => ev.Calificacion),
+                    MinCalificacion = grupo.Min(ev => ev.Calificacion),
+                    VariacionRespectoAnterior = promedio - anterior,
+                    FechaOrden = grupo.Min(ev => ev.Fecha)
+                };
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER VARIACION DE DESEMPEÑO POR EMPLEADO - NIVEL 4
+    //////////////////////////////////////////////////////////////////////////////
+    [HttpPost("VariacionDesempenoEmpleadoN4")]
+    public async Task<ActionResult<List<VariacionDesempenoEmpleadoN4>>> ObtenerVariacionDesempenoEmpleado([FromBody] FiltrarVariacionDesempenoEmpleadoN4 filtro)
+    {
+        var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+
+        int? sectorIdSupervisor = null;
+
+        if (rolActual == "SUPERVISOR")
+        {
+            var supervisor = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (supervisor == null)
+                return Ok(new List<VariacionDesempenoEmpleadoN4>());
+
+            sectorIdSupervisor = supervisor.Puesto.SectorId;
+        }
+
+        var empleados = _context.Empleado
+            .Include(e => e.Evaluacion)
+            .Include(e => e.Puesto)
+            .Where(e => !e.Eliminado)
+            .AsQueryable();
+
+        if (sectorIdSupervisor.HasValue)
+        {
+            empleados = empleados.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            empleados = empleados.Where(e => e.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            empleados = empleados.Where(e => e.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.Puesto.HasValue)
+            empleados = empleados.Where(e => e.PuestoId == filtro.Puesto);
+
+        var lista = await empleados.ToListAsync();
+
+        var resultado = lista
+            .Select(e =>
+            {
+                var evaluaciones = e.Evaluacion
+                    .Where(ev => (!filtro.FechaDesde.HasValue || ev.Fecha >= filtro.FechaDesde)
+                              && (!filtro.FechaHasta.HasValue || ev.Fecha <= filtro.FechaHasta))
+                    .OrderBy(ev => ev.Fecha)
+                    .ToList();
+
+                if (evaluaciones.Count < 2)
+                {
+                    return new VariacionDesempenoEmpleadoN4
+                    {
+                        Nombre = e.NombreCompleto,
+                        NroLegajo = e.NroLegajo,
+                        Varacion = new List<VariacionDesempenoN4>()
+                    };
+                }
+
+                var variaciones = new List<VariacionDesempenoN4>();
+                for (int i = 1; i < evaluaciones.Count; i++)
+                {
+                    var anterior = evaluaciones[i - 1];
+                    var actual = evaluaciones[i];
+
+                    var estado = actual.Calificacion > anterior.Calificacion ? "SUBIO"
+                               : actual.Calificacion < anterior.Calificacion ? "BAJO"
+                               : "SE MANTUVO";
+
+                    if (string.IsNullOrEmpty(filtro.Estado) || filtro.Estado == estado)
+                    {
+                        variaciones.Add(new VariacionDesempenoN4
+                        {
+                            Estado = estado,
+                            CalificacionAnterior = anterior.Calificacion,
+                            CalificacionActual = actual.Calificacion,
+                            Diferencia = actual.Calificacion - anterior.Calificacion,
+                            FechaAnterior = anterior.Fecha,
+                            FechaActual = actual.Fecha
+                        });
+                    }
+                }
+
+                return new VariacionDesempenoEmpleadoN4
+                {
+                    Nombre = e.NombreCompleto,
+                    NroLegajo = e.NroLegajo,
+                    Varacion = variaciones
+                };
+            })
+            .OrderBy(r => r.NroLegajo)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
