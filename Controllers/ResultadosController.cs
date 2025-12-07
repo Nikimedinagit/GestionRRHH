@@ -1719,6 +1719,96 @@ public class ResultadosController : ControllerBase
     }
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LAS LICENCIAS POR TIPO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("LicenciasPorTipo")]
+    public async Task<ActionResult<IEnumerable<TipoLicenciaGrafico>>> LicenciasPorTipo()
+    {
+        var datos = await _context.Licencia
+            .Include(l => l.TipoDeLicencia)
+            .Where(l => !l.TipoDeLicencia.Eliminado && l.Estado == EstadoLicencia.APROBADA)
+            .ToListAsync();
+
+        var resultado = datos
+            .GroupBy(l => l.TipoDeLicencia.Nombre)
+            .Select(g => new TipoLicenciaGrafico
+            {
+                Tipo = CultureInfo.CurrentCulture.TextInfo
+                    .ToTitleCase(g.Key.ToLower()),
+                TotalLicencias = g.Count(),
+                PromedioDias = g.Average(l => (l.FechaFin - l.FechaInicio).TotalDays)
+            })
+            .OrderByDescending(x => x.TotalLicencias)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR SECTOR //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("LicenciasPorSector")]
+    public async Task<ActionResult<IEnumerable<LicenciasPorSector>>> LicenciasPorSector()
+    {
+        var datos = await _context.Licencia
+            .Include(l => l.Empleado)
+            .ThenInclude(e => e.Puesto)
+            .ThenInclude(p => p.Sector)
+            .Where(l => l.Estado == EstadoLicencia.APROBADA)
+            .ToListAsync();
+
+        var resultado = datos
+            .Where(l => l.Empleado?.Puesto?.Sector != null)
+            .GroupBy(l => l.Empleado.Puesto.Sector.Nombre)
+            .Select(g => new LicenciasPorSector
+            {
+                Sector = CultureInfo.CurrentCulture.TextInfo
+                        .ToTitleCase(g.Key.ToLower()),
+                TotalLicencias = g.Count(),
+                PromedioDias = g.Average(l =>
+                    (l.FechaFin - l.FechaInicio).TotalDays
+            )
+            })
+            .OrderByDescending(x => x.TotalLicencias)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR PUESTO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("LicenciasPorPuesto")]
+    public async Task<ActionResult<IEnumerable<LicenciasPorPuesto>>> LicenciasPorPuesto()
+    {
+        var datos = await _context.Licencia
+            .Include(l => l.Empleado)
+            .ThenInclude(l => l.Puesto)
+            .Where(l => l.Estado == EstadoLicencia.APROBADA)
+            .ToListAsync();
+
+        var resultado = datos
+            .Where(l => l.Empleado?.Puesto != null)
+            .GroupBy(l => l.Empleado.Puesto.Descripcion)
+            .Select(g => new LicenciasPorPuesto
+            {
+                Puesto = CultureInfo.CurrentCulture.TextInfo
+                        .ToTitleCase(g.Key.ToLower()),
+                TotalLicencias = g.Count(),
+                PromedioDias = g.Average(l =>
+                    (l.FechaFin - l.FechaInicio).TotalDays
+            )
+            })
+            .OrderByDescending(x => x.TotalLicencias)
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
 }
 
 

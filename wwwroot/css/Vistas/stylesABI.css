@@ -770,3 +770,13 @@ textarea.form-control {
   opacity: 1; 
 }
 
+/* --- Botón Agregar --- */
+.btn-marcarNoti {
+  --c: #20c060;
+}
+
+.btn-marcarNoti:hover {
+  background: var(--c);
+  border-color: var(--c);
+  color: #fff;
+}

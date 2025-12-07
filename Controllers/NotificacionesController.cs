@@ -103,5 +103,24 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return Ok(notificacion);
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA MARCAR TODAS LAS NOTIFICACIONES COMO LEIDAS //////////////
+        /// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPut("LeerTodas")]
+        public async Task<IActionResult> LeerTodas()
+        {
+            var notificacion = await _context.Notificaciones
+            .Where(n => !n.Leida)
+            .ToListAsync();
+            
+            foreach(var notisLeidas in notificacion)
+            notisLeidas.Leida = true;
+
+            //notificacion.Leida = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(notificacion);
+        }
     }
 }
