@@ -85,7 +85,11 @@ async function CargarNotificaciones() {
 
       item.addEventListener("click", () => MarcarComoLeida(n.id));
       if (lista) lista.appendChild(item);
-      if (vista) vista.appendChild(item.cloneNode(true));
+      if (vista) {
+          const clon = item.cloneNode(true);
+          clon.addEventListener("dblclick", () => MarcarComoLeida(n.id));
+          vista.appendChild(clon);
+      }
     });
 
     document.getElementById("badgeNotificaciones").textContent =
