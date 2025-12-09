@@ -173,22 +173,22 @@ function MostrarLicencias(data) {
 
   const estadoEstilo = {
     PENDIENTE: {
-      backgroundColor: "#fff3cd", // amarillo pastel
+      backgroundColor: "#fff3cd", 
       color: "#856404",
       borde: "#ffc107"
     },
     APROBADA: {
-      backgroundColor: "#d4f4dd", // verde pastel
+      backgroundColor: "#d4f4dd", 
       color: "#2e7d32",
       borde: "#52C41A"
     },
     RECHAZADA: {
-      backgroundColor: "#f8d7da", // rojo pastel
+      backgroundColor: "#f8d7da", 
       color: "#c62828",
       borde: "#ff0000"
     },
     EXPIRADA: {
-      backgroundColor: "#e2e3e5", // gris pastel
+      backgroundColor: "#e2e3e5", 
       color: "#495057",
       borde: "#6c757d"
     }

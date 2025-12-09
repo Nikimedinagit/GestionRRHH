@@ -56,7 +56,6 @@ async function cargarLicenciasMensuales() {
     return mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1);
   });
 
-  //const meses = data.map(x => x.mes);
   const totalLicencias = data.map((x) => x.totalLicencias);
   const totalAprobadas = data.map((x) => x.totalAprobadas);
   const totalRechazadas = data.map((x) => x.totalRechazadas);

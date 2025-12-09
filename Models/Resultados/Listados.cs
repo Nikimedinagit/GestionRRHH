@@ -263,3 +263,144 @@ public class FiltrarPuestoEmpleadosEvaluaciones
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FIN DE CLASES PARA LISTADO DE PUESTO POR EVUALCIONES Y CRITERIOS - NIVEL 3
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+////NUEVOS
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE LICENCIA POR EMPELADO Y ESTADO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// ========================== Armamos Primer Grupo Empleado ============================ //
+public class LicenciaEmpleadoEstadoListadoN3
+{
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<LicenciaEstadoListadoN3> Estado { get; set; }
+}
+
+// ========================== Armamos Segundo Grupo Estado ============================ //
+public class LicenciaEstadoListadoN3
+{
+    public string Nombre { get; set; }
+    public List<LicenciaListadoN3> Licencia { get; set; }
+
+}
+
+// ========================== Armamos Tercer Grupo Licencia ============================ //
+public class LicenciaListadoN3
+{
+    public string TipoDeLicencia { get; set; }
+    public string Periodo { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarLicenciaEmpleadoEstado
+{
+    public string? NroLegajo { get; set; }
+    public string? Nombre { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE LICENCIA POR EMPELADO Y ESTADO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE LICENCIA POR TIPO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Primer Grupo Tipo de Licencia ============================ //
+public class LicenciaTipoListadoN3
+{
+    public string TipoDeLicencia { get; set; }
+    public List<LicenciaTipoEmpleadoListadoN3> Empleados { get; set; }
+}
+
+// ========================== Segundo Grupo Empleado ============================ //
+public class LicenciaTipoEmpleadoListadoN3
+{
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<LicenciaTipoDetalleListadoN3> Licencias { get; set; }
+}
+
+// ========================== Tercer Grupo Detalle de Licencia ============================ //
+public class LicenciaTipoDetalleListadoN3
+{
+    public string Periodo { get; set; }
+    public string Estado { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarLicenciaPorTipo
+{
+    public int? TipoDeLicenciaId { get; set; }
+    public string? Nombre { get; set; }
+    public string? NroLegajo { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public int? Estado { get; set; }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE LICENCIA POR TIPO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE LICENCIA POR SECTOR - NIVEL 4
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Primer Grupo Sector ============================ //
+public class LicenciaSectorListadoN3
+{
+    public string Sector { get; set; }
+    public List<LicenciaPuestoListadoN3> Puestos { get; set; }
+}
+
+// ========================== Segundo Grupo Puesto ============================ //
+public class LicenciaPuestoListadoN3
+{
+    public string Puesto { get; set; }
+    public List<LicenciaEmpleadoListadoN3> Empleados { get; set; }
+}
+
+// ========================== Tercer Grupo Empleado ============================ //
+public class LicenciaEmpleadoListadoN3
+{
+    public string Nombre { get; set; }
+    public string NroLegajo { get; set; }
+    public List<LicenciaDetalleListadoN3> Licencias { get; set; }
+}
+
+// ========================== Cuarto Grupo Detalle de Licencia ============================ //
+public class LicenciaDetalleListadoN3
+{
+    public string TipoDeLicencia { get; set; }
+    public string Periodo { get; set; }
+    public string Estado { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarLicenciaPorSector
+{
+    public int? Sector { get; set; }
+    public int? Puesto { get; set; }
+    public string? Nombre { get; set; }
+    public string? NroLegajo { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public int? Estado { get; set; }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE LICENCIA POR SECTOR - NIVEL 4
+//////////////////////////////////////////////////////////////////////////////////////////////////

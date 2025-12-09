@@ -15,7 +15,7 @@
 
 
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-         <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
             <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
                 data-bs-toggle="collapse" data-bs-target="#contenedorResultados" aria-expanded="false"
                 aria-controls="contenedorResultados">
@@ -33,26 +33,49 @@
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href=""
+                        <a href="#resultadoLicenciasPorEmpleadoEstado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-user-check me-2"></i> -------
+                            <i class="fa-solid fa-user-check me-2"></i> Licencias por Empleado y Estado
                         </a>
                     </li>
-
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoLicenciasPorTipo"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-file-medical me-2"></i> Licencias por Tipo
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoLicenciasPorSector"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-building me-2"></i> Licencias por Sector
+                        </a>
                     </li>
                 </ul>
 
                 <hr class="my-3">
 
+                <!-- ===================== ESTADÍSTICOS ===================== -->
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
                     <i class="fa-solid fa-chart-column me-2"></i> Estadísticos
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
-                        <a href=""
+                        <a href="/CantidadLicenciasPorTipo"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-chart-line me-2"></i> ------
+                            <i class="fa-solid fa-chart-pie me-2"></i> Cantidad de Licencias por Tipo
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="/PromedioDiasLicencia"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-clock me-2"></i> Promedio de Días por Sector/Puesto
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="/DistribucionEstadosLicencia"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-list-check me-2"></i> Distribución de Estados de Licencia
                         </a>
                     </li>
                 </ul>
@@ -63,32 +86,33 @@
 
 
 
+
         <!-- ======================================= Contendor de Graficos ====================================== -->
-            <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
-                <div class="row">
+        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+            <div class="row">
 
                 <div class="col-md-12 mb-4 border p-2 shadow-sm">
                     <h5>Licencias Mensuales - Últimos 6 Meses</h5>
                     <div id="contenedorLicenciasMensuales" class="grafico-fijo"></div>
                 </div>
 
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Licencias Por Tipo</h6>
-                        <div id="contenedorTortaTipos" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Licencias Solicitadas por Sector</h6>
-                        <div id="contenedorTortaLicenciasSector" class="grafico-fijo"></div>
-                    </div>
-
-                    <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                        <h6 class="text-center">Licencias Solicitadas por Puestos</h6>
-                        <div id="contenedorTortaLicenciasPuesto" class="grafico-fijo"></div>
-                    </div>  
-
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Licencias Por Tipo</h6>
+                    <div id="contenedorTortaTipos" class="grafico-fijo"></div>
                 </div>
+
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Licencias Solicitadas por Sector</h6>
+                    <div id="contenedorTortaLicenciasSector" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-4 mb-4 border p-2 shadow-sm">
+                    <h6 class="text-center">Licencias Solicitadas por Puestos</h6>
+                    <div id="contenedorTortaLicenciasPuesto" class="grafico-fijo"></div>
+                </div>
+
             </div>
+        </div>
 
 
 

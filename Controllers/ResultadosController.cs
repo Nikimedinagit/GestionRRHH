@@ -59,7 +59,7 @@ public class ResultadosController : ControllerBase
             var inicioMes = new DateTime(mes.Year, mes.Month, 1);
             var finMes = inicioMes.AddMonths(1).AddDays(-1);
 
-            var query = _context.ActivacionEmpleado
+            var obtenerPersonal = _context.ActivacionEmpleado
                 .Where(a =>
                     a.Activo &&
                     a.FechaActivacion != null &&
@@ -70,11 +70,11 @@ public class ResultadosController : ControllerBase
 
             if (sectorIdSupervisor.HasValue)
             {
-                query = query.Where(a => _context.Empleado
+                obtenerPersonal = obtenerPersonal.Where(a => _context.Empleado
                                             .Any(e => e.Id == a.EmpleadoId && e.Puesto.SectorId == sectorIdSupervisor.Value));
             }
 
-            int activacionesMes = await query.CountAsync();
+            int activacionesMes = await obtenerPersonal.CountAsync();
 
             string nombreMes = mes.ToString("MMM", new CultureInfo("es-ES"));
             nombreMes = char.ToUpper(nombreMes[0]) + nombreMes.Substring(1);
@@ -184,22 +184,22 @@ public class ResultadosController : ControllerBase
         {
             var dia = hoy.AddDays(-i);
 
-            var justificacionesQuery = _context.Justificacion
+            var justificacionesObetener = _context.Justificacion
                 .Include(j => j.Empleado)
                 .ThenInclude(e => e.Puesto)
                 .Where(j => j.Fecha.Date == dia);
 
             if (sectorIdSupervisor.HasValue)
             {
-                justificacionesQuery = justificacionesQuery
+                justificacionesObetener = justificacionesObetener
                     .Where(j => j.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
             }
 
-            int totalJustificaciones = await justificacionesQuery.CountAsync();
-            int totalAprobadas = await justificacionesQuery
+            int totalJustificaciones = await justificacionesObetener.CountAsync();
+            int totalAprobadas = await justificacionesObetener
                 .Where(j => j.Estados == EstadoJustificacion.APROBADA)
                 .CountAsync();
-            int totalRechazadas = await justificacionesQuery
+            int totalRechazadas = await justificacionesObetener
                 .Where(j => j.Estados == EstadoJustificacion.RECHAZADA)
                 .CountAsync();
 
@@ -658,7 +658,7 @@ public class ResultadosController : ControllerBase
             sectorIdSupervisor = supervisor.Puesto.SectorId;
         }
 
-        var JustificacionesQuery = _context.Justificacion
+        var JustificacionesObtener = _context.Justificacion
             .Include(j => j.Empleado)
             .ThenInclude(e => e.Puesto)
             .Where(j => j.Fecha >= InicioPeriodo)
@@ -666,11 +666,11 @@ public class ResultadosController : ControllerBase
 
         if (sectorIdSupervisor.HasValue)
         {
-            JustificacionesQuery = JustificacionesQuery
+            JustificacionesObtener = JustificacionesObtener
                 .Where(j => j.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var Justificaciones = await JustificacionesQuery.ToListAsync();
+        var Justificaciones = await JustificacionesObtener.ToListAsync();
 
         var TotalEstadistica = new List<EstadisticaJustificacionMes>();
 
@@ -700,8 +700,6 @@ public class ResultadosController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE PERSONAL - GRAFICOS Y LISTADOS ///
     /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 
@@ -739,17 +737,17 @@ public class ResultadosController : ControllerBase
         for (int i = 5; i >= 0; i--)
             meses.Add(new DateTime(hoy.Year, hoy.Month, 1).AddMonths(-i));
 
-        var empleadosQuery = _context.Empleado
+        var empleadosObtener = _context.Empleado
             .Where(e => !e.Eliminado && e.Puesto != null)
             .Include(e => e.Puesto)
             .AsQueryable();
 
         if (sectorIdSupervisor.HasValue)
         {
-            empleadosQuery = empleadosQuery.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
+            empleadosObtener = empleadosObtener.Where(e => e.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var evaluaciones = await empleadosQuery
+        var evaluaciones = await empleadosObtener
             .SelectMany(e => e.Evaluacion, (empleado, eval) => new
             {
                 Puesto = empleado.Puesto.Descripcion,
@@ -759,7 +757,7 @@ public class ResultadosController : ControllerBase
             .Where(x => x.Fecha >= meses.First())
             .ToListAsync();
 
-        var puestos = await empleadosQuery
+        var puestos = await empleadosObtener
             .Select(e => e.Puesto.Descripcion)
             .Distinct()
             .ToListAsync();
@@ -828,17 +826,17 @@ public class ResultadosController : ControllerBase
             sectorIdSupervisor = supervisor.Puesto.SectorId;
         }
 
-        var evaluacionesQuery = _context.Evaluacion
+        var evaluacionesObtener = _context.Evaluacion
             .Include(e => e.Empleado)
             .Where(e => !e.Empleado.Eliminado)
             .AsQueryable();
 
         if (sectorIdSupervisor.HasValue)
         {
-            evaluacionesQuery = evaluacionesQuery.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+            evaluacionesObtener = evaluacionesObtener.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var calificaciones = await evaluacionesQuery
+        var calificaciones = await evaluacionesObtener
             .Select(e => e.Calificacion)
             .ToListAsync();
 
@@ -881,7 +879,7 @@ public class ResultadosController : ControllerBase
             sectorIdSupervisor = supervisor.Puesto.SectorId;
         }
 
-        var criteriosQuery = _context.CriterioDeEvaluacion
+        var criteriosObtener = _context.CriterioDeEvaluacion
             .Include(c => c.Evaluacion)
                 .ThenInclude(ev => ev.Empleado)
                     .ThenInclude(emp => emp.Puesto)
@@ -890,10 +888,10 @@ public class ResultadosController : ControllerBase
 
         if (sectorIdSupervisor.HasValue)
         {
-            criteriosQuery = criteriosQuery.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+            criteriosObtener = criteriosObtener.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var datos = await criteriosQuery
+        var datos = await criteriosObtener
             .Select(c => new
             {
                 Criterio = c.TipoDeCriterio.Nombre,
@@ -943,7 +941,7 @@ public class ResultadosController : ControllerBase
             sectorIdSupervisor = supervisor.Puesto.SectorId;
         }
 
-        var criteriosQuery = _context.CriterioDeEvaluacion
+        var criteriosObtener = _context.CriterioDeEvaluacion
             .Include(c => c.Evaluacion)
                 .ThenInclude(ev => ev.Empleado)
                     .ThenInclude(emp => emp.Puesto)
@@ -952,10 +950,10 @@ public class ResultadosController : ControllerBase
 
         if (sectorIdSupervisor.HasValue)
         {
-            criteriosQuery = criteriosQuery.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+            criteriosObtener = criteriosObtener.Where(c => c.Evaluacion.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var datos = await criteriosQuery
+        var datos = await criteriosObtener
             .Select(c => new
             {
                 Criterio = c.TipoDeCriterio.Nombre,
@@ -1011,7 +1009,7 @@ public class ResultadosController : ControllerBase
             .Reverse()
             .ToList();
 
-        var evaluacionesQuery = _context.Evaluacion
+        var evaluacionesObtener = _context.Evaluacion
             .Include(e => e.Empleado)
                 .ThenInclude(emp => emp.Puesto)
             .Where(e => e.Fecha >= new DateTime(meses.First().Year, meses.First().Month, 1))
@@ -1019,10 +1017,10 @@ public class ResultadosController : ControllerBase
 
         if (sectorIdSupervisor.HasValue)
         {
-            evaluacionesQuery = evaluacionesQuery.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
+            evaluacionesObtener = evaluacionesObtener.Where(e => e.Empleado.Puesto.SectorId == sectorIdSupervisor.Value);
         }
 
-        var datos = await evaluacionesQuery
+        var datos = await evaluacionesObtener
             .Select(e => new
             {
                 Anio = e.Fecha.Year,
@@ -1656,14 +1654,14 @@ public class ResultadosController : ControllerBase
 
 
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE LICENCIAS - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA LCIENCIAS COMPARATIVA POR MES (GRAFICO) //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("LicenciasMensualesGrafico6Meses")]
     public async Task<ActionResult<IEnumerable<LicenciasMensualesGrafico>>> LicenciasMensualesGrafico6Meses()
     {
@@ -1674,6 +1672,7 @@ public class ResultadosController : ControllerBase
             .Select(f => new { f.Year, f.Month })
             .Reverse()
             .ToList();
+
         var fechaInicio = new DateTime(meses.First().Year, meses.First().Month, 1);
         var fechaFin = fechaInicio.AddMonths(6).AddDays(-1);
 
@@ -1715,12 +1714,11 @@ public class ResultadosController : ControllerBase
         .ToList();
 
         return Ok(resultado);
-
     }
 
 
-///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LAS LICENCIAS POR TIPO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LAS LICENCIAS POR TIPO (GRAFICO) //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("LicenciasPorTipo")]
     public async Task<ActionResult<IEnumerable<TipoLicenciaGrafico>>> LicenciasPorTipo()
@@ -1747,7 +1745,7 @@ public class ResultadosController : ControllerBase
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR SECTOR //////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR SECTOR (GRAFICO)  //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("LicenciasPorSector")]
     public async Task<ActionResult<IEnumerable<LicenciasPorSector>>> LicenciasPorSector()
@@ -1779,7 +1777,7 @@ public class ResultadosController : ControllerBase
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR PUESTO //////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE LICENCIAS POR PUESTO (GRAFICO)  //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("LicenciasPorPuesto")]
     public async Task<ActionResult<IEnumerable<LicenciasPorPuesto>>> LicenciasPorPuesto()
@@ -1807,6 +1805,183 @@ public class ResultadosController : ControllerBase
 
         return Ok(resultado);
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE LICENCIAS POR EMPLEADO Y ESTADO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("LicenciasPorEmpleadoEstadoN3")]
+    public async Task<ActionResult<IEnumerable<LicenciaEmpleadoEstadoListadoN3>>> GetLicenciasPorEmpleadoEstadoN3([FromBody] FiltrarLicenciaEmpleadoEstado filtro)
+    {
+        var licencias = _context.Licencia
+            .Include(l => l.Empleado)
+            .Include(l => l.TipoDeLicencia)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            licencias = licencias.Where(e => e.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            licencias = licencias.Where(e => e.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.FechaDesde.HasValue)
+            licencias = licencias.Where(l => l.FechaInicio >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            licencias = licencias.Where(l => l.FechaFin <= filtro.FechaHasta.Value);
+
+        var obetenerLicencias = await licencias.ToListAsync();
+
+        var resultado = obetenerLicencias
+            .GroupBy(l => new { l.Empleado.NombreCompleto, l.Empleado.NroLegajo })
+            .OrderBy(l => l.Key.NroLegajo)
+            .Select(g => new LicenciaEmpleadoEstadoListadoN3
+            {
+                Nombre = g.Key.NombreCompleto,
+                NroLegajo = g.Key.NroLegajo,
+                Estado = g.GroupBy(x => x.Estado.ToString())
+                          .OrderBy(x => x.Key)
+                          .Select(est => new LicenciaEstadoListadoN3
+                          {
+                              Nombre = est.Key,
+                              Licencia = est.Select(l => new LicenciaListadoN3
+                              {
+                                  TipoDeLicencia = l.TipoDeLicencia.Nombre,
+                                  Periodo = $"{l.FechaInicio:dd/MM/yyyy} - {l.FechaFin:dd/MM/yyyy}"
+                              }).ToList()
+                          }).ToList()
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE LICENCIAS POR TIPO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("LicenciasPorTipoN3")]
+    public async Task<ActionResult<IEnumerable<LicenciaTipoListadoN3>>> GetLicenciasPorTipoN3([FromBody] FiltrarLicenciaPorTipo filtro)
+    {
+        var licencias = _context.Licencia
+            .Include(l => l.Empleado)
+            .Include(l => l.TipoDeLicencia)
+            .AsQueryable();
+
+        if (filtro.TipoDeLicenciaId.HasValue)
+            licencias = licencias.Where(l => l.TipoDeLicenciaId == filtro.TipoDeLicenciaId.Value);
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            licencias = licencias.Where(l => l.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            licencias = licencias.Where(l => l.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.FechaDesde.HasValue)
+            licencias = licencias.Where(l => l.FechaInicio >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            licencias = licencias.Where(l => l.FechaFin <= filtro.FechaHasta.Value);
+
+        if (filtro.Estado.HasValue)
+            licencias = licencias.Where(l => (int)l.Estado == filtro.Estado.Value);
+
+        var obtenerlicencias = await licencias.ToListAsync();
+
+        var resultado = obtenerlicencias
+            .GroupBy(l => l.TipoDeLicencia.Nombre)
+            .OrderBy(l => l.Key)
+            .Select(g => new LicenciaTipoListadoN3
+            {
+                TipoDeLicencia = g.Key,
+                Empleados = g.GroupBy(x => new { x.Empleado.NombreCompleto, x.Empleado.NroLegajo })
+                             .OrderBy (x => x.Key.NroLegajo)
+                             .Select(emp => new LicenciaTipoEmpleadoListadoN3
+                             {
+                                 Nombre = emp.Key.NombreCompleto,
+                                 NroLegajo = emp.Key.NroLegajo,
+                                 Licencias = emp.Select(l => new LicenciaTipoDetalleListadoN3
+                                 {
+                                     Periodo = $"{l.FechaInicio:dd/MM/yyyy} - {l.FechaFin:dd/MM/yyyy}",
+                                     Estado = l.Estado.ToString()
+                                 }).ToList()
+                             }).ToList()
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE LICENCIAS POR SECTOR - NIVEL 4
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("LicenciasPorSectorN4")]
+    public async Task<ActionResult<IEnumerable<LicenciaSectorListadoN3>>> GetLicenciasPorSectorN4([FromBody] FiltrarLicenciaPorSector filtro)
+    {
+        var licencias = _context.Licencia
+            .Include(l => l.Empleado)
+                .ThenInclude(e => e.Puesto)
+                    .ThenInclude(p => p.Sector)
+            .Include(l => l.TipoDeLicencia)
+            .AsQueryable();
+
+        if (filtro.Sector.HasValue)
+            licencias = licencias.Where(l => l.Empleado.Puesto.SectorId == filtro.Sector.Value);
+
+        if (filtro.Puesto.HasValue)
+            licencias = licencias.Where(l => l.Empleado.PuestoId == filtro.Puesto.Value);
+
+        if (!string.IsNullOrEmpty(filtro.Nombre))
+            licencias = licencias.Where(l => l.Empleado.NombreCompleto.Contains(filtro.Nombre));
+
+        if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            licencias = licencias.Where(l => l.Empleado.NroLegajo.Contains(filtro.NroLegajo));
+
+        if (filtro.FechaDesde.HasValue)
+            licencias = licencias.Where(l => l.FechaInicio >= filtro.FechaDesde.Value);
+
+        if (filtro.FechaHasta.HasValue)
+            licencias = licencias.Where(l => l.FechaFin <= filtro.FechaHasta.Value);
+
+        if (filtro.Estado.HasValue)
+            licencias = licencias.Where(l => (int)l.Estado == filtro.Estado.Value);
+
+        var obetenerLicencias = await licencias.ToListAsync();
+
+        var resultado = obetenerLicencias
+            .GroupBy(l => l.Empleado.Puesto.Sector.Nombre)
+            .OrderBy(l => l.Key)
+            .Select(sector => new LicenciaSectorListadoN3
+            {
+                Sector = sector.Key,
+                Puestos = sector.GroupBy(p => p.Empleado.Puesto.Descripcion)
+                                .OrderBy(p => p.Key)
+                                .Select(puesto => new LicenciaPuestoListadoN3
+                                {
+                                    Puesto = puesto.Key,
+                                    Empleados = puesto.GroupBy(e => new { e.Empleado.NombreCompleto, e.Empleado.NroLegajo })
+                                                      .OrderBy(e => e.Key.NroLegajo)
+                                                      .Select(emp => new LicenciaEmpleadoListadoN3
+                                                      {
+                                                          Nombre = emp.Key.NombreCompleto,
+                                                          NroLegajo = emp.Key.NroLegajo,
+                                                          Licencias = emp.Select(l => new LicenciaDetalleListadoN3
+                                                          {
+                                                              TipoDeLicencia = l.TipoDeLicencia.Nombre,
+                                                              Periodo = $"{l.FechaInicio:dd/MM/yyyy} - {l.FechaFin:dd/MM/yyyy}",
+                                                              Estado = l.Estado.ToString()
+                                                          }).ToList()
+                                                      }).ToList()
+                                }).ToList()
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE LICENCIAS - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////<D
 
 
 }
