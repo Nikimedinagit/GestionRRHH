@@ -27,12 +27,17 @@ public class PanelPrincipalController : ControllerBase
     {
         var hoy = DateTime.Today;
 
+        int diaHoy = hoy.Day;
+        int mesHoy = hoy.Month;
+
         var proximo = await _context.Feriados
-            .Where(f => f.Fecha >= hoy)
-            .OrderBy(f => f.Fecha)
+            .Where(f => f.Fecha.Month > mesHoy
+                     || (f.Fecha.Month == mesHoy && f.Fecha.Day >= diaHoy))
+            .OrderBy(f => f.Fecha.Month)
+            .ThenBy(f => f.Fecha.Day)
             .Select(f => new
             {
-                Fecha = f.Fecha,
+                Fecha = new DateTime(hoy.Year, f.Fecha.Month, f.Fecha.Day), 
                 Descripcion = f.Descripcion,
                 Tipo = f.Tipos,
                 TipoNombre = f.TiposString
@@ -40,10 +45,23 @@ public class PanelPrincipalController : ControllerBase
             .FirstOrDefaultAsync();
 
         if (proximo == null)
-            return NotFound(new { message = "No hay feriados próximos." });
+        {
+            proximo = await _context.Feriados
+                .OrderBy(f => f.Fecha.Month)
+                .ThenBy(f => f.Fecha.Day)
+                .Select(f => new
+                {
+                    Fecha = new DateTime(hoy.Year + 1, f.Fecha.Month, f.Fecha.Day),
+                    Descripcion = f.Descripcion,
+                    Tipo = f.Tipos,
+                    TipoNombre = f.TiposString
+                })
+                .FirstOrDefaultAsync();
+        }
 
         return Ok(proximo);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +83,8 @@ public class PanelPrincipalController : ControllerBase
         var hoy = DateTime.Today;
         var dia = hoy.DayOfWeek;
 
-        var horario = empleado.Horario.FirstOrDefault(h =>
+        // Si el empleado no tiene horarios cargados, devolvemos todo en cero
+        var horario = empleado?.Horario?.FirstOrDefault(h =>
             (dia == DayOfWeek.Monday && h.Lunes) ||
             (dia == DayOfWeek.Tuesday && h.Martes) ||
             (dia == DayOfWeek.Wednesday && h.Miercoles) ||
@@ -79,7 +98,7 @@ public class PanelPrincipalController : ControllerBase
             .FirstOrDefaultAsync();
 
         double horasTrabajadas = 0;
-        if (asistencia != null)
+        if (asistencia != null && horario != null)
         {
             if (asistencia.PrimerEntrada.HasValue && asistencia.PrimerSalida.HasValue)
                 horasTrabajadas += (asistencia.PrimerSalida.Value - asistencia.PrimerEntrada.Value).TotalHours;
@@ -91,13 +110,13 @@ public class PanelPrincipalController : ControllerBase
 
         var resultado = new
         {
-            TipoHorario = horario.TipoHorario.ToString(),
+            TipoHorario = horario?.TipoHorario.ToString() ?? "SIN HORARIO",
             PrimerEntrada = asistencia?.PrimerEntrada?.ToString(@"hh\:mm") ?? "--:--",
             PrimerSalida = asistencia?.PrimerSalida?.ToString(@"hh\:mm") ?? "--:--",
-            SegundaEntrada = horario.TipoHorario == TipoHorario.ALTERNO
+            SegundaEntrada = horario?.TipoHorario == TipoHorario.ALTERNO
                                 ? asistencia?.SegundaEntrada?.ToString(@"hh\:mm") ?? "--:--"
                                 : null,
-            SegundaSalida = horario.TipoHorario == TipoHorario.ALTERNO
+            SegundaSalida = horario?.TipoHorario == TipoHorario.ALTERNO
                                 ? asistencia?.SegundaSalida?.ToString(@"hh\:mm") ?? "--:--"
                                 : null,
             HorasTrabajadas = Math.Round(horasTrabajadas, 2)
@@ -105,6 +124,7 @@ public class PanelPrincipalController : ControllerBase
 
         return Ok(resultado);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////

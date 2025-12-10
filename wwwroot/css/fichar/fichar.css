@@ -30,7 +30,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
 
-  .col-izq {
+  /* .col-izq {
     width: 60%;
     background: #e9efff url('../../img/asistencia.svg') center/cover no-repeat;
     box-shadow: inset 0 0 60px #92a3ff44;
@@ -46,7 +46,28 @@
     height: 100%;
     object-fit: cover;
     display: none;
-  }
+  } */
+
+
+  .col-izq {
+  width: 60%;
+  background: #e9efff url('../../img/asistencia.svg') center/cover no-repeat;
+  box-shadow: inset 0 0 60px #92a3ff44;
+  position: relative; /* clave para overlay */
+  overflow: hidden;
+}
+
+/* Video y canvas encima de la imagen */
+.col-izq video,
+.col-izq canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 
   .mensaje-camara {
     position: absolute;

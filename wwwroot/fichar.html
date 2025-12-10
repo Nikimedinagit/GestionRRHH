@@ -5,6 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Asistencia | WorkSync</title>
 <link rel="stylesheet" href="./css/Fichar/fichar.css">
+<style>
+  /* Ajustes clave para cámara + canvas */
+  .col-izq {
+    width: 60%;
+    background: #e9efff url('../../img/asistencia.svg') center/cover no-repeat;
+    box-shadow: inset 0 0 60px #92a3ff44;
+    position: relative; /* necesario para overlay */
+    overflow: hidden;
+  }
+
+  .col-izq video,
+  .col-izq canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mensaje-camara {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    padding: 15px 25px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    display: none;
+    z-index: 50;
+  }
+</style>
 </head>
 <body>
 <div class="contenedor">

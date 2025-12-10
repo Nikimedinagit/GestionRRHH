@@ -9,19 +9,26 @@ async function cargarProximoFeriado() {
 
         const fecha = new Date(feriado.fecha);
 
-        const dias = document.getElementById('dia-festivo');
-        dias.textContent = fecha.getDate();
+        const dia = fecha.getDate();
 
-        const mes = document.getElementById('mes-festivo');
-        const mesTexto = fecha.toLocaleString('es-AR', { month: 'long' });
-        mes.textContent = mesTexto.charAt(0).toUpperCase() + mesTexto.slice(1);
+        let mesTexto = fecha.toLocaleString('es-AR', { month: 'long' });
+        mesTexto = mesTexto.charAt(0).toUpperCase() + mesTexto.slice(1).toLowerCase();
+
+        const fechaFestivo = document.getElementById('fecha-festivo');
+        fechaFestivo.textContent = `${dia} de ${mesTexto}`;
 
         const nombreFestivo = document.getElementById('feriado-nombre');
         nombreFestivo.textContent = feriado.descripcion;
+
+        const tipoFestivo = document.getElementById('feriado-tipo');
+        tipoFestivo.textContent = feriado.tipoNombre;
+
     } catch (error) {
         MostrarErrorCatch();
     }
 }
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////

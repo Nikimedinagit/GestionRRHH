@@ -1,4 +1,3 @@
-
 const btnFichar = document.getElementById('btnFichar');
 const btnRegistrar = document.getElementById('btnRegistrar');
 const dniInput = document.getElementById('dniInput');
@@ -8,18 +7,19 @@ const mensajeBackend = document.getElementById('mensajeBackend');
 
 let faceDescriptor, canvas, stream;
 
-function showMensajeCamara(msg, tiempo=3000) {
+// Mostrar mensaje en la cámara
+function showMensajeCamara(msg, tiempo = 3000) {
   mensajeCamara.textContent = msg;
   mensajeCamara.style.display = 'block';
   setTimeout(() => { mensajeCamara.style.display = 'none'; }, tiempo);
 }
 
-function showMensajeBackend(data, tipo='success', tiempo=5000) {
+// Mostrar mensaje del backend
+function showMensajeBackend(data, tipo = 'success', tiempo = 5000) {
   const nombre = data.nombre || data.NombreCompleto || data.Empleado?.NombreCompleto || '';
   const dni = data.dni || data.Dni || data.Empleado?.DNI || '';
 
-  // Mensaje crítico de DNI vacío
-  if(tipo === 'error' && data.mensaje === 'Ingrese DNI válido') {
+  if (tipo === 'error' && data.mensaje === 'Ingrese DNI válido') {
     mensajeBackend.innerHTML = `<span>${data.mensaje}</span>`;
   } else {
     mensajeBackend.innerHTML = `
@@ -34,41 +34,46 @@ function showMensajeBackend(data, tipo='success', tiempo=5000) {
   setTimeout(() => { mensajeBackend.style.display = 'none'; }, tiempo);
 }
 
-// Spinner eliminado
-function showSpinner(show=true) { }
-
+// Iniciar cámara
 async function startVideo() {
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
     video.style.display = 'block';
   } catch (e) {
-    showMensajeBackend({mensaje: e.message}, 'error');
+    showMensajeBackend({ mensaje: e.message }, 'error');
   }
 }
 
+// Detener cámara
 async function stopVideo() {
   if (stream) stream.getTracks().forEach(track => track.stop());
   video.style.display = 'none';
   if (canvas) { canvas.remove(); canvas = null; }
 }
 
+// Capturar rostro
 async function captureFace() {
   const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-                                  .withFaceLandmarks()
-                                  .withFaceDescriptor();
-  if (!detection) { 
-    showMensajeBackend({mensaje:"No se detectó rostro"}, "error"); 
-    throw new Error("No se detectó rostro"); 
+    .withFaceLandmarks()
+    .withFaceDescriptor();
+
+  if (!detection) {
+    showMensajeBackend({ mensaje: "No se detectó rostro" }, "error");
+    throw new Error("No se detectó rostro");
   }
+
   faceDescriptor = Array.from(new Float32Array(detection.descriptor));
 
   if (!canvas) {
     canvas = faceapi.createCanvasFromMedia(video);
     video.parentNode.append(canvas);
   }
-  const displaySize = { width: video.videoWidth, height: video.videoHeight };
+
+  // 🔑 Usar dimensiones visibles del video
+  const displaySize = { width: video.offsetWidth, height: video.offsetHeight };
   faceapi.matchDimensions(canvas, displaySize);
+
   const resized = faceapi.resizeResults(detection, displaySize);
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -76,16 +81,16 @@ async function captureFace() {
   faceapi.draw.drawFaceLandmarks(canvas, resized);
 }
 
+// Llamada al backend
 async function callBackend(endpoint, dni) {
   try {
-    // Capturamos la foto del video como base64
     let fotoBase64 = null;
     if (endpoint === 'Fichar') {
       const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = video.videoWidth;
-      tempCanvas.height = video.videoHeight;
-      tempCanvas.getContext('2d').drawImage(video, 0, 0);
-      fotoBase64 = tempCanvas.toDataURL('image/png').split(',')[1]; // solo el contenido Base64
+      tempCanvas.width = video.offsetWidth;
+      tempCanvas.height = video.offsetHeight;
+      tempCanvas.getContext('2d').drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+      fotoBase64 = tempCanvas.toDataURL('image/png').split(',')[1];
     }
 
     const payload = endpoint === 'Fichar'
@@ -94,7 +99,7 @@ async function callBackend(endpoint, dni) {
 
     const res = await fetch(`https://localhost:7006/api/Asistencias/${endpoint}`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
@@ -108,24 +113,25 @@ async function callBackend(endpoint, dni) {
       mensaje: data.Mensaje || data.mensaje
     }, res.ok ? 'success' : 'error');
 
-  } catch(e) {
-    showMensajeBackend({mensaje: e.message}, 'error');
+  } catch (e) {
+    showMensajeBackend({ mensaje: e.message }, 'error');
     await stopVideo();
   }
 }
 
-
+// Cargar modelos
 async function loadModels() {
   await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
   await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
   await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
 }
 
+// Acción principal
 async function handleFaceAction(endpoint) {
   const dni = dniInput.value.trim();
-  if (endpoint === 'RegistrarRostro' && !dni) { 
-    showMensajeBackend({mensaje:'Ingrese DNI válido'}, 'error'); 
-    return; 
+  if (endpoint === 'RegistrarRostro' && !dni) {
+    showMensajeBackend({ mensaje: 'Ingrese DNI válido' }, 'error');
+    return;
   }
 
   await loadModels();
@@ -137,7 +143,10 @@ async function handleFaceAction(endpoint) {
     try {
       await captureFace();
       await callBackend(endpoint, dni);
-    } catch(e) { console.error(e); await stopVideo(); }
+    } catch (e) {
+      console.error(e);
+      await stopVideo();
+    }
   }, 1500);
 }
 

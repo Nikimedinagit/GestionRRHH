@@ -22,6 +22,18 @@ async function ObtenerAsistenciaHorario() {
 /// FUNCIONES PARA MOSTRAR LOS DATOS DE LA API////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function MostrarAsistenciaHorario(data) {
+
+    const badgeBaseStyle = `
+        display:inline-block;
+        padding:0.35em 0.65em;
+        font-size:0.72rem;
+        font-weight:600;
+        border-radius:0.25rem;
+        line-height:1.2;
+        text-align:center;
+        white-space:nowrap;
+    `;
+
     const contenedor = $("#contenedorAsistenciaHorario");
     contenedor.empty();
 
@@ -81,11 +93,11 @@ function MostrarAsistenciaHorario(data) {
                 <div class="d-flex align-items-center mb-2 flex-wrap">
                     <img src="${asistencia.fotoRuta || "./img/avatarAusente.png"}" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                     <div>
-                        <h5 class="mb-1 fw-bold fs-6">${data.empleado || "Sin Registro"}</h5>
-                        <span class="px-2 py-1 fs-7 fw-bold" style="background-color: ${estiloEstado.backgroundColor}; color: ${estiloEstado.color}; border-radius: 0.25rem;">
+                        <h5 class="mb-2 fw-bold fs-6">${data.empleado || "Sin Registro"}</h5>
+                        <span style="${badgeBaseStyle} background-color:${estiloEstado.backgroundColor}; color:${estiloEstado.color};">
                             ${estado}
                         </span>
-                        <p class="mb-0 text-muted fs-7">${asistencia.fechaString || "Sin Registro"}</p>
+                        <p class="mb-0 mt-2 text-muted fs-7">${asistencia.fechaString || "00/00/0000"}</p>
                     </div>
                 </div>
                 ${generarTurnos()}
@@ -100,20 +112,24 @@ function MostrarAsistenciaHorario(data) {
                 <div class="d-flex flex-column justify-content-between h-100">
                     <div class="d-flex flex-column align-items-center text-center">
                         <h5 class="fw-bold mb-2 fs-6">${data.empleado || "Empleado"}</h5>
-                        <span class="badge ${horario.tipoHorarioString === "ALTERNO" ? "bg-alterno" : "bg-continuo"} px-2 py-1 fs-7">
+
+                        <span class="mb-2" style="${badgeBaseStyle}
+                                      background-color:${horario.tipoHorarioString === "ALTERNO" ? "#d0e3ff" : "#d1f7d1"};
+                                      color:${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
                             ${horario.tipoHorarioString || "SIN HORARIO"}
                         </span>
-                        ${
-                            horario.tipoHorarioString === "ALTERNO"
-                            ? `<p class="mb-1 fs-7"><strong>Primer Turno:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>
+
+                        ${horario.tipoHorarioString === "ALTERNO"
+            ? `<p class="mb-1 fs-7"><strong>Primer Turno:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>
                                <p class="mb-1 fs-7"><strong>Segundo Turno:</strong> ${horario.segundoHorarioInicioString || "-"} - ${horario.segundoHorarioFinString || "-"}</p>`
-                            : `<p class="mb-1 fs-7"><strong>Horario:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>`
-                        }
+            : `<p class="mb-1 fs-7"><strong>Horario:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>`
+        }
                     </div>
-                    <div class="d-flex justify-content-center gap-1 flex-wrap mt-2">
+
+                    <div class="d-flex justify-content-center gap-1 flex-wrap mt-1">
                         ${dias.map(d => `
-                            <span class="badge rounded-pill px-2 py-1 fs-6" 
-                                  style="background-color: ${d.activo ? '#d1f7d1' : '#f0f0f0'}; 
+                            <span style="${badgeBaseStyle}
+                                         background-color: ${d.activo ? '#d1f7d1' : '#f0f0f0'};
                                          color: ${d.activo ? '#0a8c0a' : '#999'};">
                                 ${d.dia}
                             </span>`).join("")}
@@ -142,13 +158,13 @@ function MostrarAsistenciaHorario(data) {
                 <h5 class="fw-bold mb-2 fs-6">Historial Reciente de Asistencia</h5>
                 <div class="d-flex flex-column gap-2">
                     ${historial.map(h => {
-                        const estadoBadge = EstadoAsistenciaEstilo[h.estadoString?.toUpperCase()] || { backgroundColor: "#e2e3e5", color: "#495057" };
-                        return `
+        const estadoBadge = EstadoAsistenciaEstilo[h.estadoString?.toUpperCase()] || { backgroundColor: "#e2e3e5", color: "#495057" };
+        return `
                         <div class="d-flex flex-wrap justify-content-between align-items-center p-2 border rounded-2 shadow-sm" style="font-size: 0.85rem;">
                             <div class="flex-fill mb-1 mb-md-0"><strong>Fecha:</strong> ${h.fechaString || "-"}</div>
                             <div class="flex-fill mb-1 mb-md-0">
                                 <strong>Estado:</strong> 
-                                <span class="px-2 py-1 fs-7 fw-bold" style="background-color: ${estadoBadge.backgroundColor}; color: ${estadoBadge.color}; border-radius: 0.25rem;">
+                                <span style="${badgeBaseStyle} background-color:${estadoBadge.backgroundColor}; color:${estadoBadge.color};">
                                     ${h.estadoString || "-"}
                                 </span>
                             </div>
@@ -160,7 +176,7 @@ function MostrarAsistenciaHorario(data) {
                             ` : ""}
                         </div>
                         `;
-                    }).join("")}
+    }).join("")}
                 </div>
             </div>
         </div>
@@ -174,6 +190,14 @@ function MostrarAsistenciaHorario(data) {
             ${cardHistorial}
         </div>
     `);
+
+    if (!resumenSemanal || resumenSemanal.length === 0) {
+        document.getElementById("chartPuntualidad").parentElement.innerHTML = `
+        <p class="text-center text-muted mb-0">Sin datos.</p>
+    `;
+        return;
+    }
+
 
     const ctx = document.getElementById('chartPuntualidad').getContext('2d');
     const labels = resumenSemanal.map(r => r.estado);
