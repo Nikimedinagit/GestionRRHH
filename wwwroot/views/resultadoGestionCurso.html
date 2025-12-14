@@ -1,0 +1,132 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Resultados de la Gestión de Cursos</h3>
+        <p class="text-muted mb-3">Visualiza los gráficos y reportes generales del módulo.</p>
+    </div>
+
+
+    <hr />
+
+    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+
+        <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
+        <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+            <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
+                data-bs-toggle="collapse" data-bs-target="#contenedorResultados" aria-expanded="false"
+                aria-controls="contenedorResultados">
+                <i class="fa-solid fa-list me-2"></i> Más Resultados
+            </button>
+        </div>
+
+        <div class="collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
+            style="border-left: 4px solid #6A5ACD !important">
+            <div class="sidebar-resultados shadow-sm p-3">
+
+                <h6 class="text-muted text-uppercase fw-bold small mb-2">
+                    <i class="fa-solid fa-layer-group me-2"></i> Listados Jerárquicos
+                </h6>
+
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoCursosPorEmpleado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chalkboard-user me-2"></i> Cursos por Empleado
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoCursoPorModalidad"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chalkboard me-2"></i> Cursos por Modalidad
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoCursosPorEstado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-user-graduate me-2"></i> Cursos por Empleado y Estado
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="my-3">
+
+                <!-- ===================== ESTADÍSTICOS ===================== -->
+                <h6 class="text-muted text-uppercase fw-bold small mb-2">
+                    <i class="fa-solid fa-chart-column me-2"></i> Estadísticos
+                </h6>
+
+                <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoCursoPorEmpleadosResultado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-graduation-cap me-2"></i> Resultados de Cursos por Empleado
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoParticipacionPorCurso"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-users me-2"></i> Participación por Curso
+                        </a>
+                    </li>
+                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                        <a href="#resultadoPromedioCalificacionPorEmpleado"
+                            class="d-flex align-items-center justify-content-center text-black text-decoration-none">
+                            <i class="fa-solid fa-chart-bar me-2"></i> Promedio de Calificación por Empleado
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+
+
+
+        <!-- ======================================= Contendor de Graficos ====================================== -->
+        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+            <div class="row">
+
+                <div class="col-md-12 mb-4 border p-3 shadow-sm">
+                    <h5 class="text-center">Asistencias e Inasistencias por Curso</h5>
+                    <div id="contenedorAsistenciasPorCurso" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-6 mb-4 border p-3 shadow-sm">
+                    <h5 class="text-center">Cursos por Modalidad (Mensual)</h5>
+                    <div id="contenedorCursosPorModalidad" class="grafico-fijo"></div>
+                </div>
+                
+                <div class="col-md-6 mb-4 border p-3 shadow-sm">
+                    <h5 class="text-center">Comparación de Promedio de Asistencia y Resultado por Modalidad</h5>
+                    <div id="contenedorComparacionPorModalidad" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-12 mb-4 border p-3 shadow-sm">
+                    <h5 class="text-center">Certificados Emitidos por Curso</h5>
+                    <div id="contenedorCertificadosPorCurso" class="grafico-fijo"></div>
+                </div>
+
+                <div class="col-md-12 mb-4 border p-3 shadow-sm">
+                    <h5 class="text-center">Ranking de Cursos según Cantidad de Asistentes</h5>
+                    <div id="contenedorRankingCursos" class="grafico-fijo"></div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/resultados/resultadoGestionCurso.js"></script>

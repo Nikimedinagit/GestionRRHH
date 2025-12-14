@@ -1,0 +1,96 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Participación y Asistencia por Curso</h3>
+        <p class="text-muted mb-3">
+            Este informe presenta, por curso, la modalidad, el total de participantes,
+            los asistentes y ausentes, el porcentaje de asistencia y los certificados emitidos.
+        </p>
+    </div>
+
+
+
+    <hr />
+
+    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <a href="#resultadoGestionCurso" class="btn btn-volver">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                <span>Volver</span>
+            </a>
+
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button class="btn btn-informe" onclick="GenerarInformePdfParticipacionPorCurso()">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar Informe</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!--================================ Contenedor Filtros ===================================== -->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-3">
+                    <label for="NombreCursoBuscar" class="form-label-fija">Nombre Curso</label>
+                    <input type="text" class="form-control filtro-select" id="NombreCursoBuscar"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class=" col-12 col-md-2">
+                    <label for="ModalidadBuscar" class="form-label-fija">Modalidad</label>
+                    <select id="ModalidadBuscar" class="form-control filtro-select">
+                        <option value="">[Todos]</option>
+                        <option value="1">PRESENCIAL</option>
+                        <option value="2">VIRTUAL</option>
+                        <option value="3">MIXTO</option>
+                    </select>
+                </div>
+
+                <div class=" col-12 col-md-2">
+                    <label for="FechaInicioBuscar" class="form-label-fija">Desde</label>
+                    <input type="date" class="form-control filtro-select" id="FechaInicioBuscar" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="FechaFinBuscar" class="form-label-fija">Hasta</label>
+                    <input type="date" class="form-control filtro-select" id="FechaFinBuscar" />
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- ==================================== Tabla de Datos ===================================== -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-center">Participantes</th>
+                        <th class="text-center">Asistentes</th>
+                        <th class="d-none d-lg-table-cell text-center">Ausentes</th>
+                        <th class="d-none d-lg-table-cell text-center">% Asistencia</th>
+                        <th class="d-none d-lg-table-cell text-center">Certificados</th>
+                    </tr>
+                </thead>
+                <tbody id="listadoParticipacionPorCurso"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/resultados/estadisticoParticipacionPorCurso.js"></script>

@@ -1895,7 +1895,7 @@ public class ResultadosController : ControllerBase
             {
                 TipoDeLicencia = g.Key,
                 Empleados = g.GroupBy(x => new { x.Empleado.NombreCompleto, x.Empleado.NroLegajo })
-                             .OrderBy (x => x.Key.NroLegajo)
+                             .OrderBy(x => x.Key.NroLegajo)
                              .Select(emp => new LicenciaTipoEmpleadoListadoN3
                              {
                                  Nombre = emp.Key.NombreCompleto,
@@ -1977,14 +1977,444 @@ public class ResultadosController : ControllerBase
 
         return Ok(resultado);
     }
-
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE LICENCIAS - GRAFICOS Y LISTADOS ///
     /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////<D
 
 
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE CURSOS - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE CURSOS SEGUN LA MODADLIDAD //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("CursosPorModalidad")]
+    public async Task<IActionResult> GetCursosPorModalidad()
+    {
+        var cursosPorModalidad = await _context.Curso
+            .GroupBy(c => c.Modalidad)
+            .Select(g => new CursosPorModalidadDTO
+            {
+                Modalidad = g.Key.ToString(),
+                Cantidad = g.Count()
+            })
+            .ToListAsync();
+
+        return Ok(cursosPorModalidad);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE ASISTENCIAS E INASISTENCIAS DE CAD CURSO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("AsistenciasPorCurso")]
+    public async Task<IActionResult> GetAsistenciasPorCurso()
+    {
+        var datos = await _context.Curso
+            .Select(c => new AsistenciaPorCursoDTO
+            {
+                Curso = c.Nombre,
+                Asistencias = c.AsistenciaCapacitacion.Count(a => a.Asistencia),
+                Inasistencias = c.AsistenciaCapacitacion.Count(a => !a.Asistencia)
+            })
+            .ToListAsync();
+
+        return Ok(datos);
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE CERTIFICADOS OBTENIDOS DE CAD CURSO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("CertificadosPorCurso")]
+    public async Task<IActionResult> GetCertificadosPorCurso()
+    {
+        var datos = await _context.Curso
+            .Select(c => new CertificadosPorCursoDTO
+            {
+                Curso = c.Nombre,
+                CantidadCertificados = _context.Certificado.Count(cert => cert.CursoId == c.Id)
+            })
+            .ToListAsync();
+
+        return Ok(datos);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER PROMEDIO DE ASISTENCIA Y RESULTADO POR MODALIDAD DE CURSO //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("ComparacionPorModalidad")]
+    public async Task<IActionResult> GetComparacionPorModalidad()
+    {
+        var cursos = await _context.Curso
+            .Include(c => c.AsistenciaCapacitacion)
+            .ToListAsync();
+
+        var datos = cursos
+            .GroupBy(c => c.Modalidad)
+            .Select(g => new ComparacionPorModalidadDto
+            {
+                Modalidad = g.Key.ToString(),
+                PromedioAsistencia = g.Average(c =>
+                    c.AsistenciaCapacitacion.Count() > 0
+                        ? (double)c.AsistenciaCapacitacion.Count(a => a.Asistencia) / c.AsistenciaCapacitacion.Count()
+                        : 0),
+                PromedioResultado = g.Average(c =>
+                    c.AsistenciaCapacitacion.Any()
+                        ? c.AsistenciaCapacitacion.Average(a => (double)a.Resultado)
+                        : 0)
+            })
+            .ToList();
+
+        return Ok(datos);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /// METODO PARA OBTENER EL CURSO CON MAS ASISTENCIA //////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("RankingCursos")]
+    public async Task<IActionResult> GetRankingCursos()
+    {
+        var ranking = await _context.Curso
+            .Select(c => new RankingCursosDto
+            {
+                Curso = c.Nombre,
+                CantidadAsistentes = c.AsistenciaCapacitacion.Count(a => a.Asistencia)
+            })
+            .OrderByDescending(r => r.CantidadAsistentes)
+            .ToListAsync();
+
+        return Ok(ranking);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE CURSOS POR EMPLEADO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("CursosPorEmpleadoN3")]
+    public async Task<ActionResult<IEnumerable<CursoInformeN3>>> CursosPorEmpleadoN3([FromBody] FiltrarCursoEmpleado filtro)
+    {
+        var certificados = await _context.Certificado.ToListAsync();
+        var cursos = await _context.Curso
+            .Include(c => c.AsistenciaCapacitacion)
+                .ThenInclude(a => a.Empleado)
+            .Where(c => c.AsistenciaCapacitacion.Any(a => a.Asistencia))
+            .ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreCurso))
+        {
+            var nombreCurso = filtro.NombreCurso.Trim().ToLower();
+            cursos = cursos
+                .Where(c => c.Nombre.ToLower().Contains(nombreCurso))
+                .ToList();
+        }
+        var informe = cursos
+            .Select(c => new CursoInformeN3
+            {
+                CursoId = c.Id,
+                NombreCurso = c.Nombre,
+                Empleados = c.AsistenciaCapacitacion
+                    .Where(a =>
+                        a.Asistencia &&
+                        (string.IsNullOrWhiteSpace(filtro.Nombre) ||
+                         a.Empleado.NombreCompleto
+                            .ToLower()
+                            .Contains(filtro.Nombre.Trim().ToLower())) &&
+                        (string.IsNullOrWhiteSpace(filtro.Resultado) ||
+                         (filtro.Resultado == "Aprobado" && a.Resultado >= 6) ||
+                         (filtro.Resultado == "Reprobado" && a.Resultado < 6))
+                    )
+                    .Select(a => new CursoEmpleadoN3
+                    {
+                        EmpleadoId = a.EmpleadoId,
+                        NombreEmpleado = a.Empleado.NombreCompleto,
+                        Asistio = true,
+                        CalificacionTexto = a.Resultado >= 6 ? "Aprobado" : "Reprobado",
+                        TieneCertificado = certificados.Any(cert =>
+                            cert.CursoId == c.Id &&
+                            cert.EmpleadoId == a.EmpleadoId)
+                    })
+                    .ToList()
+            })
+            .Where(c => c.Empleados.Any())
+            .ToList();
+
+        return Ok(informe);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE CURSOS POR MODALIDAD - NIVEL 2
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("CursosPorModalidadN2")]
+    public async Task<ActionResult<List<ModalidadCursos>>> CursosPorModalidadN2([FromBody] FiltroCursoModalidad filtro)
+    {
+        var cursos = await _context.Curso
+            .Include(c => c.AsistenciaCapacitacion)
+                .ThenInclude(a => a.Empleado)
+            .ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreCurso))
+        {
+            cursos = cursos.Where(c =>
+                c.Nombre.ToLower().Contains(filtro.NombreCurso.ToLower()))
+                .ToList();
+        }
+        if (filtro.Modalidad.HasValue && filtro.Modalidad.Value != 0)
+            cursos = cursos.Where(c => (int)c.Modalidad == filtro.Modalidad.Value).ToList();
+
+        var resultado = cursos
+            .GroupBy(c => c.Modalidad)
+            .Select(modalidad => new ModalidadCursos
+            {
+                Modalidad = modalidad.Key.ToString(),
+                Cursos = modalidad.Select(curso => new CursoPorModalidad
+                {
+                    CursoId = curso.Id,
+                    NombreCurso = curso.Nombre,
+                }).ToList()
+            })
+            .Where(m => m.Cursos.Any())
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER LISTADO DE CURSOS POR ESTADO - NIVEL 2
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("CursosPorEmpleadoYResultadoN3")]
+    public async Task<ActionResult<List<EmpleadoCursos>>> CursosPorEmpleadoYResultadoN3([FromBody] FiltroCursoEmpleado filtro)
+    {
+        var asistencias = await _context.AsistenciaCapacitacion
+            .Include(a => a.Empleado)
+            .Include(a => a.Curso)
+            .ToListAsync();
+
+        if (!string.IsNullOrEmpty(filtro.NombreCurso))
+        {
+            asistencias = asistencias
+                .Where(a => a.Curso.Nombre.Contains(filtro.NombreCurso, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        if (!string.IsNullOrEmpty(filtro.Estado))
+        {
+            asistencias = asistencias
+                .Where(a =>
+                    (filtro.Estado.Equals("Aprobado", StringComparison.OrdinalIgnoreCase) && a.Resultado >= 6) ||
+                    (filtro.Estado.Equals("Reprobado", StringComparison.OrdinalIgnoreCase) && a.Resultado < 6)
+                )
+                .ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreEmpleado))
+        {
+            asistencias = asistencias
+                .Where(a =>
+                    a.Empleado.NombreCompleto.ToLower().Contains(filtro.NombreEmpleado.Trim().ToLower())
+                )
+                .ToList();
+        }
+
+        if (filtro.FechaDesde.HasValue)
+            asistencias = asistencias
+                .Where(a => a.Curso.FechaInicio >= filtro.FechaDesde.Value)
+                .ToList();
+
+        if (filtro.FechaHasta.HasValue)
+            asistencias = asistencias
+                .Where(a => a.Curso.FechaFinalizacion <= filtro.FechaHasta.Value)
+                .ToList();
+
+        var resultado = asistencias
+            .GroupBy(a => a.EmpleadoId)
+            .Select(emp => new EmpleadoCursos
+            {
+                EmpleadoId = emp.Key,
+                NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                Resultados = emp
+                    .GroupBy(a => a.Resultado >= 6 ? "Aprobado" : "Reprobado")
+                    .Select(r => new ResultadoCursos
+                    {
+                        Estado = r.Key,
+                        Cursos = r.Select(c => new CursoDetalle
+                        {
+                            CursoId = c.CursoId,
+                            NombreCurso = c.Curso.Nombre,
+                            Modalidad = c.Curso.Modalidad.ToString(),
+                            FechaInicio = c.Curso.FechaInicio,
+                            FechaFin = c.Curso.FechaFinalizacion,
+                            Nota = c.Resultado
+                        }).ToList()
+                    }).ToList()
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER UN IINFORME DE RESULTADOS DE CURSOS POR EMPLEADO
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("ResultadoCursoPorEmpleado")]
+    public async Task<ActionResult<List<ResultadoCursoPorEmpleado>>> ResultadoCursoPorEmpleado([FromBody] FiltroResultadoCursoPorEmpleado filtro)
+    {
+        var asistencias = await _context.AsistenciaCapacitacion
+            .Include(a => a.Empleado)
+            .Include(a => a.Curso)
+            .ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreEmpleado))
+        {
+            asistencias = asistencias
+                .Where(a => a.Empleado.NombreCompleto.Contains(filtro.NombreEmpleado.Trim(), StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        if (filtro.FechaDesde.HasValue)
+            asistencias = asistencias.Where(a => a.Curso.FechaInicio >= filtro.FechaDesde.Value).ToList();
+
+        if (filtro.FechaHasta.HasValue)
+            asistencias = asistencias.Where(a => a.Curso.FechaFinalizacion <= filtro.FechaHasta.Value).ToList();
+
+        if (!string.IsNullOrWhiteSpace(filtro.Estado))
+        {
+            asistencias = asistencias
+                .Where(a =>
+                    (filtro.Estado.Equals("Aprobado", StringComparison.OrdinalIgnoreCase) && a.Resultado >= 6) ||
+                    (filtro.Estado.Equals("Reprobado", StringComparison.OrdinalIgnoreCase) && a.Resultado < 6)
+                )
+                .ToList();
+        }
+
+        var resultado = asistencias
+            .GroupBy(a => a.EmpleadoId)
+            .Select(emp => new ResultadoCursoPorEmpleado
+            {
+                NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                TotalCursos = emp.Count(),
+                TotalAprobados = emp.Count(a => a.Resultado >= 6),
+                TotalReprobados = emp.Count(a => a.Resultado < 6),
+                PorcentajeAprobacion = emp.Count(a => a.Resultado >= 6) * 100m / emp.Count(),
+                NotaPromedio = emp.Average(a => a.Resultado)
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER UN IINFORME ESTADISTICO DE APROBACION Y REPROBACION DE EMPLEADOS 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("ParticipacionPorCurso")]
+    public async Task<ActionResult<List<ParticipacionCursoEstadistico>>> ParticipacionPorCurso([FromBody] FiltroParticipacionCurso filtro)
+    {
+        var cursos = await _context.Curso
+            .Include(c => c.AsistenciaCapacitacion)
+                .ThenInclude(a => a.Empleado)
+            .Include(c => c.Certificado)
+            .AsNoTracking()
+            .ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreCurso))
+            cursos = cursos
+                .Where(c => c.Nombre.Contains(filtro.NombreCurso, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        if (filtro.FechaDesde.HasValue)
+            cursos = cursos.Where(c => c.FechaInicio >= filtro.FechaDesde.Value).ToList();
+
+        if (filtro.FechaHasta.HasValue)
+            cursos = cursos.Where(c => c.FechaFinalizacion <= filtro.FechaHasta.Value).ToList();
+
+        if (filtro.Modalidad.HasValue)
+            cursos = cursos.Where(c => (int)c.Modalidad == filtro.Modalidad.Value).ToList();
+
+        var resultado = cursos.Select(c => new ParticipacionCursoEstadistico
+        {
+            NombreCurso = c.Nombre,
+            Modalidad = c.Modalidad.ToString(),
+            TotalParticipantes = c.AsistenciaCapacitacion.Count,
+            TotalAsistentes = c.AsistenciaCapacitacion.Count(a => a.Asistencia),
+            TotalAusentes = c.AsistenciaCapacitacion.Count(a => !a.Asistencia),
+            PorcentajeAsistencia = c.AsistenciaCapacitacion.Count == 0 ? 0 :
+                (decimal)c.AsistenciaCapacitacion.Count(a => a.Asistencia) / c.AsistenciaCapacitacion.Count * 100,
+            TotalCertificadosEmitidos = c.Certificado.Count
+        }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER UN IINFORME ESTADISTICO DEL DESEMPEAÑO DE EMPLEADOS EN LOS CURSOS
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("PromedioCalificacionPorEmpleado")]
+    public async Task<ActionResult<List<PromedioCalificacionEmpleadoEstadistico>>> PromedioCalificacionPorEmpleado([FromBody] FiltroPromedioCalificacionEmpleado filtro)
+    {
+        var asistencias = await _context.AsistenciaCapacitacion
+            .Include(a => a.Empleado)
+            .Include(a => a.Curso)
+            .AsNoTracking()
+            .ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(filtro.NombreEmpleado))
+        {
+            asistencias = asistencias
+                .Where(a => a.Empleado.NombreCompleto.Contains(filtro.NombreEmpleado, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (filtro.Modalidad.HasValue)
+        {
+            asistencias = asistencias
+                .Where(a => (int)a.Curso.Modalidad == filtro.Modalidad.Value)
+                .ToList();
+        }
+        if (filtro.FechaDesde.HasValue)
+            asistencias = asistencias.Where(a => a.Curso.FechaInicio >= filtro.FechaDesde.Value).ToList();
+
+        if (filtro.FechaHasta.HasValue)
+            asistencias = asistencias.Where(a => a.Curso.FechaFinalizacion <= filtro.FechaHasta.Value).ToList();
+
+        var resultado = asistencias
+            .GroupBy(a => a.EmpleadoId)
+            .Select(emp => new PromedioCalificacionEmpleadoEstadistico
+            {
+                NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                TotalCursosRealizados = emp.Count(),
+                NotaPromedio = emp.Any() ? emp.Average(a => a.Resultado) : 0,
+                MejorCalificacion = emp.Any() ? emp.Max(a => a.Resultado) : 0,
+                PeorCalificacion = emp.Any() ? emp.Min(a => a.Resultado) : 0
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE CURSOS - GRAFICOS Y LISTADOS ///
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
+
 
 
 

@@ -1,7 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
-/// INICIO DE CLASES APRA EL LISTADO DE ASISTENCIA POR EMPLEADO - NIVEL 2
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ========================== Armamos Primer Grupo Empleado ============================ //
+using API_RRHH_TESIS2025.Models.General;
+
+/// INICIO DE CLASES APRA EL LISTADO DE ASISTENCIA POR EMPLEADO - NIVEL 2
 public class EmpleadoAsistenciaListadoN2
 {
     public string NroLegajo { get; set; }
@@ -403,4 +405,107 @@ public class FiltrarLicenciaPorSector
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// FIN DE CLASES PARA LISTADO DE LICENCIA POR SECTOR - NIVEL 4
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE CURSOS POR EMPLEADO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Primer Grupo Curso ============================ //
+public class CursoInformeN3
+{
+    public int CursoId { get; set; }
+    public string NombreCurso { get; set; }
+    public List<CursoEmpleadoN3> Empleados { get; set; }
+}
+
+public class CursoEmpleadoN3
+{
+    public int EmpleadoId { get; set; }
+    public string NombreEmpleado { get; set; }
+    public bool Asistio { get; set; }
+    public string CalificacionTexto { get; set; } 
+    public bool TieneCertificado { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltrarCursoEmpleado
+{
+    public string? NombreCurso { get; set; }
+    public string? Nombre { get; set; }
+    public string? Resultado { get; set; }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE CURSOS POR EMPLEADO - NIVEL 3
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE CURSOS POR MODALIDAD - NIVEL 2
+//////////////////////////////////////////////////////////////////////////////////////////////////
+public class CursoPorModalidad
+{
+    public int CursoId { get; set; }
+    public string NombreCurso { get; set; }
+    public Modalidades Modalidad { get; set; } 
+}
+
+public class ModalidadCursos
+{
+    public string Modalidad { get; set; } 
+    public List<CursoPorModalidad> Cursos { get; set; }
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltroCursoModalidad
+{
+    public int? Modalidad { get; set; }
+    public string? NombreCurso { get; set; }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// FIN DE CLASES PARA LISTADO DE CURSOS POR MODALIDAD - NIVEL 2
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE CURSOS POR ESTADO (APROBADO - DESAPROBADO) - NIVEL 2
+//////////////////////////////////////////////////////////////////////////////////////////////////
+public class EmpleadoCursos
+{
+    public int EmpleadoId { get; set; }
+    public string NombreEmpleado { get; set; }
+    public List<ResultadoCursos> Resultados { get; set; } 
+}
+
+public class ResultadoCursos
+{
+    public string Estado { get; set; } 
+    public List<CursoDetalle> Cursos { get; set; }       
+}
+
+public class CursoDetalle
+{
+    public int CursoId { get; set; }
+    public string NombreCurso { get; set; }
+    public string Modalidad { get; set; }
+    public DateTime FechaInicio { get; set; }
+    public DateTime FechaFin { get; set; }
+    public int Nota { get; set; }
+
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltroCursoEmpleado
+{
+    public string? NombreCurso { get; set; }        
+    public string? Estado { get; set; }      
+    public string? NombreEmpleado { get; set; } 
+    public DateTime? FechaDesde { get; set; } 
+    public DateTime? FechaHasta { get; set; }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// INICIO DE CLASES PARA LISTADO DE CURSOS POR ESTADO (APROBADO - DESAPROBADO) - NIVEL 2
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -223,3 +223,98 @@ public class FiltrarVariacionDesempenoEmpleadoN4
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE APROBACIÓN Y REPROBACIÓN POR EMPLEADO 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Agrupa los resultados de cursos por empleado ============================ //
+public class ResultadoCursoPorEmpleado
+{
+    public string NombreEmpleado { get; set; }         
+    public int TotalCursos { get; set; }               
+    public int TotalAprobados { get; set; }            
+    public int TotalReprobados { get; set; }           
+    public decimal PorcentajeAprobacion { get; set; } 
+    public double NotaPromedio { get; set; }         
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltroResultadoCursoPorEmpleado
+{
+    public string? NombreEmpleado { get; set; } 
+    public DateTime? FechaDesde { get; set; }    
+    public DateTime? FechaHasta { get; set; }    
+    public string? Estado { get; set; }          
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE APROBACIÓN Y REPROBACIÓN POR EMPLEADO 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE PARTICIPACIÓN Y ASISTENCIA POR CURSO 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Agrupa la participación de empleados por curso ============================ //
+public class ParticipacionCursoEstadistico
+{
+    public string NombreCurso { get; set; }      
+    public string Modalidad { get; set; }         
+    public int TotalParticipantes { get; set; }     
+    public int TotalAsistentes { get; set; }       
+    public int TotalAusentes { get; set; }          
+    public decimal PorcentajeAsistencia { get; set; } 
+    public int TotalCertificadosEmitidos { get; set; } 
+}
+
+// ========================== Para Filtrar en el Listado ============================ //
+public class FiltroParticipacionCurso
+{
+    public string? NombreCurso { get; set; }    
+    public DateTime? FechaDesde { get; set; }   
+    public DateTime? FechaHasta { get; set; }   
+    public int? Modalidad { get; set; }         
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE PARTICIPACIÓN Y ASISTENCIA POR CURSO 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE PROMEDIO DE CALIFICACIÓN POR EMPLEADO
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+// ========================== Resumen de promedio de calificaciones por empleado ============================ //
+public class PromedioCalificacionEmpleadoEstadistico
+{
+    public string NombreEmpleado { get; set; }        
+    public int TotalCursosRealizados { get; set; }    
+    public double NotaPromedio { get; set; }         
+    public int MejorCalificacion { get; set; }       
+    public int PeorCalificacion { get; set; }         
+}
+
+// ========================== Para filtrar en el listado ============================ //
+public class FiltroPromedioCalificacionEmpleado
+{
+    public string? NombreEmpleado { get; set; }       
+    public int? Modalidad { get; set; }         
+    public DateTime? FechaDesde { get; set; }       
+    public DateTime? FechaHasta { get; set; }         
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE PROMEDIO DE CALIFICACIÓN POR EMPLEADO
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+

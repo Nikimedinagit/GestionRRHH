@@ -1,0 +1,89 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Listado de Cursos por Empleado</h3>
+        <p class="text-muted mb-3">
+            Visualizar los cursos y, para cada curso, listar los empleados asociados indicando si asistieron, su calificación (Aprobado/Reprobado) y si poseen certificado.
+        </p>
+    </div>
+
+
+
+    <hr />
+
+    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <a href="#resultadoGestionCurso" class="btn btn-volver">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                <span>Volver</span>
+            </a>
+
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button class="btn btn-informe" onclick="GenerarInformePdfCursosPorEmpleado()">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar Informe</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!--================================ Contenedor Filtros ===================================== -->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-3">
+                    <label for="EmpleadoIdBuscar" class="form-label-fija">Empleado</label>
+                    <input type="text" class="form-control filtro-select" id="EmpleadoIdBuscar"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label for="NombreCursoBuscar" class="form-label-fija">Nombre Curso</label>
+                    <input type="text" class="form-control filtro-select" id="NombreCursoBuscar"
+                        placeholder="Buscar..." />
+                </div>
+
+                <div class=" col-12 col-md-2">
+                    <label for="ResultadoBuscar" class="form-label-fija">Resultado</label>
+                    <select id="ResultadoBuscar" class="form-control filtro-select">
+                        <option value="">[Todos]</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Reprobado">Reprobado</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- ==================================== Tabla de Datos ===================================== -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-start">Asistio</th>
+                        <th class="text-center">Calificacion</th>
+                        <th class="text-center">Certificado</th>
+                    </tr>
+                </thead>
+                <tbody id="listadoCursosPorEmpleado"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/resultados/listadoCursosEmpleado.js"></script>
