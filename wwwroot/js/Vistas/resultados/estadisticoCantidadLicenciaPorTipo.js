@@ -96,12 +96,10 @@ function MostrarCantidadLicenciasPorTipo(data) {
     const isTablet = !isMobile && mqTablet.matches;
 
     let totalCantidad = 0;
-    let totalPorcentaje = 0;
 
     data.forEach((item, index) => {
 
         totalCantidad += item.cantidad;
-        totalPorcentaje += item.porcentajeTotal;
 
         const collapseId = `collapseTipo_${index}`;
 
@@ -126,8 +124,8 @@ function MostrarCantidadLicenciasPorTipo(data) {
             tabla.append(`
                 <tr id="${collapseId}" class="collapse">
                     <td colspan="4" class="p-2 bg-light text-wrap">
-                        ${isMobile ? `<div><b>Porcentaje:</b> ${item.porcentajeTotal.toFixed(2)}%</div>` : ``}
-                        <div><b>Prom. Días:</b> ${item.promedioDias.toFixed(2)}</div>
+                        ${isMobile ? `<div><b>Porcentaje:</b> <b>${item.porcentajeTotal.toFixed(2)}%</b></div>` : ``}
+                        <div><b>Prom. Días:</b> <b>${item.promedioDias.toFixed(2)}</b></div>
                     </td>
                 </tr>
             `);
@@ -139,12 +137,13 @@ function MostrarCantidadLicenciasPorTipo(data) {
             <td class="fw-bold fs-6">TOTAL</td>
             <td class="text-center fw-bold fs-6">${totalCantidad}</td>
             <td class="text-center fw-bold fs-6 d-none d-sm-table-cell">
-                ${totalPorcentaje.toFixed(2)}%
+               100.00%
             </td>
             <td class="d-none d-md-table-cell"></td>
         </tr>
     `);
 }
+
 
 
 

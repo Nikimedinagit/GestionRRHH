@@ -129,7 +129,7 @@ function MostrarLicenciasPorEmpleadoEstado(data) {
             est.licencia.forEach(lic => {
                 tabla.append(`
                     <tr>
-                        <td class="text-start align-middle">${lic.tipoDeLicencia}</td>
+                        <td class="text-start align-middle text-wrap">${lic.tipoDeLicencia}</td>
                         <td class="text-center align-middle text-wrap">${lic.periodo}</td>
                     </tr>
                 `);

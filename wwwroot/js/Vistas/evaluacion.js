@@ -735,7 +735,7 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
     if (enMovil) {
       tablaBody.append(`
         <tr>
-          <td class='align-middle'>${item.tipoDeCriterio.nombre}</td>
+          <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
           ${esEditable
           ? `<td class='align-middle text-center'>
                 <button class='btn-eliminar' style='background: none; border: none;' 

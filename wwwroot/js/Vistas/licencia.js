@@ -150,6 +150,7 @@ async function ObtenerLicencias() {
       MostrarLicencias(data);
       LimpiarModalLicencia();
       CerrarPanelLicencia();
+      ObtenerTotalLicencias();
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -1087,24 +1088,24 @@ async function GenerarInformePdfLicencias() {
   doc.text(`${resumen.total}`, 42, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Pendientes:", 49, y);
+  doc.text("| Pendientes:", 45, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.pendientes}`, 73, y);
+  doc.text(`${resumen.pendientes}`, 69, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Aprobadas:", 80, y);
+  doc.text("| Aprobadas:", 72, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.aprobadas}`, 104, y);
+  doc.text(`${resumen.aprobadas}`, 95, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Rechazadas:", 112, y);
+  doc.text("| Rechazadas:", 98, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.rechazadas}`, 139, y);
+  doc.text(`${resumen.rechazadas}`, 124, y);
 
   doc.setFont("helvetica", "normal");
-  doc.text("| Expiradas:", 147, y);
+  doc.text("| Expiradas:", 127, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${resumen.expiradas}`, 169, y);
+  doc.text(`${resumen.expiradas}`, 148, y);
 
   y += 6;
 

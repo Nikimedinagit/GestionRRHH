@@ -126,6 +126,7 @@ async function ObtenerCursos() {
       MostrarCursos(data);
       LimpiarModalCursos();
       cerrarPanelCursos();
+      btenerTotalCursos();
     })
     .catch((error) => {
       MostrarErrorCatch();

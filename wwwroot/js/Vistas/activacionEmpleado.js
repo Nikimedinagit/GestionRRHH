@@ -3,6 +3,9 @@
 // INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
+ObtenerEmpleadosActivacion();
+
+
   $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", ObtenerEmpleadosActivacion);
   $("#FiltroActivo").on("change", ObtenerEmpleadosActivacion);
 });

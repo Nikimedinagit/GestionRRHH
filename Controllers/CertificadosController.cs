@@ -25,22 +25,24 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        // [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Certificado>>> GetCertificado()
         {
-            return await _context.Certificado
-            .Include(c => c.Empleado)
-            .Include(c => c.Curso)
-            .Where(c => c.Empleado != null && !c.Empleado.Eliminado)
-            .ToListAsync();
+            var certificados = await _context.Certificado
+                .Include(c => c.Empleado)
+                .Include(c => c.Curso)
+                .Where(c => c.Empleado != null && !c.Empleado.Eliminado)
+                .ToListAsync();
+
+            return Ok(certificados); 
         }
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER UN CERTIFICADO //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Certificado>> GetCertificado(int id)
         {
@@ -58,7 +60,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA DESCARGAR UN CERTIFICADO ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("Documento/{id}")]
         public async Task<IActionResult> DescargarDocumento(int id)
         {
@@ -74,7 +76,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA CREAR UN CERTIFICADO ////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize (Roles = "ADMINISTRADOR, RRHH")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPost]
         public async Task<ActionResult> PostCertificado([FromForm] Certificado certificado, [FromForm] IFormFile DocumentoAdjunto)
         {
@@ -123,7 +125,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMINAR UN CERTIFICADO ////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [Authorize (Roles = "ADMINISTRADOR, RRHH")]
+        [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCertificado(int id)
         {

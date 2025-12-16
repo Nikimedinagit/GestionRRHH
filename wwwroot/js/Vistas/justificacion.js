@@ -32,7 +32,6 @@ $(document).ready(function () {
     "input",
     function () {
       ObtenerJustificaciones();
-      ObtenerTotalJustificaciones();
     }
   );
 });
@@ -66,6 +65,7 @@ async function ObtenerJustificaciones() {
     MostrarJustificaciones(data);
     LimpiarModalJustificacion();
     cerrarPanelJustificacion();
+    ObtenerTotalJustificaciones();
   } catch (error) {
     MostrarErrorCatch();
     console.error(error);

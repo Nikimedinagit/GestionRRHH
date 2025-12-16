@@ -100,7 +100,7 @@ function MostrarLicenciasAprobadas(data) {
         <td class="text-center columna-estado">
           ${badgeHtml}
         </td>
-        <td class="text-center columna-licencia">${item.licenciaString}</td>
+        <td class="text-center columna-licencia text-wrap">${item.licenciaString}</td>
         <td class="text-center columna-responsable">
           <strong>${item.nombreUsuarioAprobador}</strong><br>
           <small class="text-muted">${item.emailUsuarioAprobador}</small>
@@ -202,7 +202,7 @@ async function GenerarInformePdfLicenciasAprobadas() {
     : "No se aplicaron";
 
   doc.setFont("helvetica", "normal");
-  doc.text("Filtros Aplicados:", 14, y);
+  doc.text("Filtros Aplicados:", 13, y);
   doc.setFont("helvetica", "bold");
 
   const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
