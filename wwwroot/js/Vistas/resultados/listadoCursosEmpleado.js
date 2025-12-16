@@ -31,88 +31,108 @@ async function ObtenerCursosPorEmpleado() {
     }
 }
 
+// ======================= Media Query =======================
+var mqTabletMobile = window.matchMedia("(max-width: 991px)");
+var mqMobile = window.matchMedia("(max-width: 574px)");
+
+mqTabletMobile.addEventListener("change", () => {
+    if (window._cacheCursosEmpleado)
+        MostrarCursosPorEmpleado(window._cacheCursosEmpleado);
+});
+mqMobile.addEventListener("change", () => {
+    if (window._cacheCursosEmpleado)
+        MostrarCursosPorEmpleado(window._cacheCursosEmpleado);
+});
+
 
 // =================================== Mostrar Listado de Cursos por Empleado ===================================
 function MostrarCursosPorEmpleado(data) {
-    const tbody = $('#listadoCursosPorEmpleado');
-    tbody.empty();
+    window._cacheCursosEmpleado = data;
+    const tabla = $("#listadoCursosPorEmpleado");
+    tabla.empty();
 
     if (!data || data.length === 0) {
-        tbody.append(`
-            <tr>
-                <td colspan="3" class="text-start">
-                    No se encontraron resultados
-                </td>
-            </tr>
-        `);
+        tabla.html(`<tr><td colspan="3" class="text-start">No se encontraron resultados</td></tr>`);
         return;
     }
 
-    data.forEach(curso => {
-        tbody.append(`
+    const isMobile = mqMobile.matches;
+    const EstadoCursoEstilo = {
+        "SIN ASISTENCIA": { backgroundColor: "#e2e3e5", color: "#495057" },
+        "APROBADO": { backgroundColor: "#a3dc9a72", color: "#06923E" },
+        "REPROBADO": { backgroundColor: "#f8d7da", color: "#c62828" }
+    };
+
+    data.forEach((curso, cIndex) => {
+        tabla.append(`
             <tr style="background:#b7d3ff !important;">
-                <td colspan="3" class="fw-bold text-start">
+                <td colspan="3" class="fw-bold text-wrap">
                     Curso: ${curso.nombreCurso}
                 </td>
             </tr>
         `);
-
-        curso.empleados.forEach(emp => {
-            tbody.append(`
+        curso.empleados.forEach((emp, eIndex) => {
+            tabla.append(`
                 <tr style="background:#e8f0ff !important;">
-                    <td colspan="3" class="fw-bold text-start">
-                        ${emp.nombreEmpleado}
+                    <td colspan="3" class="fw-bold text-wrap">
+                        ${emp.nombreEmpleado} (Puesto: ${emp.nombrePuesto})
                     </td>
                 </tr>
             `);
-            let badgeHtml = "";
-            if (!emp.asistio) {
-                badgeHtml = `
-                    <span style="
-                        font-size:0.65rem;
-                        padding:2px 6px;
-                        border-radius:4px;
-                        background:#6c757d;
-                        color:#fff;
-                        font-weight:600;
-                    ">
-                        SIN ASISTENCIA
-                    </span>
-                `;
-            } else {
-                const aprobado = emp.calificacionTexto === "Aprobado";
 
-                badgeHtml = `
-                    <span style="
-                        font-size:0.65rem;
-                        padding:2px 6px;
-                        border-radius:4px;
-                        background:${aprobado ? '#d4f4dd' : '#f8d7da'};
-                        color:${aprobado ? '#2e7d32' : '#c62828'};
+            const estadoTexto = emp.asistio && emp.calificacionTexto
+                ? emp.calificacionTexto.toUpperCase()
+                : "SIN ASISTENCIA";
+            const estilo = EstadoCursoEstilo[estadoTexto];
+            const badgeHtml = `
+                <span class="fw-bold"
+                      style="
+                        display:inline-block;
+                        padding:0.35em 0.65em;
+                        font-size:0.7rem;
                         font-weight:600;
-                    ">
-                        ${emp.calificacionTexto.toUpperCase()}
-                    </span>
-                `;
-            }
+                        border-radius:0.25rem;
+                        background-color:${estilo.backgroundColor};
+                        color:${estilo.color};
+                      ">
+                    ${estadoTexto}
+                </span>
+            `;
             const asistioTexto = emp.asistio ? "SI" : "NO";
             const certificadoTexto = emp.tieneCertificado ? "SI" : "NO";
-            tbody.append(`
-                <tr>
-                    <td class="text-start align-middle">
-                        ${asistioTexto}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${badgeHtml}
-                    </td>
-                    <td class="text-center align-middle fw-bold">
-                        ${certificadoTexto}
-                    </td>
-                </tr>
-            `);
+            const collapseId = `curso_${cIndex}_${eIndex}`;
+            if (isMobile) {
+                tabla.append(`
+                    <tr data-bs-toggle="collapse"
+                        data-bs-target="#${collapseId}"
+                        style="cursor:pointer;">
+                        <td class="text-center">${asistioTexto}</td>
+                        <td class="text-center">${badgeHtml}</td>
+                    </tr>
+                `);
+
+                tabla.append(`
+                    <tr class="collapse" id="${collapseId}">
+                        <td colspan="3" class="p-2 bg-light" style="font-size:12px;">
+                            <b>Certificado:</b> ${certificadoTexto}
+                        </td>
+                    </tr>
+                `);
+            } else {
+
+                tabla.append(`
+                    <tr>
+                        <td class="text-center">${asistioTexto}</td>
+                        <td class="text-center">${badgeHtml}</td>
+                        <td class="text-center">${certificadoTexto}</td>
+                    </tr>
+                `);
+            }
         });
     });
 }
+
+
 
 
 // =================================== Generar Informe en PDF ===================================
@@ -158,9 +178,9 @@ async function GenerarInformePdfCursosPorEmpleado() {
     doc.text(`${totalCursos}`, 38, y);
 
     doc.setFont("helvetica", "normal");
-    doc.text("| Empleados:", 44, y);
+    doc.text("| Empleados:", 42, y);
     doc.setFont("helvetica", "bold");
-    doc.text(`${totalEmpleados}`, 68, y);
+    doc.text(`${totalEmpleados}`, 66, y);
     y += 6;
 
     let empleadoRaw = document.getElementById("EmpleadoIdBuscar").value;
@@ -206,7 +226,7 @@ async function GenerarInformePdfCursosPorEmpleado() {
         curso.empleados.forEach(emp => {
             body.push([
                 {
-                    content: emp.nombreEmpleado,
+                    content: `${emp.nombreEmpleado} (Puesto: ${emp.nombrePuesto})`,
                     colSpan: 3,
                     styles: {
                         halign: "left",

@@ -2225,6 +2225,7 @@ public class ResultadosController : ControllerBase
         var cursos = await _context.Curso
             .Include(c => c.AsistenciaCapacitacion)
                 .ThenInclude(a => a.Empleado)
+                .ThenInclude(e => e.Puesto)
             .Where(c => c.AsistenciaCapacitacion.Any(a => a.Asistencia))
             .ToListAsync();
 
@@ -2255,6 +2256,7 @@ public class ResultadosController : ControllerBase
                     {
                         EmpleadoId = a.EmpleadoId,
                         NombreEmpleado = a.Empleado.NombreCompleto,
+                        NombrePuesto = a.Empleado.Puesto.Descripcion,
                         Asistio = true,
                         CalificacionTexto = a.Resultado >= 6 ? "Aprobado" : "Reprobado",
                         TieneCertificado = certificados.Any(cert =>
@@ -2318,6 +2320,7 @@ public class ResultadosController : ControllerBase
     {
         var asistencias = await _context.AsistenciaCapacitacion
             .Include(a => a.Empleado)
+            .ThenInclude(e => e.Puesto)
             .Include(a => a.Curso)
             .ToListAsync();
 
@@ -2363,6 +2366,7 @@ public class ResultadosController : ControllerBase
             {
                 EmpleadoId = emp.Key,
                 NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                NombrePuesto = emp.First().Empleado.Puesto.Descripcion,
                 Resultados = emp
                     .GroupBy(a => a.Resultado >= 6 ? "Aprobado" : "Reprobado")
                     .Select(r => new ResultadoCursos
@@ -2393,6 +2397,7 @@ public class ResultadosController : ControllerBase
     {
         var asistencias = await _context.AsistenciaCapacitacion
             .Include(a => a.Empleado)
+            .ThenInclude(e => e.Puesto)
             .Include(a => a.Curso)
             .ToListAsync();
 
@@ -2424,6 +2429,8 @@ public class ResultadosController : ControllerBase
             .Select(emp => new ResultadoCursoPorEmpleado
             {
                 NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                NroLegajo = emp.First().Empleado.NroLegajo,
+                NombrePuesto = emp.First().Empleado.Puesto.Descripcion,
                 TotalCursos = emp.Count(),
                 TotalAprobados = emp.Count(a => a.Resultado >= 6),
                 TotalReprobados = emp.Count(a => a.Resultado < 6),
@@ -2489,6 +2496,7 @@ public class ResultadosController : ControllerBase
     {
         var asistencias = await _context.AsistenciaCapacitacion
             .Include(a => a.Empleado)
+            .ThenInclude(e => e.Puesto)
             .Include(a => a.Curso)
             .AsNoTracking()
             .ToListAsync();
@@ -2516,6 +2524,8 @@ public class ResultadosController : ControllerBase
             .Select(emp => new PromedioCalificacionEmpleadoEstadistico
             {
                 NombreEmpleado = emp.First().Empleado.NombreCompleto,
+                NombrePuesto = emp.First().Empleado.Puesto.Descripcion,
+                NroLegajo = emp.First().Empleado.NroLegajo,
                 TotalCursosRealizados = emp.Count(),
                 NotaPromedio = emp.Any() ? emp.Average(a => a.Resultado) : 0,
                 MejorCalificacion = emp.Any() ? emp.Max(a => a.Resultado) : 0,

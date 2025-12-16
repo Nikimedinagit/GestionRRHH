@@ -240,6 +240,8 @@ public class ResultadoCursoPorEmpleado
     public int TotalReprobados { get; set; }
     public decimal PorcentajeAprobacion { get; set; }
     public double NotaPromedio { get; set; }
+    public string NroLegajo { get; set; }
+    public string NombrePuesto { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
@@ -301,6 +303,8 @@ public class PromedioCalificacionEmpleadoEstadistico
     public double NotaPromedio { get; set; }
     public int MejorCalificacion { get; set; }
     public int PeorCalificacion { get; set; }
+    public string NombrePuesto { get; set; }
+    public string NroLegajo { get; set; }
 }
 
 // ========================== Para filtrar en el listado ============================ //

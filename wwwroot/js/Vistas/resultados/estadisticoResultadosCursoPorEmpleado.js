@@ -52,16 +52,17 @@ async function ObtenerResultadosPorEmpleado() {
 
 // ======================== Detectar Responsividad con collapse =============================
 function reRenderIfCachePromedio() {
-    if (window._cachePromedioEmpleado) {
-        MostrarResultadosPorEmpleado(window._cachePromedioEmpleado);
+    if (window._cacheResultadoEmpleado) {
+        MostrarResultadosPorEmpleado(window._cacheResultadoEmpleado);
     }
 }
 window.addEventListener("resize", reRenderIfCachePromedio);
 
 
 
-// ======================== Mostarr Datos =============================
+// ======================== Mostrar Datos =============================
 function MostrarResultadosPorEmpleado(data) {
+    window._cacheResultadoEmpleado = data;
 
     const tabla = $("#listadoResultadosPorEmpleado");
     tabla.empty();
@@ -92,40 +93,51 @@ function MostrarResultadosPorEmpleado(data) {
         tabla.append(`
             <tr style="background:#b7d3ff !important;">
                 <td colspan="6" class="fw-bold text-wrap">
-                    ${empleado.nombreEmpleado}
+                    ${empleado.nombreEmpleado}, (Legajo: ${empleado.nroLegajo}, Puesto: ${empleado.nombrePuesto})
                 </td>
             </tr>
         `);
+
         const totalCursos = empleado.totalCursos ?? 0;
         const totalAprobados = empleado.totalAprobados ?? 0;
         const totalReprobados = empleado.totalReprobados ?? 0;
-        const porcentaje = empleado.porcentajeAprobacion?.toFixed(2) ?? "0.00";
-        const notaPromedio = empleado.notaPromedio?.toFixed(2) ?? "0.00";
+        const porcentaje = parseFloat(empleado.porcentajeAprobacion) ?? 0;
+        const notaPromedio = parseFloat(empleado.notaPromedio) ?? 0;
+
+        const badgeAprobados = badge(totalAprobados, "#d4edda", "#155724");
+        const badgeReprobados = badge(totalReprobados, "#f8d7da", "#721c24");
+
+        const aprobadoNota = !isNaN(notaPromedio) && notaPromedio >= 6;
+        const bgNota = aprobadoNota ? "#d4edda" : "#f8d7da";
+        const colorNota = aprobadoNota ? "#155724" : "#721c24";
+        const badgeNota = badge(notaPromedio.toFixed(2), bgNota, colorNota);
+
+        const badgePorcentaje = badge(`${porcentaje.toFixed(2)}%`, "#d4edda", "#155724");
 
         if (isDesktop) {
             tabla.append(`
                 <tr>
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center">${totalAprobados}</td>
-                    <td class="text-center">${totalReprobados}</td>
-                    <td class="text-center fw-bold">${porcentaje}%</td>
-                    <td class="text-center">${badge(notaPromedio, "#d1ecf1", "#0c5460")}</td>
+                    <td class="text-center fw-bold">${totalCursos}</td>
+                    <td class="text-center fw-bold">${badgeAprobados}</td>
+                    <td class="text-center fw-bold">${badgeReprobados}</td>
+                    <td class="text-center fw-bold">${badgePorcentaje}</td>
+                    <td class="text-center fw-bold">${badgeNota}</td>
                 </tr>
             `);
         } else if (isTablet) {
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center">${totalAprobados}</td>
-                    <td class="text-center">${totalReprobados}</td>
+                    <td class="text-center fw-bold">${totalCursos}</td>
+                    <td class="text-center fw-bold">${badgeAprobados}</td>
+                    <td class="text-center fw-bold">${badgeReprobados}</td>
                 </tr>
             `);
             tabla.append(`
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="3" class="p-2 bg-light">
                         <div class="d-flex flex-column gap-2 small" style="font-size: 12px">
-                            <div><b>% Aprobación:</b> ${porcentaje}%</div>
-                            <div><b>Nota Promedio:</b> ${badge(notaPromedio, "#d1ecf1", "#0c5460")}</div>
+                            <div><b>Aprobación (%):</b> ${badgePorcentaje}</div>
+                            <div><b>Nota Promedio:</b> ${badgeNota}</div>
                         </div>
                     </td>
                 </tr>
@@ -133,17 +145,17 @@ function MostrarResultadosPorEmpleado(data) {
         } else if (isMobile) {
             tabla.append(`
                 <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center">${totalAprobados}</td>
+                    <td class="text-center fw-bold">${totalCursos}</td>
+                    <td class="text-center fw-bold">${badgeAprobados}</td>
                 </tr>
             `);
             tabla.append(`
                 <tr class="collapse" id="${collapseId}">
                     <td colspan="2" class="p-2 bg-light">
                         <div class="d-flex flex-column gap-2 small" style="font-size: 12px">
-                            <div><b>Reprobados:</b> ${totalReprobados}</div>
-                            <div><b>% Aprobación:</b> ${porcentaje}%</div>
-                            <div><b>Nota Promedio:</b> ${badge(notaPromedio, "#d1ecf1", "#0c5460")}</div>
+                            <div><b>Reprobados:</b> ${badgeReprobados}</div>
+                            <div><b>Aprobación (%):</b> ${badgePorcentaje}</div>
+                            <div><b>Nota Promedio:</b> ${badgeNota}</div>
                         </div>
                     </td>
                 </tr>
@@ -151,6 +163,7 @@ function MostrarResultadosPorEmpleado(data) {
         }
     });
 }
+
 
 
 
@@ -218,7 +231,7 @@ async function GenerarInformePdfResultadosPorEmpleado() {
 
     empleados.forEach(emp => {
         body.push([{
-            content: `${emp.nombreEmpleado}`,
+            content: `${emp.nombreEmpleado}, (Legajo: ${emp.nroLegajo}, Puesto: ${emp.nombrePuesto})`,
             colSpan: 5,
             styles: { halign: "left", fillColor: [183, 211, 255], fontStyle: "bold" }
         }]);

@@ -428,6 +428,7 @@ public class CursoEmpleadoN3
     public bool Asistio { get; set; }
     public string CalificacionTexto { get; set; } 
     public bool TieneCertificado { get; set; }
+    public string NombrePuesto { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
@@ -477,6 +478,7 @@ public class EmpleadoCursos
 {
     public int EmpleadoId { get; set; }
     public string NombreEmpleado { get; set; }
+    public string NombrePuesto { get; set; }
     public List<ResultadoCursos> Resultados { get; set; } 
 }
 

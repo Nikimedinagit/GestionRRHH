@@ -47,80 +47,157 @@ async function ObtenerCursosPorEstado() {
   }
 }
 
+
+// ======================= Media Query =======================
+var mqTabletMobile = window.matchMedia("(max-width: 991px)");
+var mqMobile = window.matchMedia("(max-width: 574px)");
+
+mqTabletMobile.addEventListener("change", () => {
+    if (window._cacheCursosEmpleadoEstado)
+        MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
+});
+mqMobile.addEventListener("change", () => {
+    if (window._cacheCursosEmpleadoEstado)
+        MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
+});
+
+
 // =================================== Mostrar Listado de Cursos por Modalidad ===================================
 function MostrarCursosPorEstado(data) {
-  const tbody = $("#listadoCursosPorEstado");
-  tbody.empty();
+    window._cacheCursosEmpleadoEstado = data; 
+    const tbody = $("#listadoCursosPorEstado");
+    tbody.empty();
 
-  if (!data || data.length === 0) {
-    tbody.append(`
+    if (!data || data.length === 0) {
+        tbody.append(`
             <tr>
                 <td colspan="5" class="text-start">
                     No se encontraron resultados
                 </td>
             </tr>
         `);
-    return;
-  }
-  const modalidadColor = {
-    PRESENCIAL: "badge-presencial",
-    VIRTUAL: "badge-virtual",
-    MIXTO: "badge-mixto",
-    "Sin modalidad": "badge-default",
-  };
+        return;
+    }
 
-  data.forEach((empleado) => {
-    tbody.append(`
+    const modalidadColor = {
+        PRESENCIAL: "badge-presencial",
+        VIRTUAL: "badge-virtual",
+        MIXTO: "badge-mixto",
+        "SIN MODALIDAD": "badge-default",
+    };
+
+    const EstadoCursoEstilo = {
+        "SIN ASISTENCIA": { backgroundColor: "#e2e3e5", color: "#495057" },
+        "APROBADO": { backgroundColor: "#a3dc9a72", color: "#06923E" },
+        "REPROBADO": { backgroundColor: "#f8d7da", color: "#c62828" }
+    };
+
+    const isMobile = mqMobile.matches;
+
+    data.forEach((empleado, empIndex) => {
+        tbody.append(`
             <tr style="background:#b7d3ff !important;">
-                <td colspan="5" class="fw-bold text-start">
-                    Empleado: ${empleado.nombreEmpleado}
+                <td colspan="5" class="text-wrap fw-bold text-start">
+                    ${empleado.nombreEmpleado} (Puesto: ${empleado.nombrePuesto})
                 </td>
             </tr>
         `);
 
-    empleado.resultados.forEach((resultado) => {
-      tbody.append(`
+        empleado.resultados.forEach((resultado, resIndex) => {
+            const estadoTexto = resultado.estado.toUpperCase();
+            const estilo = EstadoCursoEstilo[estadoTexto] || { backgroundColor: "#e2e3e5", color: "#495057" };
+
+            const badgeEstadoHtml = `
+                <span class="fw-bold"
+                      style="
+                        display:inline-block;
+                        padding:0.35em 0.65em;
+                        font-size:0.7rem;
+                        font-weight:600;
+                        border-radius:0.25rem;
+                        background-color: ${estilo.backgroundColor};
+                        color: ${estilo.color};
+                      ">
+                    ${estadoTexto}
+                </span>
+            `;
+
+            tbody.append(`
                 <tr style="background:#e8f0ff !important;">
-                    <td colspan="5" class="fw-bold text-start ps-3">
-                        Resultado: ${resultado.estado}
+                    <td colspan="5" class="text-wrap fw-bold text-start">
+                        Resultado: ${badgeEstadoHtml}
                     </td>
                 </tr>
             `);
 
-      resultado.cursos.forEach((curso) => {
-        const fechaInicio = new Date(curso.fechaInicio).toLocaleString([], {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-        const fechaFin = new Date(curso.fechaFin).toLocaleString([], {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-        const modalidadText = curso.modalidad || "Sin modalidad";
-        const badgeClass = modalidadColor[modalidadText] || "badge-default";
+            resultado.cursos.forEach((curso, cIndex) => {
+                const fechaInicio = new Date(curso.fechaInicio).toLocaleString([], {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                });
+                const fechaFin = new Date(curso.fechaFin).toLocaleString([], {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                });
 
-        tbody.append(`
-                    <tr>
-                        <td class="text-start">${curso.nombreCurso}</td>
-                        <td class="text-center">
-                            <span class="${badgeClass}">${modalidadText}</span>
-                        </td>
-                        <td class="text-center">${fechaInicio}</td>
-                        <td class="text-center">${fechaFin}</td>
-                    </tr>
-                `);
-      });
+                const modalidadTexto = (curso.modalidad || "SIN MODALIDAD").toUpperCase();
+                const badgeClass = modalidadColor[modalidadTexto] || "badge-default";
+                const badgeHtml = `
+                    <span class="${badgeClass} fw-bold"
+                          style="
+                            display:inline-block;
+                            padding:0.35em 0.65em;
+                            font-size:0.7rem;
+                            font-weight:600;
+                            border-radius:0.25rem;
+                          ">
+                        ${modalidadTexto}
+                    </span>
+                `;
+
+                const collapseId = `curso_${empIndex}_${resIndex}_${cIndex}`;
+
+                if (isMobile) {
+                    tbody.append(`
+                        <tr data-bs-toggle="collapse"
+                            data-bs-target="#${collapseId}"
+                            style="cursor:pointer;">
+                            <td class="text-start text-wrap">${curso.nombreCurso}</td>
+                            <td class="text-center">${badgeHtml}</td>
+                        </tr>
+                    `);
+                    tbody.append(`
+                        <tr class="collapse" id="${collapseId}">
+                            <td colspan="5" class="p-2 bg-light" style="font-size:12px;">
+                                <b>Fecha Inicio:</b> ${fechaInicio} <br>
+                                <b>Fecha Fin:</b> ${fechaFin}
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    tbody.append(`
+                        <tr>
+                            <td class="text-start">${curso.nombreCurso}</td>
+                            <td class="text-center">${badgeHtml}</td>
+                            <td class="text-center">${fechaInicio}</td>
+                            <td class="text-center">${fechaFin}</td>
+                        </tr>
+                    `);
+                }
+            });
+        });
     });
-  });
 }
+
+
 
 // =================================== Generar Informe en PDF ===================================
 async function GenerarInformePdfCursosPorEstado() {
@@ -188,11 +265,19 @@ async function GenerarInformePdfCursosPorEstado() {
   const nombreCursoRaw = document.getElementById("NombreCursoBuscar").value;
   const empleadoRaw = document.getElementById("EmpleadoBuscar").value;
   const resultadoRaw = document.getElementById("ResultadoBuscar").value;
+  const fechaInicioRaw = document.getElementById("FechaInicioBuscar").value;
+  const fechaFinRaw = document.getElementById("FechaFinBuscar").value;
 
   const filtrosAplicadosArray = [];
   if (empleadoRaw) filtrosAplicadosArray.push(`[Empleado: ${empleadoRaw}]`);
   if (nombreCursoRaw) filtrosAplicadosArray.push(`[Curso: ${nombreCursoRaw}]`);
   if (resultadoRaw) filtrosAplicadosArray.push(`[Resultado: ${resultadoRaw}]`);
+  if (fechaInicioRaw) {
+      filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
+  }
+  if (fechaFinRaw) {
+      filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
+  }
 
   const filtrosAplicados =
     filtrosAplicadosArray.length > 0
@@ -214,7 +299,7 @@ async function GenerarInformePdfCursosPorEstado() {
   data.forEach((empleado) => {
     body.push([
       {
-        content: `Empleado: ${empleado.nombreEmpleado}`,
+        content: `Empleado: ${empleado.nombreEmpleado} (Puesto: ${empleado.nombrePuesto})`,
         colSpan: 4,
         styles: {
           halign: "left",

@@ -29,31 +29,20 @@ var coloresPastel = [
 async function cargarCursosPorModalidad() {
   const res = await authFetch("Resultados/CursosPorModalidad");
   const data = await res.json();
-  console.log(data);
 
   if (!data || data.length === 0) {
     $("#contenedorCursosPorModalidad").html(`
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #777;
-                font-size: 16px;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                text-align: center;
-            ">
-                No hay resultados para mostrar.
-            </div>
-        `);
+      <div style="display:flex;align-items:center;justify-content:center;color:#777;font-size:16px;font-family:'Segoe UI', Arial, sans-serif;text-align:center;">
+        No hay resultados para mostrar.
+      </div>
+    `);
     return;
   }
 
-  $("#contenedorCursosPorModalidad").html(
-    '<canvas id="graficoCursosPorModalidad"></canvas>'
-  );
+  $("#contenedorCursosPorModalidad").html('<canvas id="graficoCursosPorModalidad"></canvas>');
 
-  const labels = data.map((x) => x.modalidad);
-  const valores = data.map((x) => x.cantidad);
+  const labels = data.map(x => x.modalidad);
+  const valores = data.map(x => x.cantidad);
 
   if (chartCursosModalidad) chartCursosModalidad.destroy();
 
@@ -62,359 +51,303 @@ async function cargarCursosPorModalidad() {
     {
       type: "bar",
       data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Cantidad de Cursos",
-            data: valores,
-            backgroundColor: coloresPastel,
-            borderColor: coloresPastel.map((c) => c.replace("0.7", "1")),
-            borderWidth: 1,
-            barPercentage: 0.3,
-            categoryPercentage: 0.5,
-          },
-        ],
+        labels,
+        datasets: [{
+          label: "Cantidad de Cursos",
+          data: valores,
+          backgroundColor: coloresPastel,
+          borderColor: coloresPastel.map(c => c.replace("0.7", "1")),
+          borderWidth: 1,
+          barPercentage: 0.3,
+          categoryPercentage: 0.5
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: esMobile() ? "y" : "x",
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
-            ticks: { stepSize: 1, precision: 0 },
+            ticks: { stepSize: 1, precision: 0, display: false }
           },
+          y: {
+            ticks: { display: !esMobile() }
+          }
         },
         plugins: {
-          legend: { position: "bottom" },
-          tooltip: {
-            callbacks: {
-              label: function (ctx) {
-                const i = ctx.dataIndex;
-                return `${labels[i]}: ${valores[i]} cursos`;
-              },
-            },
-          },
-        },
-      },
+          legend: { position: "top" }
+        }
+      }
     }
   );
 }
 
+
+
 // ===================================== Gráfico: Asistencias e Inasistencias por Curso ===================================
 async function cargarAsistenciasPorCurso() {
-    const res = await authFetch("Resultados/AsistenciasPorCurso");
-    const data = await res.json();
+  const res = await authFetch("Resultados/AsistenciasPorCurso");
+  const data = await res.json();
 
-    if (!data || data.length === 0) {
-        $("#contenedorAsistenciasPorCurso").html(`
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #777;
-                font-size: 16px;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                text-align: center;
-            ">
-                No hay resultados para mostrar.
-            </div>
-        `);
-        return;
-    }
+  if (!data || data.length === 0) {
+    $("#contenedorAsistenciasPorCurso").html(`
+      <div style="display:flex;align-items:center;justify-content:center;color:#777;font-size:16px;font-family:'Segoe UI', Arial, sans-serif;text-align:center;">
+        No hay resultados para mostrar.
+      </div>
+    `);
+    return;
+  }
 
-    $("#contenedorAsistenciasPorCurso").html('<canvas id="graficoAsistenciasPorCurso"></canvas>'
-    );
+  $("#contenedorAsistenciasPorCurso").html('<canvas id="graficoAsistenciasPorCurso"></canvas>');
 
-    const cursos = data.map(x => x.curso);
-    const asistencias = data.map(x => x.asistencias);
-    const inasistencias = data.map(x => x.inasistencias);
+  const cursos = data.map(x => x.curso);
+  const asistencias = data.map(x => x.asistencias);
+  const inasistencias = data.map(x => x.inasistencias);
 
-    if (chartAsistenciasCurso) chartAsistenciasCurso.destroy();
+  if (chartAsistenciasCurso) chartAsistenciasCurso.destroy();
 
-    chartAsistenciasCurso = new Chart(
-        document.getElementById("graficoAsistenciasPorCurso"),
-        {
-            type: "bar",
-            data: {
-                labels: cursos,
-                datasets: [
-                    {
-                        label: "Asistencias",
-                        data: asistencias,
-                        backgroundColor: "rgba(168, 218, 220, 0.7)",
-                        borderColor: "rgba(168, 218, 220, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.5,
-                        categoryPercentage: 0.5
-                    },
-                    {
-                        label: "Inasistencias",
-                        data: inasistencias,
-                        backgroundColor: "rgba(255, 183, 178, 0.7)",
-                        borderColor: "rgba(255, 183, 178, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.5,
-                        categoryPercentage: 0.5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: esMobile() ? "y" : "x",
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, precision: 0 }
-                    }
-                },
-                plugins: {
-                    legend: { position: "bottom" },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return `${ctx.dataset.label}: ${ctx.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
+  chartAsistenciasCurso = new Chart(
+    document.getElementById("graficoAsistenciasPorCurso"),
+    {
+      type: "bar",
+      data: {
+        labels: cursos,
+        datasets: [
+          {
+            label: "Asistencias",
+            data: asistencias,
+            backgroundColor: "rgba(168, 218, 220, 0.7)",
+            borderColor: "rgba(168, 218, 220, 0.7)",
+            borderWidth: 1,
+            barPercentage: 0.5,
+            categoryPercentage: 0.5
+          },
+          {
+            label: "Inasistencias",
+            data: inasistencias,
+            backgroundColor: "rgba(255, 183, 178, 0.7)",
+            borderColor: "rgba(255, 183, 178, 0.7)",
+            borderWidth: 1,
+            barPercentage: 0.5,
+            categoryPercentage: 0.5
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: esMobile() ? "y" : "x",
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, precision: 0, display: false }
+          },
+          y: {
+            ticks: { display: !esMobile() }
+          }
+        },
+        plugins: {
+          legend: { position: "top" }
         }
-    );
+      }
+    }
+  );
 }
+
+
 
 // ===================================== Gráfico: Certificados por Curso ===================================
 async function cargarCertificadosPorCurso() {
-    const res = await authFetch("Resultados/CertificadosPorCurso");
-    const data = await res.json();
+  const res = await authFetch("Resultados/CertificadosPorCurso");
+  const data = await res.json();
 
-    if (!data || data.length === 0) {
-        $("#contenedorCertificadosPorCurso").html(`
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #777;
-                font-size: 16px;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                text-align: center;
-            ">
-                No hay resultados para mostrar.
-            </div>
-        `);
-        return;
-    }
+  if (!data || data.length === 0) {
+    $("#contenedorCertificadosPorCurso").html(`
+      <div style="display:flex;align-items:center;justify-content:center;color:#777;font-size:16px;font-family:'Segoe UI', Arial, sans-serif;text-align:center;">
+        No hay resultados para mostrar.
+      </div>
+    `);
+    return;
+  }
 
-    $("#contenedorCertificadosPorCurso").html(
-        '<canvas id="graficoCertificadosPorCurso"></canvas>'
-    );
+  $("#contenedorCertificadosPorCurso").html('<canvas id="graficoCertificadosPorCurso"></canvas>');
 
-    const cursos = data.map(x => x.curso);
-    const certificados = data.map(x => x.cantidadCertificados);
+  const cursos = data.map(x => x.curso);
+  const certificados = data.map(x => x.cantidadCertificados);
 
-    if (chartCertificadosCurso) chartCertificadosCurso.destroy();
+  if (chartCertificadosCurso) chartCertificadosCurso.destroy();
 
-    chartCertificadosCurso = new Chart(
-        document.getElementById("graficoCertificadosPorCurso"),
-        {
-            type: "bar",
-            data: {
-                labels: cursos,
-                datasets: [
-                    {
-                        label: "Certificados",
-                        data: certificados,
-                        backgroundColor: "rgba(186, 220, 88, 0.7)",
-                        borderColor: "rgba(186, 220, 88, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.5,
-                        categoryPercentage: 0.5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: esMobile() ? "y" : "x",
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, precision: 0 }
-                    }
-                },
-                plugins: {
-                    legend: { position: "bottom" },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return `${ctx.dataset.label}: ${ctx.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
+  chartCertificadosCurso = new Chart(
+    document.getElementById("graficoCertificadosPorCurso"),
+    {
+      type: "bar",
+      data: {
+        labels: cursos,
+        datasets: [{
+          label: "Certificados",
+          data: certificados,
+          backgroundColor: "rgba(186, 220, 88, 0.7)",
+          borderColor: "rgba(186, 220, 88, 0.7)",
+          borderWidth: 1,
+          barPercentage: 0.5,
+          categoryPercentage: 0.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: esMobile() ? "y" : "x",
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, precision: 0, display: false }
+          },
+          y: {
+            ticks: { display: !esMobile() }
+          }
+        },
+        plugins: {
+          legend: { position: "top" }
         }
-    );
+      }
+    }
+  );
 }
+
+
 
 // ===================================== Gráfico: Comparaciones por Mdalidad ===================================
 async function cargarComparacionPorModalidad() {
-    const res = await authFetch("Resultados/ComparacionPorModalidad");
-    const data = await res.json();
+  const res = await authFetch("Resultados/ComparacionPorModalidad");
+  const data = await res.json();
 
-    if (!data || data.length === 0) {
-        $("#contenedorComparacionPorModalidad").html(`
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #777;
-                font-size: 16px;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                text-align: center;
-            ">
-                No hay resultados para mostrar.
-            </div>
-        `);
-        return;
-    }
+  if (!data || data.length === 0) {
+    $("#contenedorComparacionPorModalidad").html(`
+      <div style="display:flex;align-items:center;justify-content:center;color:#777;font-size:16px;font-family:'Segoe UI', Arial, sans-serif;text-align:center;">
+        No hay resultados para mostrar.
+      </div>
+    `);
+    return;
+  }
 
-    $("#contenedorComparacionPorModalidad").html(
-        '<canvas id="graficoComparacionPorModalidad"></canvas>'
-    );
+  $("#contenedorComparacionPorModalidad").html('<canvas id="graficoComparacionPorModalidad"></canvas>');
 
-    const modalidades = data.map(x => x.modalidad);
-    const promedioAsistencia = data.map(x => x.promedioAsistencia.toFixed(1));
-    const promedioResultado = data.map(x => x.promedioResultado.toFixed(1));
+  const modalidades = data.map(x => x.modalidad);
+  const promedioAsistencia = data.map(x => x.promedioAsistencia.toFixed(1));
+  const promedioResultado = data.map(x => x.promedioResultado.toFixed(1));
 
-    if (chartComparacionModalidad) chartComparacionModalidad.destroy();
+  if (chartComparacionModalidad) chartComparacionModalidad.destroy();
 
-    chartComparacionModalidad = new Chart(
-        document.getElementById("graficoComparacionPorModalidad"),
-        {
-            type: "bar",
-            data: {
-                labels: modalidades,
-                datasets: [
-                    {
-                        label: "Promedio Asistencia",
-                        data: promedioAsistencia,
-                        backgroundColor: "rgba(168, 218, 220, 0.7)",
-                        borderColor: "rgba(168, 218, 220, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.3,      
-                        categoryPercentage: 0.5  
-                    },
-                    {
-                        label: "Promedio Resultado",
-                        data: promedioResultado,
-                        backgroundColor: "rgba(255, 183, 178, 0.7)",
-                        borderColor: "rgba(255, 183, 178, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.3,
-                        categoryPercentage: 0.5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: esMobile() ? "y" : "x",
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { precision: 0 }
-                    }
-                },
-                plugins: {
-                    legend: { position: "bottom" },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return `${ctx.dataset.label}: ${ctx.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
+  chartComparacionModalidad = new Chart(
+    document.getElementById("graficoComparacionPorModalidad"),
+    {
+      type: "bar",
+      data: {
+        labels: modalidades,
+        datasets: [
+          {
+            label: "Promedio Asistencia",
+            data: promedioAsistencia,
+            backgroundColor: "rgba(168, 218, 220, 0.7)",
+            borderColor: "rgba(168, 218, 220, 0.7)",
+            borderWidth: 1,
+            barPercentage: 0.3,
+            categoryPercentage: 0.5
+          },
+          {
+            label: "Promedio Resultado",
+            data: promedioResultado,
+            backgroundColor: "rgba(255, 183, 178, 0.7)",
+            borderColor: "rgba(255, 183, 178, 0.7)",
+            borderWidth: 1,
+            barPercentage: 0.3,
+            categoryPercentage: 0.5
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: esMobile() ? "y" : "x",
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { precision: 0, display: false }
+          },
+          y: {
+            ticks: { display: !esMobile() }
+          }
+        },
+        plugins: {
+          legend: { position: "top" }
         }
-    );
+      }
+    }
+  );
 }
+
+
 
 // ===================================== Gráfico: Ranking de Cursos por Asistentes ===================================
 async function cargarRankingCursos() {
-    const res = await authFetch("Resultados/RankingCursos");
-    const data = await res.json();
+  const res = await authFetch("Resultados/RankingCursos");
+  const data = await res.json();
 
-    if (!data || data.length === 0) {
-        $("#contenedorRankingCursos").html(`
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #777;
-                font-size: 16px;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                text-align: center;
-            ">
-                No hay resultados para mostrar.
-            </div>
-        `);
-        return;
-    }
+  if (!data || data.length === 0) {
+    $("#contenedorRankingCursos").html(`
+      <div style="display:flex;align-items:center;justify-content:center;color:#777;font-size:16px;font-family:'Segoe UI', Arial, sans-serif;text-align:center;">
+        No hay resultados para mostrar.
+      </div>
+    `);
+    return;
+  }
 
-    $("#contenedorRankingCursos").html(
-        '<canvas id="graficoRankingCursos"></canvas>'
-    );
+  $("#contenedorRankingCursos").html('<canvas id="graficoRankingCursos"></canvas>');
 
-    const cursos = data.map(x => x.curso);
-    const asistentes = data.map(x => x.cantidadAsistentes);
+  const cursos = data.map(x => x.curso);
+  const asistentes = data.map(x => x.cantidadAsistentes);
 
-    if (chartRankingCursos) chartRankingCursos.destroy();
+  if (chartRankingCursos) chartRankingCursos.destroy();
 
-    chartRankingCursos = new Chart(
-        document.getElementById("graficoRankingCursos"),
-        {
-            type: "bar",
-            data: {
-                labels: cursos,
-                datasets: [
-                    {
-                        label: "Cantidad de Asistentes",
-                        data: asistentes,
-                        backgroundColor: "rgba(168, 218, 220, 0.7)",
-                        borderColor: "rgba(168, 218, 220, 0.7)",
-                        borderWidth: 1,
-                        barPercentage: 0.3,      
-                        categoryPercentage: 0.5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: esMobile() ? "y" : "x",
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, precision: 0 }
-                    }
-                },
-                plugins: {
-                    legend: { position: "bottom" },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return `${ctx.dataset.label}: ${ctx.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
+  chartRankingCursos = new Chart(
+    document.getElementById("graficoRankingCursos"),
+    {
+      type: "bar",
+      data: {
+        labels: cursos,
+        datasets: [{
+          label: "Cantidad de Asistentes",
+          data: asistentes,
+          backgroundColor: "rgba(168, 218, 220, 0.7)",
+          borderColor: "rgba(168, 218, 220, 0.7)",
+          borderWidth: 1,
+          barPercentage: 0.3,
+          categoryPercentage: 0.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: esMobile() ? "y" : "x",
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, precision: 0, display: false }
+          },
+          y: {
+            ticks: { display: !esMobile() }
+          }
+        },
+        plugins: {
+          legend: { position: "top" }
         }
-    );
+      }
+    }
+  );
 }
+
+
 
 // ===================================== Inicialziar Los Graficos ====================
 async function cargarTodo() {

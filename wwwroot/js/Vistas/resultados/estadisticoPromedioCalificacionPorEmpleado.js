@@ -59,13 +59,12 @@ window.addEventListener("resize", reRenderIfCachePromedio);
 
 // ======================== Mostarr Datos =============================
 function MostrarPromedioPorEmpleado(data) {
+  window._cachePromedioEmpleado = data;
   const tabla = $("#listadoPromedioPorEmpleado");
   tabla.empty();
 
   if (!data || data.length === 0) {
-    tabla.html(
-      `<tr><td colspan="5" class="text-start">No se encontraron resultados</td></tr>`
-    );
+    tabla.html(`<tr><td colspan="5" class="text-start">No se encontraron resultados</td></tr>`);
     return;
   }
 
@@ -73,88 +72,80 @@ function MostrarPromedioPorEmpleado(data) {
   const isMobile = width < 576;
   const isTablet = width >= 576 && width < 992;
   const isDesktop = width >= 992;
+
   const badge = (t, bg, color) =>
     `<span style="
-            display:inline-block;
-            padding:0.35em 0.65em;
-            font-size:0.75rem;
-            font-weight:600;
-            border-radius:0.25rem;
-            background:${bg};
-            color:${color};
-        "><b>${t}</b></span>`;
+      display:inline-block;
+      padding:0.35em 0.65em;
+      font-size:0.75rem;
+      font-weight:600;
+      border-radius:0.25rem;
+      background:${bg};
+      color:${color};
+    "><b>${t}</b></span>`;
+
   data.forEach((emp, idx) => {
     const collapseId = `collapseProm_${idx}`;
+
+    // Header empleado
     tabla.append(`
-            <tr style="background:#b7d3ff !important;">
-                <td colspan="6" class="fw-bold text-wrap">
-                    ${emp.nombreEmpleado}
-                </td>
-            </tr>
-        `);
+      <tr style="background:#b7d3ff !important;">
+        <td colspan="6" class="fw-bold text-wrap">
+          ${emp.nombreEmpleado}, (NroLegajo: ${emp.nroLegajo}, Puesto: ${emp.nombrePuesto})
+        </td>
+      </tr>
+    `);
+
     const totalCursos = emp.totalCursosRealizados ?? 0;
-    const promedio = emp.notaPromedio?.toFixed(2) ?? "0.00";
+    const promedio = parseFloat(emp.notaPromedio) ?? 0;
     const mejor = emp.mejorCalificacion ?? 0;
     const peor = emp.peorCalificacion ?? 0;
+
+    const aprobado = promedio >= 6;
+    const badgePromedio = badge(
+      promedio.toFixed(2),
+      aprobado ? "#d4edda" : "#f8d7da",
+      aprobado ? "#155724" : "#721c24"
+    );
+
+    const badgeMejor = badge(mejor, "#d4edda", "#155724");
+    const badgePeor = badge(peor, "#f8d7da", "#721c24");
+
+    /* ================= DESKTOP ================= */
     if (isDesktop) {
       tabla.append(`
-                <tr>
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center fw-bold">${promedio}</td>
-                    <td class="text-center">
-                        ${badge(mejor, "#d4edda", "#155724")}
-                    </td>
-                    <td class="text-center">
-                        ${badge(peor, "#f8d7da", "#721c24")}
-                    </td>
-                </tr>
-            `);
-    } else if (isTablet) {
-      tabla.append(`
-                <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center fw-bold">${promedio}</td>
-                </tr>
-            `);
-
-      tabla.append(`
-                <tr id="${collapseId}" class="collapse">
-                    <td colspan="2" class="p-2" style="background:#f8f9fa;">
-                        <div class="small">
-                            <div><b>Mejor calificación:</b> 
-                                ${badge(mejor, "#d4edda", "#155724")}
-                            </div>
-                            <div><b>Peor calificación:</b> 
-                                ${badge(peor, "#f8d7da", "#721c24")}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `);
-    } else {
-      tabla.append(`
-                <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${totalCursos}</td>
-                    <td class="text-center fw-bold">${promedio}</td>
-                </tr>
-            `);
-      tabla.append(`
-                <tr id="${collapseId}" class="collapse">
-                    <td colspan="2" class="p-2" style="background:#f8f9fa;">
-                        <div class="small">
-                            <div><b>Mejor:</b> 
-                                ${mejor}
-                            </div>
-                            <div><b>Peor:</b> 
-                                ${peor}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `);
+        <tr>
+          <td class="text-center fw-bold">${totalCursos}</td>
+          <td class="text-center fw-bold">${badgePromedio}</td>
+          <td class="text-center">${badgeMejor}</td>
+          <td class="text-center">${badgePeor}</td>
+        </tr>
+      `);
+      return;
     }
+
+    /* ================= TABLET & MOBILE ================= */
+    tabla.append(`
+      <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
+        <td class="text-center fw-bold">${totalCursos}</td>
+        <td class="text-center fw-bold">${badgePromedio}</td>
+      </tr>
+    `);
+
+    tabla.append(`
+      <tr id="${collapseId}" class="collapse">
+        <td colspan="2" class="p-2 bg-light">
+          <div class="small d-flex flex-column gap-2">
+            <div><b>Mejor calificación:</b> ${badgeMejor}</div>
+            <div><b>Peor calificación:</b> ${badgePeor}</div>
+          </div>
+        </td>
+      </tr>
+    `);
   });
 }
+
+
 
 // =================================== Generar Informe PDF Resultado Emeplados ===================================
 async function GenerarInformePdfPromedioPorEmpleado() {
@@ -240,7 +231,7 @@ async function GenerarInformePdfPromedioPorEmpleado() {
   empleados.forEach((emp) => {
     body.push([
       {
-        content: emp.nombreEmpleado,
+        content: `${emp.nombreEmpleado}, (Legajo: ${emp.nroLegajo}, Puesto: ${emp.nombrePuesto})`,
         colSpan: 4,
         styles: {
           halign: "left",

@@ -48,14 +48,15 @@ async function ObtenerParticipacionPorCurso() {
 
 // ======================== Detectar Responsividad con collapse =============================
 function reRenderIfCachePromedio() {
-  if (window._cachePromedioEmpleado) {
-    MostrarParticipacionPorCurso(window._cachePromedioEmpleado);
+  if (window._cacheParticipacionCurso) {
+    MostrarParticipacionPorCurso(window._cacheParticipacionCurso);
   }
 }
 window.addEventListener("resize", reRenderIfCachePromedio);
 
 // ======================== Mostarr Datos =============================
 function MostrarParticipacionPorCurso(data) {
+  window._cacheParticipacionCurso = data;
   const tabla = $("#listadoParticipacionPorCurso");
   tabla.empty();
 
@@ -69,89 +70,97 @@ function MostrarParticipacionPorCurso(data) {
   const width = window.innerWidth;
   const isMobile = width < 576;
   const isTablet = width >= 576 && width < 992;
-  const isDesktop = width >= 992;
 
   const badge = (t, bg, color) =>
     `<span style="
-            display:inline-block;
-            padding:0.35em 0.65em;
-            font-size:0.75rem;
-            font-weight:600;
-            border-radius:0.25rem;
-            background:${bg};
-            color:${color};
-        "><b>${t}</b></span>`;
+      display:inline-block;
+      padding:0.35em 0.65em;
+      font-size:0.75rem;
+      font-weight:600;
+      border-radius:0.25rem;
+      background:${bg};
+      color:${color};
+    "><b>${t}</b></span>`;
+
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+    "SIN MODALIDAD": "badge-default",
+  };
 
   data.forEach((curso, idx) => {
     const collapseId = `collapseCurso_${idx}`;
+    const modalidadTexto = (curso.modalidad || "SIN MODALIDAD").toUpperCase();
+    const badgeModalidad = `<span class="${
+      modalidadColor[modalidadTexto] || "badge-default"
+    } fw-bold" style="display:inline-block;padding:0.35em 0.65em;font-size:0.7rem;font-weight:600;border-radius:0.25rem;">${modalidadTexto}</span>`;
+
+
     tabla.append(`
-            <tr style="background:#b7d3ff !important;">
-                <td colspan="6" class="fw-bold text-wrap">
-                    ${curso.nombreCurso} <span class="text-muted">(${curso.modalidad})</span>
-                </td>
-            </tr>
-        `);
+      <tr style="background:#e8f0ff !important;">
+        <td colspan="6" class="fw-bold text-wrap">
+          ${curso.nombreCurso} ${badgeModalidad}
+        </td>
+      </tr>
+    `);
 
     const participantes = curso.totalParticipantes ?? 0;
     const asistentes = curso.totalAsistentes ?? 0;
     const ausentes = curso.totalAusentes ?? 0;
     const porcentaje = curso.porcentajeAsistencia?.toFixed(2) ?? "0.00";
     const certificados = curso.totalCertificadosEmitidos ?? 0;
-    if (isDesktop) {
-      tabla.append(`
-                <tr>
-                    <td class="text-center">${participantes}</td>
-                    <td class="text-center">${asistentes}</td>
-                    <td class="text-center">${ausentes}</td>
-                    <td class="text-center fw-bold">${porcentaje}%</td>
-                    <td class="text-center">
-                        ${badge(certificados, "#d1ecf1", "#0c5460")}
-                    </td>
-                </tr>
-            `);
-    } else if (isTablet) {
-      tabla.append(`
-                <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${participantes}</td>
-                    <td class="text-center">${asistentes}</td>
-                    <td class="text-center">${ausentes}</td>
-                </tr>
-            `);
 
+    const badgeAsistentes = badge(asistentes, "#d4edda", "#155724");
+    const badgeAusentes = badge(ausentes, "#f8d7da", "#721c24");
+    const badgePorcentaje = badge(`${porcentaje}%`, "#d4edda", "#155724");
+
+    if (!isMobile && !isTablet) {
       tabla.append(`
-                <tr class="collapse" id="${collapseId}">
-                    <td colspan="3" class="p-2 bg-light">
-                        <div class="d-flex flex-column gap-2 small" style="font-size:12px">
-                            <div><b>% Asistencia:</b> ${porcentaje}%</div>
-                            <div><b>Certificados emitidos:</b> 
-                                ${badge(certificados, "#d1ecf1", "#0c5460")}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `);
+        <tr>
+          <td class="text-center fw-bold">${participantes}</td>
+          <td class="text-center fw-bold">${badgeAsistentes}</td>
+          <td class="text-center fw-bold">${badgeAusentes}</td>
+          <td class="text-center fw-bold">${badgePorcentaje}</td>
+          <td class="text-center fw-bold">${certificados}</td>
+        </tr>
+      `);
     } else {
-      tabla.append(`
-                <tr data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
-                    <td class="text-center">${participantes}</td>
-                    <td class="text-center">${asistentes}</td>
-                </tr>
-            `);
+      const datosFila = isTablet
+        ? `<td class="text-center fw-bold">${participantes}</td>
+           <td class="text-center fw-bold">${badgeAsistentes}</td>
+           <td class="text-center fw-bold">${badgeAusentes}</td>` 
+        : `<td class="text-center fw-bold">${participantes}</td>
+           <td class="text-center fw-bold">${badgeAsistentes}</td>`; 
+
+      const detalleCols = isTablet
+        ? `<div><b>Asistencia (%):</b> ${badgePorcentaje}</div>
+           <div><b>Certificados emitidos:</b> ${certificados}</div>`
+        : `<div><b>Ausentes:</b> ${badgeAusentes}</div>
+           <div><b>Asistencia (%):</b> ${badgePorcentaje}</div>
+           <div><b>Certificados:</b> ${certificados}</div>`;
+
+      const colspan = isTablet ? 3 : 2;
 
       tabla.append(`
-                <tr class="collapse" id="${collapseId}">
-                    <td colspan="2" class="p-2 bg-light">
-                        <div class="d-flex flex-column gap-2 small" style="font-size:12px">
-                            <div><b>Ausentes:</b> ${ausentes}</div>
-                            <div><b>% Asistencia:</b> ${porcentaje}%</div>
-                            <div><b>Certificados:</b> ${certificados}</div>
-                        </div>
-                    </td>
-                </tr>
-            `);
+        <tr class="fw-bold" data-bs-toggle="collapse" data-bs-target="#${collapseId}" style="cursor:pointer;">
+          ${datosFila}
+        </tr>
+      `);
+
+      tabla.append(`
+        <tr class="collapse" id="${collapseId}">
+          <td colspan="${colspan}" class="p-2 bg-light">
+            <div class="fw-bold d-flex flex-column gap-2 small" style="font-size:12px">
+              ${detalleCols}
+            </div>
+          </td>
+        </tr>
+      `);
     }
   });
 }
+
 
 // =================================== Generar Informe PDF Resultado Emeplados ===================================
 async function GenerarInformePdfParticipacionPorCurso() {
@@ -164,6 +173,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("landscape");
+
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
@@ -177,8 +187,8 @@ async function GenerarInformePdfParticipacionPorCurso() {
   let y = 29;
   const fechaHoy = new Date().toLocaleString("es-AR");
 
+  doc.setTextColor(0, 0, 0);
   doc.setFontSize(11);
-  doc.setTextColor(0);
   doc.setFont("helvetica", "normal");
   doc.text("Generado:", 14, y);
   doc.setFont("helvetica", "bold");
@@ -188,7 +198,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
   doc.setFont("helvetica", "normal");
   doc.text("Total Cursos:", 14, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${cursos.length}`, 40, y);
+  doc.text(`${cursos.length}`, 38, y);
   y += 6;
 
   const nombreCurso = document.getElementById("NombreCursoBuscar")?.value || "";
@@ -219,7 +229,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
   doc.text("Filtros Aplicados:", 14, y);
   doc.setFont("helvetica", "bold");
   const filtrosText = doc.splitTextToSize(filtrosAplicados, 260);
-  doc.text(filtrosText, 48, y);
+  doc.text(filtrosText, 45, y);
   y += filtrosText.length * 6 + 2;
 
   doc.setDrawColor(180);
@@ -227,7 +237,6 @@ async function GenerarInformePdfParticipacionPorCurso() {
   y += 7;
 
   const body = [];
-
   cursos.forEach((curso) => {
     body.push([
       {
@@ -237,6 +246,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
           fillColor: [183, 211, 255],
           fontStyle: "bold",
           halign: "left",
+          cellPadding: 3,
         },
       },
     ]);
@@ -264,7 +274,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
     styles: {
       font: "helvetica",
       fontSize: 10,
-      cellPadding: 3,
+      cellPadding: 3, 
     },
     headStyles: {
       fillColor: [19, 115, 204],
@@ -304,12 +314,12 @@ async function GenerarInformePdfParticipacionPorCurso() {
   const url = URL.createObjectURL(blob);
 
   const html = `
-        <html>
-            <body style="margin:0">
-                <iframe width="100%" height="100%" src="${url}"></iframe>
-            </body>
-        </html>
-    `;
+    <html>
+        <body style="margin:0">
+            <iframe width="100%" height="100%" src="${url}"></iframe>
+        </body>
+    </html>
+  `;
 
   const w = window.open("", "_blank");
   w.document.open();
@@ -318,5 +328,4 @@ async function GenerarInformePdfParticipacionPorCurso() {
   w.document.close();
 }
 
-
-ObtenerParticipacionPorCurso()
+ObtenerParticipacionPorCurso();
