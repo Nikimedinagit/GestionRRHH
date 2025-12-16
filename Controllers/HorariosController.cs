@@ -127,14 +127,21 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
+                if (horario.HorarioInicio == null || horario.HorarioFin == null)
                     return BadRequest("Debe completar el horario de inicio y fin.");
+
+                if (horario.HorarioInicio == horario.HorarioFin)
+                    return BadRequest("El horario de inicio y fin no pueden ser iguales.");
             }
             else if (horario.TipoHorario == TipoHorario.ALTERNO)
             {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
-                    horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
+                if (horario.HorarioInicio == null || horario.HorarioFin == null ||
+                    horario.SegundoHorarioInicio == null || horario.SegundoHorarioFin == null)
                     return BadRequest("Debe completar ambos horarios.");
+
+                if (horario.HorarioInicio == horario.HorarioFin &&
+                    horario.SegundoHorarioInicio == horario.SegundoHorarioFin)
+                    return BadRequest("Los horarios no pueden ser iguales.");
             }
 
             _context.Horario.Add(horario);
@@ -145,7 +152,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 Titulo = "Nuevo Horario Asignado",
                 Mensaje = $"Se te ha asignado un nuevo horario. Por favor, verifique los detalles en su perfil.",
                 FechaCreacion = DateTime.Now,
-                UsuarioId = horario.EmpleadoId.ToString(), 
+                UsuarioId = horario.EmpleadoId.ToString(),
                 Leida = false
             };
 
@@ -166,16 +173,23 @@ namespace API_NET_CORE8_RRHH.Controllers
         {
             var horarioDb = await _context.Horario.FindAsync(id);
 
-            if (horarioDb.TipoHorario == TipoHorario.CONTINUO)
+            if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero)
+                if (horario.HorarioInicio == null || horario.HorarioFin == null)
                     return BadRequest("Debe completar el horario de inicio y fin.");
+
+                if (horario.HorarioInicio == horario.HorarioFin)
+                    return BadRequest("El horario de inicio y fin no pueden ser iguales.");
             }
-            else if (horarioDb.TipoHorario == TipoHorario.ALTERNO)
+            else if (horario.TipoHorario == TipoHorario.ALTERNO)
             {
-                if (horario.HorarioInicio == TimeSpan.Zero || horario.HorarioFin == TimeSpan.Zero ||
-                    horario.SegundoHorarioInicio == TimeSpan.Zero || horario.SegundoHorarioFin == TimeSpan.Zero)
+                if (horario.HorarioInicio == null || horario.HorarioFin == null ||
+                    horario.SegundoHorarioInicio == null || horario.SegundoHorarioFin == null)
                     return BadRequest("Debe completar ambos horarios.");
+
+                if (horario.HorarioInicio == horario.HorarioFin &&
+                    horario.SegundoHorarioInicio == horario.SegundoHorarioFin)
+                    return BadRequest("Los horarios no pueden ser iguales.");
             }
 
             horarioDb.HorarioInicio = horario.HorarioInicio;
@@ -197,7 +211,7 @@ namespace API_NET_CORE8_RRHH.Controllers
                 Titulo = "Horario Modificado",
                 Mensaje = $"Tu horario ha sido modificado. Por favor, verifica los nuevos detalles en tu perfil.",
                 FechaCreacion = DateTime.Now,
-                UsuarioId = horarioDb.EmpleadoId.ToString(), 
+                UsuarioId = horarioDb.EmpleadoId.ToString(),
                 Leida = false
             };
 

@@ -188,9 +188,15 @@ async function GenerarInformePdfCursosPorEmpleado() {
     let resultadoRaw = document.getElementById("ResultadoBuscar").value;
 
     let filtrosAplicadosArray = [];
+
     if (empleadoRaw) filtrosAplicadosArray.push(`[Empleado: ${empleadoRaw}]`);
     if (nombreCursoRaw) filtrosAplicadosArray.push(`[Curso: ${nombreCursoRaw}]`);
-    if (resultadoRaw) filtrosAplicadosArray.push(`[Resultado: ${resultadoRaw}]`);
+
+    if (resultadoRaw) {
+        const resultadoCapitalizado =
+            resultadoRaw.charAt(0).toUpperCase() + resultadoRaw.slice(1).toLowerCase();
+        filtrosAplicadosArray.push(`[Resultado: ${resultadoCapitalizado}]`);
+    }
 
     const filtrosAplicados =
         filtrosAplicadosArray.length > 0

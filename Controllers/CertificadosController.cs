@@ -25,7 +25,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE ASISTENCIA CURSO ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [Authorize (Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Certificado>>> GetCertificado()
         {

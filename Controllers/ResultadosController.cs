@@ -2125,6 +2125,7 @@ public class ResultadosController : ControllerBase
                 Modalidad = g.Key.ToString(),
                 Cantidad = g.Count()
             })
+            .Take(3)
             .ToListAsync();
 
         return Ok(cursosPorModalidad);
@@ -2143,6 +2144,7 @@ public class ResultadosController : ControllerBase
                 Asistencias = c.AsistenciaCapacitacion.Count(a => a.Asistencia),
                 Inasistencias = c.AsistenciaCapacitacion.Count(a => !a.Asistencia)
             })
+            .Take(5)
             .ToListAsync();
 
         return Ok(datos);
@@ -2161,6 +2163,7 @@ public class ResultadosController : ControllerBase
                 Curso = c.Nombre,
                 CantidadCertificados = _context.Certificado.Count(cert => cert.CursoId == c.Id)
             })
+            .Take(5)
             .ToListAsync();
 
         return Ok(datos);
@@ -2190,6 +2193,7 @@ public class ResultadosController : ControllerBase
                         ? c.AsistenciaCapacitacion.Average(a => (double)a.Resultado)
                         : 0)
             })
+            .Take(3)
             .ToList();
 
         return Ok(datos);
@@ -2207,6 +2211,7 @@ public class ResultadosController : ControllerBase
                 Curso = c.Nombre,
                 CantidadAsistentes = c.AsistenciaCapacitacion.Count(a => a.Asistencia)
             })
+            .Take(5)
             .OrderByDescending(r => r.CantidadAsistentes)
             .ToListAsync();
 

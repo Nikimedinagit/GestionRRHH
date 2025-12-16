@@ -214,15 +214,13 @@ function MostrarCursosDesktop(data) {
       }
 
       const item = $(`
-        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${
-          element.id
+        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${element.id
         }">
           <div class="d-flex align-items-start" style="gap: 10px; flex-grow: 1; min-width: 0;">
             ${botonEditar}
             <div class="d-flex flex-column" style="min-width: 0;">
-              <div class="fw-bold" title="${
-                element.nombre || "Sin nombre"
-              }" style="white-space: normal; word-break: break-word;">
+              <div class="fw-bold" title="${element.nombre || "Sin nombre"
+        }" style="white-space: normal; word-break: break-word;">
                 ${element.nombre || "Sin nombre"}
               </div>
               <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;"">
@@ -231,9 +229,8 @@ function MostrarCursosDesktop(data) {
             </div>
           </div>
           <div class="d-flex align-items-center" style="gap: 20px;">
-            <div class="badge ${
-              modalidadColor[modalidadNombre]
-            }" title="${modalidadNombre}">${modalidadNombre}</div>
+            <div class="badge ${modalidadColor[modalidadNombre]
+        }" title="${modalidadNombre}">${modalidadNombre}</div>
             <div class="d-flex align-items-center" style="gap: 10px;">
               ${botonesAccion}
             </div>
@@ -415,23 +412,20 @@ function MostrarCursosDesktop(data) {
       const card = $(`
           <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
               <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
-                  <h5 class="fw-bold mb-2" title="${
-                    element.nombre || "Sin nombre"
-                  }">${element.nombre || "Sin nombre"}</h5>
+                  <h5 class="fw-bold mb-2" title="${element.nombre || "Sin nombre"
+        }">${element.nombre || "Sin nombre"}</h5>
                   <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
 
                   <!-- Contenedor modalidad + fecha -->
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
-                      <span class="badge ${
-                        modalidadColor[modalidadNombre]
-                      } mb-1 mb-md-0">${modalidadNombre}</span>
+                      <span class="badge ${modalidadColor[modalidadNombre]
+        } mb-1 mb-md-0">${modalidadNombre}</span>
                       <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
                   </div>
 
                   <div class="d-flex justify-content-between align-items-center mt-3">
-                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${
-        aprobado ? "Aprobado" : "Desaprobado"
-      }</span>
+                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"
+        }</span>
                       ${botonDescargar}
                   </div>
               </div>
@@ -514,9 +508,8 @@ function MostrarCursosMobile(data) {
       card.innerHTML = `
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
           <div class="flex-grow-1 d-flex flex-column">
-            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${
-              element.nombre || "Sin nombre"
-            }</h5>
+            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.nombre || "Sin nombre"
+        }</h5>
             <small class="text-muted mb-1" style="font-size: 0.90rem;">
               <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
             </small>
@@ -539,9 +532,8 @@ function MostrarCursosMobile(data) {
             <table class="table table-bordered">
               <tbody>
                 <tr>
-                  <td id="DescripcionCurso_${
-                    element.id
-                  }" style="white-space: normal; word-wrap: break-word;">
+                  <td id="DescripcionCurso_${element.id
+        }" style="white-space: normal; word-wrap: break-word;">
                     ${element.descripcion ?? "Sin descripción"}
                   </td>
                 </tr>
@@ -638,20 +630,17 @@ function MostrarCursosMobile(data) {
       const card = $(` 
         <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
           <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
-            <h5 class="fw-bold mb-2" title="${
-              element.nombre || "Sin nombre"
-            }">${element.nombre || "Sin nombre"}</h5>
+            <h5 class="fw-bold mb-2" title="${element.nombre || "Sin nombre"
+        }">${element.nombre || "Sin nombre"}</h5>
             <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
-              <span class="badge ${
-                modalidadColor[modalidadNombre]
-              } mb-1 mb-md-0">${modalidadNombre}</span>
+              <span class="badge ${modalidadColor[modalidadNombre]
+        } mb-1 mb-md-0">${modalidadNombre}</span>
               <span class="text-muted" style="font-size: 0.95rem;">${fechaIni} - ${fechaFin}</span>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-3">
-              <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${
-        aprobado ? "Aprobado" : "Desaprobado"
-      }</span>
+              <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"
+        }</span>
               ${botonDescargar}
             </div>
           </div>
@@ -1207,11 +1196,11 @@ function MostrarAsistencias(cursoId, data) {
         const nuevoEstado = $(this).is(":checked");
         MarcarAsistencia(asistenciaId, nuevoEstado);
 
-          if (nuevoEstado) {
-      $(this)
-        .prop("disabled", true)
-        .addClass("checkbox-verde");
-    }
+        if (nuevoEstado) {
+          $(this)
+            .prop("disabled", true)
+            .addClass("checkbox-verde");
+        }
       });
 
   } else {
@@ -1234,14 +1223,12 @@ function MostrarAsistencias(cursoId, data) {
       tablaBody.append(`
         <tr>
           <td class='text-center align-middle'>
-            <input type="checkbox" class="checkbox-asistio" data-id="${
-              item.id
-            }" ${item.asistencia ? "checked" : ""}
+            <input type="checkbox" class="checkbox-asistio" data-id="${item.id
+        }" ${item.asistencia ? "checked" : ""}
             ${item.asistencia ? 'style="pointer-events:none;"' : ""} />
           </td>
-          <td class='align-middle nombre-empleado' title='${
-            item.empleado.nombreCompleto
-          }'>
+          <td class='align-middle nombre-empleado' title='${item.empleado.nombreCompleto
+        }'>
             ${item.empleado.nombreCompleto}
           </td>
           <td class='text-center align-middle'>
@@ -1249,9 +1236,8 @@ function MostrarAsistencias(cursoId, data) {
           </td>
           <td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
-              onclick='EliminarAsistencia(${
-                item.id
-              })' data-tippy-content='Eliminar'>
+              onclick='EliminarAsistencia(${item.id
+        })' data-tippy-content='Eliminar'>
               <i class='bi bi-trash3 icono-elimina-detalle'></i>
             </button>
           </td>
@@ -1266,11 +1252,11 @@ function MostrarAsistencias(cursoId, data) {
         const nuevoEstado = $(this).is(":checked");
         MarcarAsistencia(asistenciaId, nuevoEstado);
 
-          if (nuevoEstado) {
-      $(this)
-        .prop("disabled", true)
-        .addClass("checkbox-verde");
-    }
+        if (nuevoEstado) {
+          $(this)
+            .prop("disabled", true)
+            .addClass("checkbox-verde");
+        }
       });
   }
 
@@ -1674,8 +1660,7 @@ function MostrarCertificados(cursoId, data) {
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
                 <button class='btn-eliminar'  style='background: none; border: none;'
-                         onclick='EliminarCertificado(${item.id})'
-                        data-tippy-content="Eliminar">
+        onclick='EliminarCertificado(${item.id}, ${cursoId})'                        data-tippy-content="Eliminar">
                   <i class='bi bi-trash3 icono-elimina-detalle'></i>
                 </button>
               </div>
@@ -1712,10 +1697,11 @@ function MostrarCertificados(cursoId, data) {
           <td class='align-middle nombre-empleado'>${item.empleado.nombreCompleto}</td>
           <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
           <td class='d-flex justify-content-center align-items-center'>
-             <button class='btn-eliminar' style='background: none; border: none;' 
-              onclick='EliminarCertificado(${item.id})' data-tippy-content='Eliminar'>
-              <i class='bi bi-trash3 icono-elimina-detalle'></i>
-            </button>
+            <button class='btn-eliminar' style='background: none; border: none;' 
+    onclick='EliminarCertificado(${item.id}, ${cursoId})' data-tippy-content='Eliminar'>
+    <i class='bi bi-trash3 icono-elimina-detalle'></i>
+</button>
+
           </td>
         </tr>
       `);
@@ -1949,7 +1935,7 @@ async function CrearCertificado() {
 //////////////////////////////////////////////////////////////////////////////////////
 // MOSTRAR EL MODAL DE ELIMINAR UN CERTIFICADO ////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-function EliminarCertificado(id) {
+function EliminarCertificado(id, cursoId) {
   Swal.fire({
     title: "¿Desea eliminar este certificado?",
     html: `
@@ -1973,7 +1959,7 @@ function EliminarCertificado(id) {
     color: "#22223b",
   }).then((result) => {
     if (result.isConfirmed) {
-      EliminarSiCertificado(id);
+      EliminarSiCertificado(id, cursoId);
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire({
         title: "Acción Cancelada",
@@ -1997,38 +1983,43 @@ function EliminarCertificado(id) {
   });
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////
 // ELIMINAR SI EL CERTIFICADO //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function EliminarSiCertificado(id) {
-  const res = await authFetch(`Certificados/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) {
-    throw new Error("No se pudo eliminar el certificado");
-  }
-  ObtenerCertificados(cursoIdSeleccionado);
+async function EliminarSiCertificado(id, cursoId) {
+  try {
+    const res = await authFetch(`Certificados/${id}`, {
+      method: "DELETE",
+    });
 
-  Swal.fire({
-    title: "¡Certificado Eliminado!",
-    toast: true,
-    position: "bottom-end",
-    showConfirmButton: false,
-    timer: 2200,
-    timerProgressBar: true,
-    background: "#f4fff7",
-    color: "#1c3d26",
-    icon: "success",
-    iconColor: "#28a746d8",
-    customClass: {
-      popup: "swal2-toast-success",
-      title: "swal2-toast-success-title",
-      icon: "swal2-toast-success-icon",
-    },
-  }).catch((error) => {
+    if (!res.ok) throw new Error("No se pudo eliminar el certificado");
+
+    // Actualizamos la tabla / cards del curso correcto
+    ObtenerCertificados(cursoId);
+
+    Swal.fire({
+      title: "¡Certificado Eliminado!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+  } catch (error) {
     MostrarErrorCatch();
-  });
+  }
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LAS OPCIONES DE CURSO POR ROL /////////////////////////////////////////////
@@ -2230,15 +2221,15 @@ async function GenerarInformePdfCursos() {
       head:
         index === 0
           ? [
-              [
-                "Curso",
-                "Descripción",
-                "Modalidad",
-                "Inicio",
-                "Fin",
-                "Finalizado",
-              ],
-            ]
+            [
+              "Curso",
+              "Descripción",
+              "Modalidad",
+              "Inicio",
+              "Fin",
+              "Finalizado",
+            ],
+          ]
           : [],
       body: tablaCursoBody,
       styles: { fontSize: 10, cellPadding: 2 },

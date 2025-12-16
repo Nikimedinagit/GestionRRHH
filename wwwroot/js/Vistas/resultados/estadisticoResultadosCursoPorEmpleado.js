@@ -170,7 +170,7 @@ function MostrarResultadosPorEmpleado(data) {
 // =================================== Generar Informe PDF Resultado Emeplados ===================================
 async function GenerarInformePdfResultadosPorEmpleado() {
 
-    const empleados = await ObtenerResultadosPorEmpleado(); 
+    const empleados = await ObtenerResultadosPorEmpleado();
 
     if (!empleados || !Array.isArray(empleados) || empleados.length === 0) {
         ErrorGeneralInformePdf();
@@ -207,14 +207,24 @@ async function GenerarInformePdfResultadosPorEmpleado() {
     let resultadoRaw = document.getElementById("ResultadoBuscar")?.value || "";
 
     let filtrosAplicadosArray = [];
+
     if (fechaInicioRaw) filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
     if (fechaFinRaw) filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
     if (nombreRaw) filtrosAplicadosArray.push(`[Empleado: ${nombreRaw}]`);
-    if (resultadoRaw) filtrosAplicadosArray.push(`[Resultado: ${resultadoRaw}]`);
 
-    const filtrosAplicados = filtrosAplicadosArray.length > 0
-        ? filtrosAplicadosArray.join("  |  ")
-        : "No se aplicaron";
+    if (resultadoRaw) {
+        const resultadoCapitalizado =
+            resultadoRaw
+                .split(" ")
+                .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase())
+                .join(" ");
+        filtrosAplicadosArray.push(`[Resultado: ${resultadoCapitalizado}]`);
+    }
+
+    const filtrosAplicados =
+        filtrosAplicadosArray.length > 0
+            ? filtrosAplicadosArray.join("  |  ")
+            : "No se aplicaron";
 
     doc.setFont("helvetica", "normal");
     doc.text("Filtros Aplicados:", 14, y);

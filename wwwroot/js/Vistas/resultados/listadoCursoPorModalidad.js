@@ -35,7 +35,7 @@ function MostrarCursosPorModalidad(data) {
     if (!data || data.length === 0) {
         tbody.append(`
             <tr>
-                <td class="text-start fw-bold">
+                <td class="text-start">
                     No se encontraron resultados
                 </td>
             </tr>

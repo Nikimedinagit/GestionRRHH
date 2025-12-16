@@ -172,7 +172,7 @@ function MostrarHorarios(data) {
 }
 
 window.addEventListener("resize", function () {
-    ObtenerHorarios();
+  ObtenerHorarios();
 });
 
 
@@ -610,7 +610,6 @@ function ValidarFormularioHorario() {
   const errorSegundoHorarioInicio = document.getElementById("errorSegundoHorarioInicio");
   const errorSegundoHorarioFin = document.getElementById("errorSegundoHorarioFin");
 
-  // Limpiar errores previos
   [
     errorEmpleado, errorTipoHorario, errorHorarioInicio, errorHorarioFin, errorDiasSemana,
     errorPrimerHorarioInicio, errorPrimerHorarioFin, errorSegundoHorarioInicio, errorSegundoHorarioFin
@@ -628,7 +627,6 @@ function ValidarFormularioHorario() {
 
   let esValido = true;
 
-  // Validar empleado
   if (!selectEmpleado.value.trim()) {
     errorEmpleado.textContent = "Campo obligatorio.";
     errorEmpleado.style.display = "block";
@@ -638,7 +636,6 @@ function ValidarFormularioHorario() {
     selectEmpleado.classList.add("is-valid");
   }
 
-  // Validar tipo de horario
   if (!selectTipoHorario.value.trim() || selectTipoHorario.value === "0") {
     errorTipoHorario.textContent = "Campo obligatorio.";
     errorTipoHorario.style.display = "block";
@@ -648,7 +645,6 @@ function ValidarFormularioHorario() {
     selectTipoHorario.classList.add("is-valid");
   }
 
-  // Horario continuo
   if (selectTipoHorario.value === "1") {
     if (!inputHorarioInicio.value) {
       errorHorarioInicio.textContent = "Campo obligatorio.";
@@ -689,7 +685,6 @@ function ValidarFormularioHorario() {
     }
   }
 
-  // Horario alterno
   if (selectTipoHorario.value === "2") {
     const horarios = [
       { inicio: primerHorarioInicio, fin: primerHorarioFin, errorIni: errorPrimerHorarioInicio, errorFin: errorPrimerHorarioFin },
@@ -765,7 +760,6 @@ function ValidarFormularioHorario() {
     }
   }
 
-  // Validar días de la semana
   const diasSeleccionados = [
     "lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"
   ].some(dia => document.getElementById(dia)?.checked);
@@ -854,7 +848,6 @@ document.getElementById("horarioContinuo").addEventListener("input", () => {
       horarioFin.setDate(horarioFin.getDate() + 1);
     }
 
-    // Validación final
     if (horarioFin > horarioInicio) {
       inputHorarioFin.classList.add("is-valid");
       errorHorarioFin.style.display = "none";
@@ -949,32 +942,20 @@ async function CrearHorario() {
     domingo: document.getElementById("domingo").checked,
     empleadoId: parseInt(document.getElementById("EmpleadoId").value),
 
-    horarioInicio: "00:00:00",
-    horarioFin: "00:00:00",
-    segundoHorarioInicio: "00:00:00",
-    segundoHorarioFin: "00:00:00",
+    horarioInicio: null,
+    horarioFin: null,
+    segundoHorarioInicio: null,
+    segundoHorarioFin: null,
   };
 
   if (tipoHorario === 1) {
-    horario.horarioInicio = formatearHora(
-      document.getElementById("HorarioInicio").value
-    );
-    horario.horarioFin = formatearHora(
-      document.getElementById("HorarioFin").value
-    );
+    horario.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
+    horario.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
   } else if (tipoHorario === 2) {
-    horario.horarioInicio = formatearHora(
-      document.getElementById("PrimerHorarioInicio").value
-    );
-    horario.horarioFin = formatearHora(
-      document.getElementById("PrimerHorarioFin").value
-    );
-    horario.segundoHorarioInicio = formatearHora(
-      document.getElementById("SegundoHorarioInicio").value
-    );
-    horario.segundoHorarioFin = formatearHora(
-      document.getElementById("SegundoHorarioFin").value
-    );
+    horario.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
+    horario.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
+    horario.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
+    horario.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
   }
 
   const res = await authFetch("Horarios", {
@@ -1035,22 +1016,30 @@ async function EditarHorario(id) {
     sabado: document.getElementById("sabado").checked,
     domingo: document.getElementById("domingo").checked,
     empleadoId: parseInt(document.getElementById("EmpleadoId").value),
-    horarioInicio: "00:00:00",
-    horarioFin: "00:00:00",
-    segundoHorarioInicio: "00:00:00",
-    segundoHorarioFin: "00:00:00",
+
+    horarioInicio: null,
+    horarioFin: null,
+    segundoHorarioInicio: null,
+    segundoHorarioFin: null,
   };
 
   if (tipoHorario === 1) {
-    horarioEditar.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
-    horarioEditar.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
-  } else if (tipoHorario === 2) {
-    horarioEditar.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
-    horarioEditar.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
-    horarioEditar.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
-    horarioEditar.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
-  }
+    const inicio = document.getElementById("HorarioInicio").value;
+    const fin = document.getElementById("HorarioFin").value;
 
+    if (inicio) horarioEditar.horarioInicio = formatearHora(inicio);
+    if (fin) horarioEditar.horarioFin = formatearHora(fin);
+  } else if (tipoHorario === 2) {
+    const primerInicio = document.getElementById("PrimerHorarioInicio").value;
+    const primerFin = document.getElementById("PrimerHorarioFin").value;
+    const segundoInicio = document.getElementById("SegundoHorarioInicio").value;
+    const segundoFin = document.getElementById("SegundoHorarioFin").value;
+
+    if (primerInicio) horarioEditar.horarioInicio = formatearHora(primerInicio);
+    if (primerFin) horarioEditar.horarioFin = formatearHora(primerFin);
+    if (segundoInicio) horarioEditar.segundoHorarioInicio = formatearHora(segundoInicio);
+    if (segundoFin) horarioEditar.segundoHorarioFin = formatearHora(segundoFin);
+  }
   try {
     const response = await authFetch(`Horarios/${id}`, {
       method: "PUT",
@@ -1209,10 +1198,10 @@ async function GenerarInformePdfHorarios() {
 
   const { horarios, resumen } = await res.json();
 
-   if (!horarios || !Array.isArray(horarios) || horarios.length === 0) {
-        ErrorGeneralInformePdf();
-        return;
-    }
+  if (!horarios || !Array.isArray(horarios) || horarios.length === 0) {
+    ErrorGeneralInformePdf();
+    return;
+  }
 
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
@@ -1263,29 +1252,29 @@ async function GenerarInformePdfHorarios() {
   doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
   y += 7;
 
-    doc.autoTable({
-      startY: y,
-      head: [["Empleado", "Puesto", "Tipo Horario", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
-      body: horarios.map(h => [
-        h.nombreCompleto,
-        h.puesto,
-        h.tipoHorario,
-        h.lunes ? "X" : "",
-        h.martes ? "X" : "",
-        h.miercoles ? "X" : "",
-        h.jueves ? "X" : "",
-        h.viernes ? "X" : "",
-        h.sabado ? "X" : "",
-        h.domingo ? "X" : "",
-        h.horarioInicio,
-        h.horarioFin,
-        h.segundoHorarioInicio,
-        h.segundoHorarioFin
-      ]),
-      styles: { font: "helvetica", fontSize: 10 },
-      headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
-      margin: { left: 14, right: 14 }
-    });
+  doc.autoTable({
+    startY: y,
+    head: [["Empleado", "Puesto", "Tipo Horario", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+    body: horarios.map(h => [
+      h.nombreCompleto,
+      h.puesto,
+      h.tipoHorario,
+      h.lunes ? "X" : "",
+      h.martes ? "X" : "",
+      h.miercoles ? "X" : "",
+      h.jueves ? "X" : "",
+      h.viernes ? "X" : "",
+      h.sabado ? "X" : "",
+      h.domingo ? "X" : "",
+      h.horarioInicio,
+      h.horarioFin,
+      h.segundoHorarioInicio,
+      h.segundoHorarioFin
+    ]),
+    styles: { font: "helvetica", fontSize: 10 },
+    headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
+    margin: { left: 14, right: 14 }
+  });
 
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
