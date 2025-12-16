@@ -1346,6 +1346,8 @@ public class ResultadosController : ControllerBase
                               && (!filtro.FechaHasta.HasValue || ev.Fecha <= filtro.FechaHasta))
                     .OrderBy(ev => ev.Fecha)
                     .ToList();
+                    if (!evaluaciones.Any())
+            return null;
 
                 var promedios = new List<PromedioCalificacionN2>();
 
@@ -1376,6 +1378,7 @@ public class ResultadosController : ControllerBase
                     Promedios = promedios
                 };
             })
+            .Where(r => r != null) 
             .OrderBy(r => r.NroLegajo)
             .ToList();
 
