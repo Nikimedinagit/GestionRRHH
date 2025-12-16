@@ -1977,6 +1977,129 @@ public class ResultadosController : ControllerBase
 
         return Ok(resultado);
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER INFORME DE CANTIDAD DE LICENCIAS POR TIPO - NIVEL 1
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("CantidadLicenciasPorTipoN1")]
+    public async Task<ActionResult<IEnumerable<CantidadLicenciaPorTipoN1>>> GetCantidadLicenciasPorTipoN1(
+        [FromBody] FiltrarCantidadLicenciaPorTipo filtro)
+    {
+        var licencias = _context.Licencia
+            .Include(l => l.TipoDeLicencia)
+            .AsQueryable();
+
+        if (filtro.TipoDeLicencia.HasValue)
+            licencias = licencias.Where(l => l.TipoDeLicenciaId == filtro.TipoDeLicencia.Value);
+
+        var lista = await licencias.ToListAsync();
+        var total = lista.Count;
+
+        var resultado = lista
+            .GroupBy(l => l.TipoDeLicencia.Nombre)
+            .OrderBy(g => g.Key)
+            .Select(g => new CantidadLicenciaPorTipoN1
+            {
+                TipoLicencia = g.Key,
+                Cantidad = g.Count(),
+                PorcentajeTotal = total > 0
+                    ? Math.Round((decimal)g.Count() * 100 / total, 2)
+                    : 0,
+                PromedioDias = g.Any()
+                    ? Math.Round(
+                        g.Average(x => (decimal)(x.FechaFin - x.FechaInicio).TotalDays),
+                        2)
+                    : 0
+            })
+            .ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER INFORME DE PROMEDIO DE DÍAS POR SECTOR Y PUESTO - NIVEL 3
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpPost("PromedioDiasPorSectorPuestoN3")]
+    public async Task<ActionResult<IEnumerable<PromedioPorDiasSectorPuestoN3>>>
+     GetPromedioDiasPorSectorPuestoN3([FromBody] FiltrarPromediosPorDias filtro)
+    {
+        var licencias = _context.Licencia
+            .Include(l => l.Empleado)
+                .ThenInclude(e => e.Puesto)
+                    .ThenInclude(p => p.Sector)
+            .AsQueryable();
+
+        if (filtro.Puesto.HasValue)
+            licencias = licencias.Where(l => l.Empleado.PuestoId == filtro.Puesto.Value);
+
+        var lista = await licencias.ToListAsync();
+
+        var resultado = lista
+            .GroupBy(l => l.Empleado.Puesto.Sector.Nombre)
+            .OrderBy(g => g.Key)
+            .Select(sector => new PromedioPorDiasSectorPuestoN3
+            {
+                NombreSector = sector.Key,
+                Puestos = sector
+                    .GroupBy(p => p.Empleado.Puesto.Descripcion)
+                    .OrderBy(p => p.Key)
+                    .Select(puesto => new PromedioPorDiasPuestoN3
+                    {
+                        NombrePuesto = puesto.Key,
+                        Promedios = new List<PromedioPorDiasN3>
+                        {
+                        new PromedioPorDiasN3
+                        {
+                            CantidadLicencia = puesto.Count(),
+                            PorcentajeDias = puesto.Any()
+                                ? Math.Round(
+                                    (decimal)puesto.Average(x => (x.FechaFin - x.FechaInicio).TotalDays),
+                                    2)
+                                : 0,
+                            MaxDias = puesto.Any()
+                                ? (decimal)puesto.Max(x => (x.FechaFin - x.FechaInicio).TotalDays)
+                                : 0,
+                            MinDias = puesto.Any()
+                                ? (decimal)puesto.Min(x => (x.FechaFin - x.FechaInicio).TotalDays)
+                                : 0
+                        }
+                        }
+                    }).ToList()
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /// MÉTODO PARA OBTENER INFORME DE DISTRIBUCIÓN DE ESTADOS DE LICENCIA - NIVEL 1
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    [HttpGet("DistribucionEstadosN1")]
+    public async Task<ActionResult<IEnumerable<DistribuccionEstadosN1>>> GetDistribucionEstadosN1()
+    {
+        var licencias = await _context.Licencia.ToListAsync();
+        var total = licencias.Count;
+
+        var resultado = licencias
+            .GroupBy(l => l.Estado.ToString())
+            .OrderBy(g => g.Key)
+            .Select(g => new DistribuccionEstadosN1
+            {
+                NombreEstado = g.Key,
+                Cantidad = g.Count(),
+                PorcentajeTotal = total > 0 ? Math.Round((decimal)g.Count() * 100 / total, 2) : 0,
+                Ultima = g.Max(x => x.FechaFin)
+            }).ToList();
+
+        return Ok(resultado);
+    }
+
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///FIN DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE LICENCIAS - GRAFICOS Y LISTADOS ///
     /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////<D
@@ -1987,7 +2110,6 @@ public class ResultadosController : ControllerBase
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///INICIO DE LOS METODOS PARA OBTENEER RESULTADOS DE GESTION DE CURSOS - GRAFICOS Y LISTADOS ///
     /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -2403,10 +2525,6 @@ public class ResultadosController : ControllerBase
 
         return Ok(resultado);
     }
-
-
-
-
 
 
 

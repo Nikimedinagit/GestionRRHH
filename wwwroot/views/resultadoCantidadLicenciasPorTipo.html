@@ -1,0 +1,76 @@
+<div class="px-3 py-3">
+
+
+    <!-- ======================================= Título ====================================== -->
+    <div class="mb-3">
+        <h3 class="titulo-seccion">Listado de Cantidad Licencias por Tipo</h3>
+        <p class="text-muted mb-3">
+            Visualizá el total de licencias agrupadas por tipo en el último año, con su cantidad, porcentaje y promedio
+            de días.
+        </p>
+    </div>
+
+
+    <hr />
+
+    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
+    <div style="background-color: white; border-radius: 5px; padding: 10px">
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+            <a href="#resultadoGestionLicencia" class="btn btn-volver">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                <span>Volver</span>
+            </a>
+
+            <div class="d-flex gap-2 flex-wrap responsive-buttons">
+                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    <span>Filtros</span>
+                </button>
+
+                <button class="btn btn-informe" onclick="GenerarInformePdfCantidadLicenciasPorTipo()">
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    <span>Generar Informe</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!--================================ Contenedor Filtros ===================================== -->
+        <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-3">
+                    <label for="IdTipoLicenciaFiltro" class="form-label-fija">Tipo de Licencia</label>
+                    <select id="IdTipoLicenciaFiltro" class="form-control filtro-select">
+                        <option value="0">[Todos]</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- ==================================== Tabla de Datos ===================================== -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-start">Tipo de Licencia</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center d-none d-sm-table-cell">Porc. Total (%)</th>
+                        <th class="text-center d-none d-md-table-cell">Prom. Dias</th>
+                    </tr>
+                </thead>
+                <tbody id="listadoCantidadLicenciaPorTipo"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+</div>
+
+<script src="../js/Vistas/resultados/listadoCantidadLicenciaPorTipo.js"></script>

@@ -234,21 +234,21 @@ public class FiltrarVariacionDesempenoEmpleadoN4
 // ========================== Agrupa los resultados de cursos por empleado ============================ //
 public class ResultadoCursoPorEmpleado
 {
-    public string NombreEmpleado { get; set; }         
-    public int TotalCursos { get; set; }               
-    public int TotalAprobados { get; set; }            
-    public int TotalReprobados { get; set; }           
-    public decimal PorcentajeAprobacion { get; set; } 
-    public double NotaPromedio { get; set; }         
+    public string NombreEmpleado { get; set; }
+    public int TotalCursos { get; set; }
+    public int TotalAprobados { get; set; }
+    public int TotalReprobados { get; set; }
+    public decimal PorcentajeAprobacion { get; set; }
+    public double NotaPromedio { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
 public class FiltroResultadoCursoPorEmpleado
 {
-    public string? NombreEmpleado { get; set; } 
-    public DateTime? FechaDesde { get; set; }    
-    public DateTime? FechaHasta { get; set; }    
-    public string? Estado { get; set; }          
+    public string? NombreEmpleado { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public string? Estado { get; set; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,22 +264,22 @@ public class FiltroResultadoCursoPorEmpleado
 // ========================== Agrupa la participación de empleados por curso ============================ //
 public class ParticipacionCursoEstadistico
 {
-    public string NombreCurso { get; set; }      
-    public string Modalidad { get; set; }         
-    public int TotalParticipantes { get; set; }     
-    public int TotalAsistentes { get; set; }       
-    public int TotalAusentes { get; set; }          
-    public decimal PorcentajeAsistencia { get; set; } 
-    public int TotalCertificadosEmitidos { get; set; } 
+    public string NombreCurso { get; set; }
+    public string Modalidad { get; set; }
+    public int TotalParticipantes { get; set; }
+    public int TotalAsistentes { get; set; }
+    public int TotalAusentes { get; set; }
+    public decimal PorcentajeAsistencia { get; set; }
+    public int TotalCertificadosEmitidos { get; set; }
 }
 
 // ========================== Para Filtrar en el Listado ============================ //
 public class FiltroParticipacionCurso
 {
-    public string? NombreCurso { get; set; }    
-    public DateTime? FechaDesde { get; set; }   
-    public DateTime? FechaHasta { get; set; }   
-    public int? Modalidad { get; set; }         
+    public string? NombreCurso { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+    public int? Modalidad { get; set; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,20 +296,20 @@ public class FiltroParticipacionCurso
 // ========================== Resumen de promedio de calificaciones por empleado ============================ //
 public class PromedioCalificacionEmpleadoEstadistico
 {
-    public string NombreEmpleado { get; set; }        
-    public int TotalCursosRealizados { get; set; }    
-    public double NotaPromedio { get; set; }         
-    public int MejorCalificacion { get; set; }       
-    public int PeorCalificacion { get; set; }         
+    public string NombreEmpleado { get; set; }
+    public int TotalCursosRealizados { get; set; }
+    public double NotaPromedio { get; set; }
+    public int MejorCalificacion { get; set; }
+    public int PeorCalificacion { get; set; }
 }
 
 // ========================== Para filtrar en el listado ============================ //
 public class FiltroPromedioCalificacionEmpleado
 {
-    public string? NombreEmpleado { get; set; }       
-    public int? Modalidad { get; set; }         
-    public DateTime? FechaDesde { get; set; }       
-    public DateTime? FechaHasta { get; set; }         
+    public string? NombreEmpleado { get; set; }
+    public int? Modalidad { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,3 +318,98 @@ public class FiltroPromedioCalificacionEmpleado
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE CANTIDAD DE LICENCIA POR TIPO - NIVEL 1
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+public class CantidadLicenciaPorTipoN1
+{
+    public string TipoLicencia { get; set; }
+    public int Cantidad { get; set; }
+    public decimal PorcentajeTotal { get; set; }
+    public decimal PromedioDias { get; set; }
+}
+
+public class FiltrarCantidadLicenciaPorTipo
+{
+    public int? TipoDeLicencia { get; set; }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE CANTIDAD DE LICENCIA POR TIPO - NIVEL 1
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE PROMEDIO POR DIAS DE LICENCIA POR SECTOR Y PUESTO - NIVEL 3
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+public class PromedioPorDiasSectorPuestoN3
+{
+    public string NombreSector { get; set; }
+    public List<PromedioPorDiasPuestoN3> Puestos { get; set; }
+}
+
+
+public class PromedioPorDiasPuestoN3
+{
+    public string NombrePuesto { get; set; }
+    public List<PromedioPorDiasN3> Promedios { get; set; }
+}
+
+public class PromedioPorDiasN3
+{
+    public int CantidadLicencia { get; set; }
+    public decimal PorcentajeDias { get; set; }
+    public decimal MaxDias { get; set; }
+    public decimal MinDias { get; set; }
+
+}
+
+public class FiltrarPromediosPorDias
+{
+    public int? Puesto { get; set; }
+    
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE PROMEDIO POR DIAS DE LICENCIA POR SECTOR Y PUESTO - NIVEL 3
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// INICIO DE CLASES PARA EL INFORME DE DISTRIBUCION DE ESTADSOS - NIVEL 1
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+public class DistribuccionEstadosN1
+{
+    public string NombreEstado { get; set; }
+    public int Cantidad { get; set; }
+    public decimal PorcentajeTotal { get; set; }
+    public DateTime Ultima { get; set; }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//// FIN DE CLASES PARA EL INFORME DE DISTRIBUCION DE ESTADSOS - NIVEL 1
+///////////////////////////////////////////////////////////////////////////////////////////////

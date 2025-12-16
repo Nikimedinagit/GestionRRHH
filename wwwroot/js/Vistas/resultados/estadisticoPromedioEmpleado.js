@@ -171,6 +171,8 @@ function MostrarPromedioPorEmpleado(data) {
     });
 }
 
+
+
 // =================================== Generar Informe PDF Promedio Por Empleado ===================================
 async function GenerarInformePdfPromedioPorEmpleado() {
 
