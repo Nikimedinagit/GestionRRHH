@@ -941,7 +941,6 @@ async function CrearHorario() {
     sabado: document.getElementById("sabado").checked,
     domingo: document.getElementById("domingo").checked,
     empleadoId: parseInt(document.getElementById("EmpleadoId").value),
-
     horarioInicio: null,
     horarioFin: null,
     segundoHorarioInicio: null,
@@ -951,6 +950,8 @@ async function CrearHorario() {
   if (tipoHorario === 1) {
     horario.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
     horario.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
+    delete horario.segundoHorarioInicio;
+    delete horario.segundoHorarioFin;
   } else if (tipoHorario === 2) {
     horario.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
     horario.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
@@ -1026,9 +1027,12 @@ async function EditarHorario(id) {
   if (tipoHorario === 1) {
     const inicio = document.getElementById("HorarioInicio").value;
     const fin = document.getElementById("HorarioFin").value;
-
     if (inicio) horarioEditar.horarioInicio = formatearHora(inicio);
     if (fin) horarioEditar.horarioFin = formatearHora(fin);
+
+    delete horarioEditar.segundoHorarioInicio; 
+    delete horarioEditar.segundoHorarioFin;
+    
   } else if (tipoHorario === 2) {
     const primerInicio = document.getElementById("PrimerHorarioInicio").value;
     const primerFin = document.getElementById("PrimerHorarioFin").value;

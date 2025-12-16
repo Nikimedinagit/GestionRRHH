@@ -320,6 +320,12 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
       color: "#1c3d26",
       icon: "success",
       iconColor: "#28a746d8",
+      customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+    
     });
 
     ObtenerEmpleadosActivacion();
@@ -364,6 +370,11 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
       color: "#842029",
       icon: "success",
       iconColor: "#dc3545",
+       customClass: {
+          popup: "swal2-toast-rechazada",
+          title: "swal2-toast-rechazada-title",
+          icon: "swal2-toast-rechazada-icon",
+        },
     });
 
     ObtenerEmpleadosActivacion();
