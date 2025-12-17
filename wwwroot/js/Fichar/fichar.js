@@ -70,7 +70,7 @@ async function captureFace() {
     video.parentNode.append(canvas);
   }
 
-  // 🔑 Usar dimensiones visibles del video
+  // Usar dimensiones visibles del video
   const displaySize = { width: video.offsetWidth, height: video.offsetHeight };
   faceapi.matchDimensions(canvas, displaySize);
 
