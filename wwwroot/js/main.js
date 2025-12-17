@@ -93,8 +93,9 @@ function MostrarOpcionesSidebarPorRol() {
   }
 
   else if (rol === "EMPLEADO") {
-    $("#miPanelPersonal").removeClass("d-none");
+    $("#miPanelPersonal, #gestionDesempeño").removeClass("d-none");
     $("#justificacionGeneral").removeClass("d-none");
+    $("#resultadoGestionDesempeño").addClass("d-none");
   }
 }
 
