@@ -51,11 +51,11 @@ $(document).ready(function () {
   const filtros = "#EmpleadoIdBuscar, #DniEmpleadoFiltro, #EstadoCivilEmpleadoFiltro, #TipoSexoEmpleadoFiltro, #IdLocalidadFiltro, #IdPuestoFiltro, #NroLegajoFiltro";
 
   $(filtros).on("input change", () => {
-    ObtenerEmpleados();
+    ObtenerEmpleados(false);
     ObtenerTotalEmpleados();
   });
 
-  ObtenerEmpleados();
+  ObtenerEmpleados(false);
   ObtenerTotalEmpleados();
 });
 
@@ -100,7 +100,10 @@ async function ComboParaFiltrarLocalidadPuesto() {
 /////////////////////////////////////////////////////////////
 // OBTENER DATOS DE LA API /////////////////////////////////////
 /////////////////////////////////////////////////////////////
-async function ObtenerEmpleados() {
+async function ObtenerEmpleados(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
   let nroLegajo = document.getElementById("NroLegajoFiltro").value;
@@ -130,14 +133,15 @@ async function ObtenerEmpleados() {
 
       MostrarEmpleados(data);
       LimpiarFormularioEmpleado();
-      CerrarPanelEmpleado();
       ObtenerTotalEmpleados();
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
-}
+    })
 
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+
+}
 
 ///////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER EL ESTADO CIVIL EN TEXTO SEGUN SEXO /////////////////////
@@ -1129,37 +1133,49 @@ function MostrarErrorEmpleadoExistente(mensajes) {
 async function CrearEmpleado() {
   if (!ValidarFormularioEmpleado()) return;
 
-  const empleado = {
-    nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
-    dni: Number(document.getElementById("DniEmpleado").value.trim()),
-    cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
-    telefono: document.getElementById("TelefonoEmpleado").value.trim(),
-    email: document.getElementById("EmailEmpleado").value.trim(),
-    fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
-    direccion: document.getElementById("DireccionEmpleado").value.trim(),
-    estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
-    cantidadHijos: Number(
-      document.getElementById("CantidadHijosEmpleado").value.trim() || null
-    ),
-    tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
-    localidadId: Number(document.getElementById("IdLocalidad").value),
-    puestoId: Number(document.getElementById("IdPuesto").value),
-  };
+  mostrarOverlayGuardando();
 
-  const res = await authFetch("Empleados", {
-    method: "POST",
-    body: JSON.stringify(empleado),
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.mensaje) {
-          MostrarErrorEmpleadoExistente(errorData.mensaje);
+  try {
+    const empleado = {
+      nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
+      dni: Number(document.getElementById("DniEmpleado").value.trim()),
+      cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
+      telefono: document.getElementById("TelefonoEmpleado").value.trim(),
+      email: document.getElementById("EmailEmpleado").value.trim(),
+      fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
+      direccion: document.getElementById("DireccionEmpleado").value.trim(),
+      estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
+      cantidadHijos: Number(
+        document.getElementById("CantidadHijosEmpleado").value.trim() || null
+      ),
+      tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
+      localidadId: Number(document.getElementById("IdLocalidad").value),
+      puestoId: Number(document.getElementById("IdPuesto").value),
+    };
+
+    const res = await authFetch("Empleados", {
+      method: "POST",
+      body: JSON.stringify(empleado),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json();
+          if (errorData.mensaje) {
+            MostrarErrorEmpleadoExistente(errorData.mensaje);
+          }
+          return;
         }
-        return;
-      }
 
-      ObtenerEmpleados();
+        ObtenerEmpleados(false);
+      })
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+
+  finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
       CerrarPanelEmpleado();
 
       Swal.fire({
@@ -1179,10 +1195,10 @@ async function CrearEmpleado() {
           icon: "swal2-toast-success-icon",
         },
       });
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+
+    }, 1500);
+  }
+
 }
 
 
@@ -1192,39 +1208,50 @@ async function CrearEmpleado() {
 async function EditarEmpleado(id) {
   if (!ValidarFormularioEmpleado()) return;
 
-  let empleadoId = parseInt(document.getElementById("IdEmpleado").value);
+  mostrarOverlayGuardando();
 
-  const empleado = {
-    id: empleadoId,
-    nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
-    dni: Number(document.getElementById("DniEmpleado").value.trim()),
-    cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
-    telefono: document.getElementById("TelefonoEmpleado").value.trim(),
-    email: document.getElementById("EmailEmpleado").value.trim(),
-    fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
-    direccion: document.getElementById("DireccionEmpleado").value.trim(),
-    estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
-    cantidadHijos: Number(
-      document.getElementById("CantidadHijosEmpleado").value.trim() || null
-    ),
-    tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
-    localidadId: Number(document.getElementById("IdLocalidad").value),
-    puestoId: Number(document.getElementById("IdPuesto").value),
-  };
-  const res = await authFetch(`Empleados/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(empleado),
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.mensaje) {
-          MostrarErrorEmpleadoExistente(errorData.mensaje);
-        }
-        return;
+  try {
+    let empleadoId = parseInt(document.getElementById("IdEmpleado").value);
+
+    const empleado = {
+      id: empleadoId,
+      nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
+      dni: Number(document.getElementById("DniEmpleado").value.trim()),
+      cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
+      telefono: document.getElementById("TelefonoEmpleado").value.trim(),
+      email: document.getElementById("EmailEmpleado").value.trim(),
+      fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
+      direccion: document.getElementById("DireccionEmpleado").value.trim(),
+      estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
+      cantidadHijos: Number(
+        document.getElementById("CantidadHijosEmpleado").value.trim() || null
+      ),
+      tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
+      localidadId: Number(document.getElementById("IdLocalidad").value),
+      puestoId: Number(document.getElementById("IdPuesto").value),
+    };
+
+    const response = await authFetch(`Empleados/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(empleado),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorEmpleadoExistente(errorData.mensaje);
       }
+      return;
+    }
+
+    ObtenerEmpleados(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
       CerrarPanelEmpleado();
-      ObtenerEmpleados();
 
       Swal.fire({
         title: "¡Empleado Modificado!",
@@ -1243,11 +1270,11 @@ async function EditarEmpleado(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+
+    }, 1500);
+  }
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////

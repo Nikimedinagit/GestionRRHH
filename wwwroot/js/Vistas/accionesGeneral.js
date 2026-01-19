@@ -141,3 +141,26 @@ function ErrorGeneralInformePdf() {
         buttonsStyling: false,
     });
 }
+
+
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR EL SPINNER DE CARGARGANDO DE ESPERA /////////////// 
+//////////////////////////////////////////////////////////////////////////////
+function mostrarPantallaCarga() {
+  document.getElementById("pantallaCargaEmpleados").style.display = "flex";
+}
+
+function ocultarPantallaCarga() {
+  document.getElementById("pantallaCargaEmpleados").style.display = "none";
+}
+
+
+
+
+function mostrarOverlayGuardando() {
+  document.getElementById("overlayGuardando").classList.remove("d-none");
+}
+
+function ocultarOverlayGuardando() {
+  document.getElementById("overlayGuardando").classList.add("d-none");
+}

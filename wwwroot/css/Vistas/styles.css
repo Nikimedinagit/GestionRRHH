@@ -1062,6 +1062,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   height: 100%;
   padding-left: 1rem;
   padding-right: 1rem;
+  overflow-y: auto;
 }
 
 .historial-empleado-encabezado {
@@ -1491,3 +1492,46 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
     }
 }
 /* FIN ESTILO APRA CONTEENDOR DE GARFICOS FIJO */
+
+
+
+/* INICIO ESTILO PARA EL SPINNER */
+.pantalla-carga {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff; 
+  display: flex;
+  flex-direction: column;   
+  justify-content: flex-start; 
+  align-items: center;     
+  padding-top: 2rem; 
+  z-index: 9999;
+}
+
+.contenido-carga {
+  text-align: center;
+}
+/* FIN ESTILO PARA EL SPINNER */
+
+
+
+
+.overlay-guardando {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff; /* fondo blanco */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* encima del formulario */
+}
+
+.contenido-carga {
+  text-align: center;
+}
