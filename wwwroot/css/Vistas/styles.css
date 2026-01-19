@@ -1495,7 +1495,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
-/* INICIO ESTILO PARA EL SPINNER */
+/* INICIO ESTILO PARA EL SPINNER GENERAL*/
 .pantalla-carga {
   position: absolute;
   top: 0;
@@ -1514,24 +1514,45 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 .contenido-carga {
   text-align: center;
 }
-/* FIN ESTILO PARA EL SPINNER */
+/* FIN ESTILO PARA EL SPINNER GENERAL */
 
 
 
-
+/* INICIO ESTILO SPINER DE GURDADO */
 .overlay-guardando {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: #ffffff; /* fondo blanco */
+  background: #ffffff; 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* encima del formulario */
+  z-index: 2000; 
 }
 
 .contenido-carga {
   text-align: center;
 }
+/* FIN ESTILO SPINER DE GURDADO */
+
+
+
+
+/* INICIO ESTILO PARA EL COLLAPSE DE MAS RESULTADOS */
+.custom-collapse {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+        max-height 0.4s ease,
+        opacity 0.25s ease;
+}
+
+.custom-collapse.show {
+    max-height: 2000px;
+    opacity: 1;
+}
+
+/* FIN ESTILO PARA EL COLLAPSE DE MAS RESULTADOS */

@@ -10,7 +10,7 @@ var asistenciasData = [];
 /////////////////////////////////////////////////////////////
 $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #FechaBuscar")
     .on("input change", () => {
-        ObtenerAsistencias();
+        ObtenerAsistencias(false);
         ObtenerTotalAsitenciasHoy();
     });
 
@@ -18,7 +18,10 @@ $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #Fe
 /////////////////////////////////////////////////////////////
 // OBTENER DATOS DE LA API /////////////////////////////////////
 /////////////////////////////////////////////////////////////
-async function ObtenerAsistencias() {
+async function ObtenerAsistencias(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
     try {
         let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
         if (estadoAsistencia === "0") estadoAsistencia = null;
@@ -67,6 +70,9 @@ async function ObtenerAsistencias() {
     } catch (error) {
         MostrarErrorCatch();
     }
+
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+
 }
 
 

@@ -147,16 +147,18 @@ function ErrorGeneralInformePdf() {
 /// FUNCION PARA MOSTRAR EL SPINNER DE CARGARGANDO DE ESPERA /////////////// 
 //////////////////////////////////////////////////////////////////////////////
 function mostrarPantallaCarga() {
-  document.getElementById("pantallaCargaEmpleados").style.display = "flex";
+  document.getElementById("pantallaCargaGeneral").style.display = "flex";
 }
 
 function ocultarPantallaCarga() {
-  document.getElementById("pantallaCargaEmpleados").style.display = "none";
+  document.getElementById("pantallaCargaGeneral").style.display = "none";
 }
 
 
 
-
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO /////////////// 
+//////////////////////////////////////////////////////////////////////////////
 function mostrarOverlayGuardando() {
   document.getElementById("overlayGuardando").classList.remove("d-none");
 }
@@ -164,3 +166,23 @@ function mostrarOverlayGuardando() {
 function ocultarOverlayGuardando() {
   document.getElementById("overlayGuardando").classList.add("d-none");
 }
+
+
+function toggleResultados() {
+    const btn = document.getElementById("btnResultados");
+    const contenedor = document.getElementById("contenedorResultados");
+
+    if (!btn || !contenedor) return;
+
+    const textoBtn = btn.querySelector(".texto-btn");
+    const abierto = contenedor.classList.toggle("show");
+
+    btn.classList.toggle("active");
+
+    if (textoBtn) {
+        textoBtn.textContent = abierto
+            ? "Ocultar Resultados"
+            : "Más Resultados";
+    }
+}
+

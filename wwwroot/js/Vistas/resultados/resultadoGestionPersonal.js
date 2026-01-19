@@ -17,7 +17,7 @@ async function cargarEvolucionPersonal() {
     const res = await authFetch('Resultados/EvolucionPersonal');
     const data = await res.json();
 
-        if (!data || data.length === 0) {
+    if (!data || data.length === 0) {
         $('#contenedorEvolucionPersonal').html(`
             <div style="
                 display: flex;
@@ -69,7 +69,7 @@ async function cargarAsistenciaMensual() {
     const res = await authFetch('Resultados/AsistenciaMensual');
     const data = await res.json();
 
-     if (!data || data.length === 0) {
+    if (!data || data.length === 0) {
         $('#contenedorAsistenciaMensual').html(`
             <div style="
                 display: flex;
@@ -176,10 +176,16 @@ async function cargarJustificacionesPorDia() {
 
 
 // ===================================== Inicialziar Los Graficos ====================
-async function cargarTodo() {
-    await cargarEvolucionPersonal();
-    await cargarAsistenciaMensual();
-    await cargarJustificacionesPorDia();
+async function cargarTodo(mostrarSpinner = true) {
+
+    if(mostrarSpinner) mostrarPantallaCarga();
+    try {
+        await cargarEvolucionPersonal();
+        await cargarAsistenciaMensual();
+        await cargarJustificacionesPorDia();
+    }
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+
 }
 
 cargarTodo();
@@ -191,7 +197,7 @@ var timeoutResize;
 window.addEventListener("resize", () => {
     clearTimeout(timeoutResize);
     timeoutResize = setTimeout(() => {
-        cargarTodo(); 
+        cargarTodo(false);
     }, 300);
 });
 
@@ -199,13 +205,13 @@ window.addEventListener("resize", () => {
 
 // ===================================== Mostrar Listados  Por Rol  ==========
 function MostrarOpcionesResultadosPorRol() {
-  const rol = getRol()?.toUpperCase();
-  if (!rol) return;
+    const rol = getRol()?.toUpperCase();
+    if (!rol) return;
 
-  if (rol === "SUPERVISOR") {
-    $("#resultadoJustificacionPorSector, #resultadoEmpleadosPorSector, #resultadoAsistenciaPorSector").addClass("d-none");
+    if (rol === "SUPERVISOR") {
+        $("#resultadoJustificacionPorSector, #resultadoEmpleadosPorSector, #resultadoAsistenciaPorSector").addClass("d-none");
 
-  }
+    }
 }
 
 MostrarOpcionesResultadosPorRol();

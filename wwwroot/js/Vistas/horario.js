@@ -79,10 +79,9 @@ document
 // INICIALIZAR LOS FILTROS DE BUSQUEDA ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerHorarios();
 
   $("#EmpleadoIdBuscar, #TipoHorarioBuscar").on("input change", function () {
-    ObtenerHorarios();
+    ObtenerHorarios(false);
     ObtenerTotalHorarios()
   });
 
@@ -100,7 +99,7 @@ $(document).ready(function () {
     }
 
     if ($("#filtrarHorarioSelect").val() === "si") {
-      ObtenerHorarios();
+      ObtenerHorarios(false);
       ObtenerTotalHorarios()
     }
   });
@@ -114,7 +113,7 @@ $(document).ready(function () {
       $("#HorarioInicioBuscar, #HorarioFinBuscar").val("");
     }
 
-    ObtenerHorarios();
+    ObtenerHorarios(false);
     ObtenerTotalHorarios();
   });
 });
@@ -124,7 +123,10 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS HORARIOS ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerHorarios() {
+async function ObtenerHorarios(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   let tipoHorario = document.getElementById("TipoHorarioBuscar").value;
   let tipo =
     tipoHorario !== "0" && tipoHorario !== "" ? parseInt(tipoHorario) : null;
@@ -156,7 +158,9 @@ async function ObtenerHorarios() {
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 
@@ -929,70 +933,79 @@ async function CrearHorario() {
 
   if (!ValidarFormularioHorario()) return;
 
-  const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
+  mostrarOverlayGuardando();
+  try {
+    const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
 
-  const horario = {
-    tipoHorario: tipoHorario,
-    lunes: document.getElementById("lunes").checked,
-    martes: document.getElementById("martes").checked,
-    miercoles: document.getElementById("miercoles").checked,
-    jueves: document.getElementById("jueves").checked,
-    viernes: document.getElementById("viernes").checked,
-    sabado: document.getElementById("sabado").checked,
-    domingo: document.getElementById("domingo").checked,
-    empleadoId: parseInt(document.getElementById("EmpleadoId").value),
-    horarioInicio: null,
-    horarioFin: null,
-    segundoHorarioInicio: null,
-    segundoHorarioFin: null,
-  };
+    const horario = {
+      tipoHorario: tipoHorario,
+      lunes: document.getElementById("lunes").checked,
+      martes: document.getElementById("martes").checked,
+      miercoles: document.getElementById("miercoles").checked,
+      jueves: document.getElementById("jueves").checked,
+      viernes: document.getElementById("viernes").checked,
+      sabado: document.getElementById("sabado").checked,
+      domingo: document.getElementById("domingo").checked,
+      empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+      horarioInicio: null,
+      horarioFin: null,
+      segundoHorarioInicio: null,
+      segundoHorarioFin: null,
+    };
 
-  if (tipoHorario === 1) {
-    horario.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
-    horario.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
-    delete horario.segundoHorarioInicio;
-    delete horario.segundoHorarioFin;
-  } else if (tipoHorario === 2) {
-    horario.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
-    horario.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
-    horario.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
-    horario.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
+    if (tipoHorario === 1) {
+      horario.horarioInicio = formatearHora(document.getElementById("HorarioInicio").value);
+      horario.horarioFin = formatearHora(document.getElementById("HorarioFin").value);
+      delete horario.segundoHorarioInicio;
+      delete horario.segundoHorarioFin;
+    } else if (tipoHorario === 2) {
+      horario.horarioInicio = formatearHora(document.getElementById("PrimerHorarioInicio").value);
+      horario.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
+      horario.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
+      horario.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
+    }
+
+    const res = await authFetch("Horarios", {
+      method: "POST",
+      body: JSON.stringify(horario),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.mensaje) {
+          MostrarErrorHorarioExistente(response.mensaje);
+        } else {
+          ObtenerHorarios(false);
+        }
+      })
+
+  } catch (error) {
+    MostrarErrorCatch();
   }
 
-  const res = await authFetch("Horarios", {
-    method: "POST",
-    body: JSON.stringify(horario),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorHorarioExistente(response.mensaje);
-      } else {
-        cerrarPanelHorario();
-        ObtenerHorarios();
-        Swal.fire({
-          title: "¡Horario Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
+  finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelHorario();
 
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+      Swal.fire({
+        title: "¡Horario Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 
 }
 
@@ -1002,6 +1015,8 @@ async function CrearHorario() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarHorario(id) {
   if (!ValidarFormularioHorario()) return;
+
+  mostrarOverlayGuardando();
 
   const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
   const horarioId = document.getElementById("IdHorario").value;
@@ -1030,9 +1045,9 @@ async function EditarHorario(id) {
     if (inicio) horarioEditar.horarioInicio = formatearHora(inicio);
     if (fin) horarioEditar.horarioFin = formatearHora(fin);
 
-    delete horarioEditar.segundoHorarioInicio; 
+    delete horarioEditar.segundoHorarioInicio;
     delete horarioEditar.segundoHorarioFin;
-    
+
   } else if (tipoHorario === 2) {
     const primerInicio = document.getElementById("PrimerHorarioInicio").value;
     const primerFin = document.getElementById("PrimerHorarioFin").value;
@@ -1057,28 +1072,35 @@ async function EditarHorario(id) {
       return;
     }
 
-    cerrarPanelHorario();
-    ObtenerHorarios();
-    Swal.fire({
-      title: "¡Horario Modificado!",
-      toast: true,
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      background: "#f4fff7",
-      color: "#1c3d26",
-      icon: "success",
-      iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
-    });
+    ObtenerHorarios(false);
 
   } catch (error) {
     MostrarErrorCatch();
+  }
+  finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelHorario();
+
+      Swal.fire({
+        title: "¡Horario Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+
+    }, 1500);
   }
 }
 
@@ -1114,7 +1136,7 @@ async function EliminarHorarioId(id) {
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire({
           title: "Acción Cancelada",
-          text: "Continuará eliminando.",
+          text: "Permanece registrada.",
           toast: true,
           position: "bottom-end",
           showConfirmButton: false,
@@ -1164,7 +1186,7 @@ async function EliminarSiHorario(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerHorarios();
+      ObtenerHorarios(false);
     }
   } catch (error) {
     MostrarErrorCatch();

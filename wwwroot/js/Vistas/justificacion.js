@@ -27,11 +27,10 @@ function cerrarPanelJustificacion() {
 // INICIALIZAR LOS ONCLICK AL BUSCAR ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerJustificaciones();
   $("#EmpleadoIdBuscar, #FechaBuscar, #EstadoJustificacionBuscar").on(
     "input",
     function () {
-      ObtenerJustificaciones();
+      ObtenerJustificaciones(false);
     }
   );
 });
@@ -39,7 +38,10 @@ $(document).ready(function () {
 //////////////////////////////////////////////////////////////////////////////
 // OBTENER LAS LOS DATODS DE LA API DE JUSTIFICACIONES /////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-async function ObtenerJustificaciones() {
+async function ObtenerJustificaciones(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   const fechaEl = document.getElementById("FechaBuscar");
   const estadoEl = document.getElementById("EstadoJustificacionBuscar");
   const empleadoEl = document.getElementById("EmpleadoIdBuscar");
@@ -64,12 +66,13 @@ async function ObtenerJustificaciones() {
     const data = await res.json();
     MostrarJustificaciones(data);
     LimpiarModalJustificacion();
-    cerrarPanelJustificacion();
     ObtenerTotalJustificaciones();
+
   } catch (error) {
     MostrarErrorCatch();
-    console.error(error);
   }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -757,6 +760,8 @@ async function CrearJustificacion() {
     return;
   }
 
+  mostrarOverlayGuardando();
+
   const formData = new FormData();
   formData.append(
     "Motivo",
@@ -785,10 +790,17 @@ async function CrearJustificacion() {
     if (response.mensaje) {
       MostrarErrorJustificacionExistente(response.mensaje);
     } else {
-      cerrarPanelJustificacion();
-      ObtenerJustificaciones();
+      ObtenerJustificaciones(false);
+    }
+  } catch (error) {
+    MostrarErrorCatch();
+  }
 
-      Swal.fire({
+  finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelJustificacion();
+       Swal.fire({
         title: "¡Justificación Creada!",
         toast: true,
         position: "bottom-end",
@@ -805,9 +817,8 @@ async function CrearJustificacion() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }
-  } catch (error) {
-    MostrarErrorCatch();
+
+    }, 1500);
   }
 }
 
@@ -819,56 +830,65 @@ async function EditarJustificacion(id) {
     return;
   }
 
-  const formData = new FormData();
-  formData.append(
-    "Id",
-    parseInt(document.getElementById("IdJustificacion").value)
-  );
-  formData.append(
-    "Motivo",
-    document.getElementById("MotivoJustificacion").value
-  );
-  formData.append("Fecha", document.getElementById("FechaJustificacion").value);
-  formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+  mostrarOverlayGuardando();
 
-  const archivo = document.getElementById("DocumentoAdjunto").files[0];
-  if (archivo) {
-    formData.append("DocumentoAdjunto", archivo);
-  }
-  const res = await authFetch(`Justificaciones/${id}`, {
-    method: "PUT",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorJustificacionExistente(response.mensaje);
-      } else {
-        cerrarPanelJustificacion();
-        ObtenerJustificaciones();
+  try {
 
-        Swal.fire({
-          title: "¡Justificacion Modificada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
+    const formData = new FormData();
+    formData.append(
+      "Id",
+      parseInt(document.getElementById("IdJustificacion").value)
+    );
+    formData.append(
+      "Motivo",
+      document.getElementById("MotivoJustificacion").value
+    );
+    formData.append("Fecha", document.getElementById("FechaJustificacion").value);
+    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+
+    const archivo = document.getElementById("DocumentoAdjunto").files[0];
+    if (archivo) {
+      formData.append("DocumentoAdjunto", archivo);
+    }
+    const res = await authFetch(`Justificaciones/${id}`, {
+      method: "PUT",
+      body: formData,
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.mensaje) {
+          MostrarErrorJustificacionExistente(response.mensaje);
+        } else {
+          ObtenerJustificaciones(false);
+        }
+      })
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+  finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelJustificacion();
+      Swal.fire({
+        title: "¡Justificacion Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+
+    }, 1500);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -951,7 +971,7 @@ async function AprobarJustificacion(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerJustificaciones();
+      ObtenerJustificaciones(false);
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -985,7 +1005,7 @@ async function RechazarJustificacion(id) {
         },
       });
 
-      ObtenerJustificaciones();
+      ObtenerJustificaciones(false);
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -1069,7 +1089,7 @@ async function EliminarSiJustificacion(id) {
       },
     });
 
-    ObtenerJustificaciones();
+    ObtenerJustificaciones(false);
 
   } catch (error) {
     MostrarErrorCatch();
@@ -1107,9 +1127,9 @@ async function GenerarInformePdfJustificaciones() {
   const { justificaciones, resumen } = await res.json();
 
   if (!justificaciones || !Array.isArray(justificaciones) || justificaciones.length === 0) {
-        ErrorGeneralInformePdf();
-        return;
-    }
+    ErrorGeneralInformePdf();
+    return;
+  }
 
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);

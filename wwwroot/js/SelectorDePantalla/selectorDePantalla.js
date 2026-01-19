@@ -40,6 +40,7 @@ function CargarVista(view) {
 
 
       ActualizarLinkActivo();
+      window.scrollTo(0, 0);
     })
     .catch(err => {
       console.error(err);

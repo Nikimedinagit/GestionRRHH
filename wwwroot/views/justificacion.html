@@ -1,5 +1,17 @@
 <div class="px-3 py-3">
 
+  <!-- ======================================= Spinner General ====================================== -->
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga">
+      <h5 class="fw-bold text-dark">Cargando tardanzas...</h5>
+      <div class="spinner-border text-primary mt-3" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Estamos preparando la información de llegadas tarde, aguarda un momento</p>
+    </div>
+  </div>
+
+
   <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Gestor de Ausencias-Tardanzas</h3>
@@ -129,7 +141,7 @@
           Información de Ayuda
         </h5>
         <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-           <i class="bi bi-eye me-1"></i> Mostrar
+          <i class="bi bi-eye me-1"></i> Mostrar
         </button>
       </div>
 
@@ -189,7 +201,8 @@
             <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
             <div>
               <p class="fw-bold mb-1">Editar</p>
-              <p class="mb-0 small text-muted">Permite modificar la justificación ssi aún está pendiente y dentro del plazo.
+              <p class="mb-0 small text-muted">Permite modificar la justificación ssi aún está pendiente y dentro del
+                plazo.
               </p>
             </div>
           </div>
@@ -239,6 +252,18 @@
     </div>
     <div class="panel-body">
       <form id="formJustificacion">
+
+        <!-- ======================================= Spinner Formualrio ====================================== -->
+        <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga">
+            <h5 class="fw-bold text-dark">Guardando...</h5>
+            <div class="spinner-border text-primary mt-2" role="status">
+              <span class="visually-hidden">Guardando...</span>
+            </div>
+          </div>
+        </div>
+
+
         <input type="hidden" id="IdJustificacion" />
         <div class="invalid-feedback mb-3" id="errorEmpleadoIdJustificacionSinEmpleado"></div>
 
