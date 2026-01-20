@@ -183,6 +183,18 @@ function ocultarOverlayGuardandoCertificado() {
   document.getElementById("overlayGuardandoCertificado").classList.add("d-none");
 }
 
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO DE CRITERIOS DENTRO DE LA VISTA DE EVALUACIONES /////////////// 
+//////////////////////////////////////////////////////////////////////////////
+function mostrarOverlayGuardandoCriterios() {
+  document.getElementById("overlayGuardandoCriterios").classList.remove("d-none");
+}
+
+function ocultarOverlayGuardandoCriterios() {
+  document.getElementById("overlayGuardandoCriterios").classList.add("d-none");
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA EL TOGGLE DE RESULTADOS /////////////// 

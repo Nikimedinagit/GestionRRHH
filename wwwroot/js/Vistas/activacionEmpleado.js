@@ -3,18 +3,24 @@
 // INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-ObtenerEmpleadosActivacion();
+ObtenerEmpleadosActivacion(false);
 
-
-  $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", ObtenerEmpleadosActivacion);
-  $("#FiltroActivo").on("change", ObtenerEmpleadosActivacion);
+  $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", function() {
+      ObtenerEmpleadosActivacion(false)
+  });
+  $("#FiltroActivo").on("change", function() {
+    ObtenerEmpleadosActivacion(false);
+  });
 });
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE ACTIVACIONES ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerEmpleadosActivacion() {
+async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   const nombre = document.getElementById("FiltroNombre").value || "";
   const email = document.getElementById("FiltroEmail").value || "";
   const dniValue = document.getElementById("FiltroDNI").value;
@@ -37,6 +43,9 @@ async function ObtenerEmpleadosActivacion() {
   } catch (error) {
     MostrarErrorCatch();
   }
+  finally{
+    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } 
+  };
 }
 
 
@@ -328,7 +337,7 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
     
     });
 
-    ObtenerEmpleadosActivacion();
+    ObtenerEmpleadosActivacion(false);
 
   } catch (error) {
     console.error('Error en catch:', error);
@@ -377,7 +386,7 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
         },
     });
 
-    ObtenerEmpleadosActivacion();
+    ObtenerEmpleadosActivacion(false);
 
   } catch (error) {
     MostrarErrorCatch();
