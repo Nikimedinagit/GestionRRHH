@@ -363,12 +363,18 @@ async function cargarEvolucionDesempeno() {
 
 
 // ===================================== Inicializar Todos los Gráficos ====================
-async function cargarTodoDesempeno() {
+async function cargarTodoDesempeno(mostrarSpinner = true) {
+
+    if(mostrarSpinner) mostrarPantallaCarga();
+
+    try{
     await cargarDesempenoPorPuesto();
     await cargarDistribucionCalificaciones();
     await cargarMejoresCriterios();
     await cargarPeoresCriterios();
     await cargarEvolucionDesempeno();
+    }
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
 }
 
 cargarTodoDesempeno();

@@ -29,10 +29,10 @@ function CerrarPanelTipoDeCriterio() {
 // INICILIAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerTiposDeCriterios();
+  ObtenerTiposDeCriterios(false);
 
   $("#EstadoIdBuscar, #NombreTipoDeCriterioBuscar").on("input", function () {
-    ObtenerTiposDeCriterios();
+    ObtenerTiposDeCriterios(false);
   });
 });
 
@@ -40,7 +40,9 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE TIPOS DE CRITERIOS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerTiposDeCriterios() {
+async function ObtenerTiposDeCriterios(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga()
 
   let estado = document.getElementById("EstadoIdBuscar").value;
   let filtro = {
@@ -60,8 +62,8 @@ async function ObtenerTiposDeCriterios() {
     })
     .catch((error) => {;
       MostrarErrorCatch();
-    });
-   
+    })
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 
@@ -161,93 +163,119 @@ function BuscarTipoDeCriterioId() {
 // FUNCIÓN PARA CREAR UNA TIPO DE CRITERIO ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearTipoDeCriterio() {
-if (!ValidarFormularioTipoDeCriterio()) return;
+  if (!ValidarFormularioTipoDeCriterio()) return;
 
-  const tipoDeCriterio = {
-    nombre: document.getElementById("NombreTipoDeCriterio").value.trim(),
-  };
-  const res = await authFetch("TiposDeCriterios", {
-    method: "POST",
-    body: JSON.stringify(tipoDeCriterio),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorTipoDeCriterioExistente(response.mensaje);
-      } else {
-        CerrarPanelTipoDeCriterio();
-        ObtenerTiposDeCriterios(); 
+  mostrarOverlayGuardando();
 
-        Swal.fire({
-          title: "¡Criterio Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {;
-      MostrarErrorCatch();
+  try {
+    const tipoDeCriterio = {
+      nombre: document.getElementById("NombreTipoDeCriterio").value.trim(),
+    };
+
+    const response = await authFetch("TiposDeCriterios", {
+      method: "POST",
+      body: JSON.stringify(tipoDeCriterio),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorTipoDeCriterioExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    CerrarPanelTipoDeCriterio();
+    ObtenerTiposDeCriterios(false);
+
+    Swal.fire({
+      title: "¡Criterio Creado!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+    }, 1500);
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIÓN PARA EDITAR UNA TIPO DE CRITERIO //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarTipoDeCriterio(id) {
+  if (!ValidarFormularioTipoDeCriterio()) return;
 
-if (!ValidarFormularioTipoDeCriterio()) return;
-  
-  let tipoDeCriterio = {
-    id: document.getElementById("IdTipoDeCriterio").value,
-    nombre: document.getElementById("NombreTipoDeCriterio").value.trim(),
-  };
-  const res = await authFetch(`TiposDeCriterios/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(tipoDeCriterio),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorTipoDeCriterioExistente(response.mensaje);
-      } else {
-        ObtenerTiposDeCriterios(); 
+  mostrarOverlayGuardando();
 
-        Swal.fire({
-          title: "¡Criterio Modificado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
+  try {
+    const tipoDeCriterio = {
+      id: document.getElementById("IdTipoDeCriterio").value,
+      nombre: document.getElementById("NombreTipoDeCriterio").value.trim(),
+    };
+
+    const response = await authFetch(`TiposDeCriterios/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(tipoDeCriterio),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        ocultarOverlayGuardando(); 
+        MostrarErrorTipoDeCriterioExistente(errorData.mensaje);
       }
-    })
-     .catch((error) => {
-      MostrarErrorCatch();
-    }); 
+      return;
+    }
+
+    CerrarPanelTipoDeCriterio();
+    ObtenerTiposDeCriterios(false);
+
+    Swal.fire({
+      title: "¡Criterio Modificado!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+    }, 1500);
+  }
 }
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

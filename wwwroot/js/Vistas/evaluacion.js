@@ -67,18 +67,17 @@ function cerrarPanelCriterios() {
 // INICIALIZAR LOS ONCHANGE DE FILTROS ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerEvaluaciones();
 
   $("#EmpleadoIdBuscar").on("input", function () {
-    ObtenerEvaluaciones();
+    ObtenerEvaluaciones(false);
   });
 
   $("#FechaEvalBuscar").on("input", function () {
-    ObtenerEvaluaciones();
+    ObtenerEvaluaciones(false);
   });
 
   $("#CalificacionBuscar").on("input", function () {
-    ObtenerEvaluaciones();
+    ObtenerEvaluaciones(false);
   });
 });
 
@@ -86,7 +85,11 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA EVALUACIONES ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerEvaluaciones() {
+async function ObtenerEvaluaciones(mostrarSpinner = true) {
+console.log("mostrarSpinner:", mostrarSpinner);
+  if (mostrarSpinner) mostrarPantallaCarga();
+
+  try{
 
   let nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
   let fechaInput = document.getElementById("FechaEvalBuscar").value;
@@ -99,22 +102,27 @@ async function ObtenerEvaluaciones() {
     calificacion: calificacion,
   }
 
-  const res = await authFetch("Evaluaciones/Filtrar", {
+  const response = await authFetch("Evaluaciones/Filtrar", {
     method: "POST",
     body: JSON.stringify(filtro),
   })
-    .then(response => response.json())
-    .then((data => {
+
+  const data = await response.json();
       MostrarEvaluaciones(data);
       LimpiarModalEvaluacion();
       cerrarPanelEvaluaciones();
       ObtenerTotalEvaluaciones();
-    }))
 
-    .catch((error) => {
+    } catch(error) {
       MostrarErrorCatch();
-    });
+    }
 
+    finally {
+    // Ocultar solo si realmente se mostró
+    if (mostrarSpinner) {
+      ocultarPantallaCarga(); // quité el setTimeout
+    }
+  }
 }
 
 
@@ -130,7 +138,7 @@ function MostrarEvaluaciones(data) {
 }
 
 window.addEventListener("resize", function () {
-    ObtenerEvaluaciones();
+    ObtenerEvaluaciones(false);
 });
 
 
@@ -264,7 +272,7 @@ function MostrarEvaluacionesDesktop(data) {
 
     contenedor.append(item);
     contenedor.append(detalleHTML);
-    ObtenerCriterioDeEvaluacion(element.id, element.esEditable);
+    ObtenerCriterioDeEvaluacion(element.id, element.esEditable, false);
   });
 
   tippy("[data-tippy-content]", {
@@ -393,7 +401,7 @@ function MostrarEvaluacionesMobile(data) {
       </div>
     `;
 
-    ObtenerCriterioDeEvaluacion(element.id, esEditable);
+    ObtenerCriterioDeEvaluacion(element.id, esEditable, false);
   });
 
   tippy("[data-tippy-content]", {
@@ -596,48 +604,54 @@ function ValidarEvaluacionExistente(mensaje) {
 // FUNCION CREAR EVALUACION ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearEvaluacion() {
+  if (!ValidarFormularioEvaluacion()) return;
 
-  if (!ValidarFormularioEvaluacion())
-    return;
+  mostrarOverlayGuardando();
 
-  const evaluacion = {
-    calificacion: document.getElementById("CalificacionEvaluacion").value,
-    empleadoId: document.getElementById("EmpleadoId").value,
-  };
-  const res = await authFetch("Evaluaciones", {
-    method: 'POST',
-    body: JSON.stringify(evaluacion),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarEvaluacionExistente(response.mensaje);
-      } else {
-        cerrarPanelEvaluaciones();
-        ObtenerEvaluaciones();
-
-        Swal.fire({
-          title: "¡Evaluacion Creada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  try {
+    const evaluacion = {
+      calificacion: document.getElementById("CalificacionEvaluacion").value,
+      empleadoId: document.getElementById("EmpleadoId").value,
+    };
+    const res = await authFetch("Evaluaciones", {
+      method: "POST",
+      body: JSON.stringify(evaluacion),
     });
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        ValidarEvaluacionExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerEvaluaciones(false);
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelEvaluaciones();
+
+      Swal.fire({
+        title: "¡Evaluación creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
 
 
@@ -645,68 +659,87 @@ async function CrearEvaluacion() {
 // FUNCION PARA EDITAR UNA EVALUACION //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarEvaluacion(id) {
+  if (!ValidarFormularioEvaluacion()) return;
 
-  if (!ValidarFormularioEvaluacion())
-    return;
+  mostrarOverlayGuardando();
 
-  const evaluacion = {
-    id: document.getElementById("IdEvaluacion").value,
-    calificacion: document.getElementById("CalificacionEvaluacion").value,
-    empleadoId: document.getElementById("EmpleadoId").value,
-  };
-  const res = await authFetch(`Evaluaciones/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(evaluacion),
-  })
-    .then((response) => response.text())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarEvaluacionExistente(response.mensaje);
-      } else {
-        cerrarPanelEvaluaciones();
-        ObtenerEvaluaciones();
+  try {
+    const evaluacion = {
+      id: id,
+      calificacion: document.getElementById("CalificacionEvaluacion").value,
+      empleadoId: document.getElementById("EmpleadoId").value,
+    };
 
-        Swal.fire({
-          title: "¡Evaluacion Modificada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+    const response = await authFetch(`Evaluaciones/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(evaluacion),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        ValidarEvaluacionExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+  } catch(error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ObtenerEvaluaciones(false);
+      ocultarOverlayGuardando();
+      cerrarPanelEvaluaciones();
+
+      Swal.fire({
+      title: "¡Evaluación modificada!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+
+    }, 1500)
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS CRITERIOS DE EVALUACION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
-async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable) {
+async function ObtenerCriterioDeEvaluacion(
+  evaluacionId,
+  esEditable,
+  mostrarSpinner = true,
+) {
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   try {
     const res = await authFetch("CriteriosDeEvaluacion", { method: "GET" });
     const data = await res.json();
 
-    const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
+    const criteriosFiltrados = data.filter(
+      (c) => c.evaluacionId === evaluacionId,
+    );
 
     MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados, esEditable);
   } catch (error) {
     MostrarErrorCatch();
+  } finally {
+    if (mostrarSpinner) {
+      setTimeout(() => ocultarPantallaCarga(), 1500);
+    }
   }
 }
 
@@ -961,48 +994,60 @@ function ValidarCriterioDeEvaluacionExistente(mensaje) {
 // FUNCION PARA CREAR CRITERIO DE EVALUACION ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearCriterioDeEvaluacion() {
-  if (!ValidarFormularioCriterioDeEvaluacion())
-    return;
+  if (!ValidarFormularioCriterioDeEvaluacion()) return;
 
-  const criterioEvaluacion = {
-    tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
-    descripcion: document.getElementById("Descripcion").value,
-    evaluacionId: evaluacionIdSeleccionada,
-  };
-  const res = await authFetch("CriteriosDeEvaluacion", {
-    method: 'POST',
-    body: JSON.stringify(criterioEvaluacion),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarCriterioDeEvaluacionExistente(response.mensaje);
-      } else {
-        cerrarPanelCriterios();
-        ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true);
-        Swal.fire({
-          title: "¡Criterio Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  mostrarOverlayGuardandoCriterios();
+
+  try {
+    const criterioEvaluacion = {
+      tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
+      descripcion: document.getElementById("Descripcion").value.trim(),
+      evaluacionId: evaluacionIdSeleccionada,
+    };
+
+    const response = await authFetch("CriteriosDeEvaluacion", {
+      method: "POST",
+      body: JSON.stringify(criterioEvaluacion),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        ValidarCriterioDeEvaluacionExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardandoCriterios();
+      cerrarPanelCriterios();
+
+      Swal.fire({
+        title: "¡Criterio Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
