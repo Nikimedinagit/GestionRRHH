@@ -1,5 +1,16 @@
 <div class="px-3 py-3">
 
+  <!-- ======================================= Spinner General ====================================== -->
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga">
+      <h5 class="fw-bold text-dark">Cargando sectores...</h5>
+      <div class="spinner-border text-primary mt-3" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Estamos preparando la información de los sectores, aguarda un momento.</p>
+    </div>
+  </div>
+
   <!-- ======================================= Título ====================================== -->
   <div class="mb-3">
     <h3 class="titulo-seccion">Listado y Control de Sectores</h3>
@@ -151,6 +162,20 @@
     </div>
     <div class="panel-body">
       <form id="formSector">
+
+
+
+        <!-- ======================================= Spinner Formualrio ====================================== -->
+        <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga">
+            <h5 class="fw-bold text-dark">Guardando...</h5>
+            <div class="spinner-border text-primary mt-2" role="status">
+              <span class="visually-hidden">Guardando...</span>
+            </div>
+          </div>
+        </div>
+
+
         <input type="hidden" id="IdSector" />
 
         <div class="form-grid">
@@ -165,7 +190,7 @@
     </div>
     <div class="panel-footer mt-3">
       <button class="btn btn-cancelar" onclick="CerrarPanelSector()">Cancelar</button>
-      <button type="submit" class="btn btn-guardar" onclick="BuscarSectorId()">Guardar</button>
+      <button type="button" class="btn btn-guardar" onclick="BuscarSectorId()">Guardar</button>
     </div>
   </div>
 

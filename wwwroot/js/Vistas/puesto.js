@@ -65,7 +65,10 @@ async function ComboParaFiltrarSectores() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA OBTENER LOS DATOS DE LA API DE PUESTOS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerPuestos() {
+async function ObtenerPuestos(mostrarSpinner = true) {
+
+    if (mostrarSpinner) mostrarPantallaCarga();
+
     let estadoId = document.getElementById("EstadoIdBuscar").value;
     let sectorId = document.getElementById("SectorIdBuscar").value;
     let descripcion = document.getElementById("DescripcionPuestoBuscar").value;
@@ -88,7 +91,9 @@ async function ObtenerPuestos() {
       })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 

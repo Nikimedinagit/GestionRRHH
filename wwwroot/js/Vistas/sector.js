@@ -41,7 +41,10 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA OBTENER LOS DATOS DE LA API DE SECTORES ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerSectores() {
+async function ObtenerSectores(mostrarSpinner = true) {
+
+    if (mostrarSpinner) mostrarPantallaCarga();
+
     let estadoId = document.getElementById("EstadoIdBuscar").value;
     let filtro = {
         nombre: document.getElementById("NombreSectorBuscar").value.trim(),
@@ -59,7 +62,8 @@ async function ObtenerSectores() {
       })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 
@@ -248,95 +252,123 @@ function MostrarErrorSectorExistente(mensaje) {
 /// FUNCIÓN PARA CREAR UNA SECTOR ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearSector() {
+  if (!ValidarFormularioSector()) return;
 
-    if (!ValidarFormularioSector()) return;
+  mostrarOverlayGuardando();
 
+  try {
     const sector = {
-        nombre: document.getElementById('NombreSector').value.trim(),
-    }
-    const res = await authFetch('Sector', {
-        method: 'POST',
-        body: JSON.stringify(sector)
-    })
-    .then((response) => response.json())
-    .then(response => {
-        if (response.mensaje){
-            MostrarErrorSectorExistente(response.mensaje);
-        } else {
-            CerrarPanelSector();
-            ObtenerSectores();
+      nombre: document.getElementById("NombreSector").value.trim(),
+    };
 
-            Swal.fire({
-          title: "¡Sector Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-        }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+    const response = await authFetch("Sector", {
+      method: "POST",
+      body: JSON.stringify(sector),
     });
-} 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorSectorExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerSectores(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelSector();
+
+      Swal.fire({
+        title: "¡Sector creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
+}
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA EDITAR UNA SECTOR ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function EditarSector(id) {
+async function EditarSector(id) {
+  if (!ValidarFormularioSector()) return;
 
-    if (!ValidarFormularioSector()) return;
+  mostrarOverlayGuardando();
 
-    let sectorId = document.getElementById('IdSector').value;
-    let sector = {
-        id: sectorId,
-        nombre: document.getElementById('NombreSector').value.trim()
-    }
-    const res = authFetch(`Sector/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(sector)
-    })
-    .then(response => response.json())
-    .then(response => {
-        if (response.mensaje){
-            MostrarErrorSectorExistente(response.mensaje);
-        } else {
-            ObtenerSectores();
+  try {
+    let sectorId = parseInt(document.getElementById("IdSector").value);
 
-            Swal.fire({
-          title: "¡Sector Modificado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-        }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+    const sector = {
+      id: sectorId,
+      nombre: document.getElementById("NombreSector").value.trim(),
+    };
+
+    const response = await authFetch(`Sector/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(sector),
     });
-} 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorSectorExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerSectores(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelSector();
+
+      Swal.fire({
+        title: "¡Sector Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+
+    }, 1500);
+  }
+}
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

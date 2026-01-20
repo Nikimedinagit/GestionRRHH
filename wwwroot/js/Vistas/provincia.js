@@ -40,7 +40,10 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE PROVINCIAS ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerProvincias() {
+async function ObtenerProvincias(mostrarSpinner = true) {
+
+  if(mostrarSpinner) mostrarPantallaCarga();
+
   let estado = document.getElementById("EstadoIdBuscar").value;
   let filtro = {
     nombre: document.getElementById("NombreProvinciaBuscar").value,
@@ -59,7 +62,9 @@ async function ObtenerProvincias() {
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 
@@ -249,42 +254,54 @@ function MostrarErrorProvinciaExistente(mensaje) {
 async function CrearProvincia() {
   if (!ValidarFormularioProvincia()) return;
 
-  const provincia = {
-    nombre: document.getElementById("NombreProvincia").value.trim(),
-  };
-  const res = await authFetch("Provincias", {
-    method: "POST",
-    body: JSON.stringify(provincia),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorProvinciaExistente(response.mensaje);
-      } else {
-        cerrarPanelProvincia();
-        ObtenerProvincias();
-        Swal.fire({
-          title: "¡Provincia Creada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
+  mostrarOverlayGuardando();
+
+  try {
+    const provincia = {
+      nombre: document.getElementById("NombreProvincia").value.trim(),
+    };
+
+    const response = await authFetch("Provincias", {
+      method: "POST",
+      body: JSON.stringify(provincia),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorProvinciaExistente(errorData.mensaje);
       }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    }); 
+      return;
+    }
+
+    ObtenerProvincias(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelProvincia();
+
+      Swal.fire({
+        title: "¡Provincia Creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
 
 
@@ -294,43 +311,57 @@ async function CrearProvincia() {
 async function EditarProvincia(id) {
   if (!ValidarFormularioProvincia()) return;
 
-  let provincia = {
-    id: document.getElementById("IdProvincia").value,
-    nombre: document.getElementById("NombreProvincia").value.trim(),
-  };
-  const res = await authFetch(`Provincias/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(provincia),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorProvinciaExistente(response.mensaje);
-      } else {
-        ObtenerProvincias();
+  mostrarOverlayGuardando();
 
-        Swal.fire({
-          title: "¡Provincia Modificada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
+  try {
+    const provinciaId = parseInt(document.getElementById("IdProvincia").value);
+
+    const provincia = {
+      id: provinciaId,
+      nombre: document.getElementById("NombreProvincia").value.trim(),
+    };
+
+    const response = await authFetch(`Provincias/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(provincia),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorProvinciaExistente(errorData.mensaje);
       }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    }); 
+      return;
+    }
+
+    ObtenerProvincias(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelProvincia();
+
+      Swal.fire({
+        title: "¡Provincia Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
 
 

@@ -63,7 +63,9 @@ async function ComboParaFiltrarProvincias() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE LOCALIDADES ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerLocalidades() {
+async function ObtenerLocalidades(mostrarSpinner = true) {
+
+    if (mostrarSpinner) mostrarPantallaCarga()
   let estadoId = document.getElementById("EstadoIdBuscar").value;
   let provinciaId = document.getElementById("ProvinciaIdBuscar").value;
 
@@ -85,7 +87,9 @@ async function ObtenerLocalidades() {
     })
     .catch((error) => {
       MostrarErrorCatch();
-      });
+      })
+  
+  .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 
@@ -326,45 +330,57 @@ function MostrarErrorLocalidadExistente(mensaje) {
 async function CrearLocalidad() {
   if (!ValidarFormularioLocalidad()) return;
 
-  const localidad = {
-    nombre: document.getElementById("NombreLocalidad").value.trim(),
-    provinciaId: document.getElementById("IdProvincia").value,
-  };
-  const res = await authFetch("Localidades", {
-    method: "POST",
-    body: JSON.stringify(localidad),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorLocalidadExistente(response.mensaje);
-      } else {
-        CerrarPanelLocalidad();
-        ObtenerLocalidades();
+  mostrarOverlayGuardando();
 
-        Swal.fire({
-        title: "¡Localidad Creada!",
+  try {
+    const localidad = {
+      nombre: document.getElementById("NombreLocalidad").value.trim(),
+      provinciaId: document.getElementById("IdProvincia").value,
+    };
+
+    const response = await authFetch("Localidades", {
+      method: "POST",
+      body: JSON.stringify(localidad),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorLocalidadExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerLocalidades(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelLocalidad();
+
+      Swal.fire({
+        title: "¡Localidad creada!",
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
         timer: 2200,
         timerProgressBar: true,
-        background: "#f4fff7", 
-        color: "#1c3d26", 
+        background: "#f4fff7",
+        color: "#1c3d26",
         icon: "success",
-        iconColor: "#28a746d8", 
+        iconColor: "#28a746d8",
         customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
         },
       });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-      });
+    }, 1500);
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,47 +389,60 @@ async function CrearLocalidad() {
 async function EditarLocalidad(id) {
   if (!ValidarFormularioLocalidad()) return;
 
-  let localidadId = document.getElementById("IdLocalidad").value;
+  mostrarOverlayGuardando();
 
-  let localidad = {
-    id: localidadId,
-    nombre: document.getElementById("NombreLocalidad").value.trim(),
-    provinciaId: parseInt(document.getElementById("IdProvincia").value),
-  };
-  const res = await authFetch("Localidades/" + id, {
-    method: "PUT",
-    body: JSON.stringify(localidad),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorLocalidadExistente(response.mensaje);
-      } else {
-        ObtenerLocalidades();
+  try {
+    const localidadId = parseInt(document.getElementById("IdLocalidad").value);
 
-        Swal.fire({
+    const localidad = {
+      id: localidadId,
+      nombre: document.getElementById("NombreLocalidad").value.trim(),
+      provinciaId: parseInt(document.getElementById("IdProvincia").value),
+    };
+
+    const response = await authFetch(`Localidades/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(localidad),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorLocalidadExistente(errorData.mensaje);
+      }
+      return;
+    }
+
+    ObtenerLocalidades(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelLocalidad();
+
+      Swal.fire({
         title: "¡Localidad Modificada!",
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
         timer: 2200,
         timerProgressBar: true,
-        background: "#f4fff7", 
-        color: "#1c3d26", 
+        background: "#f4fff7",
+        color: "#1c3d26",
         icon: "success",
-        iconColor: "#28a746d8", 
+        iconColor: "#28a746d8",
         customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
         },
       });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-      });
+    }, 1500);
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
