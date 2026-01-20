@@ -167,6 +167,27 @@ function ocultarOverlayGuardando() {
   document.getElementById("overlayGuardando").classList.add("d-none");
 }
 
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO DE ASISTENCIAS Y CETIFICADOS DENTRO DE LA VISTA DE CURSOS /////////////// 
+//////////////////////////////////////////////////////////////////////////////
+function mostrarOverlayGuardandoAsistencias() {
+  document.getElementById("overlayGuardandoAsistencia").classList.remove("d-none");
+}
+
+function ocultarOverlayGuardandoAsistencias() {
+  document.getElementById("overlayGuardandoAsistencia").classList.add("d-none");
+}
+
+
+function mostrarOverlayGuardandoCertificados() {
+  document.getElementById("overlayGuardandoCertificado").classList.remove("d-none");
+}
+
+function ocultarOverlayGuardandoCertificados() {
+  document.getElementById("overlayGuardandoCertificado").classList.add("d-none");
+}
+
+
 
 function toggleResultados() {
     const btn = document.getElementById("btnResultados");

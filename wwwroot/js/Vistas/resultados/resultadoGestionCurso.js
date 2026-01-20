@@ -41,8 +41,28 @@ async function cargarCursosPorModalidad() {
 
   $("#contenedorCursosPorModalidad").html('<canvas id="graficoCursosPorModalidad"></canvas>');
 
-  const labels = data.map(x => x.modalidad);
-  const valores = data.map(x => x.cantidad);
+  const modalidades = [
+    { id: "PRESENCIAL", nombre: "Presencial" },
+    { id: "VIRTUAL", nombre: "Virtual" },
+    { id: "MIXTO", nombre: "Mixto" }
+  ];
+
+  const datasets = modalidades.map((m, i) => {
+    const curso = data.find(d => d.modalidad === m.id);
+    const cantidad = curso ? curso.cantidad : 0;
+
+    return {
+      label: `${m.nombre}`, 
+      data: [cantidad],
+      backgroundColor: coloresPastel[i],
+      borderColor: coloresPastel[i].replace("0.7", "1"),
+      borderWidth: 1,
+      barPercentage: 0.7,
+      categoryPercentage: 0.5
+    };
+  });
+
+  const labels = [""]; 
 
   if (chartCursosModalidad) chartCursosModalidad.destroy();
 
@@ -50,30 +70,14 @@ async function cargarCursosPorModalidad() {
     document.getElementById("graficoCursosPorModalidad"),
     {
       type: "bar",
-      data: {
-        labels,
-        datasets: [{
-          label: "Cantidad de Cursos",
-          data: valores,
-          backgroundColor: coloresPastel,
-          borderColor: coloresPastel.map(c => c.replace("0.7", "1")),
-          borderWidth: 1,
-          barPercentage: 0.3,
-          categoryPercentage: 0.5
-        }]
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: esMobile() ? "y" : "x",
         scales: {
-          x: {
-            beginAtZero: true,
-            ticks: { stepSize: 1, precision: 0, display: false }
-          },
-          y: {
-            ticks: { display: !esMobile() }
-          }
+          x: { beginAtZero: true, ticks: { display: false } },
+          y: { beginAtZero: true, ticks: { display: true } }
         },
         plugins: {
           legend: { position: "top" }
@@ -82,7 +86,6 @@ async function cargarCursosPorModalidad() {
     }
   );
 }
-
 
 
 // ===================================== Gráfico: Asistencias e Inasistencias por Curso ===================================
@@ -120,7 +123,7 @@ async function cargarAsistenciasPorCurso() {
             backgroundColor: "rgba(168, 218, 220, 0.7)",
             borderColor: "rgba(168, 218, 220, 0.7)",
             borderWidth: 1,
-            barPercentage: 0.5,
+            barPercentage: 1,
             categoryPercentage: 0.5
           },
           {
@@ -129,7 +132,7 @@ async function cargarAsistenciasPorCurso() {
             backgroundColor: "rgba(255, 183, 178, 0.7)",
             borderColor: "rgba(255, 183, 178, 0.7)",
             borderWidth: 1,
-            barPercentage: 0.5,
+            barPercentage: 1,
             categoryPercentage: 0.5
           }
         ]
@@ -252,7 +255,7 @@ async function cargarComparacionPorModalidad() {
             backgroundColor: "rgba(168, 218, 220, 0.7)",
             borderColor: "rgba(168, 218, 220, 0.7)",
             borderWidth: 1,
-            barPercentage: 0.3,
+            barPercentage: 0.8,
             categoryPercentage: 0.5
           },
           {
@@ -261,7 +264,7 @@ async function cargarComparacionPorModalidad() {
             backgroundColor: "rgba(255, 183, 178, 0.7)",
             borderColor: "rgba(255, 183, 178, 0.7)",
             borderWidth: 1,
-            barPercentage: 0.3,
+            barPercentage: 0.8,
             categoryPercentage: 0.5
           }
         ]
@@ -322,7 +325,7 @@ async function cargarRankingCursos() {
           backgroundColor: "rgba(168, 218, 220, 0.7)",
           borderColor: "rgba(168, 218, 220, 0.7)",
           borderWidth: 1,
-          barPercentage: 0.3,
+          barPercentage: 0.5,
           categoryPercentage: 0.5
         }]
       },
@@ -350,12 +353,18 @@ async function cargarRankingCursos() {
 
 
 // ===================================== Inicialziar Los Graficos ====================
-async function cargarTodo() {
-  await cargarCursosPorModalidad();
-  await cargarAsistenciasPorCurso();
-  await cargarCertificadosPorCurso();
-  await cargarComparacionPorModalidad();
-  await cargarRankingCursos();
+async function cargarTodo(mostrarSpinner = true) {
+
+  if(mostrarSpinner) mostrarPantallaCarga();
+
+  try {
+    await cargarCursosPorModalidad();
+    await cargarAsistenciasPorCurso();
+    await cargarCertificadosPorCurso();
+    await cargarComparacionPorModalidad();
+    await cargarRankingCursos();
+  }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
 }
 
 cargarTodo();

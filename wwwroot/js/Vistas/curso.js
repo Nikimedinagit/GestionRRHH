@@ -105,7 +105,10 @@ $(document).ready(function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA OBTENER LOS CURSOS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerCursos() {
+async function ObtenerCursos(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   let nombreCurso = document.getElementById("NombreCursoBuscar").value;
   let modalidadCurso = document.getElementById("ModalidadBuscar").value;
   let modalidad =
@@ -130,7 +133,9 @@ async function ObtenerCursos() {
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1003,30 +1008,37 @@ function ValidarCursoExistente(mensaje) {
 // FUNCION PARA CREAR UN NUEVO CURSO //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearCurso() {
-  if (!ValidarFormularioCursos()) {
-    return;
-  }
-
-  const curso = {
-    nombre: document.getElementById("NombreCurso").value,
-    modalidad: parseInt(document.getElementById("ModalidadCurso").value),
-    descripcion: document.getElementById("DescripcionCurso").value,
-    fechaInicio: document.getElementById("FechaInicioCurso").value,
-    fechaFinalizacion: document.getElementById("FechaFinCurso").value,
-  };
+  if (!ValidarFormularioCursos()) return;
+  mostrarOverlayGuardando();
 
   try {
-    const res = await authFetch("Cursos", {
+    const curso = {
+      nombre: document.getElementById("NombreCurso").value.trim(),
+      modalidad: parseInt(document.getElementById("ModalidadCurso").value),
+      descripcion: document.getElementById("DescripcionCurso").value.trim(),
+      fechaInicio: document.getElementById("FechaInicioCurso").value,
+      fechaFinalizacion: document.getElementById("FechaFinCurso").value,
+    };
+
+    const response = await authFetch("Cursos", {
       method: "POST",
       body: JSON.stringify(curso),
     });
 
-    const data = await res.json();
+    const data = await response.json();
+
     if (data.codigo === 0 || data.codigo === 1) {
       ValidarCursoExistente(data.mensaje);
-    } else {
+      return;
+    }
+    ObtenerCursos(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
       cerrarPanelCursos();
-      ObtenerCursos();
 
       Swal.fire({
         title: "¡Curso Creado!",
@@ -1045,11 +1057,10 @@ async function CrearCurso() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }
-  } catch (error) {
-    MostrarErrorCatch();
+    }, 1500);
   }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR UN CURSO ///////////////////////////////////////////////////////////////
@@ -1057,52 +1068,57 @@ async function CrearCurso() {
 async function EditarCurso(id) {
   if (!ValidarFormularioCursos()) return;
 
-  const curso = {
-    id: document.getElementById("IdCurso").value,
-    nombre: document.getElementById("NombreCurso").value,
-    modalidad: parseInt(document.getElementById("ModalidadCurso").value),
-    descripcion: document.getElementById("DescripcionCurso").value,
-    fechaInicio: document.getElementById("FechaInicioCurso").value,
-    fechaFinalizacion: document.getElementById("FechaFinCurso").value,
-  };
-  const res = await authFetch(`Cursos/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(curso),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarCursoExistente(response.mensaje);
-      } else {
-        cerrarPanelCursos();
-        ObtenerCursos();
+  mostrarOverlayGuardando();
 
-        Swal.fire({
-          title: "¡Curso Modificado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  try {
+    const curso = {
+      id: parseInt(document.getElementById("IdCurso").value),
+      nombre: document.getElementById("NombreCurso").value.trim(),
+      modalidad: parseInt(document.getElementById("ModalidadCurso").value),
+      descripcion: document.getElementById("DescripcionCurso").value.trim(),
+      fechaInicio: document.getElementById("FechaInicioCurso").value,
+      fechaFinalizacion: document.getElementById("FechaFinCurso").value,
+    };
+    const response = await authFetch(`Cursos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(curso),
     });
+
+    const data = await response.json();
+    if (data.mensaje) {
+      ValidarCursoExistente(data.mensaje);
+      return;
+    }
+    ObtenerCursos(false);
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      cerrarPanelCursos();
+
+      Swal.fire({
+        title: "¡Curso Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALAIR AL CARGAR LA VISTA //////////////////////////////////////////////////
@@ -1112,7 +1128,9 @@ ObtenerCursos();
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION APRA OBTENER  LOS DATOS DE LA API //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerAsistencia(cursoId) {
+async function ObtenerAsistencia(cursoId, mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   const res = await authFetch("AsistenciasCapacitacion", {
     method: "GET",
   })
@@ -1123,7 +1141,8 @@ async function ObtenerAsistencia(cursoId) {
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1391,51 +1410,60 @@ function ValidarAsistenciaExistente(mensaje) {
 // CREAR ASISTENCIA //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearAsistencia() {
-  if (!ValidarFormularioAsistencia()) {
-    return;
-  }
+  if (!ValidarFormularioAsistencia()) return;
 
-  const asistencia = {
-    asistencia: false,
-    empleadoId: parseInt(document.getElementById("EmpleadoId").value),
-    resultado: document.getElementById("ResultadoAsistencia").value,
-    cursoId: cursoIdSeleccionado,
-  };
-  const res = await authFetch("AsistenciasCapacitacion", {
-    method: "POST",
-    body: JSON.stringify(asistencia),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        ValidarAsistenciaExistente(response.mensaje);
-      } else {
-        ObtenerAsistencia(cursoIdSeleccionado);
-        cerrarPanelAsistencias();
+  mostrarOverlayGuardandoAsistencias();
 
-        Swal.fire({
-          title: "¡Asistencia Creada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  try {
+    const asistencia = {
+      asistencia: false,
+      empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+      resultado: document.getElementById("ResultadoAsistencia").value.trim(),
+      cursoId: cursoIdSeleccionado,
+    };
+
+    const response = await authFetch("AsistenciasCapacitacion", {
+      method: "POST",
+      body: JSON.stringify(asistencia),
     });
+    const data = await response.json();
+
+    if (data.mensaje) {
+      ValidarAsistenciaExistente(data.mensaje);
+      return;
+    }
+    await ObtenerAsistencia(cursoIdSeleccionado, false); 
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardandoAsistencias();
+      cerrarPanelAsistencias();
+
+      Swal.fire({
+        title: "¡Asistencia Creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 1500);
+  }
 }
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // MODAL CONFIRMAR ELIMINAR ASISTENCIA /////////////////////////////////////////////////
@@ -1555,7 +1583,7 @@ async function MarcarAsistencia(id, nuevoEstado) {
   })
     .then(() => {
       if (nuevoEstado) {
-        ObtenerAsistencia(cursoIdSeleccionado);
+        ObtenerAsistencia(cursoIdSeleccionado, false);
         Swal.fire({
           title: "¡Asistio Empleado!",
           toast: true,
@@ -1605,7 +1633,8 @@ ObtenerAsistencia(cursoIdSeleccionado);
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS CERTIFICADOS ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerCertificados(cursoId) {
+async function ObtenerCertificados(cursoId, mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
   const res = await authFetch("Certificados", {
     method: "GET",
   })
@@ -1616,8 +1645,10 @@ async function ObtenerCertificados(cursoId) {
     })
     .catch((error) => {
       MostrarErrorCatch();
-    });
+    })
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS CERTIFICADOS ///////////////////////////////////////////////
@@ -1879,23 +1910,23 @@ function ValidarCertificadoExistente(mensaje) {
 // FUNCION PARA CREAR UN CERTIFICADO //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearCertificado() {
-  if (!ValidarFormularioCertificado()) {
-    return;
-  }
+  if (!ValidarFormularioCertificado()) return;
 
-  const formData = new FormData();
-  formData.append(
-    "EmpleadoId",
-    document.getElementById("EmpleadoIdCertificado").value
-  );
-  formData.append("CursoId", cursoIdSeleccionado);
-
-  const archivo = document.getElementById("DocumentoAdjunto").files[0];
-  if (archivo) {
-    formData.append("DocumentoAdjunto", archivo);
-  }
+  mostrarOverlayGuardandoCertificados();
 
   try {
+    const formData = new FormData();
+    formData.append(
+      "EmpleadoId",
+      document.getElementById("EmpleadoIdCertificado").value
+    );
+    formData.append("CursoId", cursoIdSeleccionado);
+
+    const archivo = document.getElementById("DocumentoAdjunto").files[0];
+    if (archivo) {
+      formData.append("DocumentoAdjunto", archivo);
+    }
+
     const res = await authFetch("Certificados", {
       method: "POST",
       body: formData,
@@ -1905,9 +1936,17 @@ async function CrearCertificado() {
 
     if (response.mensaje) {
       ValidarCertificadoExistente(response.mensaje);
-    } else {
+      return;
+    }
+
+    await ObtenerCertificados(cursoIdSeleccionado, false); 
+
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    setTimeout(() => {
+      ocultarOverlayGuardandoCertificados();
       cerrarPanelCertificados();
-      ObtenerCertificados(cursoIdSeleccionado);
 
       Swal.fire({
         title: "¡Certificado Creado!",
@@ -1926,11 +1965,10 @@ async function CrearCertificado() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }
-  } catch (error) {
-    MostrarErrorCatch();
+    }, 1500); 
   }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // MOSTRAR EL MODAL DE ELIMINAR UN CERTIFICADO ////////////////////////////////////////////
