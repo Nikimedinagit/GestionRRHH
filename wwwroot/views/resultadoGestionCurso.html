@@ -27,14 +27,14 @@
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
         <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
             <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
-                data-bs-toggle="collapse" data-bs-target="#contenedorResultados" aria-expanded="false"
-                aria-controls="contenedorResultados">
-                <i class="fa-solid fa-list me-2"></i> Más Resultados
+                id="btnResultados" onclick="toggleResultados()">
+                <i class="fa-solid fa-list me-2"></i>
+                <span class="texto-btn">Más Resultados</span>
             </button>
         </div>
 
-        <div class="collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
-            style="border-left: 4px solid #6A5ACD !important">
+       <div class="custom-collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
+            style="border-left: 4px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-3">
 
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">

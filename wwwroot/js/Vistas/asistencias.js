@@ -71,7 +71,7 @@ async function ObtenerAsistencias(mostrarSpinner = true) {
         MostrarErrorCatch();
     }
 
-    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 
 }
 

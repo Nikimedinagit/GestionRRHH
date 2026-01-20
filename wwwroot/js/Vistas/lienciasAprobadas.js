@@ -2,7 +2,7 @@
 // INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  $("#TipoDeLicenciaIdBuscar, #FechaAprobacionBuscar").on("input", ObtenerLicenciasAprobadas);
+  $("#TipoDeLicenciaIdBuscar, #FechaAprobacionBuscar").on("input", ObtenerLicenciasAprobadas(false));
 });
 
 
@@ -32,30 +32,36 @@ async function ComboParaFiltrarPorLicencia() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE APROBACION DE LICENCIAS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerLicenciasAprobadas() {
+async function ObtenerLicenciasAprobadas(mostrarSpinner = true) {
 
+  if (mostrarSpinner) mostrarPantallaCarga();
+
+  try {
     let tipoDeLicenciaId = document.getElementById("TipoDeLicenciaIdBuscar").value;
     let tipoDeLicencia = tipoDeLicenciaId !== "0" && tipoDeLicenciaId !== "" ? parseInt(tipoDeLicenciaId) : null;
 
     let fechaAprobacionValue = document.getElementById("FechaAprobacionBuscar").value;
     let fechaAprobacion = fechaAprobacionValue ? new Date(fechaAprobacionValue) : null;
-    
+
     let filtro = {
-      fechaAprobacion:fechaAprobacion,
-      tipoDeLicenciaId:tipoDeLicencia
+      fechaAprobacion: fechaAprobacion,
+      tipoDeLicenciaId: tipoDeLicencia
     };
-  const res = await authFetch("AprobacionDeLicencias/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then(response => response.json())
-    .then((data) => {
-      MostrarLicenciasAprobadas(data);
+
+    const response = await authFetch("AprobacionDeLicencias/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .catch((error) => {
-      console.log("No se puede acceder al servicio.", error);
-      MostrarErrorServicio();
-    });
+
+    const data = await response.json();
+    MostrarLicenciasAprobadas(data);
+
+  } catch (error) {
+    MostrarErrorServicio();
+  }
+
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
+
 }
 
 

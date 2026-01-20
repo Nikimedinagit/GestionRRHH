@@ -28,10 +28,9 @@ function CerrarPanelLocalidad() {
 // INICILIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerLocalidades();
 
   $("#EstadoIdBuscar, #ProvinciaIdBuscar, #NombreLocalidadBuscar").on("input", function () {
-    ObtenerLocalidades();
+    ObtenerLocalidades(false);
   });
 });
 
@@ -65,31 +64,33 @@ async function ComboParaFiltrarProvincias() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerLocalidades(mostrarSpinner = true) {
 
-    if (mostrarSpinner) mostrarPantallaCarga()
-  let estadoId = document.getElementById("EstadoIdBuscar").value;
-  let provinciaId = document.getElementById("ProvinciaIdBuscar").value;
+  if (mostrarSpinner) mostrarPantallaCarga()
 
-  let filtro = {
-    nombre: document.getElementById("NombreLocalidadBuscar").value,
-    eliminado: estadoId !== "" ? parseInt(estadoId) : null,
-    provinciaId: provinciaId !== "" ? parseInt(provinciaId) : null,
-  };
+  try {
+    let estadoId = document.getElementById("EstadoIdBuscar").value;
+    let provinciaId = document.getElementById("ProvinciaIdBuscar").value;
 
-  const res = await authFetch("Localidades/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      MostrarLocalidades(data);
-      LimpiarModalLocalidad();
-      CerrarPanelLocalidad();
+    let filtro = {
+      nombre: document.getElementById("NombreLocalidadBuscar").value,
+      eliminado: estadoId !== "" ? parseInt(estadoId) : null,
+      provinciaId: provinciaId !== "" ? parseInt(provinciaId) : null,
+    };
+
+    const response = await authFetch("Localidades/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-      })
-  
-  .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+
+    const data = await response.json();
+    MostrarLocalidades(data);
+    LimpiarModalLocalidad();
+    CerrarPanelLocalidad();
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 
@@ -114,43 +115,43 @@ function MostrarLocalidades(data) {
 
     $("#tablaLocalidadesBody").append(
       "<tr>" +
-        "<td class='text-center align-middle'>" +
-        "<button class='btn-editar' type='button' class='btn btn-sm " +
-        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
-        "' data-tippy-content='" +
-        (item.eliminado ? "Activar" : "Desactivar") +
-        "' onclick='EliminarLocalidadId(" +
-        item.id +
-        ", " +
-        item.eliminado +
-        ")' style='background: none; border: none;'>" +
-        "<i class='icon-desactivar bi " +
-        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
-        " " +
-        iconColor +
-        "'></i>" +
-        "</button>" +
-        "</td>" +
-        "<td class='align-middle " +
-        filaClass +
-        " localidad-truncada'>" +
-        item.nombre +
-        "</td>" +
-        "<td class='align-middle d-none d-md-table-cell " +
-        filaClass +
-        "'>" +
-        (item.provinciaString || "Sin provincia") +
-        "</td>" +
-        "<td class='d-flex justify-content-center align-items-center'>" +
-        "<button class='btn-editar' data-action='edit' style='" +
-        visibleBotones +
-        " background: none; border: none;' onclick='MostrarModalEditarLocalidad(" +
-        item.id +
-        ")' data-tippy-content='Editar'>" +
-        "<i class='bi bi-pencil-square icono-editar'></i>" +
-        "</button>" +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center align-middle'>" +
+      "<button class='btn-editar' type='button' class='btn btn-sm " +
+      (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+      "' data-tippy-content='" +
+      (item.eliminado ? "Activar" : "Desactivar") +
+      "' onclick='EliminarLocalidadId(" +
+      item.id +
+      ", " +
+      item.eliminado +
+      ")' style='background: none; border: none;'>" +
+      "<i class='icon-desactivar bi " +
+      (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+      " " +
+      iconColor +
+      "'></i>" +
+      "</button>" +
+      "</td>" +
+      "<td class='align-middle " +
+      filaClass +
+      " localidad-truncada'>" +
+      item.nombre +
+      "</td>" +
+      "<td class='align-middle d-none d-md-table-cell " +
+      filaClass +
+      "'>" +
+      (item.provinciaString || "Sin provincia") +
+      "</td>" +
+      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditarLocalidad(" +
+      item.id +
+      ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>" +
+      "</td>" +
+      "</tr>"
     );
   });
 
@@ -328,7 +329,10 @@ function MostrarErrorLocalidadExistente(mensaje) {
 // FUNCION PARA CREAR UNA LOCALIDAD ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearLocalidad() {
-  if (!ValidarFormularioLocalidad()) return;
+  if (!ValidarFormularioLocalidad()) {
+    ocultarOverlayGuardando();
+    return;
+  };
 
   mostrarOverlayGuardando();
 
@@ -347,17 +351,16 @@ async function CrearLocalidad() {
       const errorData = await response.json();
       if (errorData.mensaje) {
         MostrarErrorLocalidadExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerLocalidades(false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerLocalidades(false);
       CerrarPanelLocalidad();
 
       Swal.fire({
@@ -377,17 +380,23 @@ async function CrearLocalidad() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR UNA LOCALIDAD //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarLocalidad(id) {
-  if (!ValidarFormularioLocalidad()) return;
+  if (!ValidarFormularioLocalidad()) {
+    ocultarOverlayGuardando();
+    return;
+  };
 
   mostrarOverlayGuardando();
 
@@ -409,17 +418,17 @@ async function EditarLocalidad(id) {
       const errorData = await response.json();
       if (errorData.mensaje) {
         MostrarErrorLocalidadExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerLocalidades(false);
 
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerLocalidades(false);
       CerrarPanelLocalidad();
 
       Swal.fire({
@@ -439,7 +448,11 @@ async function EditarLocalidad(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -525,7 +538,7 @@ async function EliminarSiLocalidad(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerLocalidades();
+      ObtenerLocalidades(false);
     } else {
 
       Swal.fire({

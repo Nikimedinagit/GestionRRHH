@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////////////////////
 var cursoIdSeleccionado;
 
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE CURSOS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +99,7 @@ $(document).ready(function () {
   $("#NombreCursoBuscar, #ModalidadBuscar, #FechaCursoBuscar").on(
     "input",
     function () {
-      ObtenerCursos();
+      ObtenerCursos(false);
     }
   );
 });
@@ -129,13 +131,13 @@ async function ObtenerCursos(mostrarSpinner = true) {
       MostrarCursos(data);
       LimpiarModalCursos();
       cerrarPanelCursos();
-      btenerTotalCursos();
+      ObtenerTotalCursos();
     })
     .catch((error) => {
       MostrarErrorCatch();
     })
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } });
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,9 +318,14 @@ function MostrarCursosDesktop(data) {
         </div>
       `);
 
-      function togglePanel(item, panel, btn, tipo = "descripcion") {
+      function togglePanel(item, panel, btn, tipo = "descripcion", cursoId = null) {
         btn.on("click", function (e) {
           e.stopPropagation();
+
+          // Actualizar cursoIdSeleccionado cuando se abre asistencia o certificados
+          if (cursoId && (tipo === "fijo")) {
+            cursoIdSeleccionado = cursoId;
+          }
 
           $(".panelCriterios, .panelCertificados, .panelAsistencias")
             .not(panel)
@@ -358,13 +365,15 @@ function MostrarCursosDesktop(data) {
         item,
         certificadoDetalle,
         item.find(".btn-ver-certificados"),
-        "fijo"
+        "fijo",
+        element.id
       );
       togglePanel(
         item,
         asistenciaDetalle,
         item.find(".btn-ver-asistencias"),
-        "fijo"
+        "fijo",
+        element.id
       );
 
       contenedor.append(
@@ -374,8 +383,12 @@ function MostrarCursosDesktop(data) {
         asistenciaDetalle
       );
 
-      ObtenerAsistencia(element.id);
-      ObtenerCertificados(element.id);
+      // Cargar datos lazy al renderizar
+      if (element.id) {
+        cursoIdSeleccionado = element.id;
+        ObtenerAsistencia(element.id, false);
+        ObtenerCertificados(element.id, false);
+      }
     } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
       const resultado = parseFloat(element.resultado);
       const aprobado = !isNaN(resultado) && resultado >= 6;
@@ -568,7 +581,7 @@ function MostrarCursosMobile(data) {
         .find(".btn-ver-certificados")
         .on("click", function () {
           cursoIdSeleccionado = element.id;
-          ObtenerCertificados(element.id);
+          ObtenerCertificados(element.id, false);
 
           const offcanvasAsist = bootstrap.Offcanvas.getInstance(
             document.getElementById("offcanvasAsistencias")
@@ -585,7 +598,7 @@ function MostrarCursosMobile(data) {
         .find(".btn-ver-asistencias")
         .on("click", function () {
           cursoIdSeleccionado = element.id;
-          ObtenerAsistencia(element.id);
+          ObtenerAsistencia(element.id , false);
 
           const offcanvasCert = bootstrap.Offcanvas.getInstance(
             document.getElementById("offcanvasCertificados")
@@ -1008,7 +1021,10 @@ function ValidarCursoExistente(mensaje) {
 // FUNCION PARA CREAR UN NUEVO CURSO //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearCurso() {
-  if (!ValidarFormularioCursos()) return;
+  if (!ValidarFormularioCursos()) {
+    ocultarOverlayGuardando();
+    return;
+  }
   mostrarOverlayGuardando();
 
   try {
@@ -1029,15 +1045,13 @@ async function CrearCurso() {
 
     if (data.codigo === 0 || data.codigo === 1) {
       ValidarCursoExistente(data.mensaje);
+      ocultarOverlayGuardando();
       return;
     }
-    ObtenerCursos(false);
 
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerCursos(false);
       cerrarPanelCursos();
 
       Swal.fire({
@@ -1057,7 +1071,11 @@ async function CrearCurso() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -1066,7 +1084,10 @@ async function CrearCurso() {
 // FUNCION PARA EDITAR UN CURSO ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function EditarCurso(id) {
-  if (!ValidarFormularioCursos()) return;
+  if (!ValidarFormularioCursos()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -1087,15 +1108,13 @@ async function EditarCurso(id) {
     const data = await response.json();
     if (data.mensaje) {
       ValidarCursoExistente(data.mensaje);
+      ocultarOverlayGuardando();
       return;
     }
-    ObtenerCursos(false);
 
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerCursos(false);
       cerrarPanelCursos();
 
       Swal.fire({
@@ -1115,34 +1134,41 @@ async function EditarCurso(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////
-// INICIALAIR AL CARGAR LA VISTA //////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-ObtenerCursos();
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION APRA OBTENER  LOS DATOS DE LA API //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerAsistencia(cursoId, mostrarSpinner = true) {
+  // Guard: Validar que cursoId sea un número válido
+  if (typeof cursoId !== 'number' || cursoId <= 0) {
+    return;
+  }
+
   if (mostrarSpinner) mostrarPantallaCarga();
 
-  const res = await authFetch("AsistenciasCapacitacion", {
-    method: "GET",
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const cursosFiltrados = data.filter((c) => c.cursoId === cursoId);
-      MostrarAsistencias(cursoId, cursosFiltrados);
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    })
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+  try {
+    const response = await authFetch(`AsistenciasCapacitacion/PorCurso/${cursoId}`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    MostrarAsistencias(cursoId, data);
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    if (mostrarSpinner) {
+      setTimeout(() => ocultarPantallaCarga(), 1200);
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1151,6 +1177,7 @@ async function ObtenerAsistencia(cursoId, mostrarSpinner = true) {
 function MostrarAsistencias(cursoId, data) {
   const enMovil = window.innerWidth <= 880;
 
+  // Usar el parámetro cursoId para el selector DOM
   const tablaBody = $(`.tabla-asistencias-body[data-curso-id="${cursoId}"]`);
   const cardsContenedor = $("#contenedorAsistenciasOffcanvas");
 
@@ -1409,10 +1436,14 @@ function ValidarAsistenciaExistente(mensaje) {
 //////////////////////////////////////////////////////////////////////////////////////
 // CREAR ASISTENCIA //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function CrearAsistencia() {
-  if (!ValidarFormularioAsistencia()) return;
 
-  mostrarOverlayGuardandoAsistencias();
+async function CrearAsistencia() {
+  if (!ValidarFormularioAsistencia()) {
+    ocultarOverlayGuardandoAsistencia();
+    return;
+  }
+
+  mostrarOverlayGuardandoAsistencia();
 
   try {
     const asistencia = {
@@ -1428,17 +1459,17 @@ async function CrearAsistencia() {
     });
     const data = await response.json();
 
+    // Si hay error de validación, mostrar y NO cerrar modal
     if (data.mensaje) {
       ValidarAsistenciaExistente(data.mensaje);
-      return;
+      ocultarOverlayGuardandoAsistencia();
+      return; 
     }
-    await ObtenerAsistencia(cursoIdSeleccionado, false); 
 
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
+    // Si es exitoso, refrescar datos y mostrar mensaje
     setTimeout(() => {
-      ocultarOverlayGuardandoAsistencias();
+      ocultarOverlayGuardandoAsistencia();
+      ObtenerAsistencia(cursoIdSeleccionado, false);
       cerrarPanelAsistencias();
 
       Swal.fire({
@@ -1458,7 +1489,11 @@ async function CrearAsistencia() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardandoAsistencia();
   }
 }
 
@@ -1526,9 +1561,11 @@ async function EliminarSiAsistencia(id) {
     });
 
     const data = await res.json();
-    ObtenerAsistencia(cursoIdSeleccionado);
 
     if (res.ok) {
+      // Refrescar la tabla ANTES de mostrar el mensaje
+      await ObtenerAsistencia(cursoIdSeleccionado, false);
+
       Swal.fire({
         title: "¡Asistencia Eliminada!",
         toast: true,
@@ -1628,25 +1665,33 @@ async function MarcarAsistencia(id, nuevoEstado) {
 //////////////////////////////////////////////////////////////////////////////////////
 // INICILAIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-ObtenerAsistencia(cursoIdSeleccionado);
+// Se comenta porque cursoIdSeleccionado se asigna cuando se hace click en un curso
+// ObtenerAsistencia(cursoIdSeleccionado);
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS CERTIFICADOS ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerCertificados(cursoId, mostrarSpinner = true) {
+  // Guard: Validar que cursoId sea un número válido
+  if (typeof cursoId !== 'number' || cursoId <= 0) {
+    return;
+  }
+
   if (mostrarSpinner) mostrarPantallaCarga();
-  const res = await authFetch("Certificados", {
-    method: "GET",
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const cursosFiltrados = data.filter((c) => c.cursoId === cursoId);
-      MostrarCertificados(cursoId, cursosFiltrados);
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
-    })
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+
+  try {
+    const response = await authFetch(`Certificados/PorCurso/${cursoId}`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    MostrarCertificados(cursoId, data);
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    if (mostrarSpinner) {
+      setTimeout(() => ocultarPantallaCarga(), 1500);
+    }
+  }
 }
 
 
@@ -1656,6 +1701,7 @@ async function ObtenerCertificados(cursoId, mostrarSpinner = true) {
 function MostrarCertificados(cursoId, data) {
   const enMovil = window.innerWidth <= 880;
 
+  // Usar el parámetro cursoId para el selector DOM
   const tablaBody = $(`.tabla-certificados-body[data-curso-id="${cursoId}"]`);
   const cardsContenedor = $("#contenedorCertificadosOffcanvas");
 
@@ -1691,7 +1737,7 @@ function MostrarCertificados(cursoId, data) {
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
                 <button class='btn-eliminar'  style='background: none; border: none;'
-        onclick='EliminarCertificado(${item.id}, ${cursoId})'                        data-tippy-content="Eliminar">
+        onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})'                        data-tippy-content="Eliminar">
                   <i class='bi bi-trash3 icono-elimina-detalle'></i>
                 </button>
               </div>
@@ -1729,7 +1775,7 @@ function MostrarCertificados(cursoId, data) {
           <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
           <td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
-    onclick='EliminarCertificado(${item.id}, ${cursoId})' data-tippy-content='Eliminar'>
+    onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})' data-tippy-content='Eliminar'>
     <i class='bi bi-trash3 icono-elimina-detalle'></i>
 </button>
 
@@ -1910,9 +1956,12 @@ function ValidarCertificadoExistente(mensaje) {
 // FUNCION PARA CREAR UN CERTIFICADO //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function CrearCertificado() {
-  if (!ValidarFormularioCertificado()) return;
+  if (!ValidarFormularioCertificado()) {
+    ocultarOverlayGuardandoCertificado();
+    return;
+  }
 
-  mostrarOverlayGuardandoCertificados();
+  mostrarOverlayGuardandoCertificado();
 
   try {
     const formData = new FormData();
@@ -1934,18 +1983,17 @@ async function CrearCertificado() {
 
     const response = await res.json();
 
+    // Si hay error de validación, mostrar y NO cerrar modal
     if (response.mensaje) {
       ValidarCertificadoExistente(response.mensaje);
+      ocultarOverlayGuardandoCertificado();
       return;
     }
 
-    await ObtenerCertificados(cursoIdSeleccionado, false); 
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
+    // Si es exitoso, refrescar datos y mostrar mensaje
     setTimeout(() => {
-      ocultarOverlayGuardandoCertificados();
+      ocultarOverlayGuardandoCertificado();
+      ObtenerCertificados(cursoIdSeleccionado, false);
       cerrarPanelCertificados();
 
       Swal.fire({
@@ -1965,7 +2013,11 @@ async function CrearCertificado() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500); 
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardandoCertificado();
   }
 }
 
@@ -2033,8 +2085,8 @@ async function EliminarSiCertificado(id, cursoId) {
 
     if (!res.ok) throw new Error("No se pudo eliminar el certificado");
 
-    // Actualizamos la tabla / cards del curso correcto
-    ObtenerCertificados(cursoId);
+    // Refrescar la tabla ANTES de mostrar el mensaje
+    await ObtenerCertificados(cursoIdSeleccionado, false);
 
     Swal.fire({
       title: "¡Certificado Eliminado!",
@@ -2367,5 +2419,12 @@ async function GenerarInformePdfCursos() {
 //////////////////////////////////////////////////////////////////////////////////////
 // INICIALIZAR AL CARGAR LA VISTA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-ObtenerCertificados(cursoIdSeleccionado);
+// Se comenta porque cursoIdSeleccionado se asigna cuando se hace click en un curso
+// ObtenerCertificados(cursoIdSeleccionado);
 MostrarOpcionesCursosPorRol();
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// INICIALAIR AL CARGAR LA VISTA //////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+ObtenerCursos();

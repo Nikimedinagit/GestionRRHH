@@ -184,7 +184,7 @@ async function cargarTodo(mostrarSpinner = true) {
         await cargarAsistenciaMensual();
         await cargarJustificacionesPorDia();
     }
-    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 
 }
 

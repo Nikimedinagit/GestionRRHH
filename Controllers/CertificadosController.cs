@@ -87,16 +87,17 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             Console.WriteLine($"EmpleadoId: {certificado.EmpleadoId}, CursoId: {certificado.CursoId}");
 
-            var asistenciaAprobada = await _context.AsistenciaCapacitacion
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a =>
-                    a.EmpleadoId == certificado.EmpleadoId &&
-                    a.CursoId == certificado.CursoId &&
-                    a.Asistencia &&
-                    a.Resultado >= 6);
-
-            if (asistenciaAprobada == null)
-                return BadRequest(new { codigo = 0, mensaje = "El empleado no aprobó o no asistió a este curso" });
+            // Validación removida: Permitir crear certificados independientemente de aprobación/asistencia
+            // var asistenciaAprobada = await _context.AsistenciaCapacitacion
+            //     .AsNoTracking()
+            //     .FirstOrDefaultAsync(a =>
+            //         a.EmpleadoId == certificado.EmpleadoId &&
+            //         a.CursoId == certificado.CursoId &&
+            //         a.Asistencia &&
+            //         a.Resultado >= 6);
+            //
+            // if (asistenciaAprobada == null)
+            //     return BadRequest(new { codigo = 0, mensaje = "El empleado no aprobó o no asistió a este curso" });
 
             bool existeCertificado = await _context.Certificado
                 .AsNoTracking()
@@ -121,6 +122,32 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(certificado);
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER CERTIFICADOS POR CURSO (LAZY LOADING) //////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [HttpGet("PorCurso/{cursoId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCertificadoPorCurso(int cursoId)
+        {
+            var certificados = await _context.Certificado
+                .AsNoTracking()
+                .Include(c => c.Empleado)
+                .Include(c => c.Curso)
+                .Where(c => c.CursoId == cursoId && c.Empleado != null && !c.Empleado.Eliminado)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.CursoId,
+                    c.EmpleadoId,
+                    c.DocumentoNombre,
+                    c.DocumentoMimeType,
+                    Empleado = new { c.Empleado.NombreCompleto },
+                    Curso = new { c.Curso.Nombre }
+                })
+                .ToListAsync();
+
+            return Ok(certificados);
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMINAR UN CERTIFICADO ////////////////////////////////////////////////////////////

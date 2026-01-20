@@ -45,10 +45,9 @@ document
   });
 
 $(document).ready(function () {
-  ObtenerLicencias();
 
   $("#EstadoIdBuscar, #TipoDeLicenciaIdBuscar").on("change", function () {
-    ObtenerLicencias();
+    ObtenerLicencias(false);
   });
 
   $("#FechaInicioBuscar, #FechaFinBuscar").on("change", function () {
@@ -65,18 +64,18 @@ $(document).ready(function () {
     }
 
     if ($("#filtrarFechaSelect").val() === "si") {
-      ObtenerLicencias();
+      ObtenerLicencias(false);
     }
   });
 
   $("#filtrarFechaSelect").on("change", function () {
     const filtrarFecha = $(this).val() === "si";
     $("#divFechas").toggle(filtrarFecha);
-    ObtenerLicencias();
+    ObtenerLicencias(false);
   });
 
   $("#EmpleadoIdBuscar").on("input", function () {
-    ObtenerLicencias();
+    ObtenerLicencias(false);
   });
 });
 
@@ -108,53 +107,56 @@ async function ComboParaFiltrarTiposDeLicencia() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE LICENCIAS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerLicencias() {
-  let estadoLicencia = document.getElementById("EstadoIdBuscar").value;
-  let estado =
-    estadoLicencia !== "0" && estadoLicencia !== ""
-      ? parseInt(estadoLicencia)
-      : null;
+async function ObtenerLicencias(mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
 
-  let tipoDeLicenciaId = document.getElementById(
-    "TipoDeLicenciaIdBuscar"
-  ).value;
-  let tipoDeLicencia =
-    tipoDeLicenciaId !== "0" && tipoDeLicenciaId !== ""
-      ? parseInt(tipoDeLicenciaId)
-      : null;
+  try {
+    let estadoLicencia = document.getElementById("EstadoIdBuscar").value;
+    let estado =
+      estadoLicencia !== "0" && estadoLicencia !== ""
+        ? parseInt(estadoLicencia)
+        : null;
 
-  const filtrarFecha = $("#filtrarFechaSelect").val() === "si";
-  const fechaInicioRaw = $("#FechaInicioBuscar").val();
-  const fechaFinRaw = $("#FechaFinBuscar").val();
+    let tipoDeLicenciaId = document.getElementById(
+      "TipoDeLicenciaIdBuscar"
+    ).value;
+    let tipoDeLicencia =
+      tipoDeLicenciaId !== "0" && tipoDeLicenciaId !== ""
+        ? parseInt(tipoDeLicenciaId)
+        : null;
 
-  const fechaInicio =
-    filtrarFecha && fechaInicioRaw !== "" ? fechaInicioRaw : null;
-  const fechaFin = filtrarFecha && fechaFinRaw !== "" ? fechaFinRaw : null;
+    const filtrarFecha = $("#filtrarFechaSelect").val() === "si";
+    const fechaInicioRaw = $("#FechaInicioBuscar").val();
+    const fechaFinRaw = $("#FechaFinBuscar").val();
 
-  const nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
+    const fechaInicio =
+      filtrarFecha && fechaInicioRaw !== "" ? fechaInicioRaw : null;
+    const fechaFin = filtrarFecha && fechaFinRaw !== "" ? fechaFinRaw : null;
 
-  let filtro = {
-    estado: estado,
-    tipoDeLicenciaId: tipoDeLicencia,
-    fechaInicio: fechaInicio,
-    fechaFin: fechaFin,
-    empleadoTexto: nombreEmpleado,
-  };
+    const nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
 
-  const res = await authFetch("Licencias/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      MostrarLicencias(data);
-      LimpiarModalLicencia();
-      CerrarPanelLicencia();
-      ObtenerTotalLicencias();
+    let filtro = {
+      estado: estado,
+      tipoDeLicenciaId: tipoDeLicencia,
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
+      empleadoTexto: nombreEmpleado,
+    };
+
+    const response = await authFetch("Licencias/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+    const data = await response.json();
+    MostrarLicencias(data);
+    LimpiarModalLicencia();
+    CerrarPanelLicencia();
+    ObtenerTotalLicencias();
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 
@@ -174,22 +176,22 @@ function MostrarLicencias(data) {
 
   const estadoEstilo = {
     PENDIENTE: {
-      backgroundColor: "#fff3cd", 
+      backgroundColor: "#fff3cd",
       color: "#856404",
       borde: "#ffc107"
     },
     APROBADA: {
-      backgroundColor: "#d4f4dd", 
+      backgroundColor: "#d4f4dd",
       color: "#2e7d32",
       borde: "#52C41A"
     },
     RECHAZADA: {
-      backgroundColor: "#f8d7da", 
+      backgroundColor: "#f8d7da",
       color: "#c62828",
       borde: "#ff0000"
     },
     EXPIRADA: {
-      backgroundColor: "#e2e3e5", 
+      backgroundColor: "#e2e3e5",
       color: "#495057",
       borde: "#6c757d"
     }
@@ -504,13 +506,13 @@ function ValidarFormularioLicencia() {
   } else {
     const [anioI, mesI, diaI] = inputFechaInicio.value.split("-");
     const fechaInicio = new Date(anioI, mesI - 1, diaI);
-    fechaInicio.setHours(0, 0, 0, 0); 
+    fechaInicio.setHours(0, 0, 0, 0);
 
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
     const fechaLimite = new Date(hoy);
-    fechaLimite.setDate(hoy.getDate() - 7); 
+    fechaLimite.setDate(hoy.getDate() - 7);
 
     if (!inputFechaInicio.value) {
       inputErrorFechaInicio.style.display = "block";
@@ -536,7 +538,7 @@ function ValidarFormularioLicencia() {
   } else if (fechaInicioValida) {
     const [anioF, mesF, diaF] = inputFechaFin.value.split("-");
     const fechaFin = new Date(anioF, mesF - 1, diaF);
-    fechaFin.setHours(0, 0, 0, 0); 
+    fechaFin.setHours(0, 0, 0, 0);
 
     if (fechaFin < fechaInicioValida) {
       inputErrorFechaFin.style.display = "block";
@@ -603,10 +605,10 @@ document.getElementById("FechaInicio").addEventListener("input", () => {
   fechaIngresada.setHours(0, 0, 0, 0);
 
   const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0); 
+  hoy.setHours(0, 0, 0, 0);
 
   const fechaLimite = new Date(hoy);
-  fechaLimite.setDate(hoy.getDate() - 7); 
+  fechaLimite.setDate(hoy.getDate() - 7);
 
   if (!input.value) {
     input.classList.add("is-invalid");
@@ -623,7 +625,7 @@ document.getElementById("FechaInicio").addEventListener("input", () => {
     input.classList.add("is-valid");
     error.style.display = "none";
   }
-}); 
+});
 
 
 
@@ -652,14 +654,12 @@ document.getElementById("FechaFin").addEventListener("input", () => {
 });
 
 function MostrarErrorLicenciaExistente(mensaje) {
-  const errorLicencia = document.getElementById("errorIdEmpleado");
-  if (mensaje) {
-    errorLicencia.textContent = mensaje;
-    errorLicencia.style.display = "block";
-  } else {
-    errorLicencia.textContent = "";
-    errorLicencia.style.display = "none";
-  }
+  const errorEmpleado = document.getElementById("errorIdEmpleado");
+  const inputNombreEmpleado = document.getElementById("EmpleadoId");
+
+  errorEmpleado.textContent = mensaje;
+  errorEmpleado.style.display = "block";
+  inputNombreEmpleado.classList.add("is-invalid");
 }
 
 
@@ -667,40 +667,56 @@ function MostrarErrorLicenciaExistente(mensaje) {
 // FUNCIÓN PARA CREAR UNA NUEVA LICENCIA ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearLicencia() {
-  if (!ValidarFormularioLicencia()) return;
 
-  const formData = new FormData();
+  if (!ValidarFormularioLicencia()) {
+    ocultarOverlayGuardando();
+    return;
+  };
 
-  formData.append(
-    "TipoDeLicenciaId",
-    parseInt(document.getElementById("IdTipoLicencia").value)
-  );
-  formData.append("FechaInicio", document.getElementById("FechaInicio").value);
-  formData.append("FechaFin", document.getElementById("FechaFin").value);
-
-  const rol = getRol()?.toUpperCase();
-  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
-  }
-
-  const archivo = document.getElementById("DocumentoAdjunto").files[0];
-  if (archivo) {
-    formData.append("DocumentoAdjunto", archivo);
-  }
+  mostrarOverlayGuardando();
 
   try {
-    const res = await authFetch("Licencias", {
+    const formData = new FormData();
+
+    formData.append(
+      "TipoDeLicenciaId",
+      parseInt(document.getElementById("IdTipoLicencia").value)
+    );
+    formData.append("FechaInicio", document.getElementById("FechaInicio").value);
+    formData.append("FechaFin", document.getElementById("FechaFin").value);
+
+    const rol = getRol()?.toUpperCase();
+    if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+      formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+    }
+
+    const archivo = document.getElementById("DocumentoAdjunto").files[0];
+    if (archivo) {
+      formData.append("DocumentoAdjunto", archivo);
+    }
+
+
+    const response = await authFetch("Licencias", {
       method: "POST",
       body: formData,
     });
 
-    const response = await res.json();
+    const data = await response.json();
 
-    if (response.mensaje) {
-      MostrarErrorLicenciaExistente(response.mensaje);
-    } else {
+    if (!response.ok) {
+      if (data.mensaje) {
+        MostrarErrorLicenciaExistente(data.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerLicencias(false);
       CerrarPanelLicencia();
-      ObtenerLicencias();
 
       Swal.fire({
         title: "¡Licencia Creada!",
@@ -719,9 +735,11 @@ async function CrearLicencia() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }
+    }, 800);
+
   } catch (error) {
     MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -732,61 +750,77 @@ async function CrearLicencia() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarLicencia(id) {
   if (!ValidarFormularioLicencia()) {
+    ocultarOverlayGuardando();
     return;
-  }
-  const formData = new FormData();
-  formData.append("Id", parseInt(document.getElementById("IdLicencia").value));
-  formData.append(
-    "TipoDeLicenciaId",
-    parseInt(document.getElementById("IdTipoLicencia").value)
-  );
-  formData.append("FechaInicio", document.getElementById("FechaInicio").value);
-  formData.append("FechaFin", document.getElementById("FechaFin").value);
+  };
 
-  const rol = getRol()?.toUpperCase();
-  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
-  }
+  mostrarOverlayGuardando();
 
-  const archivo = document.getElementById("DocumentoAdjunto").files[0];
-  if (archivo) {
-    formData.append("DocumentoAdjunto", archivo);
-  }
+  try {
+    const formData = new FormData();
+    formData.append("Id", parseInt(document.getElementById("IdLicencia").value));
+    formData.append(
+      "TipoDeLicenciaId",
+      parseInt(document.getElementById("IdTipoLicencia").value)
+    );
+    formData.append("FechaInicio", document.getElementById("FechaInicio").value);
+    formData.append("FechaFin", document.getElementById("FechaFin").value);
 
-  const res = await authFetch(`Licencias/${id}`, {
-    method: "PUT",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorLicenciaExistente(response.mensaje);
-      } else {
-        CerrarPanelLicencia();
-        ObtenerLicencias();
+    const rol = getRol()?.toUpperCase();
+    if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+      formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+    }
 
-        Swal.fire({
-          title: "¡Licencia Modificada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
+    const archivo = document.getElementById("DocumentoAdjunto").files[0];
+    if (archivo) {
+      formData.append("DocumentoAdjunto", archivo);
+    }
+
+    const response = await authFetch(`Licencias/${id}`, {
+      method: "PUT",
+      body: formData,
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorLicenciaExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+    setTimeout(() => {
+      CerrarPanelLicencia();
+      ObtenerLicencias(false);
+      ocultarOverlayGuardando();
+
+      Swal.fire({
+        title: "¡Licencia Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
+
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  };
 }
 
 
@@ -856,7 +890,7 @@ async function EliminarSiLicencia(id) {
       return response.text();
     })
     .then((data) => {
-      ObtenerLicencias();
+      ObtenerLicencias(false);
 
       Swal.fire({
         title: "¡Licencia Eliminada!",
@@ -964,7 +998,7 @@ async function RechazarLicencia(id) {
         },
       });
 
-      ObtenerLicencias();
+      ObtenerLicencias(false);
     })
     .catch((error) => {
       MostrarErrorCatch();
@@ -998,7 +1032,7 @@ async function AprobarLicencia(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerLicencias();
+      ObtenerLicencias(false);
     })
     .catch((error) => {
       MostrarErrorCatch();

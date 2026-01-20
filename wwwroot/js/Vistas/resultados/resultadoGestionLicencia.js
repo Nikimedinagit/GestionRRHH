@@ -171,7 +171,7 @@ async function cargarLicenciasPorSector() {
   if (!res.ok) {
     console.error("Error HTTP:", res.status);
     return;
-}
+  }
   const data = await res.json();
 
   if (!data || data.length === 0) {
@@ -226,8 +226,8 @@ async function cargarLicenciasPorSector() {
                 const i = ctx.dataIndex;
                 return [
                   `Sector: ${labels[i]}`,
-                                `Licencias: ${valores[i]}`,
-                                `Promedio: ${promedios[i]} días`
+                  `Licencias: ${valores[i]}`,
+                  `Promedio: ${promedios[i]} días`
                 ];
               },
             },
@@ -244,7 +244,7 @@ async function cargarLicenciasPorPuesto() {
   if (!res.ok) {
     console.error("Error HTTP:", res.status);
     return;
-}
+  }
   const data = await res.json();
 
   if (!data || data.length === 0) {
@@ -299,8 +299,8 @@ async function cargarLicenciasPorPuesto() {
                 const i = ctx.dataIndex;
                 return [
                   `Puesto: ${labels[i]}`,
-                                `Licencias: ${valores[i]}`,
-                                `Promedio: ${promedios[i]} días`
+                  `Licencias: ${valores[i]}`,
+                  `Promedio: ${promedios[i]} días`
                 ];
               },
             },
@@ -312,11 +312,15 @@ async function cargarLicenciasPorPuesto() {
 }
 
 // ===================================== Inicialziar Los Graficos ====================
-async function cargarTodo() {
-  await cargarLicenciasMensuales();
-  await cargarLicenciasPorTipo();
-  await cargarLicenciasPorSector();
-  await cargarLicenciasPorPuesto();
+async function cargarTodo(mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
+  try {
+    await cargarLicenciasMensuales();
+    await cargarLicenciasPorTipo();
+    await cargarLicenciasPorSector();
+    await cargarLicenciasPorPuesto();
+  }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 cargarTodo();

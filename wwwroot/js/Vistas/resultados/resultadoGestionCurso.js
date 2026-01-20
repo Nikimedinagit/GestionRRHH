@@ -364,7 +364,7 @@ async function cargarTodo(mostrarSpinner = true) {
     await cargarComparacionPorModalidad();
     await cargarRankingCursos();
   }
-  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 cargarTodo();

@@ -71,7 +71,7 @@ async function ObtenerJustificaciones(mostrarSpinner = true) {
   } catch (error) {
     MostrarErrorCatch();
   }
-  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } };
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 
 }
 
@@ -85,6 +85,11 @@ function MostrarJustificaciones(data) {
     MostrarJustificacionesDesktop(data);
   }
 }
+
+window.addEventListener("resize", function () {
+  ObtenerJustificaciones(false);
+});
+
 
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES DESKTOP ///////////////////////////////////////////
@@ -757,10 +762,13 @@ function MostrarErrorJustificacionExistente(mensaje) {
 //////////////////////////////////////////////////////////////////////////////
 async function CrearJustificacion() {
   if (!ValidarFormularioJustificacion()) {
+    ocultarOverlayGuardando();
     return;
   }
 
   mostrarOverlayGuardando();
+
+  try {
 
   const formData = new FormData();
   formData.append(
@@ -777,30 +785,27 @@ async function CrearJustificacion() {
     formData.append("DocumentoAdjunto", archivo);
   }
 
-  try {
-    const res = await authFetch("Justificaciones", {
+    const response = await authFetch("Justificaciones", {
       method: "POST",
       body: formData,
     });
 
-    const response = await res.json();
-
-    console.log(response);
-
-    if (response.mensaje) {
-      MostrarErrorJustificacionExistente(response.mensaje);
-    } else {
-      ObtenerJustificaciones(false);
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorJustificacionExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
     }
-  } catch (error) {
-    MostrarErrorCatch();
-  }
 
-  finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerJustificaciones(false);
       cerrarPanelJustificacion();
-       Swal.fire({
+      Swal.fire({
         title: "¡Justificación Creada!",
         toast: true,
         position: "bottom-end",
@@ -818,8 +823,13 @@ async function CrearJustificacion() {
         },
       });
 
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -827,6 +837,7 @@ async function CrearJustificacion() {
 //////////////////////////////////////////////////////////////////////////////
 async function EditarJustificacion(id) {
   if (!ValidarFormularioJustificacion()) {
+    ocultarOverlayGuardando();
     return;
   }
 
@@ -850,24 +861,25 @@ async function EditarJustificacion(id) {
     if (archivo) {
       formData.append("DocumentoAdjunto", archivo);
     }
-    const res = await authFetch(`Justificaciones/${id}`, {
+    const response = await authFetch(`Justificaciones/${id}`, {
       method: "PUT",
       body: formData,
     })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response.mensaje) {
-          MostrarErrorJustificacionExistente(response.mensaje);
-        } else {
-          ObtenerJustificaciones(false);
-        }
-      })
-  } catch (error) {
-    MostrarErrorCatch();
-  }
-  finally {
-    setTimeout(() => {
+      
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorJustificacionExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
       ocultarOverlayGuardando();
+      return;
+    }
+
+     setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerJustificaciones(false);
       cerrarPanelJustificacion();
       Swal.fire({
         title: "¡Justificacion Modificada!",
@@ -887,7 +899,11 @@ async function EditarJustificacion(id) {
         },
       });
 
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 

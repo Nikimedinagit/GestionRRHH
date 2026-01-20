@@ -120,6 +120,30 @@ namespace API_NET_CORE8_RRHH.Controllers
             return Ok(asistencia);
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER ASISTENCIAS POR CURSO (LAZY LOADING) //////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [HttpGet("PorCurso/{cursoId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAsistenciaCapacitacionPorCurso(int cursoId)
+        {
+            var asistencias = await _context.AsistenciaCapacitacion
+                .AsNoTracking()
+                .Include(a => a.Empleado)
+                .Where(a => a.CursoId == cursoId && a.Empleado != null && !a.Empleado.Eliminado)
+                .Select(a => new 
+                { 
+                    a.Id,
+                    a.EmpleadoId,
+                    a.CursoId,
+                    a.Resultado,
+                    a.Asistencia,
+                    Empleado = new { a.Empleado.NombreCompleto }
+                })
+                .ToListAsync();
+
+            return Ok(asistencias);
+        }
 
         private bool AsistenciaCapacitacionExists(int id)
         {

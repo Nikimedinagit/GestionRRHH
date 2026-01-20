@@ -104,6 +104,7 @@ async function ObtenerEmpleados(mostrarSpinner = true) {
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
+  try { 
   let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
   let nroLegajo = document.getElementById("NroLegajoFiltro").value;
@@ -124,22 +125,21 @@ async function ObtenerEmpleados(mostrarSpinner = true) {
     puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
   };
 
-  const res = await authFetch("Empleados/Filtrar", {
+  const response = await authFetch("Empleados/Filtrar", {
     method: "POST",
     body: JSON.stringify(filtro),
   })
-    .then((response) => response.json())
-    .then((data) => {
-
+    
+    const data = await response.json();
       MostrarEmpleados(data);
       LimpiarFormularioEmpleado();
       ObtenerTotalEmpleados();
-    })
-    .catch((error) => {
+  
+    } catch(error)  {
       MostrarErrorCatch();
-    })
+    }
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 
 }
 
@@ -1131,7 +1131,10 @@ function MostrarErrorEmpleadoExistente(mensajes) {
 // FUNCIÓN PARA CREAR EMPLEADO ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 async function CrearEmpleado() {
-  if (!ValidarFormularioEmpleado()) return;
+  if (!ValidarFormularioEmpleado()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -1139,45 +1142,44 @@ async function CrearEmpleado() {
     const empleado = {
       nombreCompleto: document.getElementById("NombreEmpleado").value.trim(),
       dni: Number(document.getElementById("DniEmpleado").value.trim()),
-      cuil: Number(document.getElementById("CuilEmpleado").value.trim() || null),
+      cuil: (() => {
+        const val = document.getElementById("CuilEmpleado").value.trim();
+        return val ? Number(val) : null;
+      })(),
       telefono: document.getElementById("TelefonoEmpleado").value.trim(),
       email: document.getElementById("EmailEmpleado").value.trim(),
       fechaNacimiento: document.getElementById("FechaNacimientoEmpleado").value,
       direccion: document.getElementById("DireccionEmpleado").value.trim(),
       estadoCiviles: Number(document.getElementById("EstadoCivilEmpleado").value),
-      cantidadHijos: Number(
-        document.getElementById("CantidadHijosEmpleado").value.trim() || null
-      ),
+      cantidadHijos: (() => {
+        const val = document.getElementById("CantidadHijosEmpleado").value.trim();
+        return val ? Number(val) : null;
+      })(),
       tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
       localidadId: Number(document.getElementById("IdLocalidad").value),
       puestoId: Number(document.getElementById("IdPuesto").value),
     };
 
-    const res = await authFetch("Empleados", {
+    const response = await authFetch("Empleados", {
       method: "POST",
       body: JSON.stringify(empleado),
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json();
-          if (errorData.mensaje) {
-            MostrarErrorEmpleadoExistente(errorData.mensaje);
-          }
-          return;
-        }
+    });
 
-        ObtenerEmpleados(false);
-      })
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorEmpleadoExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
 
-  } catch (error) {
-    MostrarErrorCatch();
-  }
-
-  finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerEmpleados(false);
       CerrarPanelEmpleado();
-
       Swal.fire({
         title: "¡Empleado Creado!",
         toast: true,
@@ -1195,19 +1197,24 @@ async function CrearEmpleado() {
           icon: "swal2-toast-success-icon",
         },
       });
+    }, 800);
 
-    }, 1500);
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
-
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////
 // EDITAR EMPLEADO //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function EditarEmpleado(id) {
-  if (!ValidarFormularioEmpleado()) return;
-
+  if (!ValidarFormularioEmpleado()) {
+    ocultarOverlayGuardando();
+    return;
+  }
   mostrarOverlayGuardando();
 
   try {
@@ -1240,17 +1247,16 @@ async function EditarEmpleado(id) {
       const errorData = await response.json();
       if (errorData.mensaje) {
         MostrarErrorEmpleadoExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerEmpleados(false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerEmpleados(false);
       CerrarPanelEmpleado();
 
       Swal.fire({
@@ -1271,7 +1277,11 @@ async function EditarEmpleado(id) {
         },
       });
 
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 

@@ -160,7 +160,7 @@ async function ObtenerHorarios(mostrarSpinner = true) {
       MostrarErrorCatch();
     })
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } });
 }
 
 
@@ -176,7 +176,7 @@ function MostrarHorarios(data) {
 }
 
 window.addEventListener("resize", function () {
-  ObtenerHorarios();
+  ObtenerHorarios(false);
 });
 
 
@@ -929,11 +929,18 @@ function formatearHora(hora) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA CREAR HORARIO ///////////////////////////////////////////////////////////////////////  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCIÓN PRINCIPAL CREAR HORARIO //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 async function CrearHorario() {
 
-  if (!ValidarFormularioHorario()) return;
+  if (!ValidarFormularioHorario()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
+
   try {
     const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
 
@@ -965,26 +972,25 @@ async function CrearHorario() {
       horario.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
     }
 
-    const res = await authFetch("Horarios", {
+    const response = await authFetch("Horarios", {
       method: "POST",
       body: JSON.stringify(horario),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response.mensaje) {
-          MostrarErrorHorarioExistente(response.mensaje);
-        } else {
-          ObtenerHorarios(false);
-        }
-      })
+    });
 
-  } catch (error) {
-    MostrarErrorCatch();
-  }
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorHorarioExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
 
-  finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerHorarios(false);
       cerrarPanelHorario();
 
       Swal.fire({
@@ -1004,17 +1010,24 @@ async function CrearHorario() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
-  }
+    }, 800);
 
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR HORARIO ///////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarHorario(id) {
-  if (!ValidarFormularioHorario()) return;
+  if (!ValidarFormularioHorario()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -1065,21 +1078,21 @@ async function EditarHorario(id) {
       body: JSON.stringify(horarioEditar),
     });
 
-    const result = await response.json();
-
-    if (result.mensaje) {
-      MostrarErrorHorarioExistente(result.mensaje);
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorHorarioExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerHorarios(false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  }
-  finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerHorarios(false);
+
       cerrarPanelHorario();
 
       Swal.fire({
@@ -1100,8 +1113,13 @@ async function EditarHorario(id) {
         },
       });
 
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

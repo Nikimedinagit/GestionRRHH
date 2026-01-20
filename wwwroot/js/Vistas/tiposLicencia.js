@@ -30,10 +30,9 @@ function CerrarPanelTipoDeLicencia() {
 // INICILIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerTiposDeLicencias();
 
   $("#EstadoIdBuscar, #NombreTipoLicenciaBuscar").on("input", function () {
-    ObtenerTiposDeLicencias();
+    ObtenerTiposDeLicencias(false);
   });
 });
 
@@ -41,27 +40,29 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerTiposDeLicencias() {
+async function ObtenerTiposDeLicencias(mostrarSpinner = true) {
 
-  let estado = document.getElementById("EstadoIdBuscar").value;
-  let filtro = {
-    nombre: document.getElementById("NombreTipoLicenciaBuscar").value,
-    eliminado: estado !== "" ? parseInt(estado) : null,
-  };
+  if (mostrarSpinner) mostrarPantallaCarga();
 
-  const res = await authFetch("TipoDeLicencias/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then(response => response.json())
-    .then((data) => {
-      MostrarTiposDeLicencias(data);
-      LimpiarModalTipoDeLicencia();
-      CerrarPanelTipoDeLicencia();
+  try {
+    let estado = document.getElementById("EstadoIdBuscar").value;
+    let filtro = {
+      nombre: document.getElementById("NombreTipoLicenciaBuscar").value,
+      eliminado: estado !== "" ? parseInt(estado) : null,
+    };
+
+    const response = await authFetch("TipoDeLicencias/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
+    const data = await response.json();
+    MostrarTiposDeLicencias(data);
+    LimpiarModalTipoDeLicencia();
+    CerrarPanelTipoDeLicencia();
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 
@@ -69,7 +70,7 @@ async function ObtenerTiposDeLicencias() {
 // FUNCION PARA MOSTRAR LOS TIPOS DE LICENCIAS ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarTiposDeLicencias(data) {
-    window.listaTiposDeLicencias = data;
+  window.listaTiposDeLicencias = data;
 
   $("#tablaTiposLicenciaBody").empty();
 
@@ -87,37 +88,37 @@ function MostrarTiposDeLicencias(data) {
 
     $("#tablaTiposLicenciaBody").append(
       "<tr>" +
-        "<td class='text-center align-middle'>" +
-        "<button class='btn-editar' type='button' class='btn btn-sm " +
-        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
-        "' data-tippy-content='" +
-        (item.eliminado ? "Activar" : "Desactivar") +
-        "' onclick='EliminarTipoDeLicenciaId(" +
-        item.id +
-        ", " +
-        item.eliminado +
-        ")' style='background: none; border: none;'>" +
-        "<i class='icon-desactivar bi " +
-        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
-        " " +
-        iconColor +
-        "'></i>" +
-        "</button>" +
-        "</td>" +
-        "<td class='align-middle " +
-        filaClass +
-        " tipo-de-licencia-truncado'>" +
-        item.nombre +
-        "</td>" +
-        "<td class='d-flex justify-content-center align-items-center'>" +
-        "<button class='btn-editar' data-action='edit' style='" +
-        visibleBotones +
-        " background: none; border: none;' onclick='MostrarModalEditar(" +
-        item.id +  ")' data-tippy-content='Editar'>" +
-        "<i class='bi bi-pencil-square icono-editar'></i>" +
-        "</button>" +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center align-middle'>" +
+      "<button class='btn-editar' type='button' class='btn btn-sm " +
+      (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+      "' data-tippy-content='" +
+      (item.eliminado ? "Activar" : "Desactivar") +
+      "' onclick='EliminarTipoDeLicenciaId(" +
+      item.id +
+      ", " +
+      item.eliminado +
+      ")' style='background: none; border: none;'>" +
+      "<i class='icon-desactivar bi " +
+      (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+      " " +
+      iconColor +
+      "'></i>" +
+      "</button>" +
+      "</td>" +
+      "<td class='align-middle " +
+      filaClass +
+      " tipo-de-licencia-truncado'>" +
+      item.nombre +
+      "</td>" +
+      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditar(" +
+      item.id + ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>" +
+      "</td>" +
+      "</tr>"
     );
   });
 
@@ -201,7 +202,7 @@ function ValidarFormularioTipoDeLicencia() {
     return false;
   }
 
-  inputNombre.classList.add("is-valid"); 
+  inputNombre.classList.add("is-valid");
   inputErrorNombre.style.display = "none";
   return true;
 }
@@ -249,45 +250,63 @@ function MostrarErrorTipoDeLicenciaExistente(mensaje) {
 // FUNCIÓN PARA CREAR UNA TIPO DE LICENCIA ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearTipoDeLicencia() {
-  if (!ValidarFormularioTipoDeLicencia()) return;
 
-  const tipoDeLicencia = {
-    nombre: document.getElementById("NombreTipoDeLicencia").value.trim(),
+  if (!ValidarFormularioTipoDeLicencia()) {
+    ocultarOverlayGuardando();
+    return;
   };
-  const res = await authFetch("TipoDeLicencias", {
-    method: "POST",
-    body: JSON.stringify(tipoDeLicencia),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorTipoDeLicenciaExistente(response.mensaje);
-      } else {
-        CerrarPanelTipoDeLicencia();
-        ObtenerTiposDeLicencias(); 
 
-        Swal.fire({
-          title: "¡Licencia Creada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+  mostrarOverlayGuardando();
+
+  try {
+    const tipoDeLicencia = {
+      nombre: document.getElementById("NombreTipoDeLicencia").value.trim(),
+    };
+    const response = await authFetch("TipoDeLicencias", {
+      method: "POST",
+      body: JSON.stringify(tipoDeLicencia),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorTipoDeLicenciaExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+
+
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerTiposDeLicencias(false);
+      CerrarPanelTipoDeLicencia();
+
+      Swal.fire({
+        title: "¡Licencia Creada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  };
 }
 
 
@@ -296,45 +315,63 @@ async function CrearTipoDeLicencia() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarTipoDeLicencia(id) {
 
-  if (!ValidarFormularioTipoDeLicencia()) return;
-  
-  let tipoDeLicencia = {
-    id: document.getElementById("IdTipoDeLicencia").value,
-    nombre: document.getElementById("NombreTipoDeLicencia").value.trim(),
+  if (!ValidarFormularioTipoDeLicencia()) {
+    ocultarOverlayGuardando();
+    return;
   };
-  const res = await authFetch(`TipoDeLicencias/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(tipoDeLicencia),
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.mensaje) {
-        MostrarErrorTipoDeLicenciaExistente(response.mensaje);
-      } else {
-        ObtenerTiposDeLicencias(); 
 
-        Swal.fire({
-          title: "¡Licencia Modificada!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-      }
+  mostrarOverlayGuardando();
+
+  try {
+    let tipoDeLicencia = {
+      id: document.getElementById("IdTipoDeLicencia").value,
+      nombre: document.getElementById("NombreTipoDeLicencia").value.trim(),
+    };
+    const response = await authFetch(`TipoDeLicencias/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(tipoDeLicencia),
     })
-     .catch((error) => {
-      MostrarErrorCatch();
+
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorTipoDeLicenciaExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerTiposDeLicencias(false);
+      CerrarPanelTipoDeLicencia();
+
+      Swal.fire({
+        title: "¡Licencia Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
       });
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  };
 }
 
 
@@ -342,7 +379,7 @@ async function EditarTipoDeLicencia(id) {
 // FUNCION MOSTRAR MODAL DE ELIMINAR TIPO DE LICENCIA ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function EliminarTipoDeLicenciaId(id, eliminado) {
-   Swal.fire({
+  Swal.fire({
     title: eliminado
       ? "¿Deseás reactivar esta licencia?"
       : "¿Deseás desactivar esta licencia?",
@@ -363,30 +400,30 @@ function EliminarTipoDeLicenciaId(id, eliminado) {
     background: "#ffffff",
     color: "#1a1a1a",
   })
-  .then((result) => {
-    if (result.isConfirmed) {
-      EliminarSiTipoDeLicencia(id);
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción Cancelada",
-        text: eliminado ? "Continuará desactivada." : "Continuará activada.",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#fef8f4",
-        color: "#5f4339",
-        icon: "info",
-        iconColor: "#ff914d",
-        customClass: {
-          popup: "swal2-toast-status",
-          title: "swal2-toast-title",
-          content: "swal2-toast-content",
-        },
-      });
-    }
-  });
+    .then((result) => {
+      if (result.isConfirmed) {
+        EliminarSiTipoDeLicencia(id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: "Acción Cancelada",
+          text: eliminado ? "Continuará desactivada." : "Continuará activada.",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#fef8f4",
+          color: "#5f4339",
+          icon: "info",
+          iconColor: "#ff914d",
+          customClass: {
+            popup: "swal2-toast-status",
+            title: "swal2-toast-title",
+            content: "swal2-toast-content",
+          },
+        });
+      }
+    });
 }
 
 
@@ -394,7 +431,7 @@ function EliminarTipoDeLicenciaId(id, eliminado) {
 // FUNCIÓN PARA ELIMINAR SI TIPO DE LICENCIA ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiTipoDeLicencia(id) {
- try {
+  try {
     const response = await authFetch(`TipoDeLicencias/${id}`, {
       method: "DELETE",
     });
@@ -419,7 +456,7 @@ async function EliminarSiTipoDeLicencia(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerTiposDeLicencias();
+      ObtenerTiposDeLicencias(false);
     } else {
       Swal.fire({
         title: "Acción no permitida",

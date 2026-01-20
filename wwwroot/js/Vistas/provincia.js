@@ -29,10 +29,9 @@ function cerrarPanelProvincia() {
 // INICILIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerProvincias();
 
   $("#EstadoIdBuscar, #NombreProvinciaBuscar").on("input", function () {
-    ObtenerProvincias();
+    ObtenerProvincias(false);
   });
 });
 
@@ -42,31 +41,34 @@ $(document).ready(function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerProvincias(mostrarSpinner = true) {
 
-  if(mostrarSpinner) mostrarPantallaCarga();
+  if (mostrarSpinner) mostrarPantallaCarga();
 
-  let estado = document.getElementById("EstadoIdBuscar").value;
-  let filtro = {
-    nombre: document.getElementById("NombreProvinciaBuscar").value,
-    eliminado: estado !== "" ? parseInt(estado) : null,
-  };
+  try {
+    let estado = document.getElementById("EstadoIdBuscar").value;
+    let filtro = {
+      nombre: document.getElementById("NombreProvinciaBuscar").value,
+      eliminado: estado !== "" ? parseInt(estado) : null,
+    };
 
-  const res = await authFetch("Provincias/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      MostrarProvincias(data);
-      LimpiarModalProvincia();
-      cerrarPanelProvincia();
-    })
-    .catch((error) => {
-      MostrarErrorCatch();
+    const response = await authFetch("Provincias/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+    const data = await response.json();
+    MostrarProvincias(data);
+    LimpiarModalProvincia();
+    cerrarPanelProvincia();
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+
+  finally {
+    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); };
+  }
+
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS DATOS DE LA API DE PROVINCIAS ///////////////////////////////////////////////
@@ -90,38 +92,38 @@ function MostrarProvincias(data) {
 
     $("#tablaProvinciasBody").append(
       "<tr>" +
-        "<td class='text-center align-middle'>" +
-        "<button class='btn-editar' type='button' class='btn btn-sm " +
-        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
-        "' data-tippy-content='" +
-        (item.eliminado ? "Activar" : "Desactivar") +
-        "' onclick='EliminarProvinciaId(" +
-        item.id +
-        ", " +
-        item.eliminado +
-        ")' style='background: none; border: none;'>" +
-        "<i class='icon-desactivar bi " +
-        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
-        " " +
-        iconColor +
-        "'></i>" +
-        "</button>" +
-        "</td>" +
-        "<td class='align-middle " +
-        filaClass +
-        " provincia-truncada'>" +
-        item.nombre +
-        "</td>" +
-        "<td class='d-flex justify-content-center align-items-center'>" +
-        "<button class='btn-editar' data-action='edit' style='" +
-        visibleBotones +
-        " background: none; border: none;' onclick='MostrarModalEditar(" +
-        item.id +
-        ")' data-tippy-content='Editar'>" +
-        "<i class='bi bi-pencil-square icono-editar'></i>" +
-        "</button>" +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center align-middle'>" +
+      "<button class='btn-editar' type='button' class='btn btn-sm " +
+      (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+      "' data-tippy-content='" +
+      (item.eliminado ? "Activar" : "Desactivar") +
+      "' onclick='EliminarProvinciaId(" +
+      item.id +
+      ", " +
+      item.eliminado +
+      ")' style='background: none; border: none;'>" +
+      "<i class='icon-desactivar bi " +
+      (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+      " " +
+      iconColor +
+      "'></i>" +
+      "</button>" +
+      "</td>" +
+      "<td class='align-middle " +
+      filaClass +
+      " provincia-truncada'>" +
+      item.nombre +
+      "</td>" +
+      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditar(" +
+      item.id +
+      ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>" +
+      "</td>" +
+      "</tr>"
     );
   });
 
@@ -204,7 +206,7 @@ function ValidarFormularioProvincia() {
     return false;
   }
 
-  inputNombre.classList.add("is-valid"); 
+  inputNombre.classList.add("is-valid");
   inputErrorNombre.style.display = "none";
   return true;
 }
@@ -229,7 +231,7 @@ document.getElementById("NombreProvincia").addEventListener("input", () => {
     errorNombre.style.display = "block";
     errorNombre.textContent = "Mínimo 3 caracteres.";
   } else {
-    inputNombre.classList.add("is-valid"); 
+    inputNombre.classList.add("is-valid");
     errorNombre.style.display = "none";
   }
 });
@@ -252,7 +254,10 @@ function MostrarErrorProvinciaExistente(mensaje) {
 // FUNCION PARA CREAR UNA PROVINCIA ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearProvincia() {
-  if (!ValidarFormularioProvincia()) return;
+  if (!ValidarFormularioProvincia()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -270,17 +275,16 @@ async function CrearProvincia() {
       const errorData = await response.json();
       if (errorData.mensaje) {
         MostrarErrorProvinciaExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerProvincias(false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerProvincias(false);
       cerrarPanelProvincia();
 
       Swal.fire({
@@ -300,16 +304,23 @@ async function CrearProvincia() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
-  }
-}
+    }, 800);
 
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  }
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA EDITAR UNA PROVINCIA //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarProvincia(id) {
-  if (!ValidarFormularioProvincia()) return;
+  if (!ValidarFormularioProvincia()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -330,17 +341,17 @@ async function EditarProvincia(id) {
       const errorData = await response.json();
       if (errorData.mensaje) {
         MostrarErrorProvinciaExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerProvincias(false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerProvincias(false);
+
       cerrarPanelProvincia();
 
       Swal.fire({
@@ -360,7 +371,11 @@ async function EditarProvincia(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -390,30 +405,30 @@ function EliminarProvinciaId(id, eliminado) {
     background: "#ffffff",
     color: "#1a1a1a",
   })
-  .then((result) => {
-    if (result.isConfirmed) {
-      EliminarSiProvincia(id);
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción Cancelada",
-        text: eliminado ? "Continuará desactivada." : "Continuará activada.",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#fef8f4",
-        color: "#5f4339",
-        icon: "info",
-        iconColor: "#ff914d",
-        customClass: {
-          popup: "swal2-toast-status",
-          title: "swal2-toast-title",
-          content: "swal2-toast-content",
-        },
-      });
-    }
-  });
+    .then((result) => {
+      if (result.isConfirmed) {
+        EliminarSiProvincia(id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: "Acción Cancelada",
+          text: eliminado ? "Continuará desactivada." : "Continuará activada.",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#fef8f4",
+          color: "#5f4339",
+          icon: "info",
+          iconColor: "#ff914d",
+          customClass: {
+            popup: "swal2-toast-status",
+            title: "swal2-toast-title",
+            content: "swal2-toast-content",
+          },
+        });
+      }
+    });
 }
 
 
@@ -446,7 +461,7 @@ async function EliminarSiProvincia(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerProvincias();
+      ObtenerProvincias(false);
     } else {
       Swal.fire({
         title: "Acción no permitida",

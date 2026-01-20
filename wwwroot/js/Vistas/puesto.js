@@ -9,7 +9,7 @@ function AbrirPanelPuesto() {
 
   setTimeout(() => {
     const inputNombre = document.getElementById("NombrePuesto");
-    if(inputNombre) inputNombre.focus();
+    if (inputNombre) inputNombre.focus();
   }, 400);
 }
 
@@ -18,11 +18,11 @@ function AbrirPanelPuesto() {
 /// FUNCIÓN PARA CERRAR EL PANEL DE PUESTO ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function CerrarPanelPuesto() {
-    document.getElementById("panelPuesto").classList.remove("abierto");
-    const fondo = document.getElementById("fondoOscuro");
-    fondo.classList.remove("visible");
+  document.getElementById("panelPuesto").classList.remove("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.remove("visible");
 
-    LimpiarModalPuesto();
+  LimpiarModalPuesto();
 
 }
 
@@ -31,10 +31,8 @@ function CerrarPanelPuesto() {
 /// INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerPuestos();
-
   $("#EstadoIdBuscar, #SectorIdBuscar, #DescripcionPuestoBuscar").on("input", function () {
-    ObtenerPuestos();
+    ObtenerPuestos(false);
   });
 });
 
@@ -43,11 +41,11 @@ $(document).ready(function () {
 /// FUNCIÓN PARA FILTRAR LOS SECTORES /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ComboParaFiltrarSectores() {
-    const res = await authFetch("Sector/Activos", {
-        method: "GET",
-      })
+  const res = await authFetch("Sector/Activos", {
+    method: "GET",
+  })
 
-      const sectores = await res.json();
+  const sectores = await res.json();
 
   const $combo = $("#SectorIdBuscar");
   $combo.empty();
@@ -67,33 +65,34 @@ async function ComboParaFiltrarSectores() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerPuestos(mostrarSpinner = true) {
 
-    if (mostrarSpinner) mostrarPantallaCarga();
+  if (mostrarSpinner) mostrarPantallaCarga();
 
+  try {
     let estadoId = document.getElementById("EstadoIdBuscar").value;
     let sectorId = document.getElementById("SectorIdBuscar").value;
     let descripcion = document.getElementById("DescripcionPuestoBuscar").value;
 
     let filtro = {
-        descripcion: descripcion !== "" ? descripcion : null,
-        eliminado: estadoId !== "" ? parseInt(estadoId) : null,
-        sectorId: sectorId !== "" ? parseInt(sectorId) : null,
+      descripcion: descripcion !== "" ? descripcion : null,
+      eliminado: estadoId !== "" ? parseInt(estadoId) : null,
+      sectorId: sectorId !== "" ? parseInt(sectorId) : null,
     };
 
-    const res = await authFetch("Puestos/Filtrar", {
-        method: 'POST',
-        body: JSON.stringify(filtro)
-    })
-    .then(response => response.json())
-    .then(data => {
-        MostrarPuestos(data)
-        LimpiarModalPuesto();
-        CerrarPanelPuesto();
-      })
-    .catch((error) => {
-      MostrarErrorCatch();
+    const response = await authFetch("Puestos/Filtrar", {
+      method: 'POST',
+      body: JSON.stringify(filtro)
     })
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+    const data = await response.json();
+    MostrarPuestos(data)
+    LimpiarModalPuesto();
+    CerrarPanelPuesto();
+
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 
@@ -118,37 +117,37 @@ function MostrarPuestos(data) {
 
     $("#tablaPuestosBody").append(
       "<tr>" +
-        "<td class='text-center align-middle'>" +
-        "<button class='btn-editar' type='button' class='btn btn-sm " +
-        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
-        "' data-tippy-content='" +
-        (item.eliminado ? "Activar" : "Desactivar") +
-        "' onclick='EliminarPuestoId(" +
-        item.id +
-        ", " +
-        item.eliminado +
-        ")' style='background: none; border: none;'>" +
-        "<i class='icon-desactivar bi " +
-        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
-        " " +
-        iconColor +
-        "'></i>" +
-        "</button>" +
-        "</td>" +
-       "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
-        "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
-        (item.sectorString || "Sin sector") +
-        "</td>" +
-        "<td class='d-flex justify-content-center align-items-center'>" +
-        "<button class='btn-editar' data-action='edit' style='" +
-        visibleBotones +
-        " background: none; border: none;' onclick='MostrarModalEditarPuesto(" +
-        item.id +
-        ")' data-tippy-content='Editar'>" +
-        "<i class='bi bi-pencil-square icono-editar'></i>" +
-        "</button>" +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center align-middle'>" +
+      "<button class='btn-editar' type='button' class='btn btn-sm " +
+      (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+      "' data-tippy-content='" +
+      (item.eliminado ? "Activar" : "Desactivar") +
+      "' onclick='EliminarPuestoId(" +
+      item.id +
+      ", " +
+      item.eliminado +
+      ")' style='background: none; border: none;'>" +
+      "<i class='icon-desactivar bi " +
+      (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+      " " +
+      iconColor +
+      "'></i>" +
+      "</button>" +
+      "</td>" +
+      "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
+      "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
+      (item.sectorString || "Sin sector") +
+      "</td>" +
+      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditarPuesto(" +
+      item.id +
+      ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>" +
+      "</td>" +
+      "</tr>"
     );
   });
 
@@ -165,29 +164,29 @@ function MostrarPuestos(data) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditarPuesto(id) {
 
-    const res = await authFetch(`Puestos/${id}`);
-    const puesto = await res.json();
+  const res = await authFetch(`Puestos/${id}`);
+  const puesto = await res.json();
 
-    document.getElementById("IdPuesto").value = puesto.id;
-    document.getElementById("NombrePuesto").value = puesto.descripcion;
-    document.getElementById("IdSector").value = puesto.sectorId;
+  document.getElementById("IdPuesto").value = puesto.id;
+  document.getElementById("NombrePuesto").value = puesto.descripcion;
+  document.getElementById("IdSector").value = puesto.sectorId;
 
-    AbrirPanelPuesto(); 
-}   
+  AbrirPanelPuesto();
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA BUSCAR EL ID DE LA PUESTO Y LLAMAR A LA FUNCIÓN DE EDICIÓN O CREACIÓN //////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function BuscarPuestosId() { 
-    
-    const id = parseInt(document.getElementById("IdPuesto").value); 
+function BuscarPuestosId() {
 
-    if (!id || id === 0) {
-        CrearPuesto();
-    } else {
-        EditarPuesto(id);
-    }
+  const id = parseInt(document.getElementById("IdPuesto").value);
+
+  if (!id || id === 0) {
+    CrearPuesto();
+  } else {
+    EditarPuesto(id);
+  }
 }
 
 
@@ -212,60 +211,60 @@ function LimpiarModalPuesto() {
   inputErrorNombre.style.display = 'none';
 
   const inputErrorIdSector = document.getElementById('errorIdSector');
-  inputErrorIdSector.textContent = '';   
+  inputErrorIdSector.textContent = '';
   inputErrorIdSector.style.display = 'none';
-}   
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA VALIDAR EL FORMULARIO DE PUESTO //////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioPuesto() {
-    const inputNombre = document.getElementById("NombrePuesto");
-    const inputErrorNombre = document.getElementById("errorNombrePuesto");
-    const selectSector = document.getElementById("IdSector");
-    const inputErrorSector = document.getElementById("errorIdSector");
-    const nombre = inputNombre.value.trim();
-    const sectorSeleccionada = selectSector.value;
+  const inputNombre = document.getElementById("NombrePuesto");
+  const inputErrorNombre = document.getElementById("errorNombrePuesto");
+  const selectSector = document.getElementById("IdSector");
+  const inputErrorSector = document.getElementById("errorIdSector");
+  const nombre = inputNombre.value.trim();
+  const sectorSeleccionada = selectSector.value;
 
-    inputErrorNombre.style.display = 'none';
-    inputErrorNombre.textContent = '';
-    inputNombre.classList.remove("is-invalid", "is-valid");
+  inputErrorNombre.style.display = 'none';
+  inputErrorNombre.textContent = '';
+  inputNombre.classList.remove("is-invalid", "is-valid");
 
-    inputErrorSector.style.display = 'none';
-    inputErrorSector.textContent = '';
-    selectSector.classList.remove("is-invalid", "is-valid");
+  inputErrorSector.style.display = 'none';
+  inputErrorSector.textContent = '';
+  selectSector.classList.remove("is-invalid", "is-valid");
 
-    let esValido = true;
+  let esValido = true;
 
-    if (nombre.length === 0) {
-        inputNombre.classList.add("is-invalid");
-        inputErrorNombre.style.display = "block";
-        inputErrorNombre.textContent = "Campo obligatorio.";
-        esValido = false;
-    } else if (nombre.length < 3) {
-        inputNombre.classList.add("is-invalid");
-        inputErrorNombre.style.display = "block";
-        inputErrorNombre.textContent = "Mínimo 3 caracteres.";
-        esValido = false;
-    } else {
-        inputNombre.classList.add("is-valid");
-        inputErrorNombre.style.display = "none";
-        inputErrorNombre.textContent = "";
-    }
+  if (nombre.length === 0) {
+    inputNombre.classList.add("is-invalid");
+    inputErrorNombre.style.display = "block";
+    inputErrorNombre.textContent = "Campo obligatorio.";
+    esValido = false;
+  } else if (nombre.length < 3) {
+    inputNombre.classList.add("is-invalid");
+    inputErrorNombre.style.display = "block";
+    inputErrorNombre.textContent = "Mínimo 3 caracteres.";
+    esValido = false;
+  } else {
+    inputNombre.classList.add("is-valid");
+    inputErrorNombre.style.display = "none";
+    inputErrorNombre.textContent = "";
+  }
 
-    if (!sectorSeleccionada) {
-        selectSector.classList.add("is-invalid");
-        inputErrorSector.style.display = "block";
-        inputErrorSector.textContent = "Seleccione un sector.";
-        esValido = false;
-    } else {
-        selectSector.classList.add("is-valid");
-        inputErrorSector.style.display = "none";
-        inputErrorSector.textContent = "";
-    }
+  if (!sectorSeleccionada) {
+    selectSector.classList.add("is-invalid");
+    inputErrorSector.style.display = "block";
+    inputErrorSector.textContent = "Seleccione un sector.";
+    esValido = false;
+  } else {
+    selectSector.classList.add("is-valid");
+    inputErrorSector.style.display = "none";
+    inputErrorSector.textContent = "";
+  }
 
-    return esValido;
+  return esValido;
 }
 
 
@@ -273,24 +272,24 @@ function ValidarFormularioPuesto() {
 /// VALIDACIÓN EN VIVO: CAMBIA EL COLOR MIENTRAS EL USUARIO ESCRIBE ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 document.getElementById("NombrePuesto").addEventListener("input", () => {
-    const inputNombre = document.getElementById("NombrePuesto");
-    const errorNombre = document.getElementById("errorNombrePuesto");
-    const nombre = inputNombre.value.trim();
+  const inputNombre = document.getElementById("NombrePuesto");
+  const errorNombre = document.getElementById("errorNombrePuesto");
+  const nombre = inputNombre.value.trim();
 
-    inputNombre.classList.remove("is-invalid", "is-valid");
+  inputNombre.classList.remove("is-invalid", "is-valid");
 
-    if (nombre.length === 0) {
-        inputNombre.classList.add("is-invalid");
-        errorNombre.style.display = "block";
-        errorNombre.textContent = "Campo obligatorio.";
-    } else if (nombre.length < 3) {
-        inputNombre.classList.add("is-invalid");
-        errorNombre.style.display = "block";
-        errorNombre.textContent = "Mínimo 3 caracteres.";
-    } else {
-        inputNombre.classList.add("is-valid"); 
-        errorNombre.style.display = "none";
-    }
+  if (nombre.length === 0) {
+    inputNombre.classList.add("is-invalid");
+    errorNombre.style.display = "block";
+    errorNombre.textContent = "Campo obligatorio.";
+  } else if (nombre.length < 3) {
+    inputNombre.classList.add("is-invalid");
+    errorNombre.style.display = "block";
+    errorNombre.textContent = "Mínimo 3 caracteres.";
+  } else {
+    inputNombre.classList.add("is-valid");
+    errorNombre.style.display = "none";
+  }
 });
 
 document.getElementById("IdSector").addEventListener("change", () => {
@@ -315,12 +314,12 @@ document.getElementById("IdSector").addEventListener("change", () => {
 /// FUNCIÓN PARA MOSTRAR EL ERROR DE PUESTO EXISTENTE ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarErrorPuestoExistente(mensaje) {
-    const errorPuesto = document.getElementById("errorNombrePuesto");
-    const inputNombrePuesto = document.getElementById("NombrePuesto");
+  const errorPuesto = document.getElementById("errorNombrePuesto");
+  const inputNombrePuesto = document.getElementById("NombrePuesto");
 
-    errorPuesto.textContent = mensaje;
-    errorPuesto.style.display = "block";
-    inputNombrePuesto.classList.add("is-invalid");
+  errorPuesto.textContent = mensaje;
+  errorPuesto.style.display = "block";
+  inputNombrePuesto.classList.add("is-invalid");
 }
 
 
@@ -329,97 +328,131 @@ function MostrarErrorPuestoExistente(mensaje) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearPuesto() {
 
-    if (!ValidarFormularioPuesto()) return;
+  if (!ValidarFormularioPuesto()) {
+    ocultarOverlayGuardando();
+    return;
+  };
+
+  mostrarOverlayGuardando();
+
+  try {
 
     const puesto = {
-        descripcion: document.getElementById('NombrePuesto').value.trim(),
-        sectorId: document.getElementById('IdSector').value
+      descripcion: document.getElementById('NombrePuesto').value.trim(),
+      sectorId: document.getElementById('IdSector').value
     }
-    const res = await authFetch("Puestos", {
-            method: 'POST', 
-            body: JSON.stringify(puesto)
-        })
-    .then(response => response.json())
-    .then(response => {
-
-        if (response.mensaje){
-            MostrarErrorPuestoExistente(response.mensaje);
-        } else {
-            CerrarPanelPuesto();
-            ObtenerPuestos();
-
-            Swal.fire({
-          title: "¡Puesto Creado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-        }
+    const response = await authFetch("Puestos", {
+      method: 'POST',
+      body: JSON.stringify(puesto)
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
-} 
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorPuestoExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerPuestos(false);
+      CerrarPanelPuesto();
+
+      Swal.fire({
+        title: "¡Puesto Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  };
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIÓN PARA EDITAR UNA PUESTO ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarPuesto(id) {
-    if (!ValidarFormularioPuesto()) return;
 
+  if (!ValidarFormularioPuesto()) {
+    ocultarOverlayGuardando();
+    return;
+  };
+
+  mostrarOverlayGuardando();
+
+  try {
     let puestoId = document.getElementById("IdPuesto").value;
 
     let puesto = {
-        id: puestoId,
-        descripcion: document.getElementById("NombrePuesto").value.trim(),
-        sectorId: document.getElementById("IdSector").value
+      id: puestoId,
+      descripcion: document.getElementById("NombrePuesto").value.trim(),
+      sectorId: document.getElementById("IdSector").value
     }
-        const res = await authFetch(`Puestos/${id}`, {
-            method: 'PUT', 
-            body: JSON.stringify(puesto)
-        })
-    .then(response => response.json())
-    .then(response => {
-        if (response.mensaje){
-            MostrarErrorPuestoExistente(response.mensaje);
-        } else {
-            ObtenerPuestos();
-
-            Swal.fire({
-          title: "¡Puesto Modificado!",
-          toast: true,
-          position: "bottom-end",
-          showConfirmButton: false,
-          timer: 2200,
-          timerProgressBar: true,
-          background: "#f4fff7",
-          color: "#1c3d26",
-          icon: "success",
-          iconColor: "#28a746d8",
-          customClass: {
-            popup: "swal2-toast-success",
-            title: "swal2-toast-success-title",
-            icon: "swal2-toast-success-icon",
-          },
-        });
-        }
+    const response = await authFetch(`Puestos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(puesto)
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    });
-} 
+    const data = await response.json();
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.mensaje) {
+        MostrarErrorPuestoExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+      ocultarOverlayGuardando();
+      return;
+    }
+
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      ObtenerPuestos(false);
+      CerrarPanelPuesto();
+      Swal.fire({
+        title: "¡Puesto Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
+  };
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -447,30 +480,30 @@ function EliminarPuestoId(id, eliminado) {
     background: "#ffffff",
     color: "#1a1a1a",
   })
-  .then((result) => {
-    if (result.isConfirmed) {
-      EliminarSiPuesto(id);
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción Cancelada",
-        text: eliminado ? "Continuará desactivado." : "Continuará activado.",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#fef8f4",
-        color: "#5f4339",
-        icon: "info",
-        iconColor: "#ff914d",
-        customClass: {
-          popup: "swal2-toast-status",
-          title: "swal2-toast-title",
-          content: "swal2-toast-content",
-        },
-      });
-    }
-  });
+    .then((result) => {
+      if (result.isConfirmed) {
+        EliminarSiPuesto(id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: "Acción Cancelada",
+          text: eliminado ? "Continuará desactivado." : "Continuará activado.",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#fef8f4",
+          color: "#5f4339",
+          icon: "info",
+          iconColor: "#ff914d",
+          customClass: {
+            popup: "swal2-toast-status",
+            title: "swal2-toast-title",
+            content: "swal2-toast-content",
+          },
+        });
+      }
+    });
 }
 
 
@@ -478,7 +511,7 @@ function EliminarPuestoId(id, eliminado) {
 /// FUNCIÓN PARA ELIMINAR SI PUESTO /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiPuesto(id) {
-    try {
+  try {
     const response = await authFetch(`Puestos/${id}`, {
       method: "DELETE",
     });
@@ -503,7 +536,7 @@ async function EliminarSiPuesto(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerPuestos();
+      ObtenerPuestos(false);
     } else {
 
       Swal.fire({
@@ -527,7 +560,7 @@ async function EliminarSiPuesto(id) {
   } catch (error) {
     MostrarErrorCatch();
   }
-}   
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
