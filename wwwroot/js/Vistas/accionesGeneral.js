@@ -167,28 +167,26 @@ function ocultarOverlayGuardando() {
   document.getElementById("overlayGuardando").classList.add("d-none");
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO DE ASISTENCIAS Y CETIFICADOS DENTRO DE LA VISTA DE CURSOS /////////////// 
-//////////////////////////////////////////////////////////////////////////////
-function mostrarOverlayGuardandoAsistencias() {
+function mostrarOverlayGuardandoAsistencia() {
   document.getElementById("overlayGuardandoAsistencia").classList.remove("d-none");
 }
 
-function ocultarOverlayGuardandoAsistencias() {
+function ocultarOverlayGuardandoAsistencia() {
   document.getElementById("overlayGuardandoAsistencia").classList.add("d-none");
 }
 
-
-function mostrarOverlayGuardandoCertificados() {
+function mostrarOverlayGuardandoCertificado() {
   document.getElementById("overlayGuardandoCertificado").classList.remove("d-none");
 }
 
-function ocultarOverlayGuardandoCertificados() {
+function ocultarOverlayGuardandoCertificado() {
   document.getElementById("overlayGuardandoCertificado").classList.add("d-none");
 }
 
 
-
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA EL TOGGLE DE RESULTADOS /////////////// 
+//////////////////////////////////////////////////////////////////////////////
 function toggleResultados() {
     const btn = document.getElementById("btnResultados");
     const contenedor = document.getElementById("contenedorResultados");
