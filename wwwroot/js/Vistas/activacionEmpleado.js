@@ -21,6 +21,7 @@ async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
+    try {
   const nombre = document.getElementById("FiltroNombre").value || "";
   const email = document.getElementById("FiltroEmail").value || "";
   const dniValue = document.getElementById("FiltroDNI").value;
@@ -33,7 +34,7 @@ async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
     activo: activoValue !== "" ? parseInt(activoValue) : null
   };
 
-  try {
+
     const res = await authFetch("ActivacionEmpleados/Filtrar", {
       method: "POST",
       body: JSON.stringify(filtro)
@@ -44,7 +45,7 @@ async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
     MostrarErrorCatch();
   }
   finally{
-    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } 
+    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } 
   };
 }
 

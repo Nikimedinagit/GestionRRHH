@@ -41,29 +41,34 @@ $(document).ready(function () {
 // OBTENER LOS DATOS DE LA API DE TIPOS DE CRITERIOS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerTiposDeCriterios(mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
 
-  if (mostrarSpinner) mostrarPantallaCarga()
+  try {
+    let estado = document.getElementById("EstadoIdBuscar").value;
+    let filtro = {
+      nombre: document.getElementById("NombreTipoDeCriterioBuscar").value,
+      eliminado: estado !== "" ? parseInt(estado) : null,
+    };
 
-  let estado = document.getElementById("EstadoIdBuscar").value;
-  let filtro = {
-    nombre: document.getElementById("NombreTipoDeCriterioBuscar").value,
-    eliminado: estado !== "" ? parseInt(estado) : null,
-  };
+    const res = await authFetch("TiposDeCriterios/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
+    });
+    
+    const data = await res.json();
+    MostrarTiposDeCriterios(data);
+    LimpiarModalTipoDeCriterio();
+    CerrarPanelTipoDeCriterio();
 
-  const res = await authFetch("TiposDeCriterios/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then(response => response.json())
-    .then((data) => {
-        MostrarTiposDeCriterios(data);
-        LimpiarModalTipoDeCriterio();
-        CerrarPanelTipoDeCriterio();
-    })
-    .catch((error) => {;
-      MostrarErrorCatch();
-    })
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1500); } });
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
+    if (mostrarSpinner) {
+      setTimeout(() => {
+        ocultarPantallaCarga();
+      }, 1200);
+    }
+  }
 }
 
 
@@ -163,7 +168,10 @@ function BuscarTipoDeCriterioId() {
 // FUNCIÓN PARA CREAR UNA TIPO DE CRITERIO ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearTipoDeCriterio() {
-  if (!ValidarFormularioTipoDeCriterio()) return;
+  if (!ValidarFormularioTipoDeCriterio()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -177,51 +185,56 @@ async function CrearTipoDeCriterio() {
       body: JSON.stringify(tipoDeCriterio),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        MostrarErrorTipoDeCriterioExistente(errorData.mensaje);
+      if (data.mensaje) {
+        MostrarErrorTipoDeCriterioExistente(data.mensaje);
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    CerrarPanelTipoDeCriterio();
-    ObtenerTiposDeCriterios(false);
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelTipoDeCriterio();
+      ObtenerTiposDeCriterios(false);
 
-    Swal.fire({
-      title: "¡Criterio Creado!",
-      toast: true,
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      background: "#f4fff7",
-      color: "#1c3d26",
-      icon: "success",
-      iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
-    });
+      Swal.fire({
+        title: "¡Criterio Creado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
 
   } catch (error) {
     MostrarErrorCatch();
-  } finally {
-    setTimeout(() => {
-      ocultarOverlayGuardando();
-    }, 1500);
+    ocultarOverlayGuardando();
   }
 }
-
+  
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIÓN PARA EDITAR UNA TIPO DE CRITERIO //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarTipoDeCriterio(id) {
-  if (!ValidarFormularioTipoDeCriterio()) return;
+  if (!ValidarFormularioTipoDeCriterio()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -236,44 +249,46 @@ async function EditarTipoDeCriterio(id) {
       body: JSON.stringify(tipoDeCriterio),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        ocultarOverlayGuardando(); 
-        MostrarErrorTipoDeCriterioExistente(errorData.mensaje);
+      if (data.mensaje) {
+        MostrarErrorTipoDeCriterioExistente(data.mensaje);
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    CerrarPanelTipoDeCriterio();
-    ObtenerTiposDeCriterios(false);
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelTipoDeCriterio();
+      ObtenerTiposDeCriterios(false);
 
-    Swal.fire({
-      title: "¡Criterio Modificado!",
-      toast: true,
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      background: "#f4fff7",
-      color: "#1c3d26",
-      icon: "success",
-      iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
-    });
+      Swal.fire({
+        title: "¡Criterio Modificado!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
 
   } catch (error) {
     MostrarErrorCatch();
-  } finally {
-    setTimeout(() => {
-      ocultarOverlayGuardando();
-    }, 1500);
+    ocultarOverlayGuardando();
   }
 }
+  
 
 
 
@@ -447,7 +462,7 @@ async function EliminarSiTipoDeCriterio(id) {
           icon: "swal2-toast-success-icon",
         },
       });
-      ObtenerTiposDeCriterios();
+      ObtenerTiposDeCriterios(false);
     } else {
 
       Swal.fire({

@@ -70,14 +70,17 @@ $(document).ready(function () {
 
   $("#EmpleadoIdBuscar").on("input", function () {
     ObtenerEvaluaciones(false);
+    ObtenerTotalEvaluaciones();
   });
 
   $("#FechaEvalBuscar").on("input", function () {
     ObtenerEvaluaciones(false);
+    ObtenerTotalEvaluaciones();
   });
 
   $("#CalificacionBuscar").on("input", function () {
     ObtenerEvaluaciones(false);
+    ObtenerTotalEvaluaciones();
   });
 });
 
@@ -86,41 +89,37 @@ $(document).ready(function () {
 // OBTENER LOS DATOS DE LA EVALUACIONES ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function ObtenerEvaluaciones(mostrarSpinner = true) {
-console.log("mostrarSpinner:", mostrarSpinner);
   if (mostrarSpinner) mostrarPantallaCarga();
 
-  try{
+  try {
+    let nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
+    let fechaInput = document.getElementById("FechaEvalBuscar").value;
+    let calificacionEvaluacion = document.getElementById("CalificacionBuscar").value;
+    let calificacion = calificacionEvaluacion !== "0" && calificacionEvaluacion !== "" ? calificacionEvaluacion : null;
 
-  let nombreEmpleado = document.getElementById("EmpleadoIdBuscar").value;
-  let fechaInput = document.getElementById("FechaEvalBuscar").value;
-  let calificacionEvaluacion = document.getElementById("CalificacionBuscar").value;
-  let calificacion = calificacionEvaluacion !== "0" && calificacionEvaluacion !== "" ? calificacionEvaluacion : null;
-
-  let filtro = {
-    nombreEmpleado: nombreEmpleado,
-    fecha: fechaInput ? fechaInput : null,
-    calificacion: calificacion,
-  }
-
-  const response = await authFetch("Evaluaciones/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-
-  const data = await response.json();
-      MostrarEvaluaciones(data);
-      LimpiarModalEvaluacion();
-      cerrarPanelEvaluaciones();
-      ObtenerTotalEvaluaciones();
-
-    } catch(error) {
-      MostrarErrorCatch();
+    let filtro = {
+      nombreEmpleado: nombreEmpleado,
+      fecha: fechaInput ? fechaInput : null,
+      calificacion: calificacion,
     }
 
-    finally {
-    // Ocultar solo si realmente se mostró
+    const response = await authFetch("Evaluaciones/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
+    })
+
+    const data = await response.json();
+    MostrarEvaluaciones(data);
+    LimpiarModalEvaluacion();
+    cerrarPanelEvaluaciones();
+    ObtenerTotalEvaluaciones()
+  } catch (error) {
+    MostrarErrorCatch();
+  } finally {
     if (mostrarSpinner) {
-      ocultarPantallaCarga(); // quité el setTimeout
+      setTimeout(() => {
+        ocultarPantallaCarga();
+      }, 1200);
     }
   }
 }
@@ -138,7 +137,7 @@ function MostrarEvaluaciones(data) {
 }
 
 window.addEventListener("resize", function () {
-    ObtenerEvaluaciones(false);
+  ObtenerEvaluaciones(false);
 });
 
 
@@ -314,21 +313,21 @@ function MostrarEvaluacionesMobile(data) {
 
     let bordeColor = "#dee2e6";
     switch (element.claseBorde) {
-      case "green": bordeColor = "#198754"; break;  
-      case "yellow": bordeColor = "#ffc107"; break; 
-      case "blue": bordeColor = "#0d6efd"; break;   
+      case "green": bordeColor = "#198754"; break;
+      case "yellow": bordeColor = "#ffc107"; break;
+      case "blue": bordeColor = "#0d6efd"; break;
     }
 
     const esEditable = element.esEditable === true || element.esEditable === "true";
 
-    
+
     const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoNombre    
-      : element.usuarioNombreEvaluador; 
+      ? element.empleadoNombre
+      : element.usuarioNombreEvaluador;
 
     const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoPuesto    
-      : element.usuarioRolEvaluador; 
+      ? element.empleadoPuesto
+      : element.usuarioRolEvaluador;
 
 
     const botonEditarHTML = esEditable
@@ -604,7 +603,10 @@ function ValidarEvaluacionExistente(mensaje) {
 // FUNCION CREAR EVALUACION ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearEvaluacion() {
-  if (!ValidarFormularioEvaluacion()) return;
+  if (!ValidarFormularioEvaluacion()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -617,24 +619,24 @@ async function CrearEvaluacion() {
       method: "POST",
       body: JSON.stringify(evaluacion),
     });
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        ValidarEvaluacionExistente(errorData.mensaje);
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      if (response.mensaje) {
+        ValidarEvaluacionExistente(response.mensaje);
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-    ObtenerEvaluaciones(false);
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardando();
+      ObtenerEvaluaciones(false);
       cerrarPanelEvaluaciones();
 
       Swal.fire({
-        title: "¡Evaluación creada!",
+        title: "¡Evaluación Creada!",
         toast: true,
         position: "bottom-end",
         showConfirmButton: false,
@@ -650,7 +652,11 @@ async function CrearEvaluacion() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -659,7 +665,10 @@ async function CrearEvaluacion() {
 // FUNCION PARA EDITAR UNA EVALUACION //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EditarEvaluacion(id) {
-  if (!ValidarFormularioEvaluacion()) return;
+  if (!ValidarFormularioEvaluacion()) {
+    ocultarOverlayGuardando();
+    return;
+  }
 
   mostrarOverlayGuardando();
 
@@ -675,41 +684,43 @@ async function EditarEvaluacion(id) {
       body: JSON.stringify(evaluacion),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        ValidarEvaluacionExistente(errorData.mensaje);
+      if (data.mensaje) {
+        ValidarEvaluacionExistente(data.mensaje);
       }
+      ocultarOverlayGuardando();
       return;
     }
 
-  } catch(error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
-      ObtenerEvaluaciones(false);
       ocultarOverlayGuardando();
+      ObtenerEvaluaciones(false);
       cerrarPanelEvaluaciones();
 
       Swal.fire({
-      title: "¡Evaluación modificada!",
-      toast: true,
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      background: "#f4fff7",
-      color: "#1c3d26",
-      icon: "success",
-      iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
-    });
+        title: "¡Evaluación Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
 
-    }, 1500)
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
 
@@ -787,14 +798,14 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
     <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
     <td class='align-middle text-wrap'>${item.descripcion || "Sin descripción"}</td>
     ${esEditable
-      ? `<td class='d-flex justify-content-center align-items-center'>
+          ? `<td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
               onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content="Eliminar">
               <i class='bi bi-trash3 icono-elimina-detalle'></i>
             </button>
           </td>`
-      : ""
-    }
+          : ""
+        }
   </tr>
 `);
 
@@ -994,7 +1005,10 @@ function ValidarCriterioDeEvaluacionExistente(mensaje) {
 // FUNCION PARA CREAR CRITERIO DE EVALUACION ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function CrearCriterioDeEvaluacion() {
-  if (!ValidarFormularioCriterioDeEvaluacion()) return;
+  if (!ValidarFormularioCriterioDeEvaluacion()) {
+    ocultarOverlayGuardandoCriterios();
+    return;
+  }
 
   mostrarOverlayGuardandoCriterios();
 
@@ -1010,21 +1024,19 @@ async function CrearCriterioDeEvaluacion() {
       body: JSON.stringify(criterioEvaluacion),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      if (errorData.mensaje) {
-        ValidarCriterioDeEvaluacionExistente(errorData.mensaje);
+      if (data.mensaje) {
+        ValidarCriterioDeEvaluacionExistente(data.mensaje);
       }
+      ocultarOverlayGuardandoCriterios();
       return;
     }
 
-    ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, false);
-
-  } catch (error) {
-    MostrarErrorCatch();
-  } finally {
     setTimeout(() => {
       ocultarOverlayGuardandoCriterios();
+      ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, false);
       cerrarPanelCriterios();
 
       Swal.fire({
@@ -1044,7 +1056,11 @@ async function CrearCriterioDeEvaluacion() {
           icon: "swal2-toast-success-icon",
         },
       });
-    }, 1500);
+    }, 800);
+
+  } catch (error) {
+    MostrarErrorCatch();
+    ocultarOverlayGuardandoCriterios();
   }
 }
 
@@ -1132,7 +1148,7 @@ async function EliminarSiCriterio(id, evaluacionId, esEditable) {
       },
     });
 
-    ObtenerCriterioDeEvaluacion(evaluacionId, esEditable);
+    ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, false);
 
   } catch (error) {
     MostrarErrorCatch();
