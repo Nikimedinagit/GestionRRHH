@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_NET_CORE8_RRHH.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20251216084423_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260121134832_InicialWorkSync")]
+    partial class InicialWorkSync
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

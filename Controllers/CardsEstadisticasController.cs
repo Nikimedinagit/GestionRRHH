@@ -213,30 +213,30 @@ public class CardsEstadisticasController : ControllerBase
             horariosQuery = horariosQuery.Where(h => h.Empleado.NombreCompleto.ToLower().Contains(texto));
         }
 
-        var totalHorariosAsignados = await horariosQuery.CountAsync();
+        var horarios = await horariosQuery.ToListAsync();
+        var totalHorariosAsignados = horarios.Count;
 
-        var totalMinutosSemanales = await horariosQuery
-            .Where(h => h.Lunes || h.Martes || h.Miercoles || h.Jueves || h.Viernes || h.Sabado || h.Domingo)
-            .Select(h =>
-                (
-                    EF.Functions.DateDiffMinute(h.HorarioInicio, h.HorarioFin) +
-                    EF.Functions.DateDiffMinute(h.SegundoHorarioInicio, h.SegundoHorarioFin)
-                ) *
-                (
-                    (h.Lunes ? 1 : 0) +
-                    (h.Martes ? 1 : 0) +
-                    (h.Miercoles ? 1 : 0) +
-                    (h.Jueves ? 1 : 0) +
-                    (h.Viernes ? 1 : 0) +
-                    (h.Sabado ? 1 : 0) +
-                    (h.Domingo ? 1 : 0)
-                )
-            )
-            .SumAsync();
+        int totalMinutosSemanales = horarios.Sum(h =>
+        {
+            // Primer tramo
+            int minutosPrimerTramo = (int)(h.HorarioFin - h.HorarioInicio).TotalMinutes;
+            if (minutosPrimerTramo < 0) minutosPrimerTramo += 24 * 60;
 
-        var trabajanFindesSemana = await horariosQuery
-            .Where(h => h.Sabado || h.Domingo)
-            .CountAsync();
+            // Segundo tramo (solo si es alterno)
+            int minutosSegundoTramo = 0;
+            if (h.TipoHorario == TipoHorario.ALTERNO)
+            {
+                minutosSegundoTramo = (int)(h.SegundoHorarioFin - h.SegundoHorarioInicio).TotalMinutes;
+                if (minutosSegundoTramo < 0) minutosSegundoTramo += 24 * 60;
+            }
+
+            int dias = (h.Lunes ? 1 : 0) + (h.Martes ? 1 : 0) + (h.Miercoles ? 1 : 0) +
+                       (h.Jueves ? 1 : 0) + (h.Viernes ? 1 : 0) + (h.Sabado ? 1 : 0) + (h.Domingo ? 1 : 0);
+
+            return (minutosPrimerTramo + minutosSegundoTramo) * dias;
+        });
+
+        var trabajanFindesSemana = horarios.Count(h => h.Sabado || h.Domingo);
 
         string horasFormateadas;
         if (totalMinutosSemanales < 60)
@@ -247,7 +247,7 @@ public class CardsEstadisticasController : ControllerBase
         {
             var horas = totalMinutosSemanales / 60;
             var minutos = totalMinutosSemanales % 60;
-            horasFormateadas = $"{horas}:{minutos.ToString("D2")} hs";
+            horasFormateadas = $"{horas}:{minutos:D2} hs";
         }
 
         return new
@@ -258,6 +258,7 @@ public class CardsEstadisticasController : ControllerBase
             EmpleadosFindes = trabajanFindesSemana
         };
     }
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -448,9 +449,6 @@ public class CardsEstadisticasController : ControllerBase
             justificacionesRechazadas
         };
     }
-
-
-
 
 }
 
