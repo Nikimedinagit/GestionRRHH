@@ -1,5 +1,7 @@
 <div class="px-3 py-3">
 
+
+
     <div class="mb-3">
         <h3 class="titulo-seccion">Notificaciones</h3>
         <p class="text-muted fs-6 mb-0">Visualizá todas tus alertas y actualizaciones.</p>
@@ -11,13 +13,24 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información</h5>
-        <button id="marcarTodas" class="btn btn-marcarNoti" onclick="MarcarTodasLeidas()">
-            <i class="ti ti-checks me-1"></i>
-            <span>Marcar todas como leídas</span>
-        </button>
+            <button id="marcarTodas" class="btn btn-marcarNoti" onclick="MarcarTodasLeidas()">
+                <i class="ti ti-checks me-1"></i>
+                <span>Marcar todas como leídas</span>
+            </button>
         </div>
 
         <div id="vistaNotificaciones" class="list-group list-group-flush">
+
+            <!-- ======================================= Spinner General ====================================== -->
+            <div id="pantallaCargaGeneralNotificaciones" class="pantalla-carga">
+                <div class="contenido-carga">
+                    <h5 class="fw-bold text-dark">Cargando notificaciones...</h5>
+                    <div class="spinner-border text-primary mt-3" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Estamos preparando las notificaciones, aguarda un momento.</p>
+                </div>
+            </div>
         </div>
 
 

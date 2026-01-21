@@ -2,7 +2,10 @@
 /// FUNCIONES PARA CARGAR NOTIFICACIONES /////////////////////////////////////////////
 let mostrarTodas = false;
 const limiteInicial = 5;
-async function CargarNotificaciones() {
+async function CargarNotificaciones(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCargaNotificaciones();
+
   try {
     const response = await authFetch("Notificaciones/PorRol", {
       method: "GET",
@@ -97,6 +100,8 @@ async function CargarNotificaciones() {
   } catch (error) {
     MostrarErrorCatch(error);
   }
+
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCargaNotificaciones(), 1200); } };
 }
 
 async function MarcarComoLeida(id) {
@@ -106,7 +111,7 @@ async function MarcarComoLeida(id) {
     });
 
     if (response.ok) {
-      CargarNotificaciones();
+      CargarNotificaciones(false);
     }
   } catch (error) {
     MostrarErrorCatch(error);
@@ -120,7 +125,7 @@ async function MarcarTodasLeidas() {
     });
 
     if (response.ok) {
-      CargarNotificaciones();
+      CargarNotificaciones(false);
     }
   } catch (error) {
     MostrarErrorCatch(error);
@@ -129,5 +134,5 @@ async function MarcarTodasLeidas() {
 
 document.addEventListener("DOMContentLoaded", () => {
   CargarNotificaciones();
-  setInterval(CargarNotificaciones, 2000);
+  setInterval(() => CargarNotificaciones(false), 2000);
 });

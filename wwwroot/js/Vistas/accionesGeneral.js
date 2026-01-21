@@ -155,6 +155,17 @@ function ocultarPantallaCarga() {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR EL SPINNER EN LA VISTA DE NOTIFICACIONES DE CARGARGANDO DE ESPERA /////////////// 
+//////////////////////////////////////////////////////////////////////////////
+function mostrarPantallaCargaNotificaciones() {
+  document.getElementById("pantallaCargaGeneralNotificaciones").style.display = "flex";
+}
+
+function ocultarPantallaCargaNotificaciones() {
+  document.getElementById("pantallaCargaGeneralNotificaciones").style.display = "none";
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO /////////////// 
