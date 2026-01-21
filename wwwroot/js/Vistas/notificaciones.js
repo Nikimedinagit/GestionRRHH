@@ -1,10 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIONES PARA CARGAR NOTIFICACIONES /////////////////////////////////////////////
-let mostrarTodas = false;
-const limiteInicial = 5;
+
 async function CargarNotificaciones(mostrarSpinner = true) {
 
-  if (mostrarSpinner) mostrarPantallaCargaNotificaciones();
+  if (mostrarSpinner) mostrarPantallaCarga();
 
   try {
     const response = await authFetch("Notificaciones/PorRol", {
@@ -101,7 +100,7 @@ async function CargarNotificaciones(mostrarSpinner = true) {
     MostrarErrorCatch(error);
   }
 
-  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCargaNotificaciones(), 1200); } };
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 async function MarcarComoLeida(id) {
@@ -133,6 +132,7 @@ async function MarcarTodasLeidas() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  CargarNotificaciones();
   setInterval(() => CargarNotificaciones(false), 2000);
 });
+
+  CargarNotificaciones();
