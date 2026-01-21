@@ -37,7 +37,7 @@ public class PanelPrincipalController : ControllerBase
             .ThenBy(f => f.Fecha.Day)
             .Select(f => new
             {
-                Fecha = new DateTime(hoy.Year, f.Fecha.Month, f.Fecha.Day), 
+                Fecha = new DateTime(hoy.Year, f.Fecha.Month, f.Fecha.Day),
                 Descripcion = f.Descripcion,
                 Tipo = f.Tipos,
                 TipoNombre = f.TiposString
@@ -367,16 +367,19 @@ public class PanelPrincipalController : ControllerBase
     [HttpGet("PanelAdministrador")]
     public async Task<IActionResult> ObtenerResumenAdministrador()
     {
+        var hoy = DateTime.Today;
+        var mañana = hoy.AddDays(1);
+
+        var ausenciasHoy = await _context.Asistencia
+            .CountAsync(a => a.Estado == EstadoAsistencia.AUSENTE &&
+                             a.Fecha >= hoy && a.Fecha < mañana);
+
         var empleadosActivos = await _context.Empleado
             .CountAsync(e => !e.Eliminado);
 
         var empleadosConLicencia = await _context.Licencia
             .Include(l => l.Empleado)
             .CountAsync(l => l.Estado == EstadoLicencia.APROBADA && l.FechaFin >= DateTime.Today);
-
-        var ausenciasHoy = await _context.Empleado
-            .CountAsync(e => !_context.Asistencia
-                .Any(a => a.EmpleadoId == e.Id && a.Fecha == DateTime.Today));
 
         var evaluacionesRecientes = await _context.Evaluacion
             .CountAsync(e => e.Fecha >= DateTime.Today.AddDays(-30));

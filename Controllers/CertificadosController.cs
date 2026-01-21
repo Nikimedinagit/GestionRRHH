@@ -87,17 +87,17 @@ namespace API_NET_CORE8_RRHH.Controllers
 
             Console.WriteLine($"EmpleadoId: {certificado.EmpleadoId}, CursoId: {certificado.CursoId}");
 
-            // Validación removida: Permitir crear certificados independientemente de aprobación/asistencia
-            // var asistenciaAprobada = await _context.AsistenciaCapacitacion
-            //     .AsNoTracking()
-            //     .FirstOrDefaultAsync(a =>
-            //         a.EmpleadoId == certificado.EmpleadoId &&
-            //         a.CursoId == certificado.CursoId &&
-            //         a.Asistencia &&
-            //         a.Resultado >= 6);
-            //
-            // if (asistenciaAprobada == null)
-            //     return BadRequest(new { codigo = 0, mensaje = "El empleado no aprobó o no asistió a este curso" });
+            //Validación removida: Permitir crear certificados independientemente de aprobación/asistencia
+            var asistenciaAprobada = await _context.AsistenciaCapacitacion
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a =>
+                    a.EmpleadoId == certificado.EmpleadoId &&
+                    a.CursoId == certificado.CursoId &&
+                    a.Asistencia &&
+                    a.Resultado >= 6);
+            
+            if (asistenciaAprobada == null)
+                return BadRequest(new { codigo = 0, mensaje = "El empleado no aprobó o no asistió a este curso" });
 
             bool existeCertificado = await _context.Certificado
                 .AsNoTracking()
