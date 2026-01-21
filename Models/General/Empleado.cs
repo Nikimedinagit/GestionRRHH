@@ -37,7 +37,7 @@ namespace API_RRHH_TESIS2025.Models.General
 
         public long Cuil { get; set; }
 
-        public int CantidadHijos { get; set; }
+        public int? CantidadHijos { get; set; }
 
         public byte[] FaceDescriptor { get; set; }
 
