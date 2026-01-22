@@ -110,7 +110,7 @@ function MostrarSectores(data) {
       " sector-truncado'>" +
       item.nombre +
       "</td>" +
-      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<td class='text-center align-middle'>" +
       "<button class='btn-editar' data-action='edit' style='" +
       visibleBotones +
       " background: none; border: none;' onclick='MostrarModalEditar(" +

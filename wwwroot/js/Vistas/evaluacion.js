@@ -200,8 +200,8 @@ function MostrarEvaluacionesDesktop(data) {
       }
     }
 
-
     const item = $(`
+      <div>
       <div class="evaluacion-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between"
            style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : element.claseBorde === "blue" ? "#0d6efd" : "#dee2e6"};">
         <div class="d-flex align-items-center" style="gap: 20px;">
@@ -224,6 +224,7 @@ function MostrarEvaluacionesDesktop(data) {
             <i class="bi bi-chevron-down"></i>
           </button>
         </div>
+      </div>
       </div>
     `);
 
@@ -345,7 +346,7 @@ function MostrarEvaluacionesMobile(data) {
       : "";
 
     contenedor.innerHTML += `
-      <div class="col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex pb-4">
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
           <div class="flex-grow-1 d-flex flex-column">
             <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;" title="${nombreMostrar}">
@@ -1385,6 +1386,13 @@ async function GenerarInformePdfEvaluacion() {
     doc.setTextColor(100);
     doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
     doc.text("www.WorkSync.com", pageWidth - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const esMobile = window.innerWidth < 768;
+
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
   }
 
   const blob = doc.output("blob");

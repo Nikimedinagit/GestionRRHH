@@ -16,7 +16,6 @@
 hr {
   border: none;
   border-bottom: 1px solid #2c2c2cc7 !important;
-  margin-bottom: 30px;
 }
 /* FIN LINEA DE SEPARACION */
 
@@ -203,8 +202,13 @@ hr {
 
 
 /* INICIO TABLA */
+.table thead th {
+  padding: 8px 12px !important;
+}
+
+
 table tbody tr td {
-  padding: 4px 8px !important;
+  padding: 2px 8px !important;
   font-size: 14px;
   vertical-align: middle;
 }
@@ -215,15 +219,16 @@ table thead tr th {
   font-weight: 700;
   font-size: 1rem;
   border: none;
-  letter-spacing: 0.5px;
 }
 
 table tbody tr {
   background-color: white !important;
 }
 
+
+
 .icono-editar {
-  font-size: 1.6rem !important;
+  font-size: 1.4rem !important;
   color: #0d6efd !important;
   font-weight: bold !important;
   margin: 0px 3px !important;
@@ -232,7 +237,7 @@ table tbody tr {
 }
 
 .icono-borrar {
-  font-size: 1.6rem !important;
+  font-size: 1.4rem !important;
   color: #dc3545 !important;
   font-weight: bold !important;
   margin: 0px 3px !important;
@@ -242,7 +247,7 @@ table tbody tr {
 
 /* Botón toggle */
 .icon-desactivar {
-  font-size: 1.5rem !important;
+  font-size: 1.4rem !important;
   margin: 0 2px !important;
   padding: 0 !important;
   vertical-align: middle;
@@ -1414,10 +1419,11 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 /*  INICIO ESTILO APRA EL CONTENDOR DE AYUDA */
 .info-ayuda {
-  background: transparent; 
+  background: #ffffff; 
   border-left: 4px solid #457b9d !important;
   border: 1px solid #dee2e6;
 }
+
 
 .info-box {
   background: #ffffff;

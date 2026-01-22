@@ -151,6 +151,12 @@ function MostrarCursos(data) {
   }
 }
 
+
+window.addEventListener("resize", function () {
+  ObtenerCursos(false);
+});
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES PARA MOSTRAR LOS CURSOS DESKTOP /////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +227,7 @@ function MostrarCursosDesktop(data) {
       }
 
       const item = $(`
+        <div>
         <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${element.id
         }">
           <div class="d-flex align-items-start" style="gap: 10px; flex-grow: 1; min-width: 0;">
@@ -243,6 +250,8 @@ function MostrarCursosDesktop(data) {
             </div>
           </div>
         </div>
+        </div>
+
       `);
 
       const descripcionDetalle = $(`
@@ -383,7 +392,6 @@ function MostrarCursosDesktop(data) {
         asistenciaDetalle
       );
 
-      // Cargar datos lazy al renderizar
       if (element.id) {
         cursoIdSeleccionado = element.id;
         ObtenerAsistencia(element.id, false);
@@ -522,7 +530,7 @@ function MostrarCursosMobile(data) {
 
       const card = document.createElement("div");
       card.className =
-        "col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex flex-column";
+        "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column mb-4";
       card.innerHTML = `
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
           <div class="flex-grow-1 d-flex flex-column">
@@ -598,7 +606,7 @@ function MostrarCursosMobile(data) {
         .find(".btn-ver-asistencias")
         .on("click", function () {
           cursoIdSeleccionado = element.id;
-          ObtenerAsistencia(element.id , false);
+          ObtenerAsistencia(element.id, false);
 
           const offcanvasCert = bootstrap.Offcanvas.getInstance(
             document.getElementById("offcanvasCertificados")
@@ -1463,7 +1471,7 @@ async function CrearAsistencia() {
     if (data.mensaje) {
       ValidarAsistenciaExistente(data.mensaje);
       ocultarOverlayGuardandoAsistencia();
-      return; 
+      return;
     }
 
     // Si es exitoso, refrescar datos y mostrar mensaje
@@ -1983,14 +1991,12 @@ async function CrearCertificado() {
 
     const response = await res.json();
 
-    // Si hay error de validación, mostrar y NO cerrar modal
     if (response.mensaje) {
       ValidarCertificadoExistente(response.mensaje);
       ocultarOverlayGuardandoCertificado();
       return;
     }
 
-    // Si es exitoso, refrescar datos y mostrar mensaje
     setTimeout(() => {
       ocultarOverlayGuardandoCertificado();
       ObtenerCertificados(cursoIdSeleccionado, false);
@@ -2400,6 +2406,13 @@ async function GenerarInformePdfCursos() {
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
     );
+  }
+
+  const esMobile = window.innerWidth < 768;
+
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
   }
 
   const blob = doc.output("blob");

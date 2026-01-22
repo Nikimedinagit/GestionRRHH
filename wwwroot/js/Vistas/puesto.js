@@ -138,7 +138,7 @@ function MostrarPuestos(data) {
       "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
       (item.sectorString || "Sin sector") +
       "</td>" +
-      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<td class='text-center align-middle'>" +
       "<button class='btn-editar' data-action='edit' style='" +
       visibleBotones +
       " background: none; border: none;' onclick='MostrarModalEditarPuesto(" +
