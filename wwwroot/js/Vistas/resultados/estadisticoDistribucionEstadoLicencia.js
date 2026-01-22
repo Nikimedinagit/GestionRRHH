@@ -55,9 +55,9 @@ function MostrarDistribucionEstadoLicencia(data) {
 
     const estadoEstilo = {
         PENDIENTE: { backgroundColor: "#fff3cd", color: "#856404" },
-        APROBADA:  { backgroundColor: "#d4f4dd", color: "#2e7d32" },
+        APROBADA: { backgroundColor: "#d4f4dd", color: "#2e7d32" },
         RECHAZADA: { backgroundColor: "#f8d7da", color: "#c62828" },
-        EXPIRADA:  { backgroundColor: "#e2e3e5", color: "#495057" }
+        EXPIRADA: { backgroundColor: "#e2e3e5", color: "#495057" }
     };
 
     const mqMobile = window.matchMedia("(max-width: 574px)");
@@ -102,9 +102,9 @@ function MostrarDistribucionEstadoLicencia(data) {
                 <td class="text-center d-none d-sm-table-cell">${porcentaje.toFixed(2)}%</td>
                 <td class="text-center d-none d-md-table-cell">
                     ${item.ultima ?? item.Ultima
-                        ? new Date(item.ultima ?? item.Ultima).toLocaleDateString("es-AR")
-                        : "-"
-                    }
+                ? new Date(item.ultima ?? item.Ultima).toLocaleDateString("es-AR")
+                : "-"
+            }
                 </td>
             </tr>
         `);
@@ -208,6 +208,13 @@ async function GenerarInformePdfDistribucionEstados() {
             doc.internal.pageSize.getHeight() - 10,
             { align: "right" }
         );
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

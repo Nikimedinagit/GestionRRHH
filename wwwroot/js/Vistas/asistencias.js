@@ -20,7 +20,7 @@ $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #Fe
 /////////////////////////////////////////////////////////////
 async function ObtenerAsistencias(mostrarSpinner = true) {
 
-  if (mostrarSpinner) mostrarPantallaCarga();
+    if (mostrarSpinner) mostrarPantallaCarga();
 
     try {
         let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
@@ -356,6 +356,13 @@ async function GenerarInformePdfAsistencias() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

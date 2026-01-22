@@ -131,8 +131,8 @@ function MostrarHistorialPorEmpleado(data) {
 async function GenerarInformePdfListadoHistorialPorEmpleado() {
 
     const data = window._cacheHistorialEmpleado;
-    
-      if (!data || !Array.isArray(data) || data.length === 0) {
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
         ErrorGeneralInformePdf();
         return;
     }
@@ -241,6 +241,13 @@ async function GenerarInformePdfListadoHistorialPorEmpleado() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

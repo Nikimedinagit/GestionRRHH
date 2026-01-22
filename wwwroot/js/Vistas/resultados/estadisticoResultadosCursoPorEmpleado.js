@@ -272,6 +272,13 @@ async function GenerarInformePdfResultadosPorEmpleado() {
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
     }
 
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
+    }
+
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);
 

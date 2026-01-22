@@ -353,8 +353,8 @@ function MostrarHorariosMobile(data) {
     const tipoClase = tipoColor[tipoStr] || "bg-light text-dark";
 
     contenedor.innerHTML += `
-      <div class="col-12 col-md-6 p-2 col-lg-4 col-xl-3 d-flex">
-        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+        <div class="card shadow-sm p-2 position-relative rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
           <div class="flex-grow-1 d-flex flex-column">
 
             <!-- Nombre del empleado -->
@@ -1327,6 +1327,12 @@ async function GenerarInformePdfHorarios() {
     doc.setTextColor(100);
     doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
     doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const esMobile = window.innerWidth < 768;
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
   }
 
   const blob = doc.output("blob");

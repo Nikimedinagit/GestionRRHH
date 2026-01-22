@@ -1,6 +1,6 @@
 // =================================== Inicializar los Filtros ===================================
 $(document).ready(function () {
-    ComboParaFiltrarEmpleado(); 
+    ComboParaFiltrarEmpleado();
     ComboParaFiltrarPuesto();
 
     $("#IdPuestoFiltro, #IdEmpleadoFiltro, #AnioFiltro, #TrimestreFiltro")
@@ -274,6 +274,14 @@ async function GenerarInformePdfEvolucionDesempeno() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

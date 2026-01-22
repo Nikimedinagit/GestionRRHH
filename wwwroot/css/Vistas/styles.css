@@ -879,7 +879,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 #offcanvasDetalleEmpleadoActivacion,
 #offcanvasDetalleHistorial,
 #offcanvasDetalleAsistencia,
-#offcanvasDetalleAsistenciaSemana {
+#offcanvasDetalleAsistenciaSemana,
+#offcanvasDetalleHorario {
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
 }
@@ -923,7 +924,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
   margin-bottom: 1rem;
   overflow: hidden;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .detalle-empleado-seccion,

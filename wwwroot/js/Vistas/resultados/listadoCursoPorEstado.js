@@ -5,17 +5,17 @@ $(document).ready(function () {
   $("#NombreCursoBuscar, #ResultadoBuscar, #EmpleadoBuscar, #FechaInicioBuscar, #FechaFinBuscar").on(
     "input change",
     function () {
-            let fechaInicioRaw = $("#FechaInicioBuscar").val();
-            let fechaFinRaw = $("#FechaFinBuscar").val();
+      let fechaInicioRaw = $("#FechaInicioBuscar").val();
+      let fechaFinRaw = $("#FechaFinBuscar").val();
 
-            if (fechaInicioRaw && fechaFinRaw) {
-                const fechaInicio = new Date(fechaInicioRaw);
-                const fechaFin = new Date(fechaFinRaw);
+      if (fechaInicioRaw && fechaFinRaw) {
+        const fechaInicio = new Date(fechaInicioRaw);
+        const fechaFin = new Date(fechaFinRaw);
 
-                if (fechaFin < fechaInicio) {
-                    $("#FechaFinBuscar").val(fechaInicioRaw);
-                }
-            }
+        if (fechaFin < fechaInicio) {
+          $("#FechaFinBuscar").val(fechaInicioRaw);
+        }
+      }
       ObtenerCursosPorEstado();
     }
   );
@@ -53,49 +53,49 @@ var mqTabletMobile = window.matchMedia("(max-width: 991px)");
 var mqMobile = window.matchMedia("(max-width: 574px)");
 
 mqTabletMobile.addEventListener("change", () => {
-    if (window._cacheCursosEmpleadoEstado)
-        MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
+  if (window._cacheCursosEmpleadoEstado)
+    MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
 });
 mqMobile.addEventListener("change", () => {
-    if (window._cacheCursosEmpleadoEstado)
-        MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
+  if (window._cacheCursosEmpleadoEstado)
+    MostrarCursosPorEstado(window._cacheCursosEmpleadoEstado);
 });
 
 
 // =================================== Mostrar Listado de Cursos por Modalidad ===================================
 function MostrarCursosPorEstado(data) {
-    window._cacheCursosEmpleadoEstado = data; 
-    const tbody = $("#listadoCursosPorEstado");
-    tbody.empty();
+  window._cacheCursosEmpleadoEstado = data;
+  const tbody = $("#listadoCursosPorEstado");
+  tbody.empty();
 
-    if (!data || data.length === 0) {
-        tbody.append(`
+  if (!data || data.length === 0) {
+    tbody.append(`
             <tr>
                 <td colspan="5" class="text-start">
                     No se encontraron resultados
                 </td>
             </tr>
         `);
-        return;
-    }
+    return;
+  }
 
-    const modalidadColor = {
-        PRESENCIAL: "badge-presencial",
-        VIRTUAL: "badge-virtual",
-        MIXTO: "badge-mixto",
-        "SIN MODALIDAD": "badge-default",
-    };
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+    "SIN MODALIDAD": "badge-default",
+  };
 
-    const EstadoCursoEstilo = {
-        "SIN ASISTENCIA": { backgroundColor: "#e2e3e5", color: "#495057" },
-        "APROBADO": { backgroundColor: "#a3dc9a72", color: "#06923E" },
-        "REPROBADO": { backgroundColor: "#f8d7da", color: "#c62828" }
-    };
+  const EstadoCursoEstilo = {
+    "SIN ASISTENCIA": { backgroundColor: "#e2e3e5", color: "#495057" },
+    "APROBADO": { backgroundColor: "#a3dc9a72", color: "#06923E" },
+    "REPROBADO": { backgroundColor: "#f8d7da", color: "#c62828" }
+  };
 
-    const isMobile = mqMobile.matches;
+  const isMobile = mqMobile.matches;
 
-    data.forEach((empleado, empIndex) => {
-        tbody.append(`
+  data.forEach((empleado, empIndex) => {
+    tbody.append(`
             <tr style="background:#b7d3ff !important;">
                 <td colspan="5" class="text-wrap fw-bold text-start">
                     ${empleado.nombreEmpleado} (Puesto: ${empleado.nombrePuesto})
@@ -103,11 +103,11 @@ function MostrarCursosPorEstado(data) {
             </tr>
         `);
 
-        empleado.resultados.forEach((resultado, resIndex) => {
-            const estadoTexto = resultado.estado.toUpperCase();
-            const estilo = EstadoCursoEstilo[estadoTexto] || { backgroundColor: "#e2e3e5", color: "#495057" };
+    empleado.resultados.forEach((resultado, resIndex) => {
+      const estadoTexto = resultado.estado.toUpperCase();
+      const estilo = EstadoCursoEstilo[estadoTexto] || { backgroundColor: "#e2e3e5", color: "#495057" };
 
-            const badgeEstadoHtml = `
+      const badgeEstadoHtml = `
                 <span class="fw-bold"
                       style="
                         display:inline-block;
@@ -122,7 +122,7 @@ function MostrarCursosPorEstado(data) {
                 </span>
             `;
 
-            tbody.append(`
+      tbody.append(`
                 <tr style="background:#e8f0ff !important;">
                     <td colspan="5" class="text-wrap fw-bold text-start">
                         Resultado: ${badgeEstadoHtml}
@@ -130,27 +130,27 @@ function MostrarCursosPorEstado(data) {
                 </tr>
             `);
 
-            resultado.cursos.forEach((curso, cIndex) => {
-                const fechaInicio = new Date(curso.fechaInicio).toLocaleString([], {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                });
-                const fechaFin = new Date(curso.fechaFin).toLocaleString([], {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                });
+      resultado.cursos.forEach((curso, cIndex) => {
+        const fechaInicio = new Date(curso.fechaInicio).toLocaleString([], {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+        const fechaFin = new Date(curso.fechaFin).toLocaleString([], {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
 
-                const modalidadTexto = (curso.modalidad || "SIN MODALIDAD").toUpperCase();
-                const badgeClass = modalidadColor[modalidadTexto] || "badge-default";
-                const badgeHtml = `
+        const modalidadTexto = (curso.modalidad || "SIN MODALIDAD").toUpperCase();
+        const badgeClass = modalidadColor[modalidadTexto] || "badge-default";
+        const badgeHtml = `
                     <span class="${badgeClass} fw-bold"
                           style="
                             display:inline-block;
@@ -163,10 +163,10 @@ function MostrarCursosPorEstado(data) {
                     </span>
                 `;
 
-                const collapseId = `curso_${empIndex}_${resIndex}_${cIndex}`;
+        const collapseId = `curso_${empIndex}_${resIndex}_${cIndex}`;
 
-                if (isMobile) {
-                    tbody.append(`
+        if (isMobile) {
+          tbody.append(`
                         <tr data-bs-toggle="collapse"
                             data-bs-target="#${collapseId}"
                             style="cursor:pointer;">
@@ -174,7 +174,7 @@ function MostrarCursosPorEstado(data) {
                             <td class="text-center">${badgeHtml}</td>
                         </tr>
                     `);
-                    tbody.append(`
+          tbody.append(`
                         <tr class="collapse" id="${collapseId}">
                             <td colspan="5" class="p-2 bg-light" style="font-size:12px;">
                                 <b>Fecha Inicio:</b> ${fechaInicio} <br>
@@ -182,8 +182,8 @@ function MostrarCursosPorEstado(data) {
                             </td>
                         </tr>
                     `);
-                } else {
-                    tbody.append(`
+        } else {
+          tbody.append(`
                         <tr>
                             <td class="text-start">${curso.nombreCurso}</td>
                             <td class="text-center">${badgeHtml}</td>
@@ -191,10 +191,10 @@ function MostrarCursosPorEstado(data) {
                             <td class="text-center">${fechaFin}</td>
                         </tr>
                     `);
-                }
-            });
-        });
+        }
+      });
     });
+  });
 }
 
 
@@ -273,10 +273,10 @@ async function GenerarInformePdfCursosPorEstado() {
   if (nombreCursoRaw) filtrosAplicadosArray.push(`[Curso: ${nombreCursoRaw}]`);
   if (resultadoRaw) filtrosAplicadosArray.push(`[Resultado: ${resultadoRaw}]`);
   if (fechaInicioRaw) {
-      filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
+    filtrosAplicadosArray.push(`[Desde: ${fechaInicioRaw}]`);
   }
   if (fechaFinRaw) {
-      filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
+    filtrosAplicadosArray.push(`[Hasta: ${fechaFinRaw}]`);
   }
 
   const filtrosAplicados =
@@ -383,6 +383,13 @@ async function GenerarInformePdfCursosPorEstado() {
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
     );
+  }
+
+  const esMobile = window.innerWidth < 768;
+
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
   }
 
   const blob = doc.output("blob");

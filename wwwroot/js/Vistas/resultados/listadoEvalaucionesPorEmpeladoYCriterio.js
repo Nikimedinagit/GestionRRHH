@@ -200,14 +200,14 @@ async function GenerarInformePdfListadoEvaluacionEmpleadoCriterio() {
         body.push([{
             content: `${emp.nombre} (Legajo: ${emp.nroLegajo})`,
             colSpan: 3,
-            styles: { fillColor: [183, 211, 255], fontStyle: "bold" } 
+            styles: { fillColor: [183, 211, 255], fontStyle: "bold" }
         }]);
 
         emp.evaluaciones.forEach(ev => {
             body.push([
                 {
                     content: new Date(ev.fecha).toLocaleDateString("es-AR"),
-                    styles: { fillColor: [232, 240, 255] } 
+                    styles: { fillColor: [232, 240, 255] }
                 },
                 {
                     content: ev.periodo,
@@ -223,12 +223,12 @@ async function GenerarInformePdfListadoEvaluacionEmpleadoCriterio() {
                 body.push([
                     {
                         content: `${c.nombre}`,
-                        styles: { fillColor: [255, 255, 255], fontStyle: "bold" } 
+                        styles: { fillColor: [255, 255, 255], fontStyle: "bold" }
                     },
                     {
                         content: c.descripcion,
                         colSpan: 2,
-                        styles: { fillColor: [255, 255, 255], fontStyle: "normal" } 
+                        styles: { fillColor: [255, 255, 255], fontStyle: "normal" }
                     }
                 ]);
             });
@@ -263,6 +263,13 @@ async function GenerarInformePdfListadoEvaluacionEmpleadoCriterio() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

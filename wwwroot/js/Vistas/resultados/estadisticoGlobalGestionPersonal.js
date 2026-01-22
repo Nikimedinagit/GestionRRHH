@@ -165,7 +165,7 @@ async function GenerarInformePdfEstadisticoGlobal() {
     const data = window._cacheEstadisticoGlobal || await ObtenerEstadisticaGlobal();
 
     if (!data || !Array.isArray(data) || data.length === 0) {
-        ErrorGeneralInformePdf(); 
+        ErrorGeneralInformePdf();
         return;
     }
 
@@ -225,7 +225,7 @@ async function GenerarInformePdfEstadisticoGlobal() {
         body: body,
         styles: { font: "helvetica", fontSize: 10, halign: "center" },
         columnStyles: {
-            0: { halign: "left" } 
+            0: { halign: "left" }
         },
         headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold", halign: "center" },
         margin: { left: 14, right: 14 }
@@ -238,6 +238,13 @@ async function GenerarInformePdfEstadisticoGlobal() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

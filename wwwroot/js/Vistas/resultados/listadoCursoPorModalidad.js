@@ -207,6 +207,13 @@ async function GenerarInformePdfCursosPorModalidad() {
     );
   }
 
+  const esMobile = window.innerWidth < 768;
+
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
+  }
+
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
   const html = `<html><body style="margin:0"><iframe width="100%" height="100%" src="${url}"></iframe></body></html>`;

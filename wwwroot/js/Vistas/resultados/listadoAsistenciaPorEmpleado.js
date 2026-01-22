@@ -8,20 +8,20 @@ $(document).ready(function () {
     $("#FechaInicioBuscar, #FechaFinBuscar, #EmpleadoIdBuscar, #NroLegajoFiltro")
         .on("input change", function () {
 
-        let fechaInicioRaw = $("#FechaInicioBuscar").val();
-        let fechaFinRaw = $("#FechaFinBuscar").val();
+            let fechaInicioRaw = $("#FechaInicioBuscar").val();
+            let fechaFinRaw = $("#FechaFinBuscar").val();
 
-        if (fechaInicioRaw && fechaFinRaw) {
-            const fechaInicio = new Date(fechaInicioRaw);
-            const fechaFin = new Date(fechaFinRaw);
+            if (fechaInicioRaw && fechaFinRaw) {
+                const fechaInicio = new Date(fechaInicioRaw);
+                const fechaFin = new Date(fechaFinRaw);
 
-            if (fechaFin < fechaInicio) {
-                $("#FechaFinBuscar").val(fechaInicioRaw);
+                if (fechaFin < fechaInicio) {
+                    $("#FechaFinBuscar").val(fechaInicioRaw);
+                }
             }
-        }
 
-        ObtenerAsistenciaPorEmpleado();
-    });
+            ObtenerAsistenciaPorEmpleado();
+        });
 });
 
 
@@ -112,7 +112,7 @@ function MostrarAsistenciaPorEmpleado(data) {
                 : `style="cursor:default;"`;
 
 
-                const badgeHtml = `
+            const badgeHtml = `
                 <span class="fw-bold"
                       style="
                         display:inline-block;
@@ -266,6 +266,13 @@ async function GenerarInformePdfListadoAsistenciaPorEmpleado() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");

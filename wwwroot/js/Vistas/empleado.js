@@ -104,42 +104,42 @@ async function ObtenerEmpleados(mostrarSpinner = true) {
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
-  try { 
-  let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
-  let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
-  let nroLegajo = document.getElementById("NroLegajoFiltro").value;
-  let estadoCivilEmpleado = document.getElementById("EstadoCivilEmpleadoFiltro").value;
-  let estadoCivil = estadoCivilEmpleado !== "0" && estadoCivilEmpleado !== "" ? parseInt(estadoCivilEmpleado) : null;
-  let tipoSexoEmpleado = document.getElementById("TipoSexoEmpleadoFiltro").value;
-  let tipoSexo = tipoSexoEmpleado !== "0" && tipoSexoEmpleado !== "" ? parseInt(tipoSexoEmpleado) : null;
-  let localidadFiltro = document.getElementById("IdLocalidadFiltro").value;
-  let puestoFiltro = document.getElementById("IdPuestoFiltro").value;
+  try {
+    let nombreCompleto = document.getElementById("EmpleadoIdBuscar").value;
+    let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
+    let nroLegajo = document.getElementById("NroLegajoFiltro").value;
+    let estadoCivilEmpleado = document.getElementById("EstadoCivilEmpleadoFiltro").value;
+    let estadoCivil = estadoCivilEmpleado !== "0" && estadoCivilEmpleado !== "" ? parseInt(estadoCivilEmpleado) : null;
+    let tipoSexoEmpleado = document.getElementById("TipoSexoEmpleadoFiltro").value;
+    let tipoSexo = tipoSexoEmpleado !== "0" && tipoSexoEmpleado !== "" ? parseInt(tipoSexoEmpleado) : null;
+    let localidadFiltro = document.getElementById("IdLocalidadFiltro").value;
+    let puestoFiltro = document.getElementById("IdPuestoFiltro").value;
 
-  let filtro = {
-    nombreCompleto: nombreCompleto,
-    dNI: dniEmpleado ? Number(dniEmpleado) : null,
-    nroLegajo: nroLegajo,
-    estadoCiviles: estadoCivil,
-    tipoSexo: tipoSexo,
-    localidadId: localidadFiltro === "0" ? null : Number(localidadFiltro),
-    puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
-  };
+    let filtro = {
+      nombreCompleto: nombreCompleto,
+      dNI: dniEmpleado ? Number(dniEmpleado) : null,
+      nroLegajo: nroLegajo,
+      estadoCiviles: estadoCivil,
+      tipoSexo: tipoSexo,
+      localidadId: localidadFiltro === "0" ? null : Number(localidadFiltro),
+      puestoId: puestoFiltro === "0" ? null : Number(puestoFiltro),
+    };
 
-  const response = await authFetch("Empleados/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    
+    const response = await authFetch("Empleados/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
+    })
+
     const data = await response.json();
-      MostrarEmpleados(data);
-      LimpiarFormularioEmpleado();
-      ObtenerTotalEmpleados();
-  
-    } catch(error)  {
-      MostrarErrorCatch();
-    }
+    MostrarEmpleados(data);
+    LimpiarFormularioEmpleado();
+    ObtenerTotalEmpleados();
 
-    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 
 }
 
@@ -1610,8 +1610,6 @@ async function GenerarInformePdfEmpleado() {
   });
 
 
-
-
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -1619,6 +1617,13 @@ async function GenerarInformePdfEmpleado() {
     doc.setTextColor(100);
     doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10, { align: "left" });
     doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+  }
+
+  const esMobile = window.innerWidth < 768;
+
+  if (esMobile) {
+    doc.save("Informe_Empleados.pdf");
+    return;
   }
 
   const blob = doc.output("blob");

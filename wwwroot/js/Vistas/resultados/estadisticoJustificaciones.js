@@ -214,6 +214,14 @@ async function GenerarInformePdfListadoJustificaciones() {
         );
     }
 
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
+    }
+
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);
 

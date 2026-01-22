@@ -239,7 +239,7 @@ async function GenerarInformePdfVariacionDesempenoEmpleado() {
                 colSpan: 6,
                 styles: {
                     halign: "left",
-                    fillColor:[183, 211, 255], 
+                    fillColor: [183, 211, 255],
                     textColor: [0, 0, 0],
                     fontStyle: "bold"
                 }
@@ -289,6 +289,13 @@ async function GenerarInformePdfVariacionDesempenoEmpleado() {
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
         doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
+
+    const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Empleados.pdf");
+        return;
     }
 
     const blob = doc.output("blob");
