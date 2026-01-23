@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIONES PARA OBTEENR DATOS DE LA API/////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerAsistenciaHorario() {
+async function ObtenerAsistenciaHorario(mostrarSpinner = true) {
+    if (mostrarSpinner) mostrarPantallaCarga();
     try {
         const resp = await authFetch(`AsistenciasHorarios/AsistenciaHorario`, {
             method: "POST",
@@ -15,6 +16,7 @@ async function ObtenerAsistenciaHorario() {
     } catch (error) {
         MostrarErrorCatch();
     }
+    finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 

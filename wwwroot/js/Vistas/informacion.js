@@ -44,7 +44,8 @@ function CerrarPanelEmpleado() {
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LA INFO DEL USUARIO LOGUEADO
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerMiInformacion() {
+async function ObtenerMiInformacion(mostrarSpinner = true) {
+  if (mostrarSpinner) mostrarPantallaCarga();
   try {
     const resp = await authFetch('Empleados/MiInformacion', {
       method: 'GET',
@@ -59,6 +60,7 @@ async function ObtenerMiInformacion() {
   } catch (error) {
     MostrarErrorCatch();
   }
+  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
 }
 
 
@@ -919,7 +921,13 @@ function LimpiarFormularioEmpleado() {
 // EDITAR EMPLEADO //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 async function EditarEmpleado() {
-  if (!ValidarFormularioEmpleado()) return;
+
+  if (!ValidarFormularioEmpleado()) {
+    ocultarOverlayGuardando();
+    return;
+  }
+
+  mostrarOverlayGuardando();
 
   const empleadoId = Number(document.getElementById("IdEmpleado").value);
 
@@ -947,36 +955,47 @@ async function EditarEmpleado() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      if (errorData.mensaje) MostrarErrorEmpleadoExistente(errorData.mensaje);
+
+      if (errorData.mensaje) {
+        MostrarErrorEmpleadoExistente(errorData.mensaje);
+      } else {
+        MostrarErrorCatch();
+      }
+
+      ocultarOverlayGuardando();
       return;
     }
 
-    Swal.fire({
-      title: "¡Información Modificada!",
-      toast: true,
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true,
-      background: "#f4fff7",
-      color: "#1c3d26",
-      icon: "success",
-      iconColor: "#28a746d8",
-      customClass: {
-        popup: "swal2-toast-success",
-        title: "swal2-toast-success-title",
-        icon: "swal2-toast-success-icon",
-      },
-    });
+    setTimeout(() => {
+      ocultarOverlayGuardando();
+      CerrarPanelEmpleado();
+      ObtenerMiInformacion(false);
 
-    // Cerrar panel y refrescar info
-    CerrarPanelEmpleado();
-    ObtenerMiInformacion();
+      Swal.fire({
+        title: "¡Información Modificada!",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+        background: "#f4fff7",
+        color: "#1c3d26",
+        icon: "success",
+        iconColor: "#28a746d8",
+        customClass: {
+          popup: "swal2-toast-success",
+          title: "swal2-toast-success-title",
+          icon: "swal2-toast-success-icon",
+        },
+      });
+    }, 800);
 
   } catch (error) {
     MostrarErrorCatch();
+    ocultarOverlayGuardando();
   }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // LLAMAR A LA FUNCION AL CARGAR LA VISTA

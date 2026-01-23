@@ -3,34 +3,34 @@
 //INICIO ONCHANGE DE FILTROS ////////////////////////////////
 /////////////////////////////////////////////////////////////
 $(document).ready(function () {
-  ObtenerEmpleadosSupervisor();
+  ObtenerEmpleadosSupervisor(false);
 
   $("#EmpleadoIdBuscar").on("input", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#DniEmpleadoFiltro").on("input", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#EstadoCivilEmpleadoFiltro").on("change", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#TipoSexoEmpleadoFiltro").on("change", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#IdLocalidadFiltro").on("change", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#IdPuestoFiltro").on("change", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 
   $("#NroLegajoFiltro").on("input", function () {
-    ObtenerEmpleadosSupervisor();
+    ObtenerEmpleadosSupervisor(false);
   });
 });
 
@@ -67,14 +67,17 @@ async function ComboParaFiltrarLocalidadPuesto() {
   });
   $comboPuesto.html(opcionesPuesto);
 
-  ObtenerEmpleadosSupervisor();
+  ObtenerEmpleadosSupervisor(false);
 }
 
 
 /////////////////////////////////////////////////////////////
 // OBTENER DATOS DE LA API /////////////////////////////////////
 /////////////////////////////////////////////////////////////
-async function ObtenerEmpleadosSupervisor() {
+async function ObtenerEmpleadosSupervisor(mostrarSpinner = true) {
+
+  if (mostrarSpinner) mostrarPantallaCarga();
+
   let dniEmpleado = document.getElementById("DniEmpleadoFiltro").value;
 
   let nroLegajo = document.getElementById("NroLegajoFiltro").value;
@@ -119,6 +122,9 @@ async function ObtenerEmpleadosSupervisor() {
     })
     .catch((error) => {
       MostrarErrorCatch();
+    })
+    .finally(() => {
+      setTimeout(() => ocultarPantallaCarga(), 1200);
     });
 }
 
