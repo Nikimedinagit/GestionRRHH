@@ -129,17 +129,17 @@ function MostrarAsistencias(data) {
                 <div class="card shadow-sm p-2 rounded-3 text-center w-100" 
                      style="min-height: 260px; border-bottom: 4px solid ${estilo.color};">
                     <img src="${foto}" alt="Foto" class="card-img-top" 
-                         style="height: 180px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                         style="height: 160px; object-fit: cover; border-radius: 12px 12px 0 0;">
                     <div class="card-body py-2 d-flex flex-column justify-content-center">
                         <h5 class="card-title mb-1" 
                             style="font-size: 1rem; font-weight:bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
                             title="${nombre}">${nombre}</h5>
                         ${badgeHtml}
-                        <button class="btn-ver" 
+                        <button class="btn-ver mt-2" 
                                 style="background: none; border: none; cursor: pointer;" 
                                 onclick="MostrarDetalleAsistencia(${item.id})" 
                                 data-tippy-content="Ver más">
-                            <i class="bi bi-info-circle btn-sm iocno-ver-asistencia"></i>
+                            <i class="bi bi-info-circle btn-sm icono-ver"></i>
                         </button>
                     </div>
                 </div>

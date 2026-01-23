@@ -234,17 +234,17 @@ function MostrarEmpleados(data) {
           <div>
             <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id
       })" data-tippy-content="Historial">
-              <i class="bi bi-card-text btn-sm icono-historial-empleado"></i>
+              <i class="bi bi-card-text btn-sm icono-historial"></i>
             </button>
           </div>
           <div>
             <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id
       })" data-tippy-content="Ver más">
-              <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+              <i class="bi bi-info-circle btn-sm icono-ver"></i>
             </button>
             <button class="btn-editar" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditarEmpleado(${item.id
       })" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square btn-sm icono-editar-empleado"></i>
+              <i class="bi bi-pencil-square btn-sm icono-editar"></i>
             </button>
           </div>
         </div>

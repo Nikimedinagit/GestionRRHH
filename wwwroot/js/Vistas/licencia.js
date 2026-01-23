@@ -228,16 +228,16 @@ function MostrarLicencias(data) {
           <div>
             ${(rol === "ADMINISTRADOR" || rol === "RRHH") ? `
               <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionLicencia(${item.id})" data-tippy-content="Aprobar o rechazar">
-                <i class="bi bi-sliders icono-accion-licencia"></i>
+                <i class="bi bi-sliders icono-accion"></i>
               </button>
             ` : ""}
           </div>
           <div class="d-flex gap-1">
             <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${item.id})" data-tippy-content="Editar">
-              <i class="bi bi-pencil-square icono-editar-licencia btn-sm"></i>
+              <i class="bi bi-pencil-square icono-editar btn-sm"></i>
             </button>
             <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarLicenciaId(${item.id})" data-tippy-content="Eliminar">
-              <i class="bi bi-trash3 icono-borrar-licencia btn-sm"></i>
+              <i class="bi bi-trash3 icono-borrar btn-sm"></i>
             </button>
           </div>
         </div>

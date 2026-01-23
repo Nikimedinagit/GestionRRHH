@@ -208,8 +208,9 @@ function MostrarHorariosDesktop(data) {
     const tipoClase = tipoColor[tipoStr] || "";
 
     const item = $(`
-      <div class="horarios-item border rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between flex-wrap">
-        <button class="btn-editar me-2" style="background: none; border: none;" onclick="MostrarModalEditar(${horario.id})" data-tippy-content="Editar">
+      <div id="horarioContainer">
+      <div class="border rounded py-2 px-2 mb-2 d-flex align-items-center justify-content-between flex-wrap bg-white">
+        <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${horario.id})" data-tippy-content="Editar">
           <i class="bi bi-pencil-square icono-editar"></i>
         </button>
 
@@ -226,13 +227,14 @@ function MostrarHorariosDesktop(data) {
         </div>
 
         <div class="botones-acciones d-flex align-items-center justify-content-end" style="min-width: 120px; gap: 10px;">
-          <button class="btn-eliminar" style="background: none; border: none;" onclick="EliminarHorarioId(${horario.id})" data-tippy-content="Eliminar">
-            <i class="bi bi-trash icono-eliminar"></i>
+          <button class="btn-borrar" style="background: none; border: none;" onclick="EliminarHorarioId(${horario.id})" data-tippy-content="Eliminar">
+            <i class="bi bi-trash3 icono-borrar"></i>
           </button>
           <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
             <i class="bi bi-chevron-down"></i>
           </button>
         </div>
+      </div>
       </div>
     `);
 
@@ -275,9 +277,9 @@ function MostrarHorariosDesktop(data) {
     });
 
     const detalleHTML = $(`
-      <div class="panelHorarios px-3 pb-2" style="display: none;">
-        <h3 class="titulo-sub-seccion mb-3" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Detalle de Horarios y Días</h3>
-        <div class="table-responsive">
+      <div class="panelHorarios px-2 mb-2 container" style="display: none; background-color: #ffffff;">
+        <h3 class="p-2 mt-1" style="font-size: 1rem; font-weight: 600;">Detalle de los Horarios y Días</h3>
+        <div class="table-responsive pb-2">
           <table class="table table-bordered table-hover">
             <colgroup>
               <col style="width: 25%" />
@@ -308,10 +310,14 @@ function MostrarHorariosDesktop(data) {
       contenedor.find(".toggle-detalle i").removeClass("bi-chevron-up").addClass("bi-chevron-down");
       contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
 
+      const estaVisible = detalleHTML.is(":visible");
+
       detalleHTML.stop(true, true).slideToggle(200);
-      iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
-      const expanded = $(this).attr("aria-expanded") === "true";
-      $(this).attr("aria-expanded", !expanded);
+      iconoChevron
+        .removeClass("bi-chevron-up bi-chevron-down")
+        .addClass(estaVisible ? "bi-chevron-down" : "bi-chevron-up");
+      $(this).attr("aria-expanded", !estaVisible);
+
     });
 
     contenedor.append(item);
@@ -353,22 +359,19 @@ function MostrarHorariosMobile(data) {
     const tipoClase = tipoColor[tipoStr] || "bg-light text-dark";
 
     contenedor.innerHTML += `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3" id="horarioContainer">
         <div class="card shadow-sm p-2 position-relative rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
           <div class="flex-grow-1 d-flex flex-column">
 
-            <!-- Nombre del empleado -->
             <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
               ${empleadoString || "Sin nombre"}
             </h5>
 
-            <!-- Puesto -->
             <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-briefcase me-2"></i>
               ${puestoEmpleado || "Sin puesto"}
             </p>
 
-            <!-- Tipo de horario -->
             <span class="badge ${tipoClase} my-2" style="width: fit-content; font-size: 1rem;">
               ${tipoStr}
             </span>
@@ -378,15 +381,15 @@ function MostrarHorariosMobile(data) {
           <div class="d-flex justify-content-between mt-3 align-items-center">
             <div>
               <button class="btn-ver" onclick="MostrarDetalleHorario(${id})" data-tippy-content="Detalle" style="background: none; border: none;">
-                <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
+                <i class="bi bi-info-circle icono-ver btn-sm"></i>
               </button>
             </div>
             <div>
               <button class="btn-editar" onclick="MostrarModalEditar(${id})" data-tippy-content="Editar" style="background: none; border: none;">
-                <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+                <i class="bi bi-pencil-square icono-editar btn-sm"></i>
               </button>
               <button class="btn-eliminar" onclick="EliminarHorarioId(${id})" data-tippy-content="Eliminar" style="background: none; border: none;">
-                <i class="bi bi-trash icono-borrar-horario btn-sm"></i>
+                <i class="bi bi-trash icono-borrar btn-sm"></i>
               </button>
             </div>
           </div>

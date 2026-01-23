@@ -79,7 +79,7 @@ async function ObtenerJustificaciones(mostrarSpinner = true) {
 // MOSTRAR LAS JUSTIFICACIONES ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 function MostrarJustificaciones(data) {
-  if (window.innerWidth <= 880) {
+  if (window.innerWidth <= 764) {
     MostrarJustificacionesMobile(data);
   } else {
     MostrarJustificacionesDesktop(data);
@@ -136,47 +136,47 @@ function MostrarJustificacionesDesktop(data) {
     let botonEditar = "";
     let botonEliminar = "";
     if (estadoNombre === "PENDIENTE" && hoy <= limite) {
-      botonEditar = `<div class="d-flex justify-content-between align-items-center mt-2">
+      botonEditar = `<div class="d-flex justify-content-between align-items-center">
                        <div>
-                         <button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+                         <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
                            <i class="bi bi-pencil-square icono-editar"></i>
                          </button>
                        </div>
                      </div>`;
-      botonEliminar = `<button class='btn-eliminar' style='background: none; border: none;' 
+      botonEliminar = `<button class='btn-borrar' style='background: none; border: none;' 
                          onclick='EliminarJustificacion(${element.id})' data-tippy-content='Eliminar'>
-                         <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                         <i class='bi bi-trash3 icono-borrar'></i>
                        </button>`;
     }
 
     let botonAccion = "";
     if ((rol === "ADMINISTRADOR" || rol === "RRHH") && estadoNombre === "PENDIENTE") {
-      botonAccion = `<div class="d-flex justify-content-between align-items-center mt-2">
-                       <div class="d-flex gap-1">
+      botonAccion = `<div class="d-flex justify-content-between align-items-center">
+                       <div class="d-flex justify-content-center align-items-center gap-1">
                          <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" 
                            data-tippy-content="Aprobar o rechazar"> 
-                           <i class="bi bi-sliders icono-accion-licencia"></i>
+                           <i class="bi bi-sliders icono-accion"></i>
                          </button>
                        </div>
                      </div>`;
     }
 
     const item = $(`
-      <div class="curso-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between">
-        <div class="d-flex justify-content-between align-items-center w-100" style="gap: 20px;">
-          <div class="d-flex align-items-center" style="gap: 10px; flex: 1;">
+      <div class="curso-item border rounded py-2 px-2 mb-2 d-flex align-items-center justify-content-between bg-white">
+        <div class="d-flex justify-content-between align-items-center w-100" >
+          <div class="d-flex align-items-center" style="flex: 1.5;">
             ${botonEditar}
             <div class="fw-bold text-truncate" style="max-width: 200px;" title="${element.empleadoString || "Sin nombre"}">
               ${element.empleadoString || "Sin nombre"}
             </div>
           </div>
 
-          <div class="text-muted text-center" style="opacity: 0.6; min-width: 120px; flex: 1;">
+          <div class="text-muted text-center" style="opacity: 0.6; min-width: 120px;">
             Día del incidente: ${fecha}
           </div>
 
-          <div class="d-flex align-items-center justify-content-end" style="gap: 20px; flex: 1;">
-            <div class="badge ${claseJustificacion}" title="${estadoNombre}">
+          <div class="d-flex align-items-center justify-content-end" style="flex: 1;">
+            <div class="badge me-2 ${claseJustificacion}" title="${estadoNombre}">
               ${estadoNombre}
             </div>
             ${botonAccion}
@@ -192,24 +192,20 @@ function MostrarJustificacionesDesktop(data) {
     `);
 
     const descripcionDetalle = $(`
-      <div class="panelJustificacion px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Detalle de la Justificación</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="d-flex gap-3 mb-3">
-          <div class="p-3 rounded" 
-              style="flex: 2; background-color: #f8fbfd;
+      <div class="panelJustificacion px-2 mb-2 container" style="display: none; background-color: #ffffff;">
+          <h3 class="p-2 mt-1" style="font-size: 1rem; font-weight: 600;">Detalle de la Justificación</h3>
+        <div class="d-flex gap-3 mb-2">
+          <div class="p-2 border rounded" 
+              style="flex: 2; background-color: #ffffff;
                       max-height: 200px; overflow-y: auto;
-                      word-wrap: break-word;" 
-              id="motivoDiv">
-              <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">MOTIVO</small>
+                      word-wrap: break-word;" >
+              <small class="fw-bold d-block mb-1" style="font-size: 0.85rem;" >Motivo</small>
               <hr style="margin: 0.2rem;" />
               <div>${element.motivo || "Sin motivo"}</div>
           </div>
-          <div class="p-3 rounded" style="flex: 1; background-color: #f8fbfd;" id="documentoDiv">
-            <small class="fw-bold d-block mb-1" id="tituloDocJustificacion">DOCUMENTO ADJUNTO</small>
-            <div>${documentoHtml || "No se adjuntó ningún documento"}</div>
+          <div class="p-2 border rounded" style="flex: 1; background-color: #ffffff;">
+            <small class="fw-bold d-block mb-1" style="font-size: 0.85rem;">Documento Adjunto</small>
+            <div>${documentoHtml || "No se adjuntó ningún documento."}</div>
           </div>
         </div>
       </div>
@@ -243,6 +239,161 @@ function MostrarJustificacionesDesktop(data) {
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES MOBILE ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+// function MostrarJustificacionesMobile(data) {
+//   const contenedor = document.getElementById("contenedorJustificaciones");
+//   contenedor.innerHTML = "";
+
+//   const rol = getRol().trim().toUpperCase();
+
+//   if (!Array.isArray(data) || data.length === 0) {
+//     contenedor.innerHTML =
+//       "<div class='text-center text-muted py-3'>No hay justificaciones para mostrar.</div>";
+//     return;
+//   }
+
+//   const justificacionColor = {
+//     PENDIENTE: "badge-pendiente",
+//     APROBADA: "badge-aprobada",
+//     RECHAZADA: "badge-rechazada",
+//   };
+
+//   data.forEach((element) => {
+//     const estadoNombre = element.estadoString || "SIN ESTADO";
+//     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
+//     const fecha = element.fechaString || "Sin fecha";
+
+//     const documentoHtml = element.documentoNombre
+//       ? `
+//         <p class="text-muted d-flex align-items-center gap-2 mb-2">
+//           <button onclick="DescargarDocumento(${element.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
+//             <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
+//             <span>Descargar</span>
+//           </button>
+//         </p>
+//       `
+//       : "No se adjuntó ningún documento";
+
+//     let botonesHtml = "";
+
+//     if (estadoNombre === "PENDIENTE") {
+//       const fechaParts = fecha.split("/");
+//       if (fechaParts.length === 3) {
+//         const fechaIncidente = new Date(fechaParts[2], fechaParts[1] - 1, fechaParts[0]);
+//         const hoy = new Date();
+//         const limite = new Date(fechaIncidente);
+//         limite.setDate(limite.getDate() + 7);
+
+//         if (hoy <= limite) {
+//           botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
+
+//           if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR" || rol === "EMPLEADO") {
+//             botonesHtml += `
+//               <button class="btn-editar" style="background: none; border: none;" 
+//                 onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+//                 <i class="bi bi-pencil-square icono-editar"></i>
+//               </button>
+//               <button class="btn-borrar" style="background: none; border: none;" 
+//                 onclick="EliminarJustificacion(${element.id})" data-tippy-content="Eliminar">
+//                 <i class="bi bi-trash3 icono-borrar"></i>
+//               </button>
+//             `;
+//           }
+
+//           if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+//             botonesHtml += `
+//               <button class="btn-accionLicencia" style="background:none; border:none;" 
+//                 onclick="AbrirModalAccionJustificacion(${element.id})" data-tippy-content="Aprobar o rechazar">
+//                 <i class="bi bi-sliders icono-accion"></i>
+//               </button>
+//             `;
+//           }
+
+//           botonesHtml += `</div>`;
+//         }
+//       }
+//     }
+
+//     const card = document.createElement("div");
+//     card.className = "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column mb-3";
+//     card.innerHTML = `
+//       <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 140px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
+//         <div class="flex-grow-1 d-flex flex-column">
+//           <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
+//             ${element.empleadoString || "Sin nombre"}
+//           </h5>
+//           <small class="text-muted mb-1" style="font-size: 0.90rem;">
+//             <i class="bx bx-calendar me-1"></i>Día del incidente: ${fecha}
+//           </small>
+//           <span class="badge ${claseJustificacion} my-2" style="width: fit-content; font-size: 0.80rem;">
+//             ${estadoNombre}
+//           </span>
+//         </div>
+
+//         <div class="d-flex justify-content-between mt-2 align-items-center">
+//           ${botonesHtml}
+//           <div>
+//             <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
+//               <i class="bi bi-chevron-down"></i>
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     `;
+
+//     const descripcionDetalle = $(`
+//       <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
+//         <div class="mb-3">
+//           <h3 class="titulo-sub-seccion">Detalle de la Justificacion</h3>
+//         </div>
+//         <hr style="margin-bottom: 1rem;" />
+//         <div class="d-flex flex-column gap-3 mb-3">
+
+//           <div class="p-3 rounded" 
+//               style="background-color: #f8fbfd;
+//                       max-height: 200px;
+//                       overflow-y: auto;
+//                       word-wrap: break-word;">
+//             <small class="fw-bold d-block mb-1">MOTIVO</small>
+//             <hr style="margin: 0.2rem;" />
+//             <div>${element.motivo || "Sin motivo"}</div>
+//           </div>
+
+//           <div class="p-3 rounded" style="background-color: #f8fbfd;">
+//             <small class="fw-bold d-block mb-1">DOCUMENTO ADJUNTO</small>
+//             <div>${documentoHtml}</div>
+//           </div>
+
+//         </div>
+//       </div>
+//     `);
+
+
+//     $(card).find(".btn-ver-descripcion").on("click", function () {
+//       const icono = $(this).find("i");
+
+//       $(".panelDescripcionCurso:visible")
+//         .not(descripcionDetalle)
+//         .slideUp(200);
+//       $(".btn-ver-descripcion i")
+//         .not(icono)
+//         .removeClass("bi-chevron-up")
+//         .addClass("bi-chevron-down");
+
+//       descripcionDetalle.slideToggle(200);
+//       icono.toggleClass("bi-chevron-down bi-chevron-up");
+//     });
+
+//     contenedor.appendChild(card);
+//     contenedor.appendChild(descripcionDetalle[0]);
+//   });
+
+//   tippy("[data-tippy-content]", {
+//     animation: "scale",
+//     theme: "mi-tema",
+//     delay: [100, 0],
+//   });
+// }
+
 function MostrarJustificacionesMobile(data) {
   const contenedor = document.getElementById("contenedorJustificaciones");
   contenedor.innerHTML = "";
@@ -266,19 +417,8 @@ function MostrarJustificacionesMobile(data) {
     const claseJustificacion = justificacionColor[estadoNombre] || "bg-light text-dark";
     const fecha = element.fechaString || "Sin fecha";
 
-    const documentoHtml = element.documentoNombre
-      ? `
-        <p class="text-muted d-flex align-items-center gap-2 mb-2">
-          <button onclick="DescargarDocumento(${element.id})" class="document-link d-flex align-items-center gap-1" data-tippy-content="Descargar" style="color: inherit; text-decoration: none; font-size: 0.9rem; border:none; background:none; cursor:pointer;">
-            <i class="bi bi-file-earmark-text" style="font-size: 1rem;"></i>
-            <span>Descargar</span>
-          </button>
-        </p>
-      `
-      : "No se adjuntó ningún documento";
 
     let botonesHtml = "";
-
     if (estadoNombre === "PENDIENTE") {
       const fechaParts = fecha.split("/");
       if (fechaParts.length === 3) {
@@ -286,28 +426,24 @@ function MostrarJustificacionesMobile(data) {
         const hoy = new Date();
         const limite = new Date(fechaIncidente);
         limite.setDate(limite.getDate() + 7);
-
         if (hoy <= limite) {
-          botonesHtml += `<div class="d-flex justify-content-start align-items-center gap-2 mt-2">`;
+          botonesHtml += `<div class="d-flex gap-2 mt-2">`;
 
-          if (rol === "ADMINISTRADOR" || rol === "RRHH" || rol === "SUPERVISOR" || rol === "EMPLEADO") {
+          if (["ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO"].includes(rol)) {
             botonesHtml += `
-              <button class="btn-editar" style="background: none; border: none;" 
-                onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
+              <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
                 <i class="bi bi-pencil-square icono-editar"></i>
               </button>
-              <button class="btn-eliminar" style="background: none; border: none;" 
-                onclick="EliminarJustificacion(${element.id})" data-tippy-content="Eliminar">
-                <i class="bi bi-trash3 icono-elimina-detalle"></i>
+              <button class="btn-borrar" style="background: none; border: none;" onclick="EliminarJustificacion(${element.id})" data-tippy-content="Eliminar">
+                <i class="bi bi-trash3 icono-borrar"></i>
               </button>
             `;
           }
 
-          if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+          if (["ADMINISTRADOR", "RRHH"].includes(rol)) {
             botonesHtml += `
-              <button class="btn-accionLicencia" style="background:none; border:none;" 
-                onclick="AbrirModalAccionJustificacion(${element.id})" data-tippy-content="Aprobar o rechazar">
-                <i class="bi bi-sliders icono-accion-licencia"></i>
+              <button class="btn-accionLicencia" style="background:none; border:none;" onclick="AbrirModalAccionJustificacion(${element.id})" data-tippy-content="Aprobar o rechazar">
+                <i class="bi bi-sliders icono-accion"></i>
               </button>
             `;
           }
@@ -318,86 +454,72 @@ function MostrarJustificacionesMobile(data) {
     }
 
     const card = document.createElement("div");
-    card.className = "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column";
+    card.className = "col-12 col-md-6 col-lg-4 col-xl-3 mb-3";
     card.innerHTML = `
-      <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
-        <div class="flex-grow-1 d-flex flex-column">
-          <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
-            ${element.empleadoString || "Sin nombre"}
-          </h5>
-          <small class="text-muted mb-1" style="font-size: 0.90rem;">
-            <i class="bx bx-calendar me-1"></i>Día del incidente: ${fecha}
-          </small>
-          <span class="badge ${claseJustificacion} my-2" style="width: fit-content; font-size: 0.80rem;">
-            ${estadoNombre}
-          </span>
-        </div>
+          <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 140px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
+            <div class="flex-grow-1 d-flex flex-column">
+              <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.empleadoString || "Sin nombre"}</h5>
+              <small class="text-muted mb-1" style="font-size: 0.9rem;"><i class="bx bx-calendar me-1"></i>Día del incidente: ${fecha}</small>
+              <span class="badge ${claseJustificacion} my-2" style="width: fit-content; font-size: 0.8rem;">${estadoNombre}</span>
+            </div>
 
-        <div class="d-flex justify-content-between mt-2 align-items-center">
-          ${botonesHtml}
-          <div>
-            <button class="btn-ver-descripcion" style="background: none; border: none;" data-tippy-content="Detalle">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div>${botonesHtml}</div>
+              <div>
+                <button class="btn-ver-detalle" onclick="MostrarDetalleJustificacion(${element.id})" data-id="${element.id}" style="background:none; border:none;" data-tippy-content="Detalle">
+                  <i class="bi bi-info-circle icono-ver"></i>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    `;
-
-    const descripcionDetalle = $(`
-      <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Detalle de la Justificacion</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;" />
-        <div class="d-flex flex-column gap-3 mb-3">
-
-          <div class="p-3 rounded" 
-              style="background-color: #f8fbfd;
-                      max-height: 200px;
-                      overflow-y: auto;
-                      word-wrap: break-word;">
-            <small class="fw-bold d-block mb-1">MOTIVO</small>
-            <hr style="margin: 0.2rem;" />
-            <div>${element.motivo || "Sin motivo"}</div>
-          </div>
-
-          <div class="p-3 rounded" style="background-color: #f8fbfd;">
-            <small class="fw-bold d-block mb-1">DOCUMENTO ADJUNTO</small>
-            <div>${documentoHtml}</div>
-          </div>
-
-        </div>
-      </div>
-    `);
-
-
-    $(card).find(".btn-ver-descripcion").on("click", function () {
-      const icono = $(this).find("i");
-
-      $(".panelDescripcionCurso:visible")
-        .not(descripcionDetalle)
-        .slideUp(200);
-      $(".btn-ver-descripcion i")
-        .not(icono)
-        .removeClass("bi-chevron-up")
-        .addClass("bi-chevron-down");
-
-      descripcionDetalle.slideToggle(200);
-      icono.toggleClass("bi-chevron-down bi-chevron-up");
-    });
+        `;
 
     contenedor.appendChild(card);
-    contenedor.appendChild(descripcionDetalle[0]);
   });
 
-  tippy("[data-tippy-content]", {
-    animation: "scale",
-    theme: "mi-tema",
-    delay: [100, 0],
+  document.querySelectorAll(".btn-ver-detalle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      const elemento = data.find((x) => x.id == id);
+
+      document.getElementById("detalleMotivo").innerText = elemento.motivo || "Sin motivo";
+      document.getElementById("detalleDocumento").innerHTML = elemento.documentoNombre
+        ? `<button onclick="DescargarDocumento(${elemento.id})" class="btn btn-sm">
+             <i class="bi bi-file-earmark-text me-1"></i>Descargar
+           </button>`
+        : "No se adjuntó ningún documento";
+
+      const offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasDetalleJustificacion"));
+      offcanvas.show();
+    });
   });
+
+  tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// MOSTRAR DETALLE DE JUSTIFICACION //////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MostrarDetalleJustificacion(id) {
+  const justificacion = justificacionesData.find((j) => j.id === id);
+  if (!justificacion) return;
+
+  document.getElementById("detalleMotivo").textContent =
+    justificacion.motivo || "Sin motivo";
+
+  document.getElementById("detalleDocumento").innerHTML =
+    justificacion.documentoNombre
+      ? `<button onclick="DescargarDocumento(${justificacion.id})" class="btn btn-sm">
+           <i class="bi bi-file-earmark-text me-1"></i>Descargar
+         </button>`
+      : "No se adjuntó ningún documento";
+
+  const offcanvas = new bootstrap.Offcanvas(
+    document.getElementById("offcanvasDetalleJustificacion")
+  );
+  offcanvas.show();
+}
 
 
 ///SUPERVISOR DEBE DE VER LAS JUSTIFICACIONES DE LOS EMPLEADOS A CARGO DE MI SECTOR EN COLOR AMARILLO, 
@@ -770,20 +892,20 @@ async function CrearJustificacion() {
 
   try {
 
-  const formData = new FormData();
-  formData.append(
-    "Motivo",
-    document.getElementById("MotivoJustificacion").value
-  );
-  formData.append("Fecha", document.getElementById("FechaJustificacion").value);
-  const rol = getRol()?.toUpperCase();
-  if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-    formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
-  }
-  const archivo = document.getElementById("DocumentoAdjunto").files[0];
-  if (archivo) {
-    formData.append("DocumentoAdjunto", archivo);
-  }
+    const formData = new FormData();
+    formData.append(
+      "Motivo",
+      document.getElementById("MotivoJustificacion").value
+    );
+    formData.append("Fecha", document.getElementById("FechaJustificacion").value);
+    const rol = getRol()?.toUpperCase();
+    if (rol === "ADMINISTRADOR" || rol === "RRHH") {
+      formData.append("EmpleadoId", document.getElementById("EmpleadoId").value);
+    }
+    const archivo = document.getElementById("DocumentoAdjunto").files[0];
+    if (archivo) {
+      formData.append("DocumentoAdjunto", archivo);
+    }
 
     const response = await authFetch("Justificaciones", {
       method: "POST",
@@ -865,7 +987,7 @@ async function EditarJustificacion(id) {
       method: "PUT",
       body: formData,
     })
-      
+
     if (!response.ok) {
       const errorData = await response.json();
       if (errorData.mensaje) {
@@ -877,7 +999,7 @@ async function EditarJustificacion(id) {
       return;
     }
 
-     setTimeout(() => {
+    setTimeout(() => {
       ocultarOverlayGuardando();
       ObtenerJustificaciones(false);
       cerrarPanelJustificacion();

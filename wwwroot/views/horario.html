@@ -13,17 +13,16 @@
 
 
   <!-- ======================================= Título ====================================== -->
-  <div class="mb-3">
-    <h3 class="titulo-seccion">Asignación de Horarios</h3>
-    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+  <div class="bg-white shadow-sm rounded p-2 mb-3">
+    <h3 class="titulo-seccion mb-1">Asignación de Horarios</h3>
+    <p class="text-muted fs-6 mb-0">
       Supervisá la carga horaria, días laborales y distribución del personal durante la semana.
     </p>
   </div>
 
-  <hr />
 
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-  <div style="background-color: white; border-radius: 5px; padding: 10px">
+  <div>
 
     <div id="fondoOscuro" onclick="cerrarPanelHorario()"></div>
 
@@ -95,7 +94,7 @@
     <div>
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-primary bg-opacity-10 p-3 me-3">
               <i class="fas fa-clock text-primary fs-4"></i>
@@ -107,7 +106,7 @@
           </div>
         </div>
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-info bg-opacity-10 p-3 me-3">
               <i class="fas fa-hourglass-half text-info fs-4"></i>
@@ -119,7 +118,7 @@
           </div>
         </div>
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-warning bg-opacity-10 p-3 me-3">
               <i class="fas fa-calendar-week text-warning fs-4"></i>
@@ -136,7 +135,7 @@
 
 
     <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+    <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
       <div class="d-flex justify-content-between align-items-center info-ayuda-header">
         <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
           Información de Ayuda
@@ -216,12 +215,7 @@
       </div>
     </div>
 
-
-
-    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
-
-
-    <div id="contenedorHorarios" class="row g-4"></div>
+    <div id="contenedorHorarios" class="row"></div>
 
 
     <!-- ======================================= Panel Deslizante Formulario ====================================== -->

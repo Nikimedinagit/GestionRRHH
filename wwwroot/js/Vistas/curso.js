@@ -1783,9 +1783,9 @@ function MostrarCertificados(cursoId, data) {
           <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
           <td class='d-flex justify-content-center align-items-center'>
             <button class='btn-eliminar' style='background: none; border: none;' 
-    onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})' data-tippy-content='Eliminar'>
-    <i class='bi bi-trash3 icono-elimina-detalle'></i>
-</button>
+                onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})' data-tippy-content='Eliminar'>
+                <i class='bi bi-trash3 icono-elimina-detalle'></i>
+            </button>
 
           </td>
         </tr>

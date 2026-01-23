@@ -9,21 +9,7 @@
 /* FIN TITULO */
 
 
-
-
-/* INICIO LINEA DE SEPARACION */
-/* Linea de separación */
-hr {
-  border: none;
-  border-bottom: 1px solid #2c2c2cc7 !important;
-}
-/* FIN LINEA DE SEPARACION */
-
-
-
-
 /* INICIO BOTONES */
-/* --- Para Todos Los Botones --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -42,7 +28,6 @@ hr {
   box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
 }
 
-/* --- Botón Agregar --- */
 .btn-agregar {
   --c: #3697E1;
 }
@@ -53,7 +38,6 @@ hr {
   color: #fff;
 }
 
-/* --- Botón Filtro --- */
 .btn-filtro {
   --c: #F0AD4E;
 }
@@ -64,7 +48,6 @@ hr {
   color: #212529;
 }
 
-/* --- Botón Informe --- */
 .btn-informe {
   --c: #28A745;
 }
@@ -84,18 +67,61 @@ hr {
   color: #fff;
 }
 
-.btn-volver{
-  background-color: #fff !important;
-}
 
-.btn-volver:hover{
+.btn-volver:hover {
   background-color: #A0522D !important;
   color: #fff;
 
 }
+
+.icono-editar {
+  font-size: 1.2rem !important;
+  color: #0d6efd !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icono-borrar {
+  font-size: 1.2rem !important;
+  color: #dc3545 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icono-ver {
+  font-size: 1.2rem !important;
+  color: #ffc107 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icono-accion {
+  font-size: 1.2rem !important;
+  color: #6f42c1 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icono-historial {
+  font-size: 1.2rem !important;
+  color: #FF6600 !important;
+  font-weight: bold !important;
+  margin: 0px 3px !important;
+  padding: 0% !important;
+}
+
+.icon-desactivar {
+  font-size: 1.4rem !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+  vertical-align: middle;
+  transition: color 0.2s;
+}
 /* FIN BOTONES */
-
-
 
 
 /* INICIO PANEL DE FILTROS */
@@ -147,12 +173,12 @@ hr {
   transform: scale(1.01);
 }
 
-/* Responsive para filtros */
 @media (max-width: 768px) {
   .filtros-panel {
     padding: 0.5rem 0.4rem;
     border-radius: 7px;
   }
+
   .form-label-fija {
     font-size: 0.92rem;
   }
@@ -160,52 +186,10 @@ hr {
 /* FIN PANEL DE FILTROS */
 
 
-
-
-/* INICIO PANEL GENERAR */
-.generar-panel {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #28A745;
-  border-radius: 9px;
-  padding: 1.2rem 1.5rem;
-  box-shadow: 0 4px 16px rgba(54, 151, 225, 0.07);
-  transition: all 0.3s ease;
-  transform: scaleY(0);
-  transform-origin: top;
-  opacity: 0;
-  overflow: hidden;
-}
-
-.generar-panel.activo {
-  transform: scaleY(1);
-  opacity: 1;
-}
-
-.btn-generar-pdf {
-  background: #fff !important;
-  color: #000 !important;
-  font-weight: 600;
-  border-radius: 7px;
-  border: none;
-  padding: 6px 16px;
-  transition: background 0.2s;
-}
-.btn-generar-pdf:hover {
-  background: #28A745 !important;
-  color: #fff !important;
-}
-
-/* FIN PANEL GENERAL*/
-
-
-
-
 /* INICIO TABLA */
 .table thead th {
   padding: 8px 12px !important;
 }
-
 
 table tbody tr td {
   padding: 2px 8px !important;
@@ -225,65 +209,33 @@ table tbody tr {
   background-color: white !important;
 }
 
-
-
-.icono-editar {
-  font-size: 1.4rem !important;
-  color: #0d6efd !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-
-}
-
-.icono-borrar {
-  font-size: 1.4rem !important;
-  color: #dc3545 !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-
-}
-
-/* Botón toggle */
-.icon-desactivar {
-  font-size: 1.4rem !important;
-  margin: 0 2px !important;
-  padding: 0 !important;
-  vertical-align: middle;
-  transition: color 0.2s;
-}
-
-/* Fila desactivada */
 .fila-desactivada {
   color: #999;
   font-style: italic;
   opacity: 0.4;
 }
 
-/* Responsive tabla */
 .table-responsive {
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
 }
+/* FIN TABLA */
 
-/* Tooltips */
+
+/* INICIO TOOLTIP */
 .tippy-box[data-theme~='mi-tema'] {
   background-color: #1f2937;
   color: #fff;
   font-size: 0.75rem;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-/* FIN TABLA */
-
-
+/* FIN TOOLTIP */
 
 
 /* INICIO FONDO OSCURO AL PULSAR BOTÓN AGREGAR */
-/* Fondo oscuro al pulsar botón agregar */
 #fondoOscuro {
   display: none;
   position: fixed;
@@ -304,10 +256,7 @@ table tbody tr {
 /* FIN FONDO OSCURO AL PULSAR BOTÓN AGREGAR */
 
 
-
-
 /* INICIO PANEL DESLIZANTE BASE */
-/* Panel deslizante base*/
 #panelProvincia,
 #panelLocalidad,
 #panelSector,
@@ -315,7 +264,15 @@ table tbody tr {
 #panelEmpleado,
 #panelTipoDeLicencia,
 #panelLicencia,
-#panelHorario{ 
+#panelHorario,
+#panelProvincia,
+#panelEvaluaciones,
+#panelTipoDeCriterio,
+#panelCriterios,
+#panelCursos,
+#panelAsistencias,
+#panelCertificados,
+#panelJustificacion {
   position: fixed;
   top: 50%;
   right: 0;
@@ -332,10 +289,9 @@ table tbody tr {
   z-index: 1100;
   transform: translate(100%, -50%);
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-   overflow-y: auto; 
+  overflow-y: auto;
 }
 
-/* Estado abierto*/
 #panelProvincia.abierto,
 #panelLocalidad.abierto,
 #panelSector.abierto,
@@ -343,16 +299,22 @@ table tbody tr {
 #panelEmpleado.abierto,
 #panelTipoDeLicencia.abierto,
 #panelLicencia.abierto,
-#panelHorario.abierto {
+#panelHorario.abierto,
+#panelProvincia.abierto,
+#panelEvaluaciones.abierto,
+#panelTipoDeCriterio.abierto,
+#panelCriterios.abierto,
+#panelCursos.abierto,
+#panelAsistencias.abierto,
+#panelCertificados.abierto,
+#panelJustificacion.abierto {
   transform: translate(0, -50%);
 }
 
-/* Header del panel*/
 .panel-header {
   margin-bottom: 15px;
 }
 
-/* Título del panel*/
 .panel-title {
   font-size: 1rem;
   font-weight: 700;
@@ -360,14 +322,12 @@ table tbody tr {
   user-select: none;
 }
 
-/* Footer del panel*/
 .panel-footer {
   margin-top: auto;
   display: flex;
   gap: 12px;
 }
 
-/* Botones base*/
 .btn {
   all: unset;
   padding: 8px 20px;
@@ -382,43 +342,36 @@ table tbody tr {
   min-width: 90px;
 }
 
-/* Botón cancelar*/
 .btn-cancelar {
   background-color: #9ca3af;
   color: white;
 }
 
-/* Botón cancelar hover*/
 .btn-cancelar:hover {
   background-color: #7f8694;
   color: white !important;
 }
 
-/* Botón guardar*/
 .btn-guardar {
   background-color: #3697E1;
   color: white;
 }
 
-/* Botón guardar hover*/
 .btn-guardar:hover {
   background-color: #2563eb;
   color: white !important;
 }
 
-/* Grid del formulario*/
 .form-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 12px 12px;
 }
 
-/* Grupo de formulario*/
 .form-group {
   position: relative;
 }
 
-/* Inputs y selects*/
 input.form-control,
 select.form-control {
   font-size: 0.875rem;
@@ -432,13 +385,11 @@ select.form-control {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Placeholder de inputs*/
 input.form-control::placeholder {
   color: #9ca3af;
   opacity: 1;
 }
 
-/* Focus de inputs y selects*/
 input.form-control:focus,
 select.form-control:focus {
   outline: none;
@@ -448,7 +399,6 @@ select.form-control:focus {
   transform: scale(1.01);
 }
 
-/* Label flotante*/
 label {
   position: absolute;
   top: 6px;
@@ -462,7 +412,6 @@ label {
   padding: 0 3px;
 }
 
-/* Label flotante activo*/
 input.form-control:focus+label,
 input.form-control:not(:placeholder-shown)+label,
 select.form-control:focus+label,
@@ -475,9 +424,7 @@ select.form-control:not([value=""])+label {
   border-radius: 8px;
 }
 
-
 @media (max-width: 1024px) {
-
   #panelProvincia,
   #panelLocalidad,
   #panelSector,
@@ -485,7 +432,15 @@ select.form-control:not([value=""])+label {
   #panelEmpleado,
   #panelTipoDeLicencia,
   #panelLicencia,
-  #panelHorario {
+  #panelHorario,
+  #panelProvincia,
+  #panelEvaluaciones,
+  #panelTipoDeCriterio,
+  #panelCriterios,
+  #panelCursos,
+  #panelAsistencias,
+  #panelCertificados,
+  #panelJustificacion {
     max-width: 50vw;
     max-height: 80vh;
     padding: 15px 15px;
@@ -493,7 +448,6 @@ select.form-control:not([value=""])+label {
 }
 
 @media (max-width: 768px) {
-
   #panelProvincia,
   #panelLocalidad,
   #panelSector,
@@ -501,7 +455,15 @@ select.form-control:not([value=""])+label {
   #panelEmpleado,
   #panelTipoDeLicencia,
   #panelLicencia,
-  #panelHorario {
+  #panelHorario,
+  #panelProvincia,
+  #panelEvaluaciones,
+  #panelTipoDeCriterio,
+  #panelCriterios,
+  #panelCursos,
+  #panelAsistencias,
+  #panelCertificados,
+  #panelJustificacion {
     max-width: 70vw;
     max-height: 70vh;
     padding: 12px 12px;
@@ -516,17 +478,22 @@ select.form-control:not([value=""])+label {
   #panelEmpleado,
   #panelTipoDeLicencia,
   #panelLicencia,
-  #panelHorario {
+  #panelHorario,
+  #panelProvincia,
+  #panelEvaluaciones,
+  #panelTipoDeCriterio,
+  #panelCriterios,
+  #panelCursos,
+  #panelAsistencias,
+  #panelCertificados,
+  #panelJustificacion {
     max-width: 90vw;
     max-height: 60vh;
     padding: 10px 10px;
     border-radius: 15px 0 0 15px;
   }
 }
-
 /* FIN PANEL DESLIZANTE BASE */
-
-
 
 
 /* INICIO RESPONSIVO PARA EMPLEADOS */
@@ -535,7 +502,6 @@ select.form-control:not([value=""])+label {
   grid-template-columns: repeat(3, 1fr) !important;
   gap: 12px !important;
 }
-
 
 @media (max-width: 1024px) {
   #panelEmpleado .form-grid {
@@ -558,13 +524,229 @@ select.form-control:not([value=""])+label {
 
 
 
+
+
+
+/* ////////////////////////////////////////////////////////////////////////////// */
 /* INICIO RESPONSIVO PARA LICENCIAS */
 @media (max-width: 400px) {
   #panelLicencia .form-grid {
-  grid-template-columns: repeat(1, 1fr) !important; 
-}
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
 }
 /* FIN RESPONSIVO PARA LICENCIAS */
+/* /////////////////////////////////////////////////////////////////////////////////////// */
+
+
+
+
+
+/* INICIO DE EMPLEADOS */
+.badge-empleado-activo {
+  background-color: #a3dc9a72 !important;
+  color: #06923E !important;
+  font-size: 0.85rem !important;
+}
+
+.badge-empleado-desactivado {
+  background-color: #f8d7da;
+  color: #c62828 !important;
+  font-size: 0.85rem !important;
+}
+
+#empleadosContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+#empleadosContainer .card:hover {
+  transform: scale(1.03);
+}
+/* FIN DE EMPLEADOS */
+
+
+/* FIN ESTILO DE ASISTENCIA */
+.titulo-asistencias {
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+}
+
+.titulo-asistencias i {
+  font-size: 1.2rem !important;
+  color: #0d6efd;
+}
+
+.titulo-asistencias span {
+  font-weight: bold;
+  font-size: 1.2rem !important;
+}
+
+.titulo-asistencias small {
+  font-size: 0.9rem !important;
+  color: #6c757d;
+}
+
+@media (min-width: 768px) {
+  .titulo-asistencias {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .titulo-asistencias span {
+    font-size: 1.25rem;
+  }
+
+  .titulo-asistencias small {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .titulo-asistencias {
+    gap: 1rem;
+  }
+
+  .titulo-asistencias i {
+    font-size: 1.8rem;
+  }
+
+  .titulo-asistencias span {
+    font-size: 1.5rem;
+  }
+
+  .titulo-asistencias small {
+    font-size: 1.1rem;
+  }
+}
+
+#asistenciasContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+#asistenciasContainer .card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+/* FIN ESTILO DE ASISTENCIA */
+
+
+/* INICIO ESTILO PARA HORARIO */
+.dia-btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+  background-color: rgba(0, 123, 255, 0.2);
+}
+
+input[type="checkbox"].btn-check:checked+.dia-btn {
+  background-color: rgba(0, 123, 255, 0.7);
+  border-color: #0d6efd;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.panelHorarios.mostrar {
+  border: 1px solid rgba(0, 0, 0, 0.152);
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+}
+
+.table-horarios-body {
+  font-size: 11px !important;
+}
+
+.bg-alterno {
+  background-color: #ffd6dd !important;
+  color: #a33a44 !important;
+  padding: 0.35em 0.65em !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  text-align: center !important;
+  font-size: 0.7rem !important;
+  border-radius: 0.25rem !important;
+}
+
+.bg-continuo {
+  background-color: #d0e6ff !important;
+  color: #1a4a8a !important;
+  padding: 0.35em 0.65em !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  text-align: center !important;
+  font-size: 0.7rem !important;
+  border-radius: 0.25rem !important;
+}
+
+#horarioContainer {
+   transition: all 0.2s ease;
+   transform: scale(1);
+}
+#horarioContainer:hover {
+   transform: scale(1.008);
+}
+/* FIN ESTILO PARA HORARIO */
+
+
+
+
+
+
+
+/*INICIO ESTILO JUSTIFICACION*/
+.badge-pendiente {
+  background-color: #fff3cd; 
+  color: #856404;           
+  font-size: 0.70rem;
+  font-weight: 700;
+}
+
+.badge-aprobada {
+  background-color: #d4f4dd;
+  color: #2e7d32;            
+  font-size: 0.70rem;
+  font-weight: 700;
+}
+
+.badge-rechazada {
+  background-color: #f8d7da; 
+  color: #c62828;           
+  font-size: 0.70rem;
+  font-weight: 700;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -654,7 +836,7 @@ select.form-control:not([value=""])+label {
   text-align: center;
 }
 
-.swal2-toast-success-icon{
+.swal2-toast-success-icon {
   font-size: 0.8rem !important;
 }
 
@@ -682,7 +864,7 @@ select.form-control:not([value=""])+label {
   text-align: center;
 }
 
-.swal2-toast-rechazada-icon{
+.swal2-toast-rechazada-icon {
   font-size: 0.8rem !important;
 }
 
@@ -720,6 +902,7 @@ select.form-control:not([value=""])+label {
   width: 100%;
   margin: 0;
 }
+
 /* FIN VENTANAS EMERGENTES */
 
 
@@ -730,91 +913,25 @@ select.form-control:not([value=""])+label {
 
 /* INICIO RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
 @media (max-width: 768px) {
+
   #tablaLocalidades col:nth-child(3),
   #tablaPuestos col:nth-child(3) {
     display: none;
   }
 }
+
 /* FIN RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
 
 
 
-/* INICIO CARD DE LICENCIAS / EMPLEADOS */
-/* Boton editar una licencia/empleado */
-.icono-editar-empleado,
-.icono-editar-licencia,
-.icono-editar-horario {
-  font-size: 1.2rem !important;
-  color: #0d6efd !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-}
 
-/* Boton borrar una licencia/empleado */
-.icono-desactivar-empleado ,
-.icono-borrar-licencia,
-.icono-borrar-horario {
-  font-size: 1.2rem !important;
-  color: #dc3545 !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-}
 
-/* Boton ver más un empleado */
-.iocno-ver-empleado,
-.iocno-ver-horario,
-.iocno-ver-asistencia{
-  font-size: 1.2rem !important;
-  color: #ffc107 !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-} 
 
-/* boton para activar un empleado */
-.icono-activar-empleado{
-  font-size: 1.2rem !important;
-  color: #28a745 !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-}
 
-.icono-accion-licencia{
-  font-size: 1.2rem !important;
-  color: #6f42c1  !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-}
 
-.icono-historial-empleado{
-  font-size: 1.2rem !important;
-  color: #FF6600  !important;
-  font-weight: bold !important;
-  margin: 0px 3px !important;
-  padding: 0% !important;
-}
 
-.icono-historial-empleado:hover{
-  color: #FF944D !important;
-}
 
-.badge-empleado-activo {
-  background-color: #a3dc9a72 !important; 
-  color: #06923E !important; 
-  font-size: 0.85rem !important;
-}
 
-.badge-empleado-desactivado {
-  background-color: #f8d7da; 
-  color: #c62828 !important;
-  font-size: 0.85rem !important;
-}
-
-/* FIN CARD DE LICENCIAS/EMPLEADOS */
 
 
 
@@ -831,39 +948,31 @@ select.form-control:not([value=""])+label {
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.3s ease;
-  transform: scale(1); /* valor base */
+  transform: scale(1);
+  /* valor base */
 }
 
 #licenciasContainer .card:hover {
-  transform: scale(1.03); /* agranda un 3% al pasar el mouse */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* opcional: sombra más fuerte */
-  z-index: 2; /* opcional: para que quede encima si hay varias cards juntas */
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  /* opcional: sombra más fuerte */
+  z-index: 2;
+  /* opcional: para que quede encima si hay varias cards juntas */
 }
 
 /* Colocamos un hover al documento de la licencia */
-#licenciasContainer .document-link:hover {
+#licenciasContainer .document-link:hover, 
+  #contenedorJustificaciones .document-link:hover {
   color: #0d6efd !important;
   text-decoration: underline;
   cursor: pointer;
 }
+
+
 /* FIN LICENCIAS */
 
-/* INICIO DE EMPLEADOS */
-#empleadosContainer .card {
-  min-height: 200px !important;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.3s ease;
-  transform: scale(1); /* valor base */
-}
 
-#empleadosContainer .card:hover {
-  transform: scale(1.03); /* agranda un 3% al pasar el mouse */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* opcional: sombra más fuerte */
-  z-index: 2; /* opcional: para que quede encima si hay varias cards juntas */
-}
 
-/* FIN DE EMPLEADOS */
 
 
 
@@ -884,19 +993,19 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 #offcanvasDetalleEmpleadoActivacion,
 #offcanvasDetalleHistorial,
 #offcanvasDetalleAsistencia,
-#offcanvasDetalleAsistenciaSemana,
-#offcanvasDetalleHorario {
+#offcanvasDetalleHorario,
+#offcanvasDetalleJustificacion {
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
 }
- 
+
 .detalle-empleado-contenedor,
 .detalle-licencia-contenedor,
 .detalle-horario-contenedor,
 .detalle-activacion-contenedor,
 .detalle-cambio-laboral-contenedor,
-.detalle-asistencia-semana-contenedor, 
-.detalle-asistencia-contenedor {
+.detalle-asistencia-contenedor,
+.detalle-justificacion-contenedor {
   border-left: 4px solid #ffc107;
   background-color: #ffffff;
   border-top-left-radius: 0.3rem;
@@ -909,8 +1018,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-encabezado,
 .detalle-activacion-encabezado,
 .detalle-cambio-laboral-encabezado,
-.detalle-asistencia-semana-encabezado,
-.detalle-asistencia-encabezado {
+.detalle-asistencia-encabezado,
+.detalle-justificacion-encabezado {
   background-color: transparent !important;
   color: #212529;
   border-bottom: none !important;
@@ -922,8 +1031,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-tarjeta,
 .detalle-activacion-tarjeta,
 .detalle-cambio-laboral-tarjeta,
-.detalle-asistencia-semana-tarjeta,
-.detalle-asistencia-tarjeta {
+.detalle-asistencia-tarjeta,
+.detalle-justificacion-tarjeta {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
@@ -937,8 +1046,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-seccion,
 .detalle-activacion-seccion,
 .detalle-cambio-laboral-seccion,
-.detalle-asistencia-semana-seccion,
-.detalle-asistencia-seccion {
+.detalle-asistencia-seccion,
+.detalle-justificacion-seccion {
   padding: 1rem 1rem;
 }
 
@@ -947,8 +1056,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-fila,
 .detalle-activacion-fila,
 .detalle-cambio-laboral-fila,
-.detalle-asistencia-semana-fila,
-.detalle-asistencia-fila {
+.detalle-asistencia-fila,
+.detalle-justificacion-fila {
   display: flex;
   margin-bottom: 0.5rem;
   align-items: flex-start;
@@ -959,8 +1068,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-etiqueta,
 .detalle-activacion-etiqueta,
 .detalle-cambio-laboral-etiqueta,
-.detalle-asistencia-semana-etiqueta,
-.detalle-asistencia-etiqueta {
+.detalle-asistencia-etiqueta,
+.detalle-justificacion-etiqueta {
   font-weight: 600;
   color: #495057;
   width: 110px;
@@ -973,9 +1082,9 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-valor,
 .detalle-activacion-valor,
 .detalle-cambio-laboral-valor,
-.detalle-asistencia-semana-valor,
-.detalle-asistencia-valor{
-  color: rgba(108, 117, 125, 0.9); 
+.detalle-asistencia-valor,
+.detalle-justificacion-valor {
+  color: rgba(108, 117, 125, 0.9);
   flex-grow: 1;
   word-break: break-word;
 }
@@ -985,8 +1094,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-horario-titulo-seccion,
 .detalle-activacion-titulo-seccion,
 .detalle-cambio-laboral-titulo-seccion,
-.detalle-asistencia-semana-titulo-seccion,
-.detalle-asistencia-titulo-seccion {
+.detalle-asistencia-titulo-seccion,
+.detalle-justificacion-titulo-seccion {
   font-size: 0.85rem;
   font-weight: 600;
   color: #ffc107;
@@ -994,7 +1103,6 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 /* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION 
 / PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL / DETALLE ASISTENCIA DIAS/SEMANAL */
 
@@ -1007,12 +1115,13 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
   color: #fff;
   border-radius: 0.35rem;
   font-weight: 600;
-  padding: 6px 12px; 
-  font-size: 0.75rem; 
+  padding: 6px 12px;
+  font-size: 0.75rem;
   display: inline-block;
   min-width: 100px;
   text-align: center;
 }
+
 /* FIN ESTILO TABALA LICENCIAS APROBADAS */
 
 
@@ -1025,13 +1134,14 @@ TIPO DE CRITERIO-TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 .localidad-truncada,
 .tipo-de-licencia-truncado,
 .tipo-de-criterio-truncado {
-  white-space: normal;   
+  white-space: normal;
   max-width: none;
   overflow: visible;
   text-overflow: clip;
 }
 
 @media (max-width: 430px) {
+
   .puesto-truncado,
   .sector-truncado,
   .provincia-truncada,
@@ -1045,6 +1155,7 @@ TIPO DE CRITERIO-TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     word-break: break-word !important;
   }
 }
+
 /* FIN RESPONSIVE TABLA PUESTOS-SECTOR-PROVINCIA-TIPO DE CRITERIO-
 TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
@@ -1054,10 +1165,10 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 /* INICIO ESTILO OFFCANVAS HISTORIAL EMPLEADO */
 #offcanvasHistorialEmpleado {
-  width: 900px !important; 
+  width: 900px !important;
   border-top-left-radius: 0.3rem !important;
   border-bottom-left-radius: 0.3rem !important;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .historial-empleado-contenedor {
@@ -1078,7 +1189,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   padding: 1rem 0.5rem;
 }
 
-.icono-ver-detalle-historial-empleado{
+.icono-ver-detalle-historial-empleado {
   font-size: 1.6rem !important;
   color: #ffc107 !important;
   font-weight: bold !important;
@@ -1094,16 +1205,16 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   .columna-accion {
     display: table-cell !important;
   }
-  
+
   .columna-fecha,
   .columna-responsable {
     display: none !important;
   }
-  
+
   .columna-puesto-actual {
     display: table-cell !important;
   }
-  
+
   .columna-puesto-anterior {
     display: table-cell !important;
   }
@@ -1115,6 +1226,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     display: none !important;
   }
 }
+
 /* FIN ESTILO OFFCANVAS HISTORIAL EMPLEADO */
 
 
@@ -1122,13 +1234,13 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 /* INICIO ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS/ ACTIVACION EMPLEADO */
 .icono-ver-detalle-licencia-aprobada,
-.icono-ver-detalle-empleado-activacion{
+.icono-ver-detalle-empleado-activacion {
   font-size: 1.6rem !important;
   color: #ffc107 !important;
   font-weight: bold !important;
   margin: 0px 3px !important;
   padding: 0% !important;
-  
+
 }
 
 .columna-accion {
@@ -1136,6 +1248,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @media (max-width: 768px) {
+
   .columna-estado,
   .columna-responsable,
   .columna-fecha-activacion,
@@ -1146,17 +1259,17 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
   .columna-fecha,
   .columna-licencia,
-  .columna-accion
-  {
+  .columna-accion {
     display: table-cell !important;
   }
 }
 
 @media (max-width: 576px) {
+
   .columna-fecha,
   .columna-estado,
   .columna-responsable,
-  .columna-email-activacion  {
+  .columna-email-activacion {
     display: none !important;
   }
 
@@ -1165,84 +1278,46 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     display: table-cell !important;
   }
 }
+
 /* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS/ ACTIVACION EMPLEADO */
 
 
-/* INICIO PARA LOS BOTONES DE TIPO DE HORARIO(DIAS LABORALES) */
-.dia-btn {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s ease-in-out;
-  background-color: rgba(0, 123, 255, 0.2); 
-
-}
-
-input[type="checkbox"].btn-check:checked + .dia-btn {
-  background-color: rgba(0, 123, 255, 0.7); 
-  border-color: #0d6efd;
-  color: #ffffff;
-  font-weight: 600;
-}
-/* FIN PARA LOS BOTONES DE TIPO DE HORARIO(DIAS LABORALES) */
-
-
-/* INICIO ESTILO PANEL HORARIOS Y TABLA EN EL DETALLE DE HORARIOS */
-.panelHorarios.mostrar{
-  border: 1px solid rgba(0, 0, 0, 0.152); 
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  margin-bottom: 8px;
-}
-
-.table-horarios-body{
-  font-size: 11px !important;
-}
-/* FIN ESTILO PANEL HORARIOS Y TABLA EN EL DETALLE DE HORARIOS */
 
 
 
-/* INICIO PARA LSO TIPOS DE HORARIOS DE LA VITS HORARIO */
-.bg-alterno {
-  background-color: #ffd6dd !important;
-  color: #a33a44 !important;            
-  padding:0.35em 0.65em!important;
-  font-weight: 600 !important;
-  display: inline-block !important;
-  text-align: center !important;
-  font-size: 0.7rem !important;
-  border-radius:0.25rem !important;
-}
 
-.bg-continuo {
-  background-color: #d0e6ff !important;
-  color: #1a4a8a !important;
-  padding: 0.35em 0.65em !important;
-  font-weight: 600 !important;
-  display: inline-block !important;
-  text-align: center !important;
-  font-size: 0.7rem !important;
-  border-radius:0.25rem !important;
-}
-/* FIN PARA LOS TIPOS DE HORARIOS DE LA VISTA HORARIO */
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 /* INICIO BOTONES PARA SELECIONAR EL ROL EN ACTIVACION EMPLEADO */
 .btn-rol {
-    padding: 8px 18px;
-    border: 1px solid #198754;
-    background: #fff;
-    color: #198754;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
-  }
-  .btn-rol.selected {
-    background: #198754;
-    color: #fff;
-  }
+  padding: 8px 18px;
+  border: 1px solid #198754;
+  background: #fff;
+  color: #198754;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-rol.selected {
+  background: #198754;
+  color: #fff;
+}
+
 /* FIN BOTONES PARA SELECIONAR EL ROL EN ACTIVACION EMPLEADO */
 
 
@@ -1252,25 +1327,25 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 /* INICIO RESPONSIVE BOTONES FILTROS Y GENERAR EN CELULARES */
 @media (max-width: 580px) {
-  .d-flex.justify-content-between > .btn-agregar {
+  .d-flex.justify-content-between>.btn-agregar {
     flex: 1 1 100%;
     margin-bottom: 8px;
   }
 
   .responsive-buttons {
-    flex-wrap: nowrap !important; 
-    justify-content: space-between; 
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
     width: 100%;
   }
 
-  .responsive-button{
-    flex-wrap: nowrap !important; 
-    justify-content: space-between; 
+  .responsive-button {
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
     width: 100%;
   }
 
   .responsive-buttons button {
-    flex: 1 1 48%; 
+    flex: 1 1 48%;
     max-width: 48%;
   }
 
@@ -1279,104 +1354,12 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
     max-width: 100%;
   }
 }
+
 /* FIN RESPONSIVE BOTONES FILTROS Y GENERAR EN CELULARES */
 
 
 
 
-/* INICIO BADGE PARA EL ESTADO DE ASITENCIA (TARDE) */
-.bg-orange {
-  background-color: #fd7e14 !important;
-  color: #ffffff !important;
-}
-/* FIN BADGE PARA EL ESTADO DE ASITENCIA (TARDE) */
-
-
-
-/* INICIO TITULO ARRIBA DE LKAS CARD DE ASITENCIAS FICHADAS */
-.titulo-asistencias {
-    font-size: 1rem;            
-    text-align: center;           
-    width: 100%;     
-    border: 1px solid #dee2e6; 
-    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-    display: flex;
-    flex-direction: column; /* por defecto en móviles */
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 0.5rem 1rem;
-}
-
-/* Ícono */
-.titulo-asistencias i {
-    font-size: 1.2rem !important;          
-    color: #0d6efd;               
-}
-
-/* Texto */
-.titulo-asistencias span {
-    font-weight: bold;
-    font-size: 1.2rem !important;
-}
-
-.titulo-asistencias small {
-    font-size: 0.9rem !important;
-    color: #6c757d;
-}
-
-/* RESPONSIVO: pantallas más grandes */
-@media (min-width: 768px) {
-    .titulo-asistencias {
-        flex-direction: row; 
-        gap: 0.5rem;
-    }
-
-    .titulo-asistencias span {
-        font-size: 1.25rem;
-    }
-
-    .titulo-asistencias small {
-        font-size: 1rem;
-    }
-}
-
-@media (min-width: 1200px) {
-    .titulo-asistencias {
-        gap: 1rem;
-    }
-
-    .titulo-asistencias i {
-        font-size: 1.8rem;
-    }
-
-    .titulo-asistencias span {
-        font-size: 1.5rem;
-    }
-
-    .titulo-asistencias small {
-        font-size: 1.1rem;
-    }
-}
-/* FIN TITULO ARRIBA DE LAS CARD DE ASISTENCIAS FICHADAS */
-
-
-
-
-/*INICIO ESTILO CAR4D DE ASISTENCIA POR DIA */
-#asistenciasContainer .card {
-  min-height: 200px !important;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  transform: scale(1); 
-}
-
-#asistenciasContainer .card:hover {
-  transform: scale(1.03); 
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); 
-  z-index: 2; 
-}
-/*FIN ESTILO CAR4D DE ASISTENCIA POR DIA */
 
 
 
@@ -1384,23 +1367,9 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 
 
-/* INICIO DE DETALLE ASISTENCIA POR SEMANA RESPONSIVO */
-#offcanvasDetalleAsistenciaSemana {
-    width: 100%;
-    max-width: 1110px;
-    min-width: 0; 
-}
-@media (min-width: 576px) { 
-    #offcanvasDetalleAsistenciaSemana {
-        min-width: 380px;
-    }
-}
-.detalle-asistencia-semana {
-  width: 100%;             
-  max-width: 100%;          
-  box-sizing: border-box;  
-}
-/* FIN DE DETALLE ASISTENCIA POR SEMANA RESPONSIVO */
+
+
+
 
 
 
@@ -1411,7 +1380,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   color: #fff !important;
 }
 /* FIN ESTILO CERRAR SESION */
- 
+
 
 
 
@@ -1419,7 +1388,7 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 /*  INICIO ESTILO APRA EL CONTENDOR DE AYUDA */
 .info-ayuda {
-  background: #ffffff; 
+  background: #ffffff;
   border-left: 4px solid #457b9d !important;
   border: 1px solid #dee2e6;
 }
@@ -1437,16 +1406,16 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 }
 
 .info-box .text-muted {
-  font-size: 0.85rem;      
-  color: #555 !important; 
-  line-height: 1.5;       
+  font-size: 0.85rem;
+  color: #555 !important;
+  line-height: 1.5;
 }
 
 .btn-ayuda-toggle {
   background: none;
   border: none;
   color: #1d3557;
-  font-size: 0.9rem;       
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -1455,32 +1424,34 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 .btn-ayuda-toggle:hover {
   font-weight: bold;
 }
+
 /*  FIN ESTILO APRA EL CONTENDOR DE AYUDA */
 
 
 
 /* INICIO ESTILO PARA SCROOL DEL PDF */
 .pdf-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; 
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .pdf-frame {
-    width: 100%;
-    height: 100%;
-    border: none;
-    overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border: none;
+  overflow: hidden;
 }
+
 /* FIN ESTILO PARA SCROOL DEL PDF */
 
 
 /* INICIO ESTILO PARA CONTENDOR DE RESULTADOS */
 .hover-bold:hover {
-    font-weight: bold;
-    cursor: pointer;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 /* FIN ESTILO PARA CONTENDOR DE RESULTADOS */
@@ -1489,15 +1460,16 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 /* INICIO ESTILO APRA CONTEENDOR DE GARFICOS FIJO */
 .grafico-fijo {
-    width: 100% !important;
-    height: 350px !important;  
+  width: 100% !important;
+  height: 350px !important;
 }
 
 @media (max-width: 768px) {
-    .grafico-fijo {
-        height: 260px !important;
-    }
+  .grafico-fijo {
+    height: 260px !important;
+  }
 }
+
 /* FIN ESTILO APRA CONTEENDOR DE GARFICOS FIJO */
 
 
@@ -1509,18 +1481,19 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #ffffff; 
+  background: #ffffff;
   display: flex;
-  flex-direction: column;   
-  justify-content: flex-start; 
-  align-items: center;     
-  padding-top: 2rem; 
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 2rem;
   z-index: 9999;
 }
 
 .contenido-carga {
   text-align: center;
 }
+
 /* FIN ESTILO PARA EL SPINNER GENERAL */
 
 
@@ -1532,16 +1505,17 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #ffffff; 
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; 
+  z-index: 2000;
 }
 
 .contenido-carga {
   text-align: center;
 }
+
 /* FIN ESTILO SPINER DE GURDADO */
 
 
@@ -1549,17 +1523,17 @@ input[type="checkbox"].btn-check:checked + .dia-btn {
 
 /* INICIO ESTILO PARA EL COLLAPSE DE MAS RESULTADOS */
 .custom-collapse {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition:
-        max-height 0.4s ease,
-        opacity 0.25s ease;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.25s ease;
 }
 
 .custom-collapse.show {
-    max-height: 2000px;
-    opacity: 1;
+  max-height: 2000px;
+  opacity: 1;
 }
 
 /* FIN ESTILO PARA EL COLLAPSE DE MAS RESULTADOS */
