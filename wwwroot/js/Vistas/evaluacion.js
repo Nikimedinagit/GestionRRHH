@@ -129,7 +129,7 @@ async function ObtenerEvaluaciones(mostrarSpinner = true) {
 // FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluaciones(data) {
-  if (window.innerWidth <= 820) {
+  if (window.innerWidth <= 768) {
     MostrarEvaluacionesMobile(data);
   } else {
     MostrarEvaluacionesDesktop(data);
@@ -201,61 +201,91 @@ function MostrarEvaluacionesDesktop(data) {
     }
 
     const item = $(`
-      <div>
-      <div class="evaluacion-item rounded py-2 px-3 mb-2 d-flex align-items-center justify-content-between"
-           style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : element.claseBorde === "blue" ? "#0d6efd" : "#dee2e6"};">
-        <div class="d-flex align-items-center" style="gap: 20px;">
-          ${botonEditarHTML}
-          <div class="d-flex flex-column" style="margin-right: 20px; min-width: 180px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <div class="fw-bold" title="${nombreMostrar}">${nombreMostrar}</div>
-            <div class="text-muted" style="opacity: 0.6;" title="${rolMostrar}">${rolMostrar}</div>
-          </div>
-        </div>
-        <div class="d-flex align-items-center text-muted text-center" style="opacity: 0.6; min-width: 200px; flex-shrink: 0;">
-          <span style="margin-right: 5px;">&bull;</span>
-          Fecha de evaluación: ${fecha}
-        </div>
-        <div class="d-flex align-items-center" style="min-width: 220px; justify-content: flex-end; gap: 10px;">
-          <div class="d-flex align-items-center" style="margin-right: 20px;">
-            <div class="text-dark fw-bold" style="margin-right: 10px;">${nota}/10</div>
-            <div class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</div>
-          </div>
-          <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-        </div>
-      </div>
-      </div>
-    `);
+                  <div id="evaluacionesContainer">
+                    <div class="rounded border py-2 px-2 mb-2 d-flex align-items-center justify-content-between bg-white"
+                        style="border-left: 3px solid ${element.claseBorde === "green" ? "#198754" : element.claseBorde === "yellow" ? "#ffc107" : element.claseBorde === "blue" ? "#0d6efd" : "#dee2e6"};">
+                      
+                      <div class="d-flex align-items-center">
+                        ${botonEditarHTML}
+
+                        <div class="d-flex flex-column" style="width: 260px;">
+                          <div class="fw-bold text-truncate" title="${nombreMostrar}">
+                            ${nombreMostrar}
+                          </div>
+
+                          <div class="text-muted text-truncate" title="${rolMostrar}">
+                            ${rolMostrar}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-flex align-items-center text-muted text-center"
+                          style="opacity: 0.6; min-width: 130px; flex-shrink: 0;">
+                        Fecha de evaluación:<br/>${fecha}
+                      </div>
+
+                      <div class="d-flex align-items-center" style="justify-content: flex-end;">
+                        <div class="d-flex align-items-center me-3">
+                          <div class="text-dark fw-bold me-2">${nota}/10</div>
+                          <div class="badge ${badgeClass}" >
+                            ${etiqueta}
+                          </div>
+                        </div>
+
+                        <button class="toggle-detalle"
+                                style="background: none; border: none;"
+                                data-tippy-content="Detalle">
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+                `);
+
 
     const detalleHTML = $(`
-      <div class="panelCriterios px-3 pb-2" style="display: none;">
-        <div class="mb-3">
-          <h3 class="titulo-sub-seccion">Criterios de Evaluación</h3>
-        </div>
-        <hr style="margin-bottom: 1rem;"/>
-        <div class="criterios-panel mt-3">
-          ${element.esEditable ? `<button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}">Agregar Criterio</button>` : ""}
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle w-100">
-              <colgroup>
-                <col style="width: 25%" />
-                <col style="width: 65%" />
-                 ${element.esEditable ? `<col style="width: 10%" />` : ""}
-              </colgroup>
-             <thead>
-              <tr>
-                <th class="text-start header-table">Criterio</th>
-                <th class="text-start header-table">Descripción</th>
-                ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-              </tr>
-            </thead>
-            <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    `);
+                        <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
+                          
+                          <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+                            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">
+                              Criterios de Evaluación
+                            </h3>
+
+                            ${element.esEditable ? `
+                              <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center justify-content-center"
+                                      data-evaluacion-id="${element.id}">
+                                <i class="fa-solid fa-square-plus me-1"></i>
+                                Agregar criterio
+                              </button>
+                            ` : ""}
+                          </div>
+
+                          <div class="criterios-panel">
+                            <div class="table-responsive">
+                              <table class="table table-bordered table-hover align-middle w-100">
+                                <colgroup>
+                                  <col style="width: 25%" />
+                                  <col style="width: 65%" />
+                                  ${element.esEditable ? `<col style="width: 10%" />` : ""}
+                                </colgroup>
+                                <thead>
+                                  <tr>
+                                    <th class="text-start header-table">Criterio</th>
+                                    <th class="text-start header-table">Descripción</th>
+                                    ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+                                  </tr>
+                                </thead>
+                                <tbody class="tabla-criterios-body"
+                                      data-evaluacion-id="${element.id}">
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                        </div>
+                      `);
+
 
     item.find(".toggle-detalle").on("click", function () {
       const iconoChevron = $(this).find("i");
@@ -333,7 +363,7 @@ function MostrarEvaluacionesMobile(data) {
 
     const botonEditarHTML = esEditable
       ? `<button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-           <i class="bi bi-pencil-square icono-editar-horario btn-sm"></i>
+           <i class="bi bi-pencil-square icono-editar btn-sm"></i>
          </button>`
       : "";
 
@@ -346,7 +376,7 @@ function MostrarEvaluacionesMobile(data) {
       : "";
 
     contenedor.innerHTML += `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex pb-4">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3">
         <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
           <div class="flex-grow-1 d-flex flex-column">
             <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;" title="${nombreMostrar}">
@@ -359,44 +389,64 @@ function MostrarEvaluacionesMobile(data) {
             <small class="text-muted mb-2" style="font-size: 0.75rem;">
               ${fecha}
             </small>
-            <span class="badge ${badgeClass} my-2" style="width: fit-content; font-size: 1rem;">
+            <span class="badge ${badgeClass} my-2" style="width: fit-content;">
               ${etiqueta}
             </span>
           </div>
           
           <div class="d-flex justify-content-between mt-2 align-items-center">
             <div>
-              <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none;">
-                <i class="bi bi-info-circle iocno-ver-horario btn-sm"></i>
-              </button>
+              ${botonEditarHTML}
             </div>
             <div>
-              ${botonEditarHTML}
+               <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none;">
+                <i class="bi bi-info-circle icono-ver btn-sm"></i>
+              </button>
+
               <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
                 <i class="bi bi-chevron-down"></i>
               </button>
             </div>
           </div>
 
-          <div class="panelCriterios mt-2" style="display:none;">
-            ${botonAgregarCriterioHTML}
+          <div class="panelCriterios mt-2 border-top" style="display:none;">
+
+            <!-- Encabezado del detalle -->
+            <div class="d-flex align-items-center justify-content-between mb-2 mt-2 px-1">
+              <h6 class="mb-0 fw-semibold">
+                Detalle de Criterios
+              </h6>
+
+              ${element.esEditable ? `
+                <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center"
+                        data-evaluacion-id="${element.id}">
+                  <i class="fa-solid fa-square-plus me-1"></i>
+                  Agregar criterio
+                </button>
+              ` : ""}
+            </div>
+
             <div class="table-responsive">
               <table class="table table-bordered table-hover table-sm align-middle">
                 <colgroup>
-                  <col style="width: 70%" /> 
+                  <col style="width: 70%" />
                   ${element.esEditable ? `<col style="width: 30%" />` : ""}
                 </colgroup>
                 <thead>
                   <tr>
                     <th class="text-start header-table">Criterio</th>
-                    ${esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+                    ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
                   </tr>
                 </thead>
-                <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                <tbody class="tabla-criterios-body"
+                      data-evaluacion-id="${element.id}">
                 </tbody>
               </table>
             </div>
+
           </div>
+
+
         </div>
       </div>
     `;
@@ -783,9 +833,9 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
           <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
           ${esEditable
           ? `<td class='align-middle text-center'>
-                <button class='btn-eliminar' style='background: none; border: none;' 
+                <button class='btn-borrar' style='background: none; border: none;' 
                   onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
-                  <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                  <i class='bi bi-trash3 icono-borrar'></i>
                 </button>
               </td>`
           : ""
@@ -800,9 +850,9 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
     <td class='align-middle text-wrap'>${item.descripcion || "Sin descripción"}</td>
     ${esEditable
           ? `<td class='d-flex justify-content-center align-items-center'>
-            <button class='btn-eliminar' style='background: none; border: none;' 
+            <button class='btn-borrar' style='background: none; border: none;' 
               onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content="Eliminar">
-              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+              <i class='bi bi-trash3 icono-borrar'></i>
             </button>
           </td>`
           : ""

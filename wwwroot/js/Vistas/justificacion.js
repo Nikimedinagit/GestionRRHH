@@ -162,7 +162,7 @@ function MostrarJustificacionesDesktop(data) {
     }
 
     const item = $(`
-      <div class="curso-item border rounded py-2 px-2 mb-2 d-flex align-items-center justify-content-between bg-white">
+      <div class="border rounded py-2 px-2 mb-2 d-flex align-items-center justify-content-between bg-white">
         <div class="d-flex justify-content-between align-items-center w-100" >
           <div class="d-flex align-items-center" style="flex: 1.5;">
             ${botonEditar}
@@ -460,7 +460,7 @@ function MostrarJustificacionesMobile(data) {
             <div class="flex-grow-1 d-flex flex-column">
               <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.empleadoString || "Sin nombre"}</h5>
               <small class="text-muted mb-1" style="font-size: 0.9rem;"><i class="bx bx-calendar me-1"></i>Día del incidente: ${fecha}</small>
-              <span class="badge ${claseJustificacion} my-2" style="width: fit-content; font-size: 0.8rem;">${estadoNombre}</span>
+              <span class="badge ${claseJustificacion} my-2" style="width: fit-content;">${estadoNombre}</span>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-2">

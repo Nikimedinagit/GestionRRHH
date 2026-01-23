@@ -16,7 +16,7 @@
   <div class="bg-white shadow-sm rounded p-2 mb-3">
     <h3 class="titulo-seccion mb-1">Gestor de Ausencias-Tardanzas</h3>
     <p class="text-muted fs-6 mb-0">
-      Visualiza y gestiona las justificaciones de los empleados.
+      Gestioná, evaluá y resolvé las justificaciones de ausencias y tardanzas del personal.
     </p>
   </div>
 
@@ -302,56 +302,57 @@
   </div>
 
 
- <!--==================================== Offcanvas Detalle Justificación ===================================== -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleJustificacion"
-  aria-labelledby="tituloDetalleJustificacion"
-  style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-  
-  <div class="detalle-justificacion-contenedor">
-    
-    <!-- Encabezado -->
-    <div class="detalle-justificacion-encabezado row align-items-start">
-      <div class="col-10">
-        <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
-          Detalle de Justificación
-        </h5>
-        <p class="mb-0 text-muted" style="font-size: 0.95rem;">
-          Información detallada de la justificación seleccionada.
-        </p>
-      </div>
-      <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-      </div>
-    </div>
+  <!--==================================== Offcanvas Detalle Justificación ===================================== -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleJustificacion"
+    aria-labelledby="tituloDetalleJustificacion"
+    style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
 
-    <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+    <div class="detalle-justificacion-contenedor">
 
-    <!-- Cuerpo del Offcanvas -->
-    <div class="offcanvas-body p-2" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
-
-      <!-- Tarjeta Justificación -->
-      <div class="detalle-justificacion-tarjeta">
-        <div class="detalle-justificacion-seccion">
-          <p class="detalle-justificacion-titulo-seccion">Motivo</p>
-          <div class="detalle-justificacion-fila">
-            <span class="detalle-justificacion-valor" id="detalleMotivo"></span>
-          </div>
+      <!-- Encabezado -->
+      <div class="detalle-justificacion-encabezado row align-items-start">
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
+            Detalle de Justificación
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.95rem;">
+            Información detallada de la justificación seleccionada.
+          </p>
+        </div>
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
       </div>
 
-      <!-- Tarjeta Documento -->
-      <div class="detalle-justificacion-tarjeta" style="margin-bottom: 1rem">
-        <div class="detalle-justificacion-seccion">
-          <p class="detalle-justificacion-titulo-seccion">Documento Adjunto</p>
-          <div class="detalle-justificacion-fila">
-            <span class="detalle-justificacion-valor" id="detalleDocumento"></span>
+      <hr style="margin: 0; border-top: 1px solid #dee2e6" />
+
+      <!-- Cuerpo del Offcanvas -->
+      <div class="offcanvas-body p-2"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+
+        <!-- Tarjeta Justificación -->
+        <div class="detalle-justificacion-tarjeta">
+          <div class="detalle-justificacion-seccion">
+            <p class="detalle-justificacion-titulo-seccion">Motivo</p>
+            <div class="detalle-justificacion-fila">
+              <span class="detalle-justificacion-valor" id="detalleMotivo"></span>
+            </div>
           </div>
         </div>
-      </div>
 
+        <!-- Tarjeta Documento -->
+        <div class="detalle-justificacion-tarjeta" style="margin-bottom: 1rem">
+          <div class="detalle-justificacion-seccion">
+            <p class="detalle-justificacion-titulo-seccion">Documento Adjunto</p>
+            <div class="detalle-justificacion-fila">
+              <span class="detalle-justificacion-valor" id="detalleDocumento"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 
 
 

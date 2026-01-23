@@ -221,7 +221,7 @@ function MostrarHorariosDesktop(data) {
           <div class="puesto text-muted small text-truncate">
             ${horario.puestoEmpleado || "Sin puesto"}
           </div>
-          <div class="tipo text-truncate ${tipoClase}">
+          <div class="badge tipo text-truncate ${tipoClase}">
             ${tipoStr}
           </div>
         </div>

@@ -342,3 +342,18 @@ var slideToggle = (target, duration = 0) => {
   }
 };
 
+
+document.addEventListener(
+  'click',
+  function (e) {
+    const link = e.target.closest('.pc-sidebar a[href^="#"]');
+    if (!link) return;
+
+    if (window.innerWidth <= 991) {
+      setTimeout(() => {
+        rm_menu();
+      }, 50);
+    }
+  },
+  true 
+);

@@ -47,114 +47,8 @@
 
 
 
-/*CARD DEL COLAPSE DE EVALUACION QUE CONTIENE LA TABLA DE CRITERIOS*/
-.evaluacion-card {
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
-}
-
-.evaluacion-card:hover {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-}
-
-/*FIN CARD DEL COLAPSE DE EVALUACION QUE CONTIENE LA TABLA DE CRITERIOS*/
-
-/*BDGES DE LAS NOTAS*/
-.badge-pill {
-  padding: 4px 12px;
-  border-radius: 2px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.badge-excelente {
-  background-color: #e8f0fe;
-  color: #1a73e8;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.badge-muybuena {
-  background-color: #e0f7fa;
-  color: #007b8a;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.badge-buena {
-  background-color: #fff3cd;
-  color: #856404;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.badge-regular {
-  background-color: #f8d7da;
-  color: #721c24;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-/*BDGES DE LAS NOTAS*/
-
-.toggle-detalle {
-  background: transparent;
-  border: none;
-  color: #6c757d;
-}
-
-/*Contenedor de la informacion de evaluacion*/
-.evaluacion-item {
-  border-radius: 8px; 
-  border: 1px solid #ddd; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  background-color: #fff;
-}
-
-.evaluacion-item:hover {
-  box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3); 
-}
-/*Fin Contenedor de la informacion de evaluacion*/
 
 
-
-/* TABLA DE CRITERIOS DE EVALUACION*/
-.header-table {
-  padding: 2px 6px !important;
-  font-size: 14px !important;
-  max-width: 100px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-/* Celdas compactas */
-td {
-  padding: 2px 6px !important;
-  font-size: 12px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  text-align: left !important;
-}
-
-
-td.td-empleado {
-  text-align: left !important; 
-}
-
-
-
-/* Cuerpo de tabla con estilo compacto */
-.tabla-criterios-body, .tabla-asistencias-body, .tabla-certificados-body {
-  font-size: 11px !important;
-}
-
-.icono-elimina-detalle {
-  font-size: 1.2rem !important;
-  color: #fd0d1d !important;
-}
 
 
 
@@ -170,6 +64,14 @@ td.td-empleado {
   background-color: #7b59b3 !important;
   color: #fff !important;
 }
+
+
+
+
+
+
+
+
 
 .panelAsistencias.mostrar {
   border: 1px solid rgba(0, 0, 0, 0.152); 
@@ -365,9 +267,7 @@ textarea.form-control {
     justify-content: space-between !important;
   }
 
-  .evaluacion-item .toggle-detalle {
-    align-self: flex-end;
-  }
+ 
 }
 
 /* Adaptar gráfico a ancho del contenedor */

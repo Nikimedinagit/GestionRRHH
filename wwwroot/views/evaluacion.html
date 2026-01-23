@@ -1,6 +1,6 @@
 <div class="px-3 py-3">
 
-    <!-- ======================================= Spinner General ====================================== -->
+  <!-- ======================================= Spinner General ====================================== -->
   <div id="pantallaCargaGeneral" class="pantalla-carga">
     <div class="contenido-carga">
       <h5 class="fw-bold text-dark">Cargando evaluaciones...</h5>
@@ -13,18 +13,17 @@
 
 
   <!--==================================== Título ===================================== -->
-  <div class="mb-3">
-    <h3 class="titulo-seccion">Seguimiento de Evaluaciones</h3>
-    <p class="text-muted mb-0" style="font-size: 0.95rem;" id="tituloEvaluaciones">
-      Visualizá el progreso, resultados y responsables de las evaluaciones realizadas.
+  <div class="bg-white shadow-sm rounded p-2 mb-3">
+    <h3 class="titulo-seccion mb-1">Seguimiento de Evaluaciones</h3>
+    <p class="text-muted mb-0">
+      Gestioná el seguimiento integral de las evaluaciones del personal, incluyendo estados, resultados y criterios.
     </p>
   </div>
 
 
-  <hr />
 
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-  <div style="background-color: white; border-radius: 5px; padding: 10px">
+  <div>
 
     <div id="fondoOscuro" onclick="cerrarPanelEvaluaciones()"></div>
 
@@ -83,7 +82,7 @@
     <div class="d-none" id="cardEstadisticasEvaluaciones">
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-primary bg-opacity-10 p-3 me-3">
               <i class="fas fa-tasks text-primary fs-4"></i>
@@ -95,7 +94,7 @@
           </div>
         </div>
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-info bg-opacity-10 p-3 me-3">
               <i class="fas fa-chart-line text-info fs-4"></i>
@@ -107,7 +106,7 @@
           </div>
         </div>
 
-        <div class="card p-3 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
           <div class="d-flex align-items-center">
             <div class="bg-success bg-opacity-10 p-3 me-3">
               <i class="fas fa-users text-success fs-4"></i>
@@ -124,13 +123,13 @@
 
 
     <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+    <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
       <div class="d-flex justify-content-between align-items-center info-ayuda-header">
         <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
           Información de Ayuda
         </h5>
         <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-           <i class="bi bi-eye me-1"></i> Mostrar
+          <i class="bi bi-eye me-1"></i> Mostrar
         </button>
       </div>
 
@@ -228,7 +227,8 @@
               style="font-size:1.2rem; color:#fd0d1d;"></i>
             <div>
               <p class="fw-bold mb-1" style="color:#fd0d1d;">Eliminar</p>
-              <p class="mb-0 small text-muted">  Permite borrar el criterio de evaluación asignado en el detalle de forma permanente.</p>
+              <p class="mb-0 small text-muted"> Permite borrar el criterio de evaluación asignado en el detalle de forma
+                permanente.</p>
             </div>
           </div>
         </div>
@@ -247,12 +247,10 @@
 
 
 
-    <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
     <!-- ================================ Contenedor de las evaluaciones ===================================== -->
-    <!-- <div class="container-fluid"> -->
-      <div id="contenedorEvaluaciones" class="row">
-      <!-- </div> -->
+    <div id="contenedorEvaluaciones" class="row">
+       
     </div>
 
     <!-- ================================ Panel Deslizante Formulario ===================================== -->
@@ -263,15 +261,15 @@
       </div>
       <div class="panel-body">
         <form id="formCriterios">
-          
-        <div id="overlayGuardandoCriterios" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+
+          <div id="overlayGuardandoCriterios" class="overlay-guardando d-none">
+            <div class="contenido-carga">
+              <h5 class="fw-bold text-dark">Guardando...</h5>
+              <div class="spinner-border text-primary mt-2" role="status">
+                <span class="visually-hidden">Guardando...</span>
+              </div>
             </div>
           </div>
-        </div>
 
 
           <input type="hidden" id="IdCriterio" />
@@ -313,15 +311,15 @@
       <div class="panel-body">
         <form id="formEvaluaciones">
 
-    <!-- ======================================= Spinner Formualrio ====================================== -->
-        <div id="overlayGuardando" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <!-- ======================================= Spinner Formualrio ====================================== -->
+          <div id="overlayGuardando" class="overlay-guardando d-none">
+            <div class="contenido-carga">
+              <h5 class="fw-bold text-dark">Guardando...</h5>
+              <div class="spinner-border text-primary mt-2" role="status">
+                <span class="visually-hidden">Guardando...</span>
+              </div>
             </div>
           </div>
-        </div>
 
 
           <input type="hidden" id="IdEvaluacion" />
