@@ -367,13 +367,6 @@ function MostrarEvaluacionesMobile(data) {
          </button>`
       : "";
 
-    const botonAgregarCriterioHTML = esEditable
-      ? `<div class="d-flex justify-content-center mb-2">
-           <button class="btn btn-agregar-criterio mb-2 crearCriterio" data-evaluacion-id="${element.id}"> 
-             <span>Agregar Criterio</span>
-           </button>
-         </div>`
-      : "";
 
     contenedor.innerHTML += `
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3">
@@ -399,7 +392,7 @@ function MostrarEvaluacionesMobile(data) {
               ${botonEditarHTML}
             </div>
             <div>
-               <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none;">
+               <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none; margin-right:5px">
                 <i class="bi bi-info-circle icono-ver btn-sm"></i>
               </button>
 
@@ -411,7 +404,6 @@ function MostrarEvaluacionesMobile(data) {
 
           <div class="panelCriterios mt-2 border-top" style="display:none;">
 
-            <!-- Encabezado del detalle -->
             <div class="d-flex align-items-center justify-content-between mb-2 mt-2 px-1">
               <h6 class="mb-0 fw-semibold">
                 Detalle de Criterios

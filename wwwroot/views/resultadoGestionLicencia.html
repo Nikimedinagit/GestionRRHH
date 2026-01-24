@@ -1,6 +1,6 @@
 <div class="px-3 py-3">
 
-     <!-- ======================================= Spinner General ====================================== -->
+    <!-- ======================================= Spinner General ====================================== -->
     <div id="pantallaCargaGeneral" class="pantalla-carga">
         <div class="contenido-carga">
             <h5 class="fw-bold text-dark">Cargando resultados...</h5>
@@ -12,20 +12,19 @@
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Resultados de la Gestión de Licencias</h3>
-        <p class="text-muted mb-3">Visualiza los gráficos y reportes generales del módulo.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3">
+        <h3 class="titulo-seccion mb-1">Indicadores de Gestión de Licencias</h3>
+        <p class="text-muted fs-6 mb-0">
+            Gestioná indicadores, listados jerárquicos y estadísticas de licencias para el análisis y la toma de
+            decisiones. </p>
     </div>
 
-
-    <hr />
-
     <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <div>
 
 
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-         <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
             <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
                 id="btnResultados" onclick="toggleResultados()">
                 <i class="fa-solid fa-list me-2"></i>
@@ -33,7 +32,7 @@
             </button>
         </div>
 
-      <div class="custom-collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
+        <div class="custom-collapse mb-2 rounded-3 bg-white" id="contenedorResultados"
             style="border-left: 4px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-3">
 
@@ -98,26 +97,26 @@
 
 
         <!-- ======================================= Contendor de Graficos ====================================== -->
-        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+        <div>
             <div class="row">
 
-                <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                    <h5>Licencias Mensuales - Últimos 6 Meses</h5>
+                <div class="col-md-12 mb-4 border p-3 rounded bg-white shadow-sm">
+                    <h5>Evolución Mensual de Licencias (Últimos 6 Meses)</h5>
                     <div id="contenedorLicenciasMensuales" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Licencias Por Tipo</h6>
+                <div class="col-md-4 mb-4 border p-3 rounded bg-white shadow-sm">
+                    <h6 class="text-center">Distribución de Licencias por Tipo</h6>
                     <div id="contenedorTortaTipos" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Licencias Solicitadas por Sector</h6>
+                <div class="col-md-4 mb-4 border p-3 rounded bg-white shadow-sm">
+                    <h6 class="text-center">Distribución de Licencias por Sector</h6>
                     <div id="contenedorTortaLicenciasSector" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Licencias Solicitadas por Puestos</h6>
+                <div class="col-md-4 mb-4 border p-3 rounded bg-white shadow-sm">
+                    <h6 class="text-center">Distribución de Licencias por Puesto</h6>
                     <div id="contenedorTortaLicenciasPuesto" class="grafico-fijo"></div>
                 </div>
 

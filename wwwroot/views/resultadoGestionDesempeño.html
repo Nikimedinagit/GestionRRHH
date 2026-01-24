@@ -11,20 +11,20 @@
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Resultados de la Gestión de Desempeño</h3>
-        <p class="text-muted mb-3">Visualiza los gráficos y reportes generales del módulo.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3">
+        <h3 class="titulo-seccion mb-1">Indicadores de Gestión del Desempeño</h3>
+        <p class="text-muted fs-6 mb-0">
+            Gestioná indicadores, listados jerárquicos y estadísticas de desempeño para el análisis y la toma de
+            decisiones.
+        </p>
     </div>
 
 
-    <hr />
-
     <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
-
+    <div>
 
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-         <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex justify-content-start align-items-center flex-wrap mb-2 gap-2">
             <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
                 id="btnResultados" onclick="toggleResultados()">
                 <i class="fa-solid fa-list me-2"></i>
@@ -33,8 +33,7 @@
         </div>
 
 
-        <div class="custom-collapse mt-3 mb-2 rounded-3" id="contenedorResultados"
-            style="border-left: 4px solid #6A5ACD">
+        <div class="custom-collapse mb-2 rounded-3 bg-white" id="contenedorResultados" style="border-left: 4px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-3">
 
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
@@ -60,7 +59,7 @@
                     <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoPuestoEmpleadoEvaluaciones">
                         <a href="#resultadoPuestoEmpleadoEvaluaciones"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
-                            <i class="fa-solid fa-briefcase me-2"></i>  Evaluaciones por Puesto y Empleados
+                            <i class="fa-solid fa-briefcase me-2"></i> Evaluaciones por Puesto y Empleados
                         </a>
                     </li>
 
@@ -112,31 +111,31 @@
 
 
         <!-- ======================================= Contendor de Graficos ====================================== -->
-        <div style="background-color: white; border-radius: 5px; padding: 0.8rem;">
+        <div>
             <div class="row">
 
-                <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                    <h5>Promedio General de Desempeño por Puesto</h5>
+                <div class="col-md-12 mb-3 border p-3 rounded shadow-sm bg-white">
+                    <h5>Promedio de Desempeño por Puesto</h5>
                     <div id="contenedorDesempenoPorPuesto" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Distribución de Calificaciones</h6>
+                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
+                    <h6 class="text-center">Distribución de Calificaciones de Desempeño</h6>
                     <div id="contenedorTortaDistribucion" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Criterios con Mejor Desempeño</h6>
+                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
+                    <h6 class="text-center">Criterios con Mayor Nivel de Desempeño</h6>
                     <div id="contenedorTortaCriteriosBuenos" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-4 border p-2 shadow-sm">
-                    <h6 class="text-center">Criterios con Peor Desempeño</h6>
+                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
+                    <h6 class="text-center">Criterios con Oportunidades de Mejora</h6>
                     <div id="contenedorCriteriosMalos" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-12 mb-4 border p-2 shadow-sm">
-                    <h5>Evolución Histórica del Desempeño</h5>
+                <div class="col-md-12 mb-3 border p-3 rounded shadow-sm bg-white">
+                    <h5>Evolución del Desempeño en el Tiempo</h5>
                     <div id="contenedorEvolucionDesempeno" class="grafico-fijo"></div>
                 </div>
 

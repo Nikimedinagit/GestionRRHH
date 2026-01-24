@@ -1056,7 +1056,7 @@ function MostrarOpcionesLicenciasPorRol() {
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     estadisticasYFiltros.removeClass("d-none");
     seleccionEmpleado.removeClass("d-none");
-    titulo.text("Visualizá, creá o gestioná licencias de los empleados de forma rápida.");
+    titulo.text("Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma rápida y sencilla.");
     tipoLicenciaGroup.css("grid-column", "span 1");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
     estadisticasYFiltros.addClass("d-none");

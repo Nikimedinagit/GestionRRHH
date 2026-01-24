@@ -12,17 +12,17 @@
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Gestor de Licencias</h3>
-        <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá, creá o gestioná licencias de los empleados de
-            forma rápida.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3">
+        <h3 class="titulo-seccion mb-1">Gestor de Licencias</h3>
+        <p class="text-muted fs-6 mb-0" id="tituloLicencia">
+            Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma
+            rápida y sencilla.
+        </p>
     </div>
-
-    <hr />
 
 
     <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <div>
 
         <div id="fondoOscuro" onclick="CerrarPanelLicencia()"></div>
 
@@ -38,7 +38,7 @@
                     <span>Filtros</span>
                 </button>
 
-                <button class="btn btn-generar-pdf responsive-buttons" onclick="GenerarInformePdfLicencias()">
+                <button class="btn btn-informe responsive-buttons" onclick="GenerarInformePdfLicencias()">
                     <i class="fa-solid fa-file-lines me-1"></i>
                     <span>Generar Informe</span>
                 </button>
@@ -99,7 +99,7 @@
         <div class="d-none" id="cardEstadisticasLicencias">
             <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-                <div class="card p-3 border-0"
+                <div class="card p-2 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
                         <div class="bg-secondary bg-opacity-10 p-3  me-3">
@@ -112,7 +112,7 @@
                     </div>
                 </div>
 
-                <div class="card p-3 border-0"
+                <div class="card p-2 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
                         <div class="bg-success bg-opacity-10 p-3 me-3">
@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <div class="card p-3 border-0"
+                <div class="card p-2 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
                         <div class="bg-warning bg-opacity-10 p-3 me-3">
@@ -138,7 +138,7 @@
                     </div>
                 </div>
 
-                <div class="card p-3 border-0"
+                <div class="card p-2 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
                         <div class="bg-danger bg-opacity-10 p-3 me-3">
@@ -151,7 +151,7 @@
                     </div>
                 </div>
 
-                <div class="card p-3 border-0"
+                <div class="card p-2 border-0"
                     style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
                     <div class="d-flex align-items-center">
                         <div class="bg-dark bg-opacity-10 p-3 me-3">
@@ -169,7 +169,7 @@
 
 
         <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-        <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+        <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
             <div class="d-flex justify-content-between align-items-center info-ayuda-header">
                 <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
                 <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
@@ -286,10 +286,9 @@
 
 
 
-        <hr style="margin-bottom: 1rem !important; margin-top: 1rem !important;" />
 
         <!-- ======================================= Tarjetas de licencias ====================================== -->
-        <div id="licenciasContainer" class="row g-4"></div>
+        <div id="licenciasContainer" class="row g-3"></div>
 
     </div>
 
@@ -313,7 +312,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <input type="hidden" id="IdLicencia" />
 
                 <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">

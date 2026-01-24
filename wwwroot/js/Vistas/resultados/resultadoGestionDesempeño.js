@@ -386,6 +386,6 @@ var timeoutResize;
 window.addEventListener("resize", () => {
     clearTimeout(timeoutResize);
     timeoutResize = setTimeout(() => {
-        cargarTodoDesempeno();
+        cargarTodoDesempeno(false);
     }, 300);
 });

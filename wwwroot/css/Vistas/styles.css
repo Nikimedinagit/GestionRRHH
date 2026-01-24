@@ -235,6 +235,7 @@ table tbody tr {
   font-size: 0.75rem;
   border-radius: 6px;
 }
+
 /* FIN TOOLTIP */
 
 
@@ -500,7 +501,6 @@ select.form-control:not([value=""])+label {
     border-radius: 15px 0 0 15px;
   }
 }
-
 /* FIN PANEL DESLIZANTE BASE */
 
 
@@ -528,27 +528,16 @@ select.form-control:not([value=""])+label {
     grid-template-columns: 1fr !important;
   }
 }
-
 /* FIN RESPONSIVO PARA EMPLEADOS */
 
 
-
-
-
-
-/* ////////////////////////////////////////////////////////////////////////////// */
 /* INICIO RESPONSIVO PARA LICENCIAS */
 @media (max-width: 400px) {
   #panelLicencia .form-grid {
     grid-template-columns: repeat(1, 1fr) !important;
   }
 }
-
 /* FIN RESPONSIVO PARA LICENCIAS */
-/* /////////////////////////////////////////////////////////////////////////////////////// */
-
-
-
 
 
 /* INICIO DE EMPLEADOS */
@@ -774,8 +763,6 @@ input[type="checkbox"].btn-check:checked+.dia-btn {
   font-weight: 700;
 }
 
-
-/* TABLA DE CRITERIOS DE EVALUACION*/
 .header-table {
   padding: 2px 6px !important;
   font-size: 14px !important;
@@ -785,7 +772,6 @@ input[type="checkbox"].btn-check:checked+.dia-btn {
   text-overflow: ellipsis !important;
 }
 
-/* Celdas compactas */
 td {
   padding: 2px 6px !important;
   font-size: 12px !important;
@@ -795,42 +781,31 @@ td {
   text-align: left !important;
 }
 
-
 td.td-empleado {
   text-align: left !important;
 }
 
-
-
-/* Cuerpo de tabla con estilo compacto */
 .tabla-criterios-body,
 .tabla-asistencias-body,
 .tabla-certificados-body {
   font-size: 11px !important;
 }
 
+.btn-agregar-criterio {
+  font-size: 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
 
+.btn-agregar-criterio:hover {
+  background-color: #7b59b3 !important;
+  color: #fff !important;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* FIN ESTILO EVALUACIONES */
 
 
 /* INICIO VENTANAS EMERGENTES */
-/* Contenedor general del modal */
 .swal2-custom-popup {
   border-radius: 12px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
@@ -855,7 +830,7 @@ td.td-empleado {
   background-color: #28a745 !important;
   color: white !important;
   font-size: 0.9rem !important;
-  padding: 0.4rem 1rem !important;
+  padding: 0.6rem 1rem !important;
   border-radius: 5px !important;
   margin-right: 0.5rem;
 }
@@ -868,7 +843,7 @@ td.td-empleado {
   background-color: #dc3545 !important;
   color: white !important;
   font-size: 0.9rem !important;
-  padding: 0.4rem 1rem !important;
+  padding: 0.6rem 1rem !important;
   border-radius: 5px !important;
   margin-right: 0.5rem;
 }
@@ -877,11 +852,24 @@ td.td-empleado {
   background-color: #c82333 !important;
 }
 
+.swal2-btn-eliminar {
+  background-color: #dc3545 !important;
+  color: white !important;
+  font-size: 0.9rem !important;
+  padding: 0.6rem 1rem !important;
+  border-radius: 5px !important;
+  margin-right: 0.5rem;
+}
+
+.swal2-btn-eliminar:hover {
+  background-color: #c82333 !important;
+}
+
 .swal2-btn-cancelar {
   background-color: #e0e0e0 !important;
   color: #333 !important;
   font-size: 0.9rem !important;
-  padding: 0.4rem 1rem !important;
+  padding: 0.6rem 1rem !important;
   border-radius: 5px !important;
 }
 
@@ -889,7 +877,6 @@ td.td-empleado {
   background-color: #c5c5c5 !important;
 }
 
-/* Ventana exito de acción abajo a la derecha*/
 .swal2-toast-success {
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
@@ -918,7 +905,6 @@ td.td-empleado {
   font-size: 0.8rem !important;
 }
 
-/* Ventana de rechazada de licencias */
 .swal2-toast-rechazada {
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
@@ -946,8 +932,6 @@ td.td-empleado {
   font-size: 0.8rem !important;
 }
 
-
-/* Ventana de cancelacion de acción abajo a la derecha*/
 .swal2-toast-status {
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
@@ -984,6 +968,45 @@ td.td-empleado {
 /* FIN VENTANAS EMERGENTES */
 
 
+/* INICIO ESTILO DE LICENCIAS */
+.card {
+  margin-bottom: 0 !important;
+}
+
+#licenciasContainer .card {
+  min-height: 200px !important;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+#licenciasContainer .card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+#licenciasContainer .document-link:hover,
+#contenedorJustificaciones .document-link:hover {
+  color: #0d6efd !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* FIN ESTILO DE LICENCIAS */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1001,53 +1024,33 @@ td.td-empleado {
 /* FIN RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* INICIO LICENCIAS */
-/* le sacamos el m¿margin de las card de etsadisticas */
-.card {
-  margin-bottom: 0 !important;
+/* INICIO ESTILO TABALA LICENCIAS APROBADAS */
+.badge-success {
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 0.35rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
 }
-
-#licenciasContainer .card {
-  min-height: 200px !important;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.3s ease;
-  transform: scale(1);
-  /* valor base */
-}
-
-#licenciasContainer .card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  /* opcional: sombra más fuerte */
-  z-index: 2;
-  /* opcional: para que quede encima si hay varias cards juntas */
-}
-
-/* Colocamos un hover al documento de la licencia */
-#licenciasContainer .document-link:hover,
-#contenedorJustificaciones .document-link:hover {
-  color: #0d6efd !important;
-  text-decoration: underline;
-  cursor: pointer;
-}
+/* FIN ESTILO TABALA LICENCIAS APROBADAS */
 
 
-/* FIN LICENCIAS */
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1188,20 +1191,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 
 
 
-/* INICIO ESTILO TABALA LICENCIAS APROBADAS */
-.badge-success {
-  background-color: #28a745;
-  color: #fff;
-  border-radius: 0.35rem;
-  font-weight: 600;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  display: inline-block;
-  min-width: 100px;
-  text-align: center;
-}
 
-/* FIN ESTILO TABALA LICENCIAS APROBADAS */
 
 
 
