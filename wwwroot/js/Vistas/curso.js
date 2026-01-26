@@ -144,7 +144,7 @@ async function ObtenerCursos(mostrarSpinner = true) {
 // FUNCIONES PARA MOSTRAR LOS CURSOS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarCursos(data) {
-  if (window.innerWidth <= 880) {
+  if (window.innerWidth <= 768) {
     MostrarCursosMobile(data);
   } else {
     MostrarCursosDesktop(data);
@@ -227,22 +227,23 @@ function MostrarCursosDesktop(data) {
       }
 
       const item = $(`
-        <div>
-        <div class="curso-item border rounded py-2 px-3 mb-2 d-flex align-items-start justify-content-between" data-curso-id="${element.id
+        <div id="cursosContainer">
+        <div class="border rounded py-2 px-2 mb-2 d-flex align-items-center justify-content-between bg-white" data-curso-id="${element.id
         }">
-          <div class="d-flex align-items-start" style="gap: 10px; flex-grow: 1; min-width: 0;">
+          <div class="d-flex align-items-center">
             ${botonEditar}
             <div class="d-flex flex-column" style="min-width: 0;">
               <div class="fw-bold" title="${element.nombre || "Sin nombre"
         }" style="white-space: normal; word-break: break-word;">
                 ${element.nombre || "Sin nombre"}
               </div>
-              <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;"">
-                ${fechaInicioFormateada} || ${fechaFinalizacionFormateada}
+             <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;">
+                ${fechaInicioFormateada} – ${fechaFinalizacionFormateada}
               </div>
+
             </div>
           </div>
-          <div class="d-flex align-items-center" style="gap: 20px;">
+          <div class="d-flex align-items-center justify-content-center" style="gap: 10px;">
             <div class="badge ${modalidadColor[modalidadNombre]
         }" title="${modalidadNombre}">${modalidadNombre}</div>
             <div class="d-flex align-items-center" style="gap: 10px;">
@@ -255,37 +256,31 @@ function MostrarCursosDesktop(data) {
       `);
 
       const descripcionDetalle = $(`
-        <div class="panelCriterios px-3 pb-2" style="display: none;">
-          <div class="mb-3">
-            <h3 class="titulo-sub-seccion">${element.nombre}</h3>
-          </div>
-          <hr style="margin-bottom: 1rem;" />
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <tbody>
-                <tr>
-                 <td id="DescripcionCurso_${element.id}" class="text-wrap">
-                    ${element.descripcion ?? "Sin descripción"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
+          <h3 class="m-0 p-2 mt-1 mb-1" style="font-size: 1rem; font-weight: 600;">Descripcion del Curso</h3>
+          <div class="p-2 border rounded" 
+              style="background-color: #ffffff;
+                       overflow-y: auto;
+                      word-wrap: break-word;" >
+              <div id="DescripcionCurso_${element.id}">${element.descripcion || "Sin descripción"}</div>
           </div>
         </div>
       `);
 
       const certificadoDetalle = $(`
-        <div class="panelCertificados px-3 pb-2" style="display: none;">
-          <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Certificados</h3>
-          </div>
-          <hr style="margin-bottom: 1rem;" />
-          <div class="certificados-panel mt-3">
-            <button class="btn btn-agregar-asistencia mb-2 crearCertificado" data-curso-id="${element.id}">
-              <span>Cargar Certificados</span>
+        <div class="panelCertificados px-2 pb-2" style="display: none; background-color: #ffffff;">
+         <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">Certificados del Curso</h3>
+
+            <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
+                    data-curso-id="${element.id}">
+                <i class="fa-solid fa-square-plus me-1"></i>
+                  Cargar Certificados
             </button>
+          </div>
+          <div class="certificados-panel">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover">
+              <table class="table table-bordered table-hover align-middle w-100">
                 <thead>
                   <tr>
                     <th class="text-start header-table">Empleado</th>
@@ -297,19 +292,23 @@ function MostrarCursosDesktop(data) {
               </table>
             </div>
           </div>
+
         </div>
       `);
 
       const asistenciaDetalle = $(`
-        <div class="panelAsistencias px-3 pb-2" style="display: none;">
-          <div class="mb-3">
-            <h3 class="titulo-sub-seccion">Asistencia de Curso</h3>
-          </div>
-          <hr style="margin-bottom: 1rem;" />
-          <div class="asistencias-panel mt-3">
-            <button class="btn btn-agregar-asistencia mb-2 crearAsistencias" data-curso-id="${element.id}">
-              <span>Registrar Asistencia</span>
+        <div class="panelAsistencias px-2 pb-2" style="display: none;background-color: #ffffff;">
+        <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">Asistencia del Curso</h3>
+
+            <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
+                    data-curso-id="${element.id}">
+                <i class="fa-solid fa-square-plus me-1"></i>
+                    Registrar Asistencia
             </button>
+          </div>
+         
+          <div class="asistencias-panel">
             <div class="table-responsive">
               <table class="table table-bordered table-hover">
                 <thead>
@@ -511,79 +510,75 @@ function MostrarCursosMobile(data) {
       : "Sin fecha";
 
     if (rol === "ADMINISTRADOR" || rol === "RRHH") {
-      let botonesIzquierda = `
-        <button class="btn-ver-asistencias icono-asistencia-mobile" style="background:none;border:none;" data-tippy-content="Ver Asistencias">
+      let botonesDerecha = `
+        <button class="btn-ver-asistencias icono-asistencia" style="background:none;border:none;" data-tippy-content="Ver Asistencias">
           <i class="bi-calendar-check"></i>
         </button>
-        <button class="btn-ver-certificados icono-certificado-mobile" style="background:none;border:none;" data-tippy-content="Ver Certificados">
+         <button class="btn-ver-certificados icono-certificado" style="background:none;border:none;" data-tippy-content="Ver Certificados">
           <i class="bi-award"></i>
         </button>
+              <button class="btn-ver-descripcion" style="background:none;border:none;" data-tippy-content="Detalle">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+       
       `;
-      let botonesDerecha = `
+      let botonesIzquierda = `
         <button class="btn-editar me-1" style="background:none;border:none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
           <i class="bi bi-pencil-square icono-editar"></i>
         </button>
-        <button class="btn-ver-descripcion" style="background:none;border:none;" data-tippy-content="Detalle">
-          <i class="bi bi-chevron-down"></i>
-        </button>
+   
       `;
 
       const card = document.createElement("div");
       card.className =
-        "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column mb-4";
+        "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column mb-3";
       card.innerHTML = `
-        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 210px;">
-          <div class="flex-grow-1 d-flex flex-column">
-            <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.nombre || "Sin nombre"
-        }</h5>
-            <small class="text-muted mb-1" style="font-size: 0.90rem;">
-              <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
-            </small>
-            <span class="badge ${claseModalidad} my-2" style="width: fit-content; font-size: 1rem;">${modalidadNombre}</span>
-          </div>
-          <div class="d-flex justify-content-between mt-2 align-items-center">
-            <div>${botonesIzquierda}</div>
-            <div>${botonesDerecha}</div>
-          </div>
-        </div>
-      `;
+            <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100">
 
-      const descripcionDetalle = $(` 
-        <div class="panelDescripcionCurso px-3 pb-2" style="display: none;">
-          <div class="mb-3">
-            <h3 class="titulo-sub-seccion">${element.nombre}</h3>
-          </div>
-          <hr style="margin-bottom: 1rem;" />
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <tbody>
-                <tr>
-                  <td id="DescripcionCurso_${element.id
-        }" style="white-space: normal; word-wrap: break-word;">
-                    ${element.descripcion ?? "Sin descripción"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `);
+              <div>
+                <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
+                  ${element.nombre || "Sin nombre"}
+                </h5>
 
-      $(card)
-        .find(".btn-ver-descripcion")
-        .on("click", function () {
-          $(".panelDescripcionCurso:visible")
-            .not(descripcionDetalle)
-            .slideUp(200);
-          descripcionDetalle.slideToggle(200);
+                <small class="text-muted mb-1 d-block" style="font-size: 0.90rem;">
+                  <i class="bx bx-calendar me-1"></i>${fechaInicioStr} — ${fechaFinStr}
+                </small>
 
-          const icono = $(this).find("i");
-          $(".btn-ver-descripcion i")
-            .not(icono)
-            .removeClass("bi-chevron-up")
-            .addClass("bi-chevron-down");
-          icono.toggleClass("bi-chevron-down bi-chevron-up");
-        });
+                <span class="badge ${claseModalidad}" style="width: fit-content;">
+                  ${modalidadNombre}
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>${botonesIzquierda}</div>
+                <div>${botonesDerecha}</div>
+              </div>
+
+              <div class="panelDescripcionCurso mt-2 pt-2 border-top" style="display:none;">
+                <p class="mb-0 text-muted" style="font-size: 0.9rem;">
+                  ${element.descripcion ?? "Sin descripción"}
+                </p>
+              </div>
+
+            </div>
+
+          `;
+
+      $(card).find(".btn-ver-descripcion").on("click", function () {
+        const cardActual = $(this).closest(".card");
+        const panel = cardActual.find(".panelDescripcionCurso");
+        const icono = $(this).find("i");
+
+        $(".panelDescripcionCurso").not(panel).slideUp(200);
+        $(".btn-ver-descripcion i")
+          .not(icono)
+          .removeClass("bi-chevron-up")
+          .addClass("bi-chevron-down");
+
+        panel.slideToggle(200);
+        icono.toggleClass("bi-chevron-down bi-chevron-up");
+      });
+
 
       $(card)
         .find(".btn-ver-certificados")
@@ -620,7 +615,6 @@ function MostrarCursosMobile(data) {
         });
 
       contenedor.appendChild(card);
-      contenedor.appendChild(descripcionDetalle[0]);
     } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
       const resultado = parseFloat(element.resultado);
       const aprobado = !isNaN(resultado) && resultado >= 6;
@@ -1223,18 +1217,17 @@ function MostrarAsistencias(cursoId, data) {
                 <h6 class="fw-bold mb-1 text-truncate" style="max-width: 200px;">
                   ${item.empleado.nombreCompleto}
                 </h6>
-                <span class="badge-pill ${badgeClass}" 
-                      style="padding: 4px 10px; font-size: 0.8rem; align-self: start;">
+                <span class="badge ${badgeClass}">
                   ${etiqueta}
                 </span>
               </div>
             </div>
 
-            <button class='btn-eliminar text-danger' 
+            <button class='btn-borrar text-danger' 
                     style='background: none; border: none; font-size: 1.1rem;' 
                     onclick='EliminarAsistencia(${item.id})' 
                     data-tippy-content='Eliminar'>
-              <i class='bi bi-trash3'></i>
+              <i class='bi bi-trash3 icono-borrar'></i>
             </button>
 
           </div>
@@ -1286,13 +1279,13 @@ function MostrarAsistencias(cursoId, data) {
             ${item.empleado.nombreCompleto}
           </td>
           <td class='text-center align-middle'>
-            <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${etiqueta}</span>
+            <span class="badge ${badgeClass}">${etiqueta}</span>
           </td>
           <td class='d-flex justify-content-center align-items-center'>
-            <button class='btn-eliminar' style='background: none; border: none;' 
+            <button class='btn-borrar' style='background: none; border: none;' 
               onclick='EliminarAsistencia(${item.id
         })' data-tippy-content='Eliminar'>
-              <i class='bi bi-trash3 icono-elimina-detalle'></i>
+              <i class='bi bi-trash3 icono-borrar'></i>
             </button>
           </td>
         </tr>
@@ -1744,9 +1737,9 @@ function MostrarCertificados(cursoId, data) {
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
-                <button class='btn-eliminar'  style='background: none; border: none;'
+                <button class='btn-borrar'  style='background: none; border: none;'
         onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})'                        data-tippy-content="Eliminar">
-                  <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                  <i class='bi bi-trash3 icono-borrar'></i>
                 </button>
               </div>
             </div>
@@ -1780,11 +1773,11 @@ function MostrarCertificados(cursoId, data) {
       tablaBody.append(`
         <tr>
           <td class='align-middle nombre-empleado'>${item.empleado.nombreCompleto}</td>
-          <td class='align-middle text-center' style="font-size: 0.8rem;">${documentoHtml}</td>
+          <td class='text-center align-middle' style="font-size: 0.8rem;">${documentoHtml}</td>
           <td class='d-flex justify-content-center align-items-center'>
-            <button class='btn-eliminar' style='background: none; border: none;' 
+            <button class='btn-borrar' style='background: none; border: none;' 
                 onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})' data-tippy-content='Eliminar'>
-                <i class='bi bi-trash3 icono-elimina-detalle'></i>
+                <i class='bi bi-trash3 icono-borrar'></i>
             </button>
 
           </td>

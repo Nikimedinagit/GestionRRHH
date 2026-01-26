@@ -248,7 +248,7 @@ function MostrarEvaluacionesDesktop(data) {
                         <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
                           
                           <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-                            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">
+                            <h3 style="font-size: 1rem; font-weight: 600;">
                               Criterios de Evaluación
                             </h3>
 
