@@ -330,6 +330,6 @@ var timeoutResize;
 window.addEventListener("resize", () => {
   clearTimeout(timeoutResize);
   timeoutResize = setTimeout(() => {
-    cargarTodo();
+    cargarTodo(false);
   }, 300);
 });

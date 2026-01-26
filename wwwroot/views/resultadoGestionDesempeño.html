@@ -33,7 +33,8 @@
         </div>
 
 
-        <div class="custom-collapse mb-2 rounded-3 bg-white" id="contenedorResultados" style="border-left: 4px solid #6A5ACD">
+        <div class="custom-collapse mb-2 rounded-3 bg-white" id="contenedorResultados"
+            style="border-left: 4px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-3">
 
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
@@ -119,20 +120,29 @@
                     <div id="contenedorDesempenoPorPuesto" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
-                    <h6 class="text-center">Distribución de Calificaciones de Desempeño</h6>
-                    <div id="contenedorTortaDistribucion" class="grafico-fijo"></div>
+                <div class="row">
+                    <div class="col-md-4 mb-3 px-md-2 ps-md-0">
+                        <div class="border p-3 rounded shadow-sm bg-white h-100">
+                            <h6 class="text-center">Distribución de Calificaciones de Desempeño</h6>
+                            <div id="contenedorTortaDistribucion" class="grafico-fijo"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3 px-md-2">
+                        <div class="border p-3 rounded shadow-sm bg-white h-100">
+                            <h6 class="text-center">Criterios con Mayor Nivel de Desempeño</h6>
+                            <div id="contenedorTortaCriteriosBuenos" class="grafico-fijo"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3 px-md-2 pe-md-0">
+                        <div class="border p-3 rounded shadow-sm bg-white h-100">
+                            <h6 class="text-center">Criterios con Oportunidades de Mejora</h6>
+                            <div id="contenedorCriteriosMalos" class="grafico-fijo"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
-                    <h6 class="text-center">Criterios con Mayor Nivel de Desempeño</h6>
-                    <div id="contenedorTortaCriteriosBuenos" class="grafico-fijo"></div>
-                </div>
-
-                <div class="col-md-4 mb-3 border p-3 rounded shadow-sm bg-white">
-                    <h6 class="text-center">Criterios con Oportunidades de Mejora</h6>
-                    <div id="contenedorCriteriosMalos" class="grafico-fijo"></div>
-                </div>
 
                 <div class="col-md-12 mb-3 border p-3 rounded shadow-sm bg-white">
                     <h5>Evolución del Desempeño en el Tiempo</h5>

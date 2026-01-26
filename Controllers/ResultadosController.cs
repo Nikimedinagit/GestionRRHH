@@ -2116,7 +2116,7 @@ public class ResultadosController : ControllerBase
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LA CANTIDAD DE CURSOS SEGUN LA MODADLIDAD //////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE CURSOS SEGUN LA MODADLIDAD - GRAFICO //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("CursosPorModalidad")]
     public async Task<IActionResult> GetCursosPorModalidad()
@@ -2135,7 +2135,7 @@ public class ResultadosController : ControllerBase
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LA CANTIDAD DE ASISTENCIAS E INASISTENCIAS DE CAD CURSO //////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE ASISTENCIAS E INASISTENCIAS DE CAD CURSO - GRAFICO//////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("AsistenciasPorCurso")]
     public async Task<IActionResult> GetAsistenciasPorCurso()
@@ -2155,7 +2155,7 @@ public class ResultadosController : ControllerBase
 
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER LA CANTIDAD DE CERTIFICADOS OBTENIDOS DE CAD CURSO //////////////
+    /// METODO PARA OBTENER LA CANTIDAD DE CERTIFICADOS OBTENIDOS DE CAD CURSO - GRAFICO//////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("CertificadosPorCurso")]
     public async Task<IActionResult> GetCertificadosPorCurso()
@@ -2173,7 +2173,7 @@ public class ResultadosController : ControllerBase
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER PROMEDIO DE ASISTENCIA Y RESULTADO POR MODALIDAD DE CURSO //////////////
+    /// METODO PARA OBTENER PROMEDIO DE ASISTENCIA Y RESULTADO POR MODALIDAD DE CURSO - GRAFICO //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     [HttpGet("ComparacionPorModalidad")]
     public async Task<IActionResult> GetComparacionPorModalidad()
@@ -2203,9 +2203,9 @@ public class ResultadosController : ControllerBase
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    /// METODO PARA OBTENER EL CURSO CON MAS ASISTENCIA //////////////
+    /// METODO PARA OBTENER EL CURSO CON MAS ASISTENCIA - GRAFICO //////////////
     ///////////////////////////////////////////////////////////////////////////////////////
-    [HttpGet("RankingCursos")]
+        [HttpGet("RankingCursos")]
     public async Task<IActionResult> GetRankingCursos()
     {
         var ranking = await _context.Curso
