@@ -814,6 +814,7 @@ td.td-empleado {
 
 /* INICIO VENTANAS EMERGENTES */
 .swal2-custom-popup {
+  position: absolute;
   border-radius: 12px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
   padding: 1.5rem;
@@ -895,7 +896,6 @@ td.td-empleado {
   justify-content: center;
   flex-direction: column;
   text-align: center;
-
 }
 
 .swal2-toast-success-title {
@@ -971,7 +971,13 @@ td.td-empleado {
   width: 100%;
   margin: 0;
 }
+.swal2-container {
+  justify-content: flex-end !important;
+}
 
+.swal2-container .swal2-popup {
+  transform: translateX(-20%) !important;
+}
 /* FIN VENTANAS EMERGENTES */
 
 
@@ -1787,14 +1793,13 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   position: fixed;
   visibility: hidden;
   opacity: 0;
-  right: 15px;
-  bottom: 90px !important;
+  right: 10px;
+  bottom: 10px !important;
   z-index: 1050;
   background-color: rgb(37, 99, 235); 
   width: 44px;
   height: 44px;
   border-radius: 50%;
-
   transition: all 0.4s ease;
 }
 
@@ -1811,16 +1816,17 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 .scroll-top.active {
   visibility: visible;
   opacity: 1;
-  bottom: 15px;
+  bottom: 10px;
 }
 /* FIN ESTILO BOTON SCROOL */
+
+
 
 .text-truncate-1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 .flex-text {
   min-width: 0;

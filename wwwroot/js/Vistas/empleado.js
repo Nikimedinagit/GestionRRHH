@@ -1274,6 +1274,7 @@ async function EditarEmpleado(id) {
           popup: "swal2-toast-success",
           title: "swal2-toast-success-title",
           icon: "swal2-toast-success-icon",
+
         },
       });
 
