@@ -214,7 +214,7 @@ function MostrarEmpleados(data) {
 
             <p class="mb-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               <i class="bi bi-envelope me-2" style="font-size: 1rem;"></i>
-              <span class="text-truncate-1">${email}</span>
+              <span class="flex-text">${email}</span>
             </p>
 
             <p class="mb-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">

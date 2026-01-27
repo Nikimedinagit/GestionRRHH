@@ -29,18 +29,20 @@
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div>
   
-    <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
   
+      <div class="d-flex gap-2 flex-wrap responsive-button">
       <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
         <i class="fa-solid fa-filter me-1"></i>
         <span>Filtros</span>
       </button>
-      <div class="d-flex gap-2 flex-wrap responsive-button">
+      </div>
+
         <button class="btn btn-generar-pdf responsive-buttons" onclick="GenerarInformePdfLicenciasAprobadas()">
           <i class="fa-solid fa-file-lines me-1"></i>
           <span>Generar Informe</span>
         </button>
-      </div>
+
     </div>
 
 

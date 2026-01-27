@@ -1822,3 +1822,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 
+.flex-text {
+  min-width: 0;
+  word-break: break-word;
+}
