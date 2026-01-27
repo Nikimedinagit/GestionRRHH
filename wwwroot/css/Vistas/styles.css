@@ -1814,3 +1814,11 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   bottom: 15px;
 }
 /* FIN ESTILO BOTON SCROOL */
+
+.text-truncate-1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
