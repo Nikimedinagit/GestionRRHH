@@ -457,9 +457,12 @@ function MostrarDetalleHorario(id) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// LIMPIAR FORMULARIO DE HORARIO ////////////////////////////////////////////////////////////////////
+/// LIMPIAR FORMULARIO DE HORARIO ////////////////////////////////////// //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalHorario() {
+
+     ObtenerEmpleadosSinHorariosDropDown(); 
+
   document.getElementById("IdHorario").value = "";
   const inputEmpleado = document.getElementById("EmpleadoId");
   inputEmpleado.value = "";
@@ -546,10 +549,14 @@ function BuscarHorarioId() {
 async function MostrarModalEditar(id) {
   try {
     const response = await authFetch(`Horarios/${id}`);
-
     const data = await response.json();
 
     document.getElementById("IdHorario").value = data.id;
+
+    await ObtenerEmpleadosSinHorariosDropDown(data.empleadoId);
+
+    document.getElementById("EmpleadoId").value = data.empleadoId;
+
     document.getElementById("TipoHorario").value = data.tipoHorario;
 
     document.getElementById("lunes").checked = data.lunes;
@@ -560,8 +567,7 @@ async function MostrarModalEditar(id) {
     document.getElementById("sabado").checked = data.sabado;
     document.getElementById("domingo").checked = data.domingo;
 
-    document.getElementById("EmpleadoId").value = data.empleadoId;
-
+    // 🚫 No se pueden cambiar en edición
     document.getElementById("EmpleadoId").disabled = true;
     document.getElementById("TipoHorario").disabled = true;
 
@@ -571,24 +577,24 @@ async function MostrarModalEditar(id) {
 
       document.getElementById("HorarioInicio").value = data.horarioInicio;
       document.getElementById("HorarioFin").value = data.horarioFin;
+
     } else if (data.tipoHorario === 2) {
       document.getElementById("horarioContinuo").classList.add("d-none");
       document.getElementById("horarioAlterno").classList.remove("d-none");
 
       document.getElementById("PrimerHorarioInicio").value = data.horarioInicio;
       document.getElementById("PrimerHorarioFin").value = data.horarioFin;
-      document.getElementById("SegundoHorarioInicio").value =
-        data.segundoHorarioInicio;
-      document.getElementById("SegundoHorarioFin").value =
-        data.segundoHorarioFin;
+      document.getElementById("SegundoHorarioInicio").value = data.segundoHorarioInicio;
+      document.getElementById("SegundoHorarioFin").value = data.segundoHorarioFin;
     }
 
-
     abrirPanelHorario();
+
   } catch (error) {
     MostrarErrorCatch();
   }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -995,6 +1001,7 @@ async function CrearHorario() {
       ocultarOverlayGuardando();
       ObtenerHorarios(false);
       cerrarPanelHorario();
+      ObtenerEmpleadosSinHorariosDropDown();
 
       Swal.fire({
         title: "¡Horario Creado!",

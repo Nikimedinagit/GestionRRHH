@@ -467,6 +467,51 @@ namespace API_RRHH_TESIS2025.Controllers
         }
 
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
+        [HttpGet("ActivosSinHorario")]
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosActivosSinHorario(int? empleadoIdActual)
+        {
+            var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var empleadosQuery = _context.Empleado
+                .Where(e => !e.Eliminado &&
+                       (
+                           !e.Horario.Any()          // Empleados sin horario
+                           || e.Id == empleadoIdActual // 🔥 Excepción: el que estoy editando
+                       ))
+                .Include(e => e.Puesto)
+                .AsQueryable();
+
+            // 🔒 Filtro por sector si es SUPERVISOR
+            if (rolActual == "SUPERVISOR")
+            {
+                var usuario = await _context.Users.FindAsync(userId);
+                var email = usuario?.Email?.Trim().ToLower();
+
+                var supervisor = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == email);
+
+                if (supervisor == null || supervisor.Puesto == null)
+                    return Ok(new List<Empleado>());
+
+                var sectorId = supervisor.Puesto.SectorId;
+
+                empleadosQuery = empleadosQuery.Where(e => e.Puesto.SectorId == sectorId);
+            }
+
+            var empleados = await empleadosQuery
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+
+            return Ok(empleados);
+        }
+
+
 
 
         [HttpGet("Buscar")]
@@ -505,7 +550,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
 
-        
+
 
 
 

@@ -16001,7 +16001,7 @@ pre[class*=language-] {
   display: none;
 }
 .pc-sidebar .pc-micon {
-  margin-right: 15px;
+  margin-right: 10px;
   height: 24px;
   display: inline-block;
   vertical-align: middle;
@@ -22064,15 +22064,14 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
 /* AGREADO POR NOSOTROS */
 .pc-sidebar .pc-submenu {
   background: #fff !important;
-  border-radius: 10px !important;
+  border-radius: 0.375REM !important;
   box-shadow: 0 4px 16px rgba(11,29,81,0.08);
-  padding: 0.5rem ;
   margin: 0.25rem 30px;  
   min-width: 180px;
   z-index: 1050;
 }
 .pc-sidebar .pc-submenu .pc-link {
-      padding: .5rem 1rem !important;
+    padding: .5rem 1rem !important;
     display: block;
     color: #3a3b45;
     text-decoration: none;
