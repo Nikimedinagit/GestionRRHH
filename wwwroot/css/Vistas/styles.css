@@ -185,7 +185,6 @@
     font-size: 0.92rem;
   }
 }
-
 /* FIN PANEL DE FILTROS */
 
 
@@ -294,8 +293,15 @@ table tbody tr {
   transform: translate(100%, -50%);
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
   overflow-y: auto;
+  overflow-x: hidden;
+
 }
 
+/* #panelEvaluaciones {
+  overflow-x: hidden;
+}
+ */
+ 
 #panelProvincia.abierto,
 #panelLocalidad.abierto,
 #panelSector.abierto,
@@ -1808,7 +1814,3 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   bottom: 15px;
 }
 /* FIN ESTILO BOTON SCROOL */
-
-
-
-  
