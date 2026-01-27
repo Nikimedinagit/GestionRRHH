@@ -228,3 +228,32 @@ function toggleResultados() {
     }
 }
 
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+/// FUNCION PARA MOSTRAR U OCULTAR EL BOTON DE SCROLL TOP /////////////// 
+//////////////////////////////////////////////////////////////////////////////
+document.addEventListener('DOMContentLoaded', () => {
+  const scrollTopBtn = document.querySelector('.scroll-top');
+  if (!scrollTopBtn) return;
+
+  function botonScrollTop() {
+    if (window.scrollY > 150) {
+      scrollTopBtn.classList.add('active');
+    } else {
+      scrollTopBtn.classList.remove('active');
+    }
+  }
+
+  window.addEventListener('scroll', botonScrollTop);
+  window.addEventListener('load', botonScrollTop);
+
+  scrollTopBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+
+
