@@ -2118,7 +2118,7 @@ function MostrarOpcionesCursosPorRol() {
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     $(
-      "#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso"
+      "#cardEstadisticasCursos, #btnMostrarGenerar, #btnNuevoCurso, #btnInformes"
     ).removeClass("d-none");
     $(
       "#PresencialRA, #VirtualRA, #MixtoRA, #AprobadoRA, #DesaprobadoRA, #AsistenciaRA, #CertificadoRA, #DescripcionRA, #EditarRA, #AsistioRA, #DescargarRA"
