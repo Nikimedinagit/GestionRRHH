@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!scrollTopBtn) return;
 
   function botonScrollTop() {
-    if (window.scrollY > 150) {
+    if (window.scrollY > 20) {
       scrollTopBtn.classList.add('active');
     } else {
       scrollTopBtn.classList.remove('active');
