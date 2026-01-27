@@ -200,11 +200,11 @@ function MostrarEmpleadosSupervisor(data) {
           <div class="d-flex justify-content-center mt-2 align-items-center">
             <button class="btn-ver" style="background: none; border: none; cursor: pointer;"
                     onclick="MostrarDetalleEmpleado(${item.id})" data-tippy-content="Ver más">
-              <i class="bi bi-info-circle btn-sm iocno-ver-empleado"></i>
+              <i class="bi bi-info-circle icono-ver"></i>
             </button>
             <button class="btn-ver" style="background: none; border: none; cursor: pointer;"
                     onclick="MostrarDetalleHorario(${item.id})" data-tippy-content="Ver horario">
-              <i class="bi bi-clock btn-sm icono-historial-empleado"></i>
+              <i class="bi bi-clock icono-historial"></i>
             </button>
           </div>
 

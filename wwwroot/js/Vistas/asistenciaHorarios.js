@@ -26,14 +26,8 @@ async function ObtenerAsistenciaHorario(mostrarSpinner = true) {
 function MostrarAsistenciaHorario(data) {
 
     const badgeBaseStyle = `
-        display:inline-block;
-        padding:0.35em 0.65em;
-        font-size:0.72rem;
-        font-weight:600;
-        border-radius:0.25rem;
-        line-height:1.2;
-        text-align:center;
-        white-space:nowrap;
+        font-size:0.70rem;
+        font-weight:700;
     `;
 
     const contenedor = $("#contenedorAsistenciaHorario");
@@ -90,13 +84,13 @@ function MostrarAsistenciaHorario(data) {
 
     const cardAsistencia = `
         <div class="col-12 col-md-6 d-flex">
-            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${estiloEstado.color};">
+            <div class="bg-white shadow-sm rounded flex-fill p-3" style="border-bottom: 3px solid ${estiloEstado.color};">
                 <h5 class="fw-bold mb-2 fs-6">Asistencia de Hoy</h5>
                 <div class="d-flex align-items-center mb-2 flex-wrap">
                     <img src="${asistencia.fotoRuta || "./img/avatarAusente.png"}" alt="Foto" class="rounded-circle me-3 mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                     <div>
                         <h5 class="mb-2 fw-bold fs-6">${data.empleado || "Sin Registro"}</h5>
-                        <span style="${badgeBaseStyle} background-color:${estiloEstado.backgroundColor}; color:${estiloEstado.color};">
+                        <span class="badge" style="${badgeBaseStyle} background-color:${estiloEstado.backgroundColor}; color:${estiloEstado.color};">
                             ${estado}
                         </span>
                         <p class="mb-0 mt-2 text-muted fs-7">${asistencia.fechaString || "00/00/0000"}</p>
@@ -109,16 +103,16 @@ function MostrarAsistenciaHorario(data) {
 
     const cardHorario = `
         <div class="col-12 col-md-6 d-flex">
-            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid ${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
+            <div class="bg-white shadow-sm rounded flex-fill p-3" style="border-bottom: 3px solid ${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
                 <h5 class="fw-bold mb-2 fs-6">Horario</h5>
-                <div class="d-flex flex-column justify-content-between h-100">
+                <div class="d-flex flex-column h-100">
                     <div class="d-flex flex-column align-items-center text-center">
-                        <h5 class="fw-bold mb-2 fs-6">${data.empleado || "Empleado"}</h5>
+                        <h5 class="fw-bold mb-2 fs-6">${data.empleado || "Sin Registro"}</h5>
 
-                        <span class="mb-2" style="${badgeBaseStyle}
+                        <span class="mb-2 badge" style="${badgeBaseStyle}
                                       background-color:${horario.tipoHorarioString === "ALTERNO" ? "#d0e3ff" : "#d1f7d1"};
                                       color:${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
-                            ${horario.tipoHorarioString || "SIN HORARIO"}
+                            ${horario.tipoHorarioString || "Sin Definir"}
                         </span>
 
                         ${horario.tipoHorarioString === "ALTERNO"
@@ -130,9 +124,9 @@ function MostrarAsistenciaHorario(data) {
 
                     <div class="d-flex justify-content-center gap-1 flex-wrap mt-1">
                         ${dias.map(d => `
-                            <span style="${badgeBaseStyle}
+                            <span class="badge" style="${badgeBaseStyle}
                                          background-color: ${d.activo ? '#d1f7d1' : '#f0f0f0'};
-                                         color: ${d.activo ? '#0a8c0a' : '#999'};">
+                                         color: ${d.activo ? '#0a8c0a' : '#999'}; font-size:0.75rem;">
                                 ${d.dia}
                             </span>`).join("")}
                     </div>
@@ -143,7 +137,7 @@ function MostrarAsistenciaHorario(data) {
 
     const cardResumen = `
         <div class="col-12 col-lg-4 d-flex">
-            <div class="card shadow-sm rounded-3 flex-fill p-0" style="border-bottom: 3px solid #1a73e8;">
+            <div class="bg-white shadow-sm rounded flex-fill p-0" style="border-bottom: 3px solid #1a73e8;">
                 <div class="d-flex flex-column justify-content-between h-100 w-100">
                     <h5 class="fw-bold fs-6 text-center py-2">Resumen de Puntualidad</h5>
                     <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
@@ -156,7 +150,7 @@ function MostrarAsistenciaHorario(data) {
 
     const cardHistorial = `
         <div class="col-12 col-lg-8">
-            <div class="card shadow-sm rounded-3 flex-fill p-3" style="border-bottom: 3px solid #34a853;">
+            <div class="bg-white shadow-sm rounded flex-fill p-3" style="border-bottom: 3px solid #34a853;">
                 <h5 class="fw-bold mb-2 fs-6">Historial Reciente de Asistencia</h5>
                 <div class="d-flex flex-column gap-2">
                     ${historial.map(h => {
@@ -166,7 +160,7 @@ function MostrarAsistenciaHorario(data) {
                             <div class="flex-fill mb-1 mb-md-0"><strong>Fecha:</strong> ${h.fechaString || "-"}</div>
                             <div class="flex-fill mb-1 mb-md-0">
                                 <strong>Estado:</strong> 
-                                <span style="${badgeBaseStyle} background-color:${estadoBadge.backgroundColor}; color:${estadoBadge.color};">
+                                <span class="badge" style="${badgeBaseStyle} background-color:${estadoBadge.backgroundColor}; color:${estadoBadge.color};">
                                     ${h.estadoString || "-"}
                                 </span>
                             </div>

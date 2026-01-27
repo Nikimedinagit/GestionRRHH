@@ -1,14 +1,21 @@
 <div class="px-3 py-3">
   <!-- ======================================= Spinner General ====================================== -->
-  <div id="pantallaCargaGeneral" class="pantalla-carga">
-    <div class="contenido-carga">
-      <h5 class="fw-bold text-dark">Cargando tipo de licencias...</h5>
-      <div class="spinner-border text-primary mt-3" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-      <p class="p-4 text-muted">Estamos preparando la información de los tipos de licencias, aguarda un momento.</p>
+ <div id="pantallaCargaGeneral" class="pantalla-carga">
+        <div class="contenido-carga card-carga">
+            <div class="icono-carga mb-3">
+                <i class="fa-solid fa-tags fa-sm"></i>
+            </div>
+
+            <h5 class="fw-bold mb-2">Cargando tipos de licencias</h5>
+
+            <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+            <p class="text-muted mensaje-carga">
+                Estamos preparando la información de los tipos de licencias
+                <span class="dots"></span>
+            </p>
+        </div>
     </div>
-  </div>
 
   <!-- ======================================= Título ====================================== -->
   <div class="bg-white shadow-sm rounded p-2 mb-3">
@@ -169,11 +176,13 @@
 
         <!-- ======================================= Spinner Formualrio ====================================== -->
         <div id="overlayGuardando" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status">
             </div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
           </div>
         </div>
 

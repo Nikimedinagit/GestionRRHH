@@ -103,7 +103,7 @@ async function mostrarTiempoUsuario() {
         document.getElementById('progresoHoy').style.width = `${calcularPorcentaje(data.hoy)}%`;
         document.getElementById('progresoSemana').style.width = `${calcularPorcentaje(data.semana)}%`;
         document.getElementById('progresoMes').style.width = `${calcularPorcentaje(data.mes)}%`;
-        document.getElementById('horasAnio').style.width = `${calcularPorcentaje(data.anio)}%`;
+        document.getElementById('progresoAnio').style.width = `${calcularPorcentaje(data.anio)}%`;
 
         function actualizarHora() {
             const ahora = new Date();

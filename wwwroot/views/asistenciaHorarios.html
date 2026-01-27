@@ -1,43 +1,47 @@
 <div class="px-3 py-3">
 
-    <!-- ======================================= Spinner General ====================================== -->
-    <div id="pantallaCargaGeneral" class="pantalla-carga">
-        <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Cargando asistencia y horarios...</h5>
-            <div class="spinner-border text-primary mt-3" role="status">
-                <span class="visually-hidden">Cargando...</span>
+  <!-- ======================================= Spinner General ====================================== -->
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+        <div class="contenido-carga card-carga">
+            <div class="icono-carga mb-3">
+                <i class="fa-solid fa-user-clock fa-sm"></i>
             </div>
-            <p class="p-4 text-muted">Estamos preparando tus horarios y registros de asistencia, aguarda un momento.
+
+            <h5 class="fw-bold mb-2">Cargando asistencias e horarios</h5>
+
+            <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+            <p class="text-muted mensaje-carga">
+                Estamos preparando la información de las asistencias e horarios
             </p>
         </div>
     </div>
 
 
   <!-- ======================================= Título ====================================== -->
-  <div class="mb-3">
-    <h3 class="titulo-seccion">Control de Asitencia y Asignacion de Horarios</h3>
-    <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá tu horario laboral y controlá tus registros de
-      asistencia diarios.</p>
+  <div class="bg-white shadow-sm rounded p-2 mb-3">
+    <h3 class="titulo-seccion mb-1">Mi Asistencias e Horarios</h3>
+    <p class="text-muted fs-6 mb-0">Visualizá tu jornada laboral y realizá el seguimiento de tus asistencias diarias.
+    </p>
   </div>
 
-  <hr />
 
 
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-  <div style="background-color: white; border-radius: 5px; padding: 10px">
+  <div>
 
 
     <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+    <div class="info-ayuda mt-3 mb-3 p-2 rounded shadow-sm">
       <div class="d-flex justify-content-between align-items-center info-ayuda-header">
         <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
         <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-           <i class="bi bi-eye me-1"></i> Mostrar
+          <i class="bi bi-eye me-1"></i> Mostrar
         </button>
       </div>
 
       <div id="contenido-ayuda" class="row g-3 d-none">
-         <div class="col-12 col-md-6 col-lg-4 d-flex">
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
           <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
             <i class="bi bi-check-circle-fill me-3" style="color:#06923E; font-size:1.2rem;"></i>
             <div>
@@ -146,7 +150,7 @@
 
 
     <!-- ======================================= Tarjetas de asistencias y horarios ====================================== -->
-    <div id="contenedorAsistenciaHorario" class="row g-4"></div>
+    <div id="contenedorAsistenciaHorario"></div>
 
   </div>
 

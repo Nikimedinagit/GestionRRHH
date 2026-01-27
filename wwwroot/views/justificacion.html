@@ -2,14 +2,22 @@
 
   <!-- ======================================= Spinner General ====================================== -->
   <div id="pantallaCargaGeneral" class="pantalla-carga">
-    <div class="contenido-carga">
-      <h5 class="fw-bold text-dark">Cargando tardanzas...</h5>
-      <div class="spinner-border text-primary mt-3" role="status">
-        <span class="visually-hidden">Cargando...</span>
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3">
+        <i class="fa-solid fa-hourglass-half fa-sm"></i>
       </div>
-      <p class="p-4 text-muted">Estamos preparando la información de llegadas tarde, aguarda un momento</p>
+
+      <h5 class="fw-bold mb-2">Cargando tardanzas e ausencias</h5>
+
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+      <p class="text-muted mensaje-carga">
+        Estamos preparando la información de tardanzas e ausencias
+        <span class="dots"></span>
+      </p>
     </div>
   </div>
+
 
 
   <!-- ======================================= Título ====================================== -->
@@ -247,12 +255,14 @@
       <form id="formJustificacion">
 
         <!-- ======================================= Spinner Formualrio ====================================== -->
-        <div id="overlayGuardando" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status">
             </div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
           </div>
         </div>
 

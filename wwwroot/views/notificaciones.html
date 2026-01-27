@@ -2,27 +2,31 @@
 
     <!-- ======================================= Spinner General ====================================== -->
     <div id="pantallaCargaGeneral" class="pantalla-carga">
-        <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Cargando notificaciones...</h5>
-            <div class="spinner-border text-primary mt-3" role="status">
-                <span class="visually-hidden">Cargando...</span>
+        <div class="contenido-carga card-carga">
+            <div class="icono-carga mb-3">
+                <i class="fa-solid fa-bell fa-sm"></i>
             </div>
-            <p class="p-4 text-muted">Estamos preparando la información de notificaciones, aguarda un momento.
+
+            <h5 class="fw-bold mb-2">Cargando notificaciones</h5>
+
+            <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+            <p class="text-muted mensaje-carga">
+                Estamos preparando la información de las notificaciones
+                <span class="dots"></span>
             </p>
         </div>
     </div>
 
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Notificaciones</h3>
-        <p class="text-muted fs-6 mb-0">Visualizá todas tus alertas y actualizaciones.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3">
+        <h3 class="titulo-seccion mb-1">Notificaciones</h3>
+        <p class="text-muted fs-6 mb-0">Consultá todas tus notificaciones, avisos importantes y novedades.</p>
     </div>
 
-    <hr />
 
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información</h5>
+        <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
             <button id="marcarTodas" class="btn btn-marcarNoti" onclick="MarcarTodasLeidas()">
                 <i class="ti ti-checks me-1"></i>
                 <span>Marcar todas como leídas</span>

@@ -2,12 +2,19 @@
 
   <!-- ======================================= Spinner General ====================================== -->
   <div id="pantallaCargaGeneral" class="pantalla-carga">
-    <div class="contenido-carga">
-      <h5 class="fw-bold text-dark">Cargando cursos...</h5>
-      <div class="spinner-border text-primary mt-3" role="status">
-        <span class="visually-hidden">Cargando...</span>
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3">
+        <i class="fa-solid fa-graduation-cap fa-sm"></i>
       </div>
-      <p class="p-4 text-muted">Estamos preparando la información de los cursos, aguarda un momento.</p>
+
+      <h5 class="fw-bold mb-2">Cargando cursos</h5>
+
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+      <p class="text-muted mensaje-carga">
+        Estamos preparando la información de cursos
+        <span class="dots"></span>
+      </p>
     </div>
   </div>
 
@@ -17,7 +24,7 @@
     <h3 class="titulo-seccion mb-1">Seguimiento de Cursos</h3>
     <p class="text-muted fs-6 mb-0" id="tituloCursos">
       Gestioná la información de los cursos, controlá la asistencia de los participantes,
-  emití certificados y accedé al detalle de cada capacitación.
+      emití certificados y accedé al detalle de cada capacitación.
     </p>
   </div>
 
@@ -384,11 +391,13 @@
 
         <!-- ======================================= Spinner Formualrio ====================================== -->
         <div id="overlayGuardando" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status">
             </div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
           </div>
         </div>
 
@@ -450,14 +459,15 @@
 
         <!-- ======================================= Spinner Formualrio ====================================== -->
         <div id="overlayGuardandoAsistencia" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status">
             </div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
           </div>
         </div>
-
 
         <input type="hidden" id="IdAsistencia" />
         <div class="form-grid">
@@ -505,11 +515,13 @@
 
         <!-- ======================================= Spinner Formualrio ====================================== -->
         <div id="overlayGuardandoCertificado" class="overlay-guardando d-none">
-          <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Guardando...</h5>
-            <div class="spinner-border text-primary mt-2" role="status">
-              <span class="visually-hidden">Guardando...</span>
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status">
             </div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
           </div>
         </div>
 

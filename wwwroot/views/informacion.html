@@ -2,32 +2,39 @@
 
     <!-- ======================================= Spinner General ====================================== -->
     <div id="pantallaCargaGeneral" class="pantalla-carga">
-        <div class="contenido-carga">
-            <h5 class="fw-bold text-dark">Cargando informacion...</h5>
-            <div class="spinner-border text-primary mt-3" role="status">
-                <span class="visually-hidden">Cargando...</span>
+        <div class="contenido-carga card-carga">
+            <div class="icono-carga mb-3">
+                <i class="fa-solid fa-circle-info fa-sm"></i>
             </div>
-            <p class="p-4 text-muted">Estamos preparando la información personal, aguarda un momento.
+
+            <h5 class="fw-bold mb-2">Cargando información</h5>
+
+            <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+            <p class="text-muted mensaje-carga">
+                Estamos preparando la información de información
             </p>
         </div>
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="mb-3">
-        <h3 class="titulo-seccion">Control de Informacion Personal</h3>
-        <p class="text-muted fs-6 mb-0" id="tituloLicencia">Visualizá y controla tu información personal.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3">
+        <h3 class="titulo-seccion mb-1">Mi Información</h3>
+        <p class="text-muted fs-6 mb-0">
+            Visualizá y actualizá tus datos personales de forma segura y organizada.
+        </p>
     </div>
 
-    <hr />
+
 
 
     <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-    <div style="background-color: white; border-radius: 5px; padding: 10px">
+    <div>
 
         <div id="fondoOscuro" onclick="CerrarPanelEmpleado()"></div>
 
         <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-        <div class="info-ayuda mt-3 mb-3 p-3 rounded-3 shadow-sm">
+        <div class="info-ayuda mt-3 mb-3 p-2 rounded shadow-sm">
             <div class="d-flex justify-content-between align-items-center info-ayuda-header">
                 <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
                 <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">

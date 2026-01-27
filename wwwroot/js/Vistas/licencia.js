@@ -1052,10 +1052,12 @@ function MostrarOpcionesLicenciasPorRol() {
   const titulo = $("#tituloLicencia");
   const tipoLicenciaGroup = $("#IdTipoLicencia").closest(".form-group");
   const contenedorAyuda = $("#LicenciaAcciones");
+  const btnGenerarInforme = $("#btnMostrarGenerar");
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     estadisticasYFiltros.removeClass("d-none");
     seleccionEmpleado.removeClass("d-none");
+    btnGenerarInforme.removeClass("d-none");
     titulo.text("Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma rápida y sencilla.");
     tipoLicenciaGroup.css("grid-column", "span 1");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {

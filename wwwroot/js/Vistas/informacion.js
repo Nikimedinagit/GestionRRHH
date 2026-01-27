@@ -75,9 +75,9 @@ function MostrarMiInformacion(empleado) {
 
   const card = `
     <div class="col-12 d-flex">
-      <div class="card shadow-sm rounded-3 w-100 h-100" style="border-left: 4px solid ${bordeColor};">
+      <div class="shadow-sm rounded w-100 h-100 bg-white" style="border-left: 4px solid ${bordeColor};">
 
-        <div class="card shadow-sm m-2 p-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+        <div class="border-bottom p-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
 
           <div class="d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
             <img src="./dist/assets/images/user/avatar-1.jpg"
@@ -93,26 +93,26 @@ function MostrarMiInformacion(empleado) {
               </div>
 
               <div class="d-md-none mt-3 d-flex justify-content-center">
-                <button class="btn btn-agregar w-100" onclick="MostrarModalEditarEmpleado(${empleado.id})">
-                  <i class="fa-solid fa-pen-to-square me-1"></i>Editar
-                </button>
+                 <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditarEmpleado(${empleado.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
+            </button>
               </div>
             </div>
           </div>
 
           <div class="d-none d-md-block">
-            <button class="btn btn-agregar" onclick="MostrarModalEditarEmpleado(${empleado.id})">
-              <i class="fa-solid fa-pen-to-square me-1"></i>Editar
+            <button class="btn-editar" style="background: none; border: none;" onclick="MostrarModalEditarEmpleado(${empleado.id})" data-tippy-content="Editar">
+              <i class="bi bi-pencil-square icono-editar"></i>
             </button>
           </div>
 
         </div>
 
-        <div class="card shadow-sm m-2 p-3">
+        <div class="p-3 border-bottom">
           <h6 class="fw-bold mb-3">
             <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Personal</span>
           </h6>
-          <div class="row mb-2">
+          <div class="row">
             <div class="col-md-6 mb-2">
               <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
                 <strong>Dni:</strong> ${empleado.dni || "-"}
@@ -140,10 +140,10 @@ function MostrarMiInformacion(empleado) {
             <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
               <strong>Dirección:</strong> ${empleado.direccion || "-"}
             </div>
-            <div class="col-md-6 mb-2" style="color:#141414; font-size:0.85rem;">
+            <div class="col-md-6" style="color:#141414; font-size:0.85rem;">
               <strong>Cant. de Hijos:</strong> ${empleado.cantidadHijos || 0}
             </div>
-            <div class="col-md-6 mb-2">
+            <div class="col-md-6">
               <span class="badge" style="background-color:#d0e7ff; color:#141414; font-size:0.85rem">
                 <strong>Estado Civil:</strong> ${empleado.estadoCivilesString || "-"}
               </span>
@@ -151,9 +151,9 @@ function MostrarMiInformacion(empleado) {
           </div>
         </div>
 
-        <div class="row m-2 g-2">
+        <div class="row g-2">
           <div class="col-md-6">
-            <div class="card shadow-sm p-3 h-100">
+            <div class="p-3 h-100 border-end">
               <h6 class="fw-bold mb-2">
                 <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Contacto</span>
               </h6>
@@ -171,7 +171,7 @@ function MostrarMiInformacion(empleado) {
           </div>
 
           <div class="col-md-6">
-            <div class="card shadow-sm p-3 h-100">
+            <div class="p-3 h-100">
               <h6 class="fw-bold mb-2">
                 <span class="badge fw-bold" style="background-color: #f3e5f5; color: #6a1b9a; font-size: 0.85rem;">Información Laboral</span>
               </h6>
@@ -196,6 +196,12 @@ function MostrarMiInformacion(empleado) {
     `;
 
   contenedor.append(card);
+
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
 }
 
 

@@ -435,13 +435,12 @@ function MostrarCursosDesktop(data) {
           : "Certificado no disponible";
 
       const card = $(`
-          <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
-              <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
+          <div class="col-12 mb-3">
+              <div class="bg-white shadow-sm rounded p-3 h-100" style="${borderColor}">
                   <h5 class="fw-bold mb-2" title="${element.nombre || "Sin nombre"
         }">${element.nombre || "Sin nombre"}</h5>
                   <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
 
-                  <!-- Contenedor modalidad + fecha -->
                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
                       <span class="badge ${modalidadColor[modalidadNombre]
         } mb-1 mb-md-0">${modalidadNombre}</span>
@@ -449,7 +448,7 @@ function MostrarCursosDesktop(data) {
                   </div>
 
                   <div class="d-flex justify-content-between align-items-center mt-3">
-                      <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"
+                      <span class="badge ${badgeClass}">${aprobado ? "Aprobado" : "Desaprobado"
         }</span>
                       ${botonDescargar}
                   </div>
@@ -645,10 +644,10 @@ function MostrarCursosMobile(data) {
             </button>
         </p>
         `
-          : "";
+          : "Certificado no disponible";
 
       const card = $(` 
-        <div class="col-12 col-md-6 mb-3 px-0 px-md-2">
+        <div class="col-12 col-md-6 mb-3">
           <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
             <h5 class="fw-bold mb-2" title="${element.nombre || "Sin nombre"
         }">${element.nombre || "Sin nombre"}</h5>
@@ -661,7 +660,7 @@ function MostrarCursosMobile(data) {
             <div class="d-flex justify-content-between align-items-center mt-3">
               <span class="badge-pill ${badgeClass}" style="padding: 4px 12px;">${aprobado ? "Aprobado" : "Desaprobado"
         }</span>
-              ${botonDescargar}
+              ${botonDescargar} 
             </div>
           </div>
         </div>
