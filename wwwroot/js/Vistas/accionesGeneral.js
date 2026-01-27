@@ -147,12 +147,15 @@ function ErrorGeneralInformePdf() {
 /// FUNCION PARA MOSTRAR EL SPINNER DE CARGARGANDO DE ESPERA /////////////// 
 //////////////////////////////////////////////////////////////////////////////
 function mostrarPantallaCarga() {
-  document.getElementById("pantallaCargaGeneral").style.display = "flex";
+  const spinner = document.getElementById("pantallaCargaGeneral");
+  if (spinner) spinner.style.display = "flex";
 }
 
 function ocultarPantallaCarga() {
-  document.getElementById("pantallaCargaGeneral").style.display = "none";
+  const spinner = document.getElementById("pantallaCargaGeneral");
+  if (spinner) spinner.style.display = "none";
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////

@@ -131,8 +131,11 @@ async function MarcarTodasLeidas() {
   }
 }
 
+  CargarNotificaciones();
+
+
 document.addEventListener("DOMContentLoaded", () => {
   setInterval(() => CargarNotificaciones(false), 2000);
 });
 
-  CargarNotificaciones();
+

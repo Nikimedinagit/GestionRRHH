@@ -110,17 +110,64 @@ namespace API_RRHH_TESIS2025.Controllers
         [HttpPut("LeerTodas")]
         public async Task<IActionResult> LeerTodas()
         {
-            var notificacion = await _context.Notificaciones
-            .Where(n => !n.Leida)
-            .ToListAsync();
-            
-            foreach(var notisLeidas in notificacion)
-            notisLeidas.Leida = true;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value?.ToUpper();
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            //notificacion.Leida = true;
+            var usuarioActual = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (usuarioActual == null)
+                return Unauthorized();
+
+            var emailActual = usuarioActual.Email.Trim().ToLower();
+
+            var empleadoActual = await _context.Empleado
+                .Include(e => e.Puesto)
+                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+
+            if (empleadoActual == null)
+                return Ok(new { cantidad = 0 });
+
+            var empleadoIdStr = empleadoActual.Id.ToString();
+
+            IQueryable<Notificaciones> query = _context.Notificaciones.Where(n => !n.Leida);
+
+            if (rol == "EMPLEADO")
+            {
+                query = query.Where(n => n.UsuarioId == empleadoIdStr);
+            }
+            else if (rol == "SUPERVISOR")
+            {
+                var sectorId = empleadoActual.Puesto?.SectorId;
+                var empleadosSector = await _context.Empleado
+                    .Where(e => e.Puesto.SectorId == sectorId)
+                    .Select(e => e.Id.ToString())
+                    .ToListAsync();
+
+                query = query.Where(n =>
+                    empleadosSector.Contains(n.UsuarioId) || n.UsuarioId == empleadoIdStr);
+            }
+            else if (rol == "RRHH")
+            {
+                query = query.Where(n =>
+                    n.UsuarioId == empleadoIdStr ||
+                    (string.IsNullOrEmpty(n.UsuarioId) &&
+                     (n.DestinatarioRol ?? "").ToUpper().Contains("RRHH")));
+            }
+            else if (rol == "ADMINISTRADOR")
+            {
+                query = query.Where(n =>
+                    string.IsNullOrEmpty(n.UsuarioId) &&
+                    (n.DestinatarioRol ?? "").ToUpper().Contains("ADMINISTRADOR"));
+            }
+
+            var notificaciones = await query.ToListAsync();
+
+            foreach (var n in notificaciones)
+                n.Leida = true;
+
             await _context.SaveChangesAsync();
 
-            return Ok(notificacion);
+            return Ok(new { cantidad = notificaciones.Count });
         }
+
     }
 }
