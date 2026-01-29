@@ -23,7 +23,7 @@ namespace API_NET_CORE8_RRHH.Controllers
             _context = context;
         }
 
-             ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// FUNCION PARA NORMALIZAR EL TEXTO //////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         private string NormalizarTexto(string texto)
@@ -105,7 +105,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         [Authorize(Roles = "ADMINISTRADOR, RRHH")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTipoDeCriterio(int id, TipoDeCriterio tipoDeCriterio)
-        {   
+        {
             string nombreNormalizado = NormalizarTexto(tipoDeCriterio.Nombre);
 
             var tipoDeCriterios = await _context.TipoDeCriterio.FindAsync(id);
@@ -184,9 +184,31 @@ namespace API_NET_CORE8_RRHH.Controllers
                 .Where(t => !t.Eliminado)
                 .OrderBy(t => t.Nombre)
                 .ToListAsync();
-                
+
             return tipoDeCriteriosActivos;
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// TIPOS DE CRITERIO QUE TODAVIA NO FUERON USADOS EN LA EVALUACION //////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
+        [HttpGet("TiposCriterioDisponibles")]
+        public async Task<ActionResult<IEnumerable<TipoDeCriterio>>> GetTiposCriterioDisponibles(int? evaluacionId)
+        {
+            var criteriosDisponibles = await _context.TipoDeCriterio
+                .Where(tc => !tc.Eliminado &&
+                    !_context.CriterioDeEvaluacion
+                        .Any(ce => ce.EvaluacionId == evaluacionId
+                                && ce.TipoDeCriterioId == tc.Id))
+                .OrderBy(tc => tc.Nombre)
+                .ToListAsync();
+
+            return Ok(criteriosDisponibles);
+        }
+
+
+
 
         private bool TipoDeCriterioExists(int id)
         {

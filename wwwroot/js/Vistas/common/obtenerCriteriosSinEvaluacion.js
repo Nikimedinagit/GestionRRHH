@@ -1,15 +1,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// OBTENER LOS DATOS DE LA API DE EMPLEADOS ////////////////////////////////////////////////////////////
+// OBTENER LOS DATOS DE LA API DE TIPOS DE CRITERIOS ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerEmpleadosSinHorariosDropDown(empleadoIdActual = null) {
-    const $dropdown = $('#EmpleadoId');
+async function ObtenerTiposCriterioDisponibles(evaluacionId = null) {
+    const $dropdown = $('#IdTipoCriterio');
     $dropdown.prop("disabled", true);
 
     try {
-        let url = "Empleados/ActivosSinHorario";
-        if (empleadoIdActual) {
-            url += `?empleadoIdActual=${empleadoIdActual}`;
+        let url = "TiposDeCriterios/TiposCriterioDisponibles";
+        if (evaluacionId) {
+            url += `?evaluacionId=${evaluacionId}`;
         }
 
         const response = await authFetch(url);
@@ -18,7 +18,7 @@ async function ObtenerEmpleadosSinHorariosDropDown(empleadoIdActual = null) {
         $dropdown.empty();
 
         if (data.length === 0) {
-            $dropdown.append(`<option value="" selected>No hay empleados disponibles</option>`);
+            $dropdown.append(`<option value="">No hay criterios disponibles</option>`);
             $dropdown.prop("disabled", true);
             return;
         }
@@ -26,7 +26,7 @@ async function ObtenerEmpleadosSinHorariosDropDown(empleadoIdActual = null) {
         $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
         $.each(data, function (index, item) {
-            $dropdown.append(`<option value="${item.id}">${item.nombreCompleto}</option>`);
+            $dropdown.append(`<option value="${item.id}">${item.nombre}</option>`);
         });
 
         $dropdown.prop("disabled", false);
@@ -41,4 +41,4 @@ async function ObtenerEmpleadosSinHorariosDropDown(empleadoIdActual = null) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// INICILAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-ObtenerEmpleadosSinHorariosDropDown();
+ObtenerTiposCriterioDisponibles();

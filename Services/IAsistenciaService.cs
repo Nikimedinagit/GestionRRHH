@@ -11,7 +11,5 @@ namespace API_RRHH_TESIS2025.Services
         Task<(bool ok, object payload)> FicharAsync(FicharDto dto);
         Task RegistrarAusentesAutomaticamenteAsync();
 
-        // Nuevo método para obtener estado semanal
-        Task<List<VistaAsistencia>> GetAsistenciasSemanaAsync();
     }
 }

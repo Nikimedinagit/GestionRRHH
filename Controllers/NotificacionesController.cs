@@ -119,19 +119,24 @@ namespace API_RRHH_TESIS2025.Controllers
 
             var emailActual = usuarioActual.Email.Trim().ToLower();
 
-            var empleadoActual = await _context.Empleado
-                .Include(e => e.Puesto)
-                .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+            Empleado empleadoActual = null;
 
-            if (empleadoActual == null)
-                return Ok(new { cantidad = 0 });
+            if (rol != "ADMINISTRADOR")
+            {
+                empleadoActual = await _context.Empleado
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
 
-            var empleadoIdStr = empleadoActual.Id.ToString();
+                if (empleadoActual == null)
+                    return Ok(new { cantidad = 0 });
+            }
 
-            IQueryable<Notificaciones> query = _context.Notificaciones.Where(n => !n.Leida);
+            IQueryable<Notificaciones> query = _context.Notificaciones
+                .Where(n => !n.Leida);
 
             if (rol == "EMPLEADO")
             {
+                var empleadoIdStr = empleadoActual.Id.ToString();
                 query = query.Where(n => n.UsuarioId == empleadoIdStr);
             }
             else if (rol == "SUPERVISOR")
@@ -142,11 +147,15 @@ namespace API_RRHH_TESIS2025.Controllers
                     .Select(e => e.Id.ToString())
                     .ToListAsync();
 
+                var empleadoIdStr = empleadoActual.Id.ToString();
+
                 query = query.Where(n =>
                     empleadosSector.Contains(n.UsuarioId) || n.UsuarioId == empleadoIdStr);
             }
             else if (rol == "RRHH")
             {
+                var empleadoIdStr = empleadoActual.Id.ToString();
+
                 query = query.Where(n =>
                     n.UsuarioId == empleadoIdStr ||
                     (string.IsNullOrEmpty(n.UsuarioId) &&
@@ -168,6 +177,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
             return Ok(new { cantidad = notificaciones.Count });
         }
+
 
     }
 }

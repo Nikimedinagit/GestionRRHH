@@ -468,7 +468,7 @@ namespace API_RRHH_TESIS2025.Controllers
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS ///////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS SIN HORARIOS ///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR")]
         [HttpGet("ActivosSinHorario")]
@@ -477,16 +477,15 @@ namespace API_RRHH_TESIS2025.Controllers
             var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var empleadosQuery = _context.Empleado
+            var empleadosSinHorarios = _context.Empleado
                 .Where(e => !e.Eliminado &&
                        (
-                           !e.Horario.Any()          // Empleados sin horario
-                           || e.Id == empleadoIdActual // 🔥 Excepción: el que estoy editando
+                           !e.Horario.Any()          
+                           || e.Id == empleadoIdActual 
                        ))
                 .Include(e => e.Puesto)
                 .AsQueryable();
 
-            // 🔒 Filtro por sector si es SUPERVISOR
             if (rolActual == "SUPERVISOR")
             {
                 var usuario = await _context.Users.FindAsync(userId);
@@ -501,10 +500,10 @@ namespace API_RRHH_TESIS2025.Controllers
 
                 var sectorId = supervisor.Puesto.SectorId;
 
-                empleadosQuery = empleadosQuery.Where(e => e.Puesto.SectorId == sectorId);
+                empleadosSinHorarios = empleadosSinHorarios.Where(e => e.Puesto.SectorId == sectorId);
             }
 
-            var empleados = await empleadosQuery
+            var empleados = await empleadosSinHorarios
                 .OrderBy(e => e.NombreCompleto)
                 .ToListAsync();
 

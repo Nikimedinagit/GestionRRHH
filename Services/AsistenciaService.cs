@@ -40,7 +40,7 @@ namespace API_RRHH_TESIS2025.Services
                 var saved = EmbeddingHelper.BytesToFloats(e.FaceDescriptor);
                 var dist = EmbeddingHelper.Euclidean(faceDescriptor, saved);
                 if (dist <= FACE_TOLERANCE)
-                    return (false, new { Mensaje = "Este rostro ya está registrado con otro DNI." });
+                    return (false, new { Mensaje = "Este rostro ya está registrado con otro Empleado." });
             }
 
             empleado.FaceDescriptor = EmbeddingHelper.FloatsToBytes(faceDescriptor);
@@ -200,50 +200,7 @@ namespace API_RRHH_TESIS2025.Services
             await _db.SaveChangesAsync();
         }
 
-        // ========================
-        // Obtener asistencias de la semana
-        // ========================
-        public async Task<List<VistaAsistencia>> GetAsistenciasSemanaAsync()
-        {
-            var hoy = DateTime.Today;
-            int diff = (7 + (hoy.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var lunes = hoy.AddDays(-1 * diff);
-            var domingo = lunes.AddDays(6);
-
-            var asistencias = await _db.Asistencia
-                .Include(a => a.Empleado)
-                .Include(a => a.Horario)
-                .Where(a => a.Fecha.Date >= lunes && a.Fecha.Date <= domingo)
-                .ToListAsync();
-
-            var vistaSemana = new List<VistaAsistencia>();
-
-            var empleados = asistencias.GroupBy(a => a.EmpleadoId);
-            foreach (var grupo in empleados)
-            {
-                var empleado = grupo.First().Empleado;
-                string estadoSemana = CalcularEstadoSemana(grupo.ToList());
-
-                vistaSemana.Add(new VistaAsistencia
-                {
-                    Id = grupo.First().Id,
-                    EmpleadoString = empleado?.NombreCompleto ?? "Sin empleado",
-                    NroLegajo = empleado?.NroLegajo.ToString() ?? "-",
-                    TipoHorario = grupo.First().Horario?.TipoHorarioString ?? "CONTINUO",
-                    FechaString = $"{lunes:dd/MM/yyyy} - {domingo:dd/MM/yyyy}",
-                    DiaSemana = "Semana",
-                    EstadoString = estadoSemana,
-                    PrimerEntradaString = null,
-                    PrimerSalidaString = null,
-                    SegundaEntradaString = null,
-                    SegundaSalidaString = null,
-                    FotoUrl = grupo.First().FotoRuta != null ? $"http://localhost:5106/{grupo.First().FotoRuta}" : null
-                });
-            }
-
-            return vistaSemana;
-        }
-
+        
         // ========================
         // Métodos auxiliares privados
         // ========================

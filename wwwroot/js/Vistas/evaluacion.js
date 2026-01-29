@@ -30,9 +30,13 @@ function cerrarPanelEvaluaciones() {
 // FUNCION PARA ABRIR EL PANEL DE CRITERIOS //////////////////////////////////////////////////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function abrirPanelCriterios() {
-  document.getElementById("panelCriterios").classList.add("abierto");
+  const panel = document.getElementById("panelCriterios");
   const fondo = document.getElementById("fondoOscuro");
+
+  panel.classList.add("abierto");
   fondo.classList.add("visible");
+
+  fondo.addEventListener("click", cerrarPanelCriterios);
 
   setTimeout(() => {
     const inputTipoCriterio = document.getElementById("IdTipoCriterio");
@@ -47,6 +51,9 @@ function abrirPanelCriterios() {
 $(document).on("click", ".crearCriterio", function () {
   const idEvaluacion = $(this).data("evaluacion-id");
   evaluacionIdSeleccionada = idEvaluacion;
+
+  ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
+
   abrirPanelCriterios();
 });
 
@@ -55,12 +62,17 @@ $(document).on("click", ".crearCriterio", function () {
 // FUNCION PARA CERRAR EL PANEL DE CRITERIOS //////////////////////////////////////////////////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelCriterios() {
-  document.getElementById("panelCriterios").classList.remove("abierto");
+  const panel = document.getElementById("panelCriterios");
   const fondo = document.getElementById("fondoOscuro");
+
+  panel.classList.remove("abierto");
   fondo.classList.remove("visible");
 
-  LimpiarModalEvaluacion();
+  LimpiarModalCriterio();
+
+  fondo.removeEventListener("click", cerrarPanelCriterios);
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,64 +257,84 @@ function MostrarEvaluacionesDesktop(data) {
 
 
     const detalleHTML = $(`
-                        <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
-                          
-                          <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-                            <h3 style="font-size: 1rem; font-weight: 600;">
-                              Criterios de Evaluación
-                            </h3>
+<div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
 
-                            ${element.esEditable ? `
-                              <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center justify-content-center"
-                                      data-evaluacion-id="${element.id}">
-                                <i class="fa-solid fa-square-plus me-1"></i>
-                                Agregar criterio
-                              </button>
-                            ` : ""}
-                          </div>
+  <!-- Contenido real, oculto al inicio -->
+  <div class="panel-detalle-contenido" style="display: none;">
+    <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+      <h3 style="font-size: 1rem; font-weight: 600;">
+        Criterios de Evaluación
+      </h3>
 
-                          <div class="criterios-panel">
-                            <div class="table-responsive">
-                              <table class="table table-bordered table-hover align-middle w-100">
-                                <colgroup>
-                                  <col style="width: 25%" />
-                                  <col style="width: 65%" />
-                                  ${element.esEditable ? `<col style="width: 10%" />` : ""}
-                                </colgroup>
-                                <thead>
-                                  <tr>
-                                    <th class="text-start header-table">Criterio</th>
-                                    <th class="text-start header-table">Descripción</th>
-                                    ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-                                  </tr>
-                                </thead>
-                                <tbody class="tabla-criterios-body"
-                                      data-evaluacion-id="${element.id}">
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
+      ${element.esEditable ? `
+      <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center justify-content-center"
+              data-evaluacion-id="${element.id}">
+        <i class="fa-solid fa-square-plus me-1"></i>
+        Agregar criterio
+      </button>` : ""}
+    </div>
 
-                        </div>
-                      `);
+    <div class="criterios-panel">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle w-100">
+          <colgroup>
+            <col style="width: 25%" />
+            <col style="width: 65%" />
+            ${element.esEditable ? `<col style="width: 10%" />` : ""}
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="text-start header-table">Criterio</th>
+              <th class="text-start header-table">Descripción</th>
+              ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+            </tr>
+          </thead>
+          <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spinner -->
+  <div class="panel-detalle-spinner" style="display: flex;">
+    <div class="card-carga-detalle">
+      <div class="spinner-border text-primary spinner-pequena" role="status"></div>
+      <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
+    </div>
+  </div>
+
+</div>
+`);
+
 
 
     item.find(".toggle-detalle").on("click", function () {
       const iconoChevron = $(this).find("i");
+
+      // Cierra otros paneles abiertos
       contenedor.find(".panelCriterios:visible").not(detalleHTML).slideUp(200).removeClass("mostrar");
       contenedor.find(".toggle-detalle i").not(iconoChevron).removeClass("bi-chevron-up").addClass("bi-chevron-down");
       contenedor.find(".toggle-detalle").attr("aria-expanded", "false");
 
+      // Toggle del panel actual
       detalleHTML.stop(true, true).slideToggle(200, function () {
         detalleHTML.toggleClass("mostrar", detalleHTML.is(":visible"));
+        if (detalleHTML.is(":visible")) {
+          const evalId = detalleHTML.find(".tabla-criterios-body").data("evaluacion-id");
+          ObtenerCriterioDeEvaluacion(evalId, element.esEditable, detalleHTML[0]);
+        }
       });
+
       iconoChevron.toggleClass("bi-chevron-down bi-chevron-up");
       $(this).attr("aria-expanded", $(this).attr("aria-expanded") !== "true");
     });
 
+
+
+
     contenedor.append(item);
     contenedor.append(detalleHTML);
-    ObtenerCriterioDeEvaluacion(element.id, element.esEditable, false);
   });
 
   tippy("[data-tippy-content]", {
@@ -402,7 +434,7 @@ function MostrarEvaluacionesMobile(data) {
             </div>
           </div>
 
-          <div class="panelCriterios mt-2 border-top" style="display:none;">
+          <div class="panelCriterios mt-2 border-top" data-es-editable="${element.esEditable}" style="display:none;">
 
             <div class="d-flex align-items-center justify-content-between mb-2 mt-2 px-1">
               <h6 class="mb-0 fw-semibold">
@@ -418,32 +450,37 @@ function MostrarEvaluacionesMobile(data) {
               ` : ""}
             </div>
 
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover table-sm align-middle">
-                <colgroup>
-                  <col style="width: 70%" />
-                  ${element.esEditable ? `<col style="width: 30%" />` : ""}
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th class="text-start header-table">Criterio</th>
-                    ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-                  </tr>
-                </thead>
-                <tbody class="tabla-criterios-body"
-                      data-evaluacion-id="${element.id}">
-                </tbody>
-              </table>
-            </div>
+            <div class="panel-detalle-spinner" style="display: none; justify-content: center; align-items: center; padding: 1rem;">
+                <div class="card-carga-detalle d-flex flex-column align-items-center">
+                  <div class="spinner-border text-primary spinner-pequena" role="status"></div>
+                  <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
+                </div>
+              </div>
 
+              <div class="panel-detalle-contenido" style="display: none;">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover table-sm align-middle">
+                    <colgroup>
+                      <col style="width: 70%" />
+                      ${element.esEditable ? `<col style="width: 30%" />` : ""}
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th class="text-start header-table">Criterio</th>
+                        ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+                      </tr>
+                    </thead>
+                    <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
           </div>
 
 
         </div>
       </div>
     `;
-
-    ObtenerCriterioDeEvaluacion(element.id, esEditable, false);
   });
 
   tippy("[data-tippy-content]", {
@@ -458,9 +495,18 @@ function MostrarEvaluacionesMobile(data) {
       const detalleTabla = card.querySelector(".panelCriterios");
       const icono = this.querySelector("i");
 
+      const esEditable = detalleTabla.dataset.esEditable === "true";
+
       document.querySelectorAll(".panelCriterios").forEach((panel) => {
         if (panel !== detalleTabla) {
           panel.style.display = "none";
+
+          const contenido = panel.querySelector(".panel-detalle-contenido");
+          if (contenido) contenido.style.display = "none";
+
+          const spinner = panel.querySelector(".panel-detalle-spinner");
+          if (spinner) spinner.style.display = "none";
+
           panel.closest(".card").querySelector(".toggle-detalle i").classList.replace("bi-chevron-up", "bi-chevron-down");
         }
       });
@@ -470,13 +516,16 @@ function MostrarEvaluacionesMobile(data) {
         icono.classList.replace("bi-chevron-down", "bi-chevron-up");
 
         const evaluacionId = detalleTabla.querySelector(".tabla-criterios-body").dataset.evaluacionId;
-        ObtenerCriterioDeEvaluacion(Number(evaluacionId), esEditable);
+        ObtenerCriterioDeEvaluacion(Number(evaluacionId), esEditable, detalleTabla);
       } else {
         detalleTabla.style.display = "none";
         icono.classList.replace("bi-chevron-up", "bi-chevron-down");
       }
     });
   });
+
+
+
 }
 
 
@@ -545,6 +594,9 @@ function LimpiarModalEvaluacion() {
   const inputErrorDescripcion = document.getElementById("errorDescripcion");
   inputErrorDescripcion.textContent = "";
   inputErrorDescripcion.style.display = "none";
+
+  ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
+
 }
 
 
@@ -772,30 +824,34 @@ async function EditarEvaluacion(id) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS CRITERIOS DE EVALUACION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
-async function ObtenerCriterioDeEvaluacion(
-  evaluacionId,
-  esEditable,
-  mostrarSpinner = true,
-) {
-  if (mostrarSpinner) mostrarPantallaCarga();
+async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetalle) {
+  const spinner = panelDetalle.querySelector(".panel-detalle-spinner");
+  const contenido = panelDetalle.querySelector(".panel-detalle-contenido");
+  const tablaBody = panelDetalle.querySelector(".tabla-criterios-body");
+
+  if (tablaBody) tablaBody.innerHTML = "";
+
+  if (spinner) spinner.style.display = "flex";
+  if (contenido) contenido.style.display = "none";
 
   try {
-    const res = await authFetch("CriteriosDeEvaluacion", { method: "GET" });
-    const data = await res.json();
+    const res = await authFetch(`CriteriosDeEvaluacion/PorEvaluacion/${evaluacionId}`, { method: "GET" });
+    const criterios = await res.json();
 
-    const criteriosFiltrados = data.filter(
-      (c) => c.evaluacionId === evaluacionId,
-    );
-
-    MostrarCriterioDeEvaluacion(evaluacionId, criteriosFiltrados, esEditable);
+    setTimeout(() => {
+      if (spinner) spinner.style.display = "none";
+      if (contenido) contenido.style.display = "block";
+      MostrarCriterioDeEvaluacion(evaluacionId, criterios, esEditable);
+    }, 800);
   } catch (error) {
+    if (spinner) spinner.style.display = "none";
+    if (contenido) contenido.style.display = "block";
     MostrarErrorCatch();
-  } finally {
-    if (mostrarSpinner) {
-      setTimeout(() => ocultarPantallaCarga(), 1500);
-    }
   }
 }
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -803,6 +859,7 @@ async function ObtenerCriterioDeEvaluacion(
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
   const tablaBody = $(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
+
   if (!tablaBody.length) return;
 
   tablaBody.empty();
@@ -1081,6 +1138,7 @@ async function CrearCriterioDeEvaluacion() {
       ocultarOverlayGuardandoCriterios();
       ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, false);
       cerrarPanelCriterios();
+      ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
 
       Swal.fire({
         title: "¡Criterio Creado!",
@@ -1449,8 +1507,6 @@ async function GenerarInformePdfEvaluacion() {
   w.document.write(html);
   w.document.close();
 }
-
-
 
 
 

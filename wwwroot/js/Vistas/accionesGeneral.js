@@ -110,10 +110,10 @@ function toggleAyuda() {
 
   if (oculto) {
     btnToggle.innerHTML = '<i class="bi bi-eye me-1"></i> Mostrar';
-    headerAyuda.classList.remove('mb-3'); 
+    headerAyuda.classList.remove('mb-3');
   } else {
     btnToggle.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Ocultar';
-    headerAyuda.classList.add('mb-3'); 
+    headerAyuda.classList.add('mb-3');
   }
 }
 
@@ -123,23 +123,23 @@ function toggleAyuda() {
 // FUNCION PARA MOSTRAR EL ERROR GENERAR INFORMES VACIOS///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ErrorGeneralInformePdf() {
-    Swal.fire({
-        title: "No es posible generar el informe",
-        html: `
+  Swal.fire({
+    title: "No es posible generar el informe",
+    html: `
           <div class="text-center">
             <p>No se encontraron resultados con los filtros aplicados.</p>
             <p>Modificá los criterios de búsqueda e intentá nuevamente.</p>
           </div>
         `,
-        confirmButtonText: "Entendido",
-        customClass: {
-            popup: "shadow rounded-3 p-3",
-            confirmButton: "btn btn-danger",
-            title: "fs-5 text-dark mb-2",
-            htmlContainer: "text-muted fs-6",
-        },
-        buttonsStyling: false,
-    });
+    confirmButtonText: "Entendido",
+    customClass: {
+      popup: "shadow rounded-3 p-3",
+      confirmButton: "btn btn-danger",
+      title: "fs-5 text-dark mb-2",
+      htmlContainer: "text-muted fs-6",
+    },
+    buttonsStyling: false,
+  });
 }
 
 
@@ -155,6 +155,18 @@ function ocultarPantallaCarga() {
   const spinner = document.getElementById("pantallaCargaGeneral");
   if (spinner) spinner.style.display = "none";
 }
+
+function mostrarSpinnerDetalle(panel) {
+  const spinner = panel.querySelector(".panel-detalle-spinner");
+  if (spinner) spinner.style.display = "flex";
+}
+
+function ocultarSpinnerDetalle(panel) {
+  const spinner = panel.querySelector(".panel-detalle-spinner");
+  if (spinner) spinner.style.display = "none";
+}
+
+
 
 
 
@@ -197,6 +209,7 @@ function ocultarOverlayGuardandoCertificado() {
   document.getElementById("overlayGuardandoCertificado").classList.add("d-none");
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA MOSTRAR EL SPINNER DE GUARDANDO DE CRITERIOS DENTRO DE LA VISTA DE EVALUACIONES /////////////// 
 //////////////////////////////////////////////////////////////////////////////
@@ -214,21 +227,21 @@ function ocultarOverlayGuardandoCriterios() {
 /// FUNCION PARA EL TOGGLE DE RESULTADOS /////////////// 
 //////////////////////////////////////////////////////////////////////////////
 function toggleResultados() {
-    const btn = document.getElementById("btnResultados");
-    const contenedor = document.getElementById("contenedorResultados");
+  const btn = document.getElementById("btnResultados");
+  const contenedor = document.getElementById("contenedorResultados");
 
-    if (!btn || !contenedor) return;
+  if (!btn || !contenedor) return;
 
-    const textoBtn = btn.querySelector(".texto-btn");
-    const abierto = contenedor.classList.toggle("show");
+  const textoBtn = btn.querySelector(".texto-btn");
+  const abierto = contenedor.classList.toggle("show");
 
-    btn.classList.toggle("active");
+  btn.classList.toggle("active");
 
-    if (textoBtn) {
-        textoBtn.textContent = abierto
-            ? "Ocultar Resultados"
-            : "Más Resultados";
-    }
+  if (textoBtn) {
+    textoBtn.textContent = abierto
+      ? "Ocultar Resultados"
+      : "Más Resultados";
+  }
 }
 
 

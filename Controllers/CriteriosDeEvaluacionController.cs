@@ -9,7 +9,7 @@ using API_RRHH_TESIS2025.Models.General;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API_NET_CORE8_RRHH.Controllers
-{   
+{
     [Route("api/[controller]")]
     [ApiController]
     public class CriteriosDeEvaluacionController : ControllerBase
@@ -37,6 +37,8 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// MERODO PARA CREAR UN CRITERIO DE EVALUACION //////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +64,20 @@ namespace API_NET_CORE8_RRHH.Controllers
             return CreatedAtAction("GetCriterioDeEvaluacion", new { id = criterioDeEvaluacion.Id }, criterioDeEvaluacion);
         }
 
-        
+        [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
+        [HttpGet("PorEvaluacion/{evaluacionId}")]
+        public async Task<ActionResult<IEnumerable<CriterioDeEvaluacion>>> GetCriteriosPorEvaluacion(int evaluacionId)
+        {
+            var criterios = await _context.CriterioDeEvaluacion
+                .Where(c => c.EvaluacionId == evaluacionId)
+                .Include(c => c.TipoDeCriterio)          
+                .ToListAsync();
+
+            return Ok(criterios);
+        }
+
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA ELIMIANR UN CRITERIO DE EVALUACION ///////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +86,7 @@ namespace API_NET_CORE8_RRHH.Controllers
         public async Task<IActionResult> DeleteCriterioDeEvaluacion(int id)
         {
             var criterioDeEvaluacion = await _context.CriterioDeEvaluacion.FindAsync(id);
-            
+
             _context.CriterioDeEvaluacion.Remove(criterioDeEvaluacion);
             await _context.SaveChangesAsync();
 
