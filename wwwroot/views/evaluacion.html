@@ -397,11 +397,18 @@
         </div>
         <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-        <div class="offcanvas-body" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px);
-      overflow-y: auto;" id="contenedorCriteriosOffcanvas">
+        <div class="offcanvas-body"
+          style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+
+
+          <button class="btn-canvas btn-agregar-canvas" onclick="abrirPanelCriterios()">
+            <i class="fa-solid fa-square-plus me-1"></i>
+            <span>Agregar Criterios</span>
+          </button>
+
+          <div id="contenedorCriteriosOffcanvas" class="mt-3 row"></div>
         </div>
       </div>
-
     </div>
 
 

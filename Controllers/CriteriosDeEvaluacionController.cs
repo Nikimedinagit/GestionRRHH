@@ -64,6 +64,10 @@ namespace API_NET_CORE8_RRHH.Controllers
             return CreatedAtAction("GetCriterioDeEvaluacion", new { id = criterioDeEvaluacion.Id }, criterioDeEvaluacion);
         }
 
+
+        ////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER EVALUACIONES SIN CRITERIOS /// 
+        ////////////////////////////////////////////////////////
         [Authorize(Roles = "ADMINISTRADOR, RRHH, SUPERVISOR, EMPLEADO")]
         [HttpGet("PorEvaluacion/{evaluacionId}")]
         public async Task<ActionResult<IEnumerable<CriterioDeEvaluacion>>> GetCriteriosPorEvaluacion(int evaluacionId)

@@ -185,6 +185,7 @@
     font-size: 0.92rem;
   }
 }
+
 /* FIN PANEL DE FILTROS */
 
 
@@ -247,15 +248,17 @@ table tbody tr {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1100;
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: auto;
 }
 
 #fondoOscuro.visible {
   display: block;
   opacity: 1;
 }
+
 /* FIN FONDO OSCURO AL PULSAR BOTÓN AGREGAR */
 
 
@@ -301,7 +304,7 @@ table tbody tr {
   overflow-x: hidden;
 }
  */
- 
+
 #panelProvincia.abierto,
 #panelLocalidad.abierto,
 #panelSector.abierto,
@@ -384,7 +387,7 @@ table tbody tr {
 
 input.form-control,
 select.form-control,
-textarea.form-control  {
+textarea.form-control {
   font-size: 0.875rem;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
@@ -511,6 +514,7 @@ textarea.form-control:not(:placeholder-shown)+label {
     border-radius: 15px 0 0 15px;
   }
 }
+
 /* FIN PANEL DESLIZANTE BASE */
 
 
@@ -538,6 +542,7 @@ textarea.form-control:not(:placeholder-shown)+label {
     grid-template-columns: 1fr !important;
   }
 }
+
 /* FIN RESPONSIVO PARA EMPLEADOS */
 
 
@@ -547,6 +552,7 @@ textarea.form-control:not(:placeholder-shown)+label {
     grid-template-columns: repeat(1, 1fr) !important;
   }
 }
+
 /* FIN RESPONSIVO PARA LICENCIAS */
 
 
@@ -737,7 +743,7 @@ input[type="checkbox"].btn-check:checked+.dia-btn {
   transition: all 0.2s ease;
   transform: scale(1);
 }
- 
+
 #evaluacionesContainer:hover {
   transform: scale(1.008);
 }
@@ -1002,6 +1008,7 @@ td.td-empleado {
   text-decoration: underline;
   cursor: pointer;
 }
+
 /* FIN ESTILO DE LICENCIAS */
 
 
@@ -1013,6 +1020,7 @@ td.td-empleado {
     display: none;
   }
 }
+
 /* FIN RESPONSIVO OCULTAMIENTO COLUMNAS DE TABLA */
 
 
@@ -1028,42 +1036,39 @@ td.td-empleado {
   min-width: 100px;
   text-align: center;
 }
+
 /* FIN ESTILO TABALA LICENCIAS APROBADAS */
 
 /* INICIO ESTILO DE CURSO */
 
 .panelAsistencias.mostrar {
-  border: 1px solid rgba(0, 0, 0, 0.152); 
   border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   margin-bottom: 8px;
 }
 
-.btn-agregar-asistencia{
-      font-size: 0.7rem !important;
-      padding: 0.25rem 0.5rem !important;
-      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+.btn-agregar-asistencia {
+  font-size: 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-.btn-agregar-asistencia:hover{
+.btn-agregar-asistencia:hover {
   background-color: #7b59b3 !important;
   color: #fff !important;
 }
 
 .panelCertificados.mostrar {
-  border: 1px solid rgba(0, 0, 0, 0.152); 
   border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   margin-bottom: 8px;
 }
 
-.btn-agregar-certificado{
-      font-size: 0.7rem !important;
-      padding: 0.25rem 0.5rem !important;
-      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+.btn-agregar-certificado {
+  font-size: 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-.btn-agregar-certificado:hover{
+.btn-agregar-certificado:hover {
   background-color: #7b59b3 !important;
   color: #fff !important;
 }
@@ -1071,7 +1076,7 @@ td.td-empleado {
 .icono-asistencia {
   font-size: 1.1rem !important;
   color: #dc5260 !important;
- font-weight: bold !important;
+  font-weight: bold !important;
   margin: 0px 3px !important;
   padding: 0% !important;
 }
@@ -1079,7 +1084,7 @@ td.td-empleado {
 .icono-certificado {
   font-size: 1.1rem !important;
   color: #77BEF0 !important;
- font-weight: bold !important;
+  font-weight: bold !important;
   margin: 0px 3px !important;
   padding: 0% !important;
 }
@@ -1094,7 +1099,7 @@ td.td-empleado {
 .badge-virtual {
   background-color: #fdf5aa9d;
   color: #f9bc06;
-   font-size: 0.7rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
@@ -1107,7 +1112,7 @@ td.td-empleado {
 
 .badge-aprobado {
   background-color: #28a7462c !important;
-  color: #28a745  !important;
+  color: #28a745 !important;
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -1162,28 +1167,30 @@ td.td-empleado {
 }
 
 .checkbox-verde {
-  accent-color: #28a745 !important; 
+  accent-color: #28a745 !important;
   cursor: not-allowed;
 }
+
 .checkbox-asistio:checked {
-  accent-color: #28a745; 
+  accent-color: #28a745;
 }
 
 .checkbox-asistio-card:checked {
-  accent-color: #28a745; 
+  accent-color: #28a745;
 }
+
 .checkbox-asistio:checked:disabled,
 .checkbox-asistio-card:checked:disabled {
   accent-color: #28a745;
-  opacity: 1; 
+  opacity: 1;
 }
 
 @media (max-width: 600px) {
   td.nombre-empleado {
-    max-width: 90px !important;      
-    white-space: nowrap !important;   
-    overflow: hidden !important;      
-    text-overflow: ellipsis !important; 
+    max-width: 90px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
 
@@ -1191,7 +1198,7 @@ td.td-empleado {
   transition: all 0.2s ease;
   transform: scale(1);
 }
- 
+
 #cursosContainer:hover {
   transform: scale(1.008);
 }
@@ -1240,7 +1247,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-asistencia-encabezado,
 .detalle-justificacion-encabezado,
 .detalle-criterio-encabezado,
-.detalle-certificado-encabezado, 
+.detalle-certificado-encabezado,
 .detalle-asistencia-encabezado {
   background-color: transparent !important;
   color: #212529;
@@ -1271,7 +1278,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-cambio-laboral-seccion,
 .detalle-asistencia-seccion,
 .detalle-justificacion-seccion,
-.detalle-criterio-seccion{
+.detalle-criterio-seccion {
   padding: 1rem 1rem;
 }
 
@@ -1281,7 +1288,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-activacion-fila,
 .detalle-cambio-laboral-fila,
 .detalle-asistencia-fila,
-.detalle-justificacion-fila, 
+.detalle-justificacion-fila,
 .detalle-criterio-fila {
   display: flex;
   margin-bottom: 0.5rem;
@@ -1309,7 +1316,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-activacion-valor,
 .detalle-cambio-laboral-valor,
 .detalle-asistencia-valor,
-.detalle-justificacion-valor, 
+.detalle-justificacion-valor,
 .detalle-criterio-valor {
   color: rgba(108, 117, 125, 0.9);
   flex-grow: 1;
@@ -1338,6 +1345,7 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
   word-break: break-word;
   font-weight: 900;
 }
+
 /* FIN PANEL DETALLE EMPLEADO / PANEL DETALLE LICENCIAS APROBADAS / PANEL DETALLE ACTIVACION 
 / PANEL DETALLE HORARIO / PANEL DETALLE HISTORIAL LABORAL / DETALLE ASISTENCIA DIAS/SEMANAL */
 
@@ -1438,6 +1446,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     display: none !important;
   }
 }
+
 /* FIN ESTILO OFFCANVAS HISTORIAL EMPLEADO */
 
 
@@ -1459,6 +1468,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @media (max-width: 768px) {
+
   .columna-estado,
   .columna-responsable,
   .columna-fecha-activacion,
@@ -1475,6 +1485,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @media (max-width: 576px) {
+
   .columna-fecha,
   .columna-estado,
   .columna-responsable,
@@ -1487,6 +1498,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     display: table-cell !important;
   }
 }
+
 /* FIN ESTILO OFFCANVAS DETALLE LICENCIAS APROBADAS/ ACTIVACION EMPLEADO */
 
 
@@ -1506,6 +1518,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   background: #198754;
   color: #fff;
 }
+
 /* FIN BOTONES PARA SELECIONAR EL ROL EN ACTIVACION EMPLEADO */
 
 
@@ -1538,6 +1551,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
     max-width: 100%;
   }
 }
+
 /* FIN RESPONSIVE BOTONES FILTROS Y GENERAR EN CELULARES */
 
 
@@ -1547,6 +1561,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   border-color: #E13641 !important;
   color: #fff !important;
 }
+
 /* FIN ESTILO CERRAR SESION */
 
 
@@ -1587,6 +1602,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 .btn-ayuda-toggle:hover {
   font-weight: bold;
 }
+
 /*  FIN ESTILO APRA EL CONTENDOR DE AYUDA */
 
 
@@ -1605,6 +1621,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   border: none;
   overflow: hidden;
 }
+
 /* FIN ESTILO PARA SCROOL DEL PDF */
 
 
@@ -1680,15 +1697,31 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @keyframes dots {
-  0% { content: ""; }
-  33% { content: "."; }
-  66% { content: ".."; }
-  100% { content: "..."; }
+  0% {
+    content: "";
+  }
+
+  33% {
+    content: ".";
+  }
+
+  66% {
+    content: "..";
+  }
+
+  100% {
+    content: "...";
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 
@@ -1727,15 +1760,31 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes dots {
-  0% { content: ""; }
-  33% { content: "."; }
-  66% { content: ".."; }
-  100% { content: "..."; }
+  0% {
+    content: "";
+  }
+
+  33% {
+    content: ".";
+  }
+
+  66% {
+    content: "..";
+  }
+
+  100% {
+    content: "...";
+  }
 }
 
 /* FIN ESTILO PARA EL SPINNER GENERAL */
@@ -1747,13 +1796,14 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(255, 255, 255); 
+  background: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
   transition: opacity 0.3s ease;
 }
+
 .card-carga-formulario {
   background: white;
   border-radius: 0.375rem;
@@ -1761,6 +1811,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   max-width: 280px;
   width: 100%;
 }
+
 .overlay-guardando.d-none {
   display: none;
 }
@@ -1795,11 +1846,26 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 @keyframes blink {
-  0%, 20% { content: ''; }
-  40% { content: '.'; }
-  60% { content: '..'; }
-  80%, 100% { content: '...'; }
+
+  0%,
+  20% {
+    content: '';
+  }
+
+  40% {
+    content: '.';
+  }
+
+  60% {
+    content: '..';
+  }
+
+  80%,
+  100% {
+    content: '...';
+  }
 }
+
 /* FIN ESTILO SPINER DE GURDADO */
 
 
@@ -1817,6 +1883,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   max-height: 2000px;
   opacity: 1;
 }
+
 /* FIN ESTILO PARA EL COLLAPSE DE MAS RESULTADOS */
 
 
@@ -1830,6 +1897,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   border-color: var(--c);
   color: #fff;
 }
+
 /* FIN ESTILO NOTIFICAICONES */
 
 
@@ -1841,7 +1909,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   right: 10px;
   bottom: 10px !important;
   z-index: 1050;
-  background-color: rgb(37, 99, 235); 
+  background-color: rgb(37, 99, 235);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -1855,7 +1923,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 .scroll-top:hover {
-  background-color: rgb(29, 78, 216); 
+  background-color: rgb(29, 78, 216);
 }
 
 .scroll-top.active {
@@ -1863,6 +1931,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   opacity: 1;
   bottom: 10px;
 }
+
 /* FIN ESTILO BOTON SCROOL */
 
 .text-truncate-1 {

@@ -68,7 +68,6 @@ namespace API_RRHH_TESIS2025.Models.General
         public virtual ICollection<Justificacion> Justificacion { get; set; }
         public virtual ICollection<Asistencia> Asistencia { get; set; }
 
-
     }
 
     public enum EstadoCivil

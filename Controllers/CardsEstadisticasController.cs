@@ -370,7 +370,6 @@ public class CardsEstadisticasController : ControllerBase
         var totalParticipantes = await _context.AsistenciaCapacitacion
             .Where(a =>
                 a.Asistencia &&
-                a.Resultado >= 6 &&
                 a.Empleado != null &&
                 !a.Empleado.Eliminado)
             .Select(a => a.EmpleadoId)

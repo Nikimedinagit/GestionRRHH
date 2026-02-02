@@ -156,15 +156,16 @@ function ocultarPantallaCarga() {
   if (spinner) spinner.style.display = "none";
 }
 
-function mostrarSpinnerDetalle(panel) {
-  const spinner = panel.querySelector(".panel-detalle-spinner");
+function mostrarSpinnerDetalle(panel, claseSpinner = ".panel-detalle-spinner") {
+  const spinner = panel.querySelector(claseSpinner);
   if (spinner) spinner.style.display = "flex";
 }
 
-function ocultarSpinnerDetalle(panel) {
-  const spinner = panel.querySelector(".panel-detalle-spinner");
+function ocultarSpinnerDetalle(panel, claseSpinner = ".panel-detalle-spinner") {
+  const spinner = panel.querySelector(claseSpinner);
   if (spinner) spinner.style.display = "none";
 }
+
 
 
 

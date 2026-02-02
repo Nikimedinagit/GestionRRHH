@@ -4,7 +4,6 @@
 var cursoIdSeleccionado;
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE CURSOS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -32,15 +31,19 @@ function cerrarPanelCursos() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-// FUNCION PARA ABRIR PANEL DE ASISTENCIAS  /////////////////////////////////////////////////
+// FUNCION PARA ABRIR PANEL DE ASISTENCIAS CON CARGA DE EMPLEADOS
 //////////////////////////////////////////////////////////////////////////////////////
-function abrirPanelAsistencias() {
+function abrirPanelAsistencias(cursoId) {
   document.getElementById("panelAsistencias").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.add("visible");
 
+  ObtenerEmpleadosSinAsistencia(cursoId);
+
+  fondo.addEventListener("click", cerrarPanelAsistencias);
+
   setTimeout(() => {
-    const inputEmpleadoId = document.getElementById("EmpleadoId");
+    const inputEmpleadoId = document.getElementById("EmpleadoIdAsistencia");
     if (inputEmpleadoId) inputEmpleadoId.focus();
   }, 400);
 }
@@ -48,30 +51,39 @@ function abrirPanelAsistencias() {
 $(document).on("click", ".crearAsistencias", function () {
   const cursoId = $(this).data("curso-id");
   cursoIdSeleccionado = cursoId;
-  abrirPanelAsistencias();
+
+  abrirPanelAsistencias(cursoId);
 });
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA CERRAR PANEL DE ASISTENCIAS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelAsistencias() {
-  document.getElementById("panelAsistencias").classList.remove("abierto");
+  const panel = document.getElementById("panelAsistencias");
   const fondo = document.getElementById("fondoOscuro");
+
+  panel.classList.remove("abierto");
   fondo.classList.remove("visible");
 
   LimpiarModalAsistencias();
+
+  fondo.removeEventListener("click", cerrarPanelAsistencias);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR PANEL DE CERTIFICADOS  /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-function abrirPanelCertificados() {
+function abrirPanelCertificados(cursoId) {
   document.getElementById("panelCertificados").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
   fondo.classList.add("visible");
 
+  ObtenerEmpleadosSinCertificado(cursoId);
+
+  fondo.addEventListener("click", cerrarPanelCertificados);
+
   setTimeout(() => {
-    const inputEmpleadoId = document.getElementById("EmpleadoId");
+    const inputEmpleadoId = document.getElementById("EmpleadoIdCertificado");
     if (inputEmpleadoId) inputEmpleadoId.focus();
   }, 400);
 }
@@ -79,17 +91,22 @@ function abrirPanelCertificados() {
 $(document).on("click", ".crearCertificado", function () {
   const cursoId = $(this).data("curso-id");
   cursoIdSeleccionado = cursoId;
-  abrirPanelCertificados();
+  abrirPanelCertificados(cursoId);
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA CERRRAR EL PANEL DE FORMULARIO DE CERTIFICADOS
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 function cerrarPanelCertificados() {
-  document.getElementById("panelCertificados").classList.remove("abierto");
+  const panel = document.getElementById("panelCertificados");
   const fondo = document.getElementById("fondoOscuro");
+
+  panel.classList.remove("abierto");
   fondo.classList.remove("visible");
+
   LimpiarModalCertificado();
+
+  fondo.removeEventListener("click", cerrarPanelCertificados);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +117,7 @@ $(document).ready(function () {
     "input",
     function () {
       ObtenerCursos(false);
+      ObtenerTotalCursos();
     }
   );
 });
@@ -111,33 +129,35 @@ async function ObtenerCursos(mostrarSpinner = true) {
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
-  let nombreCurso = document.getElementById("NombreCursoBuscar").value;
-  let modalidadCurso = document.getElementById("ModalidadBuscar").value;
-  let modalidad =
-    modalidadCurso !== "0" && modalidadCurso !== "" ? modalidadCurso : null;
-  let fecha = document.getElementById("FechaCursoBuscar").value;
+  try {
+    let nombreCurso = document.getElementById("NombreCursoBuscar").value;
+    let modalidadCurso = document.getElementById("ModalidadBuscar").value;
+    let modalidad =
+      modalidadCurso !== "0" && modalidadCurso !== "" ? modalidadCurso : null;
+    let fecha = document.getElementById("FechaCursoBuscar").value;
 
-  const filtro = {
-    nombreCurso: nombreCurso,
-    modalidad: modalidad,
-    fecha: fecha ? fecha : null,
-  };
-  const res = await authFetch("Cursos/Filtrar", {
-    method: "POST",
-    body: JSON.stringify(filtro),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      MostrarCursos(data);
-      LimpiarModalCursos();
-      cerrarPanelCursos();
-      ObtenerTotalCursos();
+    const filtro = {
+      nombreCurso: nombreCurso,
+      modalidad: modalidad,
+      fecha: fecha ? fecha : null,
+    };
+    const response = await authFetch("Cursos/Filtrar", {
+      method: "POST",
+      body: JSON.stringify(filtro),
     })
-    .catch((error) => {
-      MostrarErrorCatch();
-    })
+    const data = await response.json();
 
-    .finally(() => { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } });
+    MostrarCursos(data);
+    LimpiarModalCursos();
+    cerrarPanelCursos();
+    ObtenerTotalCursos();
+  }
+  catch (error) {
+    MostrarErrorCatch();
+  }
+  finally {
+    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,7 +257,7 @@ function MostrarCursosDesktop(data) {
         }" style="white-space: normal; word-break: break-word;">
                 ${element.nombre || "Sin nombre"}
               </div>
-             <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;">
+              <div class="text-muted small" style="opacity: 0.9; font-size: 0.80rem;">
                 ${fechaInicioFormateada} – ${fechaFinalizacionFormateada}
               </div>
 
@@ -260,7 +280,7 @@ function MostrarCursosDesktop(data) {
           <h3 class="m-0 p-2 mt-1 mb-1" style="font-size: 1rem; font-weight: 600;">Descripcion del Curso</h3>
           <div class="p-2 border rounded" 
               style="background-color: #ffffff;
-                       overflow-y: auto;
+                      overflow-y: auto;
                       word-wrap: break-word;" >
               <div id="DescripcionCurso_${element.id}">${element.descripcion || "Sin descripción"}</div>
           </div>
@@ -268,100 +288,118 @@ function MostrarCursosDesktop(data) {
       `);
 
       const certificadoDetalle = $(`
-        <div class="panelCertificados px-2 pb-2" style="display: none; background-color: #ffffff;">
-         <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">Certificados del Curso</h3>
+  <div class="panelCertificados px-2 pb-2" style="display:none; background-color:#ffffff;">
 
-            <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
-                    data-curso-id="${element.id}">
-                <i class="fa-solid fa-square-plus me-1"></i>
-                  Cargar Certificados
-            </button>
-          </div>
-          <div class="certificados-panel">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover align-middle w-100">
-                <thead>
-                  <tr>
-                    <th class="text-start header-table">Empleado</th>
-                    <th class="text-center header-table">Documento Descargable</th>
-                    <th class="text-center header-table">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
-              </table>
-            </div>
-          </div>
+    <div class="panel-certificado-contenido" style="display:none;">
+      <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+        <h3 class="m-0" style="font-size:1rem; font-weight:600;">Certificados del Curso</h3>
 
+        <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
+                data-curso-id="${element.id}">
+          <i class="fa-solid fa-square-plus me-1"></i>
+          Cargar Certificados
+        </button>
+      </div>
+
+      <div class="certificados-panel">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle w-100">
+            <thead>
+              <tr>
+                <th class="text-start header-table">Empleado</th>
+                <th class="text-center header-table">Documento Descargable</th>
+                <th class="text-center header-table">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
+          </table>
         </div>
-      `);
+      </div>
+    </div>
+
+    <div class="panel-detalle-spinner" style="display:flex;">
+      <div class="card-carga-detalle">
+        <div class="spinner-border text-primary spinner-pequena"></div>
+        <p class="text-muted mt-2">Cargando certificados<span class="dots"></span></p>
+      </div>
+    </div>
+
+  </div>
+`);
+
 
       const asistenciaDetalle = $(`
-        <div class="panelAsistencias px-2 pb-2" style="display: none;background-color: #ffffff;">
-        <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-            <h3 class="m-0" style="font-size: 1rem; font-weight: 600;">Asistencia del Curso</h3>
+  <div class="panelAsistencias px-2 pb-2" style="display:none; background-color:#ffffff;">
 
-            <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
-                    data-curso-id="${element.id}">
-                <i class="fa-solid fa-square-plus me-1"></i>
-                    Registrar Asistencia
-            </button>
-          </div>
-         
-          <div class="asistencias-panel">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th class="text-center header-table">Asistió</th>
-                    <th class="text-start header-table">Empleado</th>
-                    <th class="text-center header-table">Resultado</th>
-                    <th class="text-center header-table">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
-              </table>
-            </div>
-          </div>
+    <div class="panel-asistencia-contenido" style="display:none;">
+      <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+        <h3 class="m-0" style="font-size:1rem; font-weight:600;">Asistencia del Curso</h3>
+
+        <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
+                data-curso-id="${element.id}">
+          <i class="fa-solid fa-square-plus me-1"></i>
+          Registrar Asistencia
+        </button>
+      </div>
+
+      <div class="asistencias-panel">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="text-center header-table">Asistió</th>
+                <th class="text-start header-table">Empleado</th>
+                <th class="text-center header-table">Resultado</th>
+                <th class="text-center header-table">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
+          </table>
         </div>
-      `);
+      </div>
+    </div>
+
+    <div class="panel-detalle-spinner" style="display:flex;">
+      <div class="card-carga-detalle">
+        <div class="spinner-border text-primary spinner-pequena"></div>
+        <p class="text-muted mt-2">Cargando asistencias<span class="dots"></span></p>
+      </div>
+    </div>
+
+  </div>
+`);
+
 
       function togglePanel(item, panel, btn, tipo = "descripcion", cursoId = null) {
         btn.on("click", function (e) {
           e.stopPropagation();
-
-          // Actualizar cursoIdSeleccionado cuando se abre asistencia o certificados
-          if (cursoId && (tipo === "fijo")) {
-            cursoIdSeleccionado = cursoId;
-          }
 
           $(".panelCriterios, .panelCertificados, .panelAsistencias")
             .not(panel)
             .slideUp(200)
             .removeClass("mostrar");
 
-          if (tipo === "descripcion") {
-            $(".btn-ver-descripcion i")
-              .not(btn.find("i"))
-              .removeClass("bi-chevron-up")
-              .addClass("bi-chevron-down");
-          }
-
           panel.slideToggle(200, function () {
-            panel.toggleClass("mostrar", panel.is(":visible"));
+            const visible = panel.is(":visible");
+            panel.toggleClass("mostrar", visible);
+
+            if (visible && cursoId) {
+              if (panel.hasClass("panelAsistencias")) {
+                ObtenerAsistencia(cursoId, panel[0]);
+              }
+              if (panel.hasClass("panelCertificados")) {
+                ObtenerCertificados(cursoId, panel[0]);
+              }
+            }
           });
 
           if (tipo === "descripcion") {
             const icono = btn.find("i");
-            if (
-              icono.hasClass("bi-chevron-down") ||
-              icono.hasClass("bi-chevron-up")
-            ) {
-              icono.toggleClass("bi-chevron-down bi-chevron-up");
-            }
+            icono.toggleClass("bi-chevron-down bi-chevron-up");
           }
         });
       }
+
 
       togglePanel(
         item,
@@ -391,11 +429,11 @@ function MostrarCursosDesktop(data) {
         asistenciaDetalle
       );
 
-      if (element.id) {
-        cursoIdSeleccionado = element.id;
-        ObtenerAsistencia(element.id, false);
-        ObtenerCertificados(element.id, false);
-      }
+      // if (element.id) {
+      //   cursoIdSeleccionado = element.id;
+      //   ObtenerAsistencia(element.id, false);
+      //   ObtenerCertificados(element.id, false);
+      // }
     } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
       const resultado = parseFloat(element.resultado);
       const aprobado = !isNaN(resultado) && resultado >= 6;
@@ -1143,34 +1181,32 @@ async function EditarCurso(id) {
   }
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION APRA OBTENER  LOS DATOS DE LA API //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerAsistencia(cursoId, mostrarSpinner = true) {
-  // Guard: Validar que cursoId sea un número válido
-  if (typeof cursoId !== 'number' || cursoId <= 0) {
-    return;
-  }
+async function ObtenerAsistencia(cursoId, panelDetalle) {
+  const contenido = panelDetalle.querySelector(".panel-asistencia-contenido");
 
-  if (mostrarSpinner) mostrarPantallaCarga();
+  mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+  if (contenido) contenido.style.display = "none";
 
   try {
-    const response = await authFetch(`AsistenciasCapacitacion/PorCurso/${cursoId}`, {
-      method: "GET",
-    });
+    const response = await authFetch(`AsistenciasCapacitacion/PorCurso/${cursoId}`);
     const data = await response.json();
-    MostrarAsistencias(cursoId, data);
+
+    setTimeout(() => {
+      ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+      if (contenido) contenido.style.display = "block";
+
+      MostrarAsistencias(cursoId, data);
+    }, 500);
   } catch (error) {
+    ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+    if (contenido) contenido.style.display = "block";
     MostrarErrorCatch();
-  } finally {
-    if (mostrarSpinner) {
-      setTimeout(() => ocultarPantallaCarga(), 1200);
-    }
   }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS ASISTENCIAS /////////////////////////////////////////////
@@ -1317,7 +1353,7 @@ function MostrarAsistencias(cursoId, data) {
 // FUNCION PARA LIMPIAR EL FORMULARIO DE LA ASISTENCIA //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function ValidarFormularioAsistencia() {
-  const selectEmpleadoId = document.getElementById("EmpleadoId");
+  const selectEmpleadoId = document.getElementById("EmpleadoIdAsistencia");
   const selectErrorEmpleadoId = document.getElementById("errorEmpleadoId");
 
   const selectResultado = document.getElementById("ResultadoAsistencia");
@@ -1357,8 +1393,8 @@ function ValidarFormularioAsistencia() {
 //////////////////////////////////////////////////////////////////////////////////////
 // VALIDACIONES EN VIVO  PARA EL FORMULARIO DE ASISTENCIAS ///////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-document.getElementById("EmpleadoId").addEventListener("input", () => {
-  const inputEmpleado = document.getElementById("EmpleadoId");
+document.getElementById("EmpleadoIdAsistencia").addEventListener("input", () => {
+  const inputEmpleado = document.getElementById("EmpleadoIdAsistencia");
   const errorEmpleadoId = document.getElementById("errorEmpleadoId");
   const empleadoId = inputEmpleado.value;
 
@@ -1379,32 +1415,30 @@ document.getElementById("EmpleadoId").addEventListener("input", () => {
   return esValid;
 });
 
-document
-  .getElementById("ResultadoAsistencia")
-  .addEventListener("change", () => {
-    const selectResultado = document.getElementById("ResultadoAsistencia");
-    const errorResultado = document.getElementById("errorResultadoAsistencia");
-    const valor = parseInt(selectResultado.value);
+document.getElementById("ResultadoAsistencia").addEventListener("change", () => {
+  const selectResultado = document.getElementById("ResultadoAsistencia");
+  const errorResultado = document.getElementById("errorResultadoAsistencia");
+  const valor = parseInt(selectResultado.value);
 
-    selectResultado.classList.remove("is-invalid", "is-valid");
+  selectResultado.classList.remove("is-invalid", "is-valid");
 
-    if (isNaN(valor) || valor === 0) {
-      selectResultado.classList.add("is-invalid");
-      errorResultado.style.display = "block";
-      errorResultado.textContent = "Campo obligatorio.";
-    } else {
-      selectResultado.classList.add("is-valid");
-      errorResultado.style.display = "none";
-      errorResultado.textContent = "";
-    }
-  });
+  if (isNaN(valor) || valor === 0) {
+    selectResultado.classList.add("is-invalid");
+    errorResultado.style.display = "block";
+    errorResultado.textContent = "Campo obligatorio.";
+  } else {
+    selectResultado.classList.add("is-valid");
+    errorResultado.style.display = "none";
+    errorResultado.textContent = "";
+  }
+});
 
 //////////////////////////////////////////////////////////////////////////////////////
 // LIMPIAR FORMULARIO DE ASISTENCIA //////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalAsistencias() {
   document.getElementById("IdAsistencia").value = "";
-  const inputEmpleado = document.getElementById("EmpleadoId");
+  const inputEmpleado = document.getElementById("EmpleadoIdAsistencia");
   inputEmpleado.value = "";
   const inputResultadoAsistencia = document.getElementById(
     "ResultadoAsistencia"
@@ -1426,7 +1460,7 @@ function LimpiarModalAsistencias() {
 
 function ValidarAsistenciaExistente(mensaje) {
   const errorEmpleadoId = document.getElementById("errorEmpleadoId");
-  const inputEmpleadoId = document.getElementById("EmpleadoId");
+  const inputEmpleadoId = document.getElementById("EmpleadoIdAsistencia");
 
   errorEmpleadoId.textContent = mensaje;
   errorEmpleadoId.style.display = "block";
@@ -1448,7 +1482,7 @@ async function CrearAsistencia() {
   try {
     const asistencia = {
       asistencia: false,
-      empleadoId: parseInt(document.getElementById("EmpleadoId").value),
+      empleadoId: parseInt(document.getElementById("EmpleadoIdAsistencia").value),
       resultado: document.getElementById("ResultadoAsistencia").value.trim(),
       cursoId: cursoIdSeleccionado,
     };
@@ -1671,28 +1705,29 @@ async function MarcarAsistencia(id, nuevoEstado) {
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS CERTIFICADOS ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerCertificados(cursoId, mostrarSpinner = true) {
-  // Guard: Validar que cursoId sea un número válido
-  if (typeof cursoId !== 'number' || cursoId <= 0) {
-    return;
-  }
+async function ObtenerCertificados(cursoId, panelDetalle) {
+  const contenido = panelDetalle.querySelector(".panel-certificado-contenido");
 
-  if (mostrarSpinner) mostrarPantallaCarga();
+  mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+  if (contenido) contenido.style.display = "none";
 
   try {
-    const response = await authFetch(`Certificados/PorCurso/${cursoId}`, {
-      method: "GET",
-    });
+    const response = await authFetch(`Certificados/PorCurso/${cursoId}`);
     const data = await response.json();
-    MostrarCertificados(cursoId, data);
+
+    setTimeout(() => {
+      ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+      if (contenido) contenido.style.display = "block";
+
+      MostrarCertificados(cursoId, data);
+    }, 500);
   } catch (error) {
+    ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+    if (contenido) contenido.style.display = "block";
     MostrarErrorCatch();
-  } finally {
-    if (mostrarSpinner) {
-      setTimeout(() => ocultarPantallaCarga(), 1500);
-    }
   }
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1732,12 +1767,11 @@ function MostrarCertificados(cursoId, data) {
 
       const card = $(`
           <div class="col-12 mb-2">
-            <div class="card shadow-sm rounded-3 p-3">
+            <div class="card shadow-sm rounded-3 p-2">
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
-                <button class='btn-borrar'  style='background: none; border: none;'
-        onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})'                        data-tippy-content="Eliminar">
+                <button class='btn-borrar' style='background: none; border: none;' onclick='EliminarCertificado(${item.id}, ${cursoIdSeleccionado})' data-tippy-content="Eliminar">
                   <i class='bi bi-trash3 icono-borrar'></i>
                 </button>
               </div>
@@ -2075,7 +2109,7 @@ function EliminarCertificado(id, cursoId) {
 //////////////////////////////////////////////////////////////////////////////////////
 // ELIMINAR SI EL CERTIFICADO //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function EliminarSiCertificado(id, cursoId) {
+async function EliminarSiCertificado(id) {
   try {
     const res = await authFetch(`Certificados/${id}`, {
       method: "DELETE",

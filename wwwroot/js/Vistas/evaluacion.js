@@ -141,12 +141,13 @@ async function ObtenerEvaluaciones(mostrarSpinner = true) {
 // FUNCION PARA MOSTRAR LOS DATOS DE LA EVALUACIONES ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEvaluaciones(data) {
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 764) {
     MostrarEvaluacionesMobile(data);
   } else {
     MostrarEvaluacionesDesktop(data);
   }
 }
+
 
 window.addEventListener("resize", function () {
   ObtenerEvaluaciones(false);
@@ -191,8 +192,8 @@ function MostrarEvaluacionesDesktop(data) {
 
     const botonEditarHTML = element.esEditable
       ? `<button class="btn-editar me-1" style="background: none; border: none;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-           <i class="bi bi-pencil-square icono-editar"></i>
-         </button>`
+            <i class="bi bi-pencil-square icono-editar"></i>
+          </button>`
       : "";
 
     let nombreMostrar = "";
@@ -257,55 +258,53 @@ function MostrarEvaluacionesDesktop(data) {
 
 
     const detalleHTML = $(`
-<div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
+            <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
 
-  <!-- Contenido real, oculto al inicio -->
-  <div class="panel-detalle-contenido" style="display: none;">
-    <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-      <h3 style="font-size: 1rem; font-weight: 600;">
-        Criterios de Evaluación
-      </h3>
+              <div class="panel-detalle-contenido" style="display: none;">
+                <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+                  <h3 style="font-size: 1rem; font-weight: 600;">
+                    Criterios de Evaluación
+                  </h3>
 
-      ${element.esEditable ? `
-      <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center justify-content-center"
-              data-evaluacion-id="${element.id}">
-        <i class="fa-solid fa-square-plus me-1"></i>
-        Agregar criterio
-      </button>` : ""}
-    </div>
+                  ${element.esEditable ? `
+                  <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center justify-content-center"
+                          data-evaluacion-id="${element.id}">
+                    <i class="fa-solid fa-square-plus me-1"></i>
+                    Agregar criterio
+                  </button>` : ""}
+                </div>
 
-    <div class="criterios-panel">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle w-100">
-          <colgroup>
-            <col style="width: 25%" />
-            <col style="width: 65%" />
-            ${element.esEditable ? `<col style="width: 10%" />` : ""}
-          </colgroup>
-          <thead>
-            <tr>
-              <th class="text-start header-table">Criterio</th>
-              <th class="text-start header-table">Descripción</th>
-              ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-            </tr>
-          </thead>
-          <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+                <div class="criterios-panel">
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle w-100">
+                      <colgroup>
+                        <col style="width: 25%" />
+                        <col style="width: 65%" />
+                        ${element.esEditable ? `<col style="width: 10%" />` : ""}
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th class="text-start header-table">Criterio</th>
+                          <th class="text-start header-table">Descripción</th>
+                          ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+                        </tr>
+                      </thead>
+                      <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
 
-  <!-- Spinner -->
-  <div class="panel-detalle-spinner" style="display: flex;">
-    <div class="card-carga-detalle">
-      <div class="spinner-border text-primary spinner-pequena" role="status"></div>
-      <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
-    </div>
-  </div>
+              <div class="panel-detalle-spinner" style="display: flex;">
+                <div class="card-carga-detalle">
+                  <div class="spinner-border text-primary spinner-pequena" role="status"></div>
+                  <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
+                </div>
+              </div>
 
-</div>
-`);
+            </div>
+            `);
 
 
 
@@ -395,8 +394,8 @@ function MostrarEvaluacionesMobile(data) {
 
     const botonEditarHTML = esEditable
       ? `<button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarModalEditar(${element.id})" data-tippy-content="Editar">
-           <i class="bi bi-pencil-square icono-editar btn-sm"></i>
-         </button>`
+          <i class="bi bi-pencil-square icono-editar btn-sm"></i>
+        </button>`
       : "";
 
 
@@ -424,60 +423,12 @@ function MostrarEvaluacionesMobile(data) {
               ${botonEditarHTML}
             </div>
             <div>
-               <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none; margin-right:5px">
+              <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none; margin-right:5px">
                 <i class="bi bi-info-circle icono-ver btn-sm"></i>
               </button>
 
-              <button class="toggle-detalle" style="background: none; border: none; font-weight: bold;" aria-expanded="false" aria-label="Mostrar detalles" data-tippy-content="Detalle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
             </div>
           </div>
-
-          <div class="panelCriterios mt-2 border-top" data-es-editable="${element.esEditable}" style="display:none;">
-
-            <div class="d-flex align-items-center justify-content-between mb-2 mt-2 px-1">
-              <h6 class="mb-0 fw-semibold">
-                Detalle de Criterios
-              </h6>
-
-              ${element.esEditable ? `
-                <button class="btn btn-agregar-criterio crearCriterio d-flex align-items-center"
-                        data-evaluacion-id="${element.id}">
-                  <i class="fa-solid fa-square-plus me-1"></i>
-                  Agregar criterio
-                </button>
-              ` : ""}
-            </div>
-
-            <div class="panel-detalle-spinner" style="display: none; justify-content: center; align-items: center; padding: 1rem;">
-                <div class="card-carga-detalle d-flex flex-column align-items-center">
-                  <div class="spinner-border text-primary spinner-pequena" role="status"></div>
-                  <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
-                </div>
-              </div>
-
-              <div class="panel-detalle-contenido" style="display: none;">
-                <div class="table-responsive">
-                  <table class="table table-bordered table-hover table-sm align-middle">
-                    <colgroup>
-                      <col style="width: 70%" />
-                      ${element.esEditable ? `<col style="width: 30%" />` : ""}
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th class="text-start header-table">Criterio</th>
-                        ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-                      </tr>
-                    </thead>
-                    <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-          </div>
-
-
         </div>
       </div>
     `;
@@ -488,43 +439,6 @@ function MostrarEvaluacionesMobile(data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
-
-  document.querySelectorAll(".toggle-detalle").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const card = this.closest(".card");
-      const detalleTabla = card.querySelector(".panelCriterios");
-      const icono = this.querySelector("i");
-
-      const esEditable = detalleTabla.dataset.esEditable === "true";
-
-      document.querySelectorAll(".panelCriterios").forEach((panel) => {
-        if (panel !== detalleTabla) {
-          panel.style.display = "none";
-
-          const contenido = panel.querySelector(".panel-detalle-contenido");
-          if (contenido) contenido.style.display = "none";
-
-          const spinner = panel.querySelector(".panel-detalle-spinner");
-          if (spinner) spinner.style.display = "none";
-
-          panel.closest(".card").querySelector(".toggle-detalle i").classList.replace("bi-chevron-up", "bi-chevron-down");
-        }
-      });
-
-      if (detalleTabla.style.display === "none") {
-        detalleTabla.style.display = "block";
-        icono.classList.replace("bi-chevron-down", "bi-chevron-up");
-
-        const evaluacionId = detalleTabla.querySelector(".tabla-criterios-body").dataset.evaluacionId;
-        ObtenerCriterioDeEvaluacion(Number(evaluacionId), esEditable, detalleTabla);
-      } else {
-        detalleTabla.style.display = "none";
-        icono.classList.replace("bi-chevron-up", "bi-chevron-down");
-      }
-    });
-  });
-
-
 
 }
 
@@ -825,11 +739,13 @@ async function EditarEvaluacion(id) {
 // OBTENER LOS CRITERIOS DE EVALUACION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
 async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetalle) {
-  const spinner = panelDetalle.querySelector(".panel-detalle-spinner");
-  const contenido = panelDetalle.querySelector(".panel-detalle-contenido");
-  const tablaBody = panelDetalle.querySelector(".tabla-criterios-body");
+  const spinner = panelDetalle?.querySelector?.(".panel-detalle-spinner");
+  const contenido = panelDetalle?.querySelector?.(".panel-detalle-contenido");
 
-  if (tablaBody) tablaBody.innerHTML = "";
+  let tablaBody = panelDetalle?.querySelector?.(".tabla-criterios-body");
+  if (!tablaBody) {
+    tablaBody = document.querySelector(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
+  }
 
   if (spinner) spinner.style.display = "flex";
   if (contenido) contenido.style.display = "none";
@@ -841,16 +757,20 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetall
     setTimeout(() => {
       if (spinner) spinner.style.display = "none";
       if (contenido) contenido.style.display = "block";
-      MostrarCriterioDeEvaluacion(evaluacionId, criterios, esEditable);
-    }, 800);
+
+      if (window.innerWidth > 764) {
+        MostrarCriterioDeEvaluacion(evaluacionId, criterios, esEditable);
+      } else {
+        MostrarDetalleCriterios(evaluacionId, esEditable);
+      }
+    }, 500);
+
   } catch (error) {
     if (spinner) spinner.style.display = "none";
     if (contenido) contenido.style.display = "block";
     MostrarErrorCatch();
   }
 }
-
-
 
 
 
@@ -873,7 +793,7 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
     return;
   }
 
-  const enMovil = window.innerWidth <= 820;
+  const enMovil = window.innerWidth <= 764;
 
   $.each(data, function (index, item) {
     if (enMovil) {
@@ -923,39 +843,43 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL DETALLE DE CRITERIOS DE EVALUACION ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function MostrarDetalleCriterios(evaluacionId) {
+async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
   const contenedor = document.getElementById("contenedorCriteriosOffcanvas");
 
-  const res = await authFetch("CriteriosDeEvaluacion", {
-    method: "GET",
-  })
-    .then(response => response.json())
-    .then(data => {
-      const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
+  try {
+    const response = await authFetch("CriteriosDeEvaluacion", {
+      method: "GET",
+    });
 
-      contenedor.innerHTML = "";
+    const data = await response.json();
+    const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
 
-      if (criteriosFiltrados.length === 0) {
-        contenedor.innerHTML = "<div class='text-center text-muted'>No hay criterios para mostrar.</div>";
-        return;
-      }
+    contenedor.innerHTML = "";
 
+    if (criteriosFiltrados.length === 0) {
+      contenedor.innerHTML = "<div class='text-center text-muted py-3'>No hay criterios para mostrar.</div>";
+    } else {
       criteriosFiltrados.forEach(item => {
+        const botonEliminar = esEditable
+          ? `<div class="text-end mt-2">
+                <button class='btn-borrar' style='background: none; border: none;' 
+                  onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' 
+                  data-tippy-content="Eliminar">
+                  <i class='bi bi-trash3 icono-borrar'></i>
+                </button>
+              </div>`
+          : "";
+
         const card = `
-          <div class="card mb-3 detalle-criterio-tarjeta">
-            <div class="card-body detalle-criterio-seccion">
-              <p class="detalle-criterio-titulo-seccion">Información del Criterio</p>
-
-              <div class="detalle-criterio-fila text-wrap">
-                <span class="detalle-criterio-valor-nombre text-wrap">${item.tipoDeCriterio.nombre}</span>
-              </div>
-
-              <div class="detalle-criterio-fila text-wrap">
-                <span class="detalle-criterio-valor text-wrap">${item.descripcion || "Sin descripción"}</span>
+          <div class="col-12 mb-2">
+            <div class="card shadow-sm rounded-3 p-2">
+              <h6 class="fw-bold mb-0">${item.tipoDeCriterio.nombre}</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${item.descripcion || "Sin descripción"}</span>
+                ${botonEliminar} 
               </div>
             </div>
-          </div>
-        `;
+          </div>`;
         contenedor.innerHTML += card;
       });
 
@@ -964,18 +888,25 @@ async function MostrarDetalleCriterios(evaluacionId) {
         theme: "mi-tema",
         delay: [100, 0],
       });
-    });
+    }
 
-  const offcanvasElement = document.getElementById("offcanvasDetalleCriterios");
-  if (offcanvasElement.parentNode !== document.body) {
-    document.body.appendChild(offcanvasElement);
+    const offcanvasElement = document.getElementById("offcanvasDetalleCriterios");
+
+    if (offcanvasElement.parentNode !== document.body) {
+      document.body.appendChild(offcanvasElement);
+    }
+
+    if (!offcanvasElement.classList.contains("show")) {
+      let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if (!offcanvas) offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+      offcanvas.show();
+    }
+
+  } catch (error) {
+    console.error("Error al obtener criterios:", error);
+    if (typeof MostrarErrorCatch === "function") MostrarErrorCatch();
   }
-
-  let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-  if (!offcanvas) offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-  offcanvas.show();
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1248,9 +1179,7 @@ async function EliminarSiCriterio(id, evaluacionId, esEditable) {
         icon: "swal2-toast-success-icon",
       },
     });
-
     ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, false);
-
   } catch (error) {
     MostrarErrorCatch();
   }

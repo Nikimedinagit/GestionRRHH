@@ -479,10 +479,10 @@ namespace API_RRHH_TESIS2025.Controllers
 
             var empleadosSinHorarios = _context.Empleado
                 .Where(e => !e.Eliminado &&
-                       (
-                           !e.Horario.Any()          
-                           || e.Id == empleadoIdActual 
-                       ))
+                    (
+                        e.Horario.Any()
+                        || e.Id == empleadoIdActual
+                    ))
                 .Include(e => e.Puesto)
                 .AsQueryable();
 
@@ -504,6 +504,34 @@ namespace API_RRHH_TESIS2025.Controllers
             }
 
             var empleados = await empleadosSinHorarios
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+
+            return Ok(empleados);
+        }
+
+        [HttpGet("SinAsistencia/{cursoId}")]
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosSinAsistencia(int cursoId)
+        {
+            var empleados = await _context.Empleado
+                .Where(e => !e.Eliminado &&
+                            !_context.AsistenciaCapacitacion.Any(a => a.CursoId == cursoId && a.EmpleadoId == e.Id))
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+
+            return Ok(empleados);
+        }
+
+
+        [HttpGet("SinCertificado/{cursoId}")]
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosSinCertificado(int cursoId)
+        {
+            var empleados = await _context.Empleado
+                .Where(e => !e.Eliminado &&
+                            !_context.Certificado.Any(c => c.CursoId == cursoId && c.EmpleadoId == e.Id) &&
+                            _context.AsistenciaCapacitacion.Any(a => a.CursoId == cursoId &&
+                                                                     a.EmpleadoId == e.Id &&
+                                                                     a.Resultado >= 6))
                 .OrderBy(e => e.NombreCompleto)
                 .ToListAsync();
 
