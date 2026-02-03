@@ -2,9 +2,15 @@
 
 
     <!-- ======================================= Título ====================================== -->
-    <div class="bg-white shadow-sm rounded p-2 mb-3">
-        <h3 class="titulo-seccion mb-1">Detalle de Empleados por Sector</h3>
-        <p class="text-muted fs-6 mb-0"> Consultá los empleados asignados a cada sector de la organización.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+        style="border-left-width: 3px !important;">
+        <div class="px-2">
+            <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Detalle de Empleados
+                por Sector</h4>
+            <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+                Consultá los empleados asignados a cada sector de la organización.
+            </p>
+        </div>
     </div>
 
     <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
@@ -12,20 +18,25 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-            <a href="#resultadoGestionPersonal" class="btn btn-volver">
-                <i class="fa-solid fa-arrow-left me-1"></i>
-                <span>Volver</span>
+            <a href="#resultadoGestionPersonal"
+                class="btn rounded btn-volver py-1 px-3 border bg-white shadow-sm d-inline-flex align-items-center justify-content-center text-decoration-none responsive-button">
+                <i class="fa-solid fa-arrow-left me-2" style="color: var(--c);"></i>
+                <span class="fw-bold" style="color: #495057;">Volver</span>
             </a>
 
-            <div class="d-flex gap-2 flex-wrap responsive-buttons">
-                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-                    <i class="fa-solid fa-filter me-1"></i>
-                    <span>Filtros</span>
+
+            <div class="d-flex gap-2 flex-wrap responsive-button">
+
+                <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+                    onclick="toggleFiltros()">
+                    <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+                    <span class="texto-btn">Filtros</span>
                 </button>
 
-                <button class="btn btn-informe" onclick="GenerarInformePdfListadoEmpleadoPorSector()">
-                    <i class="fa-solid fa-file-lines me-1"></i>
-                    <span>Generar Informe</span>
+                <button class="btn rounded btn-informe py-1 px-2 border bg-white"
+                    onclick="GenerarInformePdfListadoEmpleadoPorSector()">
+                    <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
+                    <span>Exportar</span>
                 </button>
             </div>
         </div>

@@ -19,40 +19,40 @@
   </div>
 
   <!-- ======================================= Título ====================================== -->
-  <div class="bg-white shadow-sm rounded p-2 mb-3">
-    <h3 class="titulo-seccion mb-1">Asignación de Horarios</h3>
-    <p class="text-muted fs-6 mb-0">
-      Gestioná la asignación de horarios, jornadas y días laborales del personal según su puesto y modalidad.
-    </p>
-
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Asignación de Horarios</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Gestioná la asignación de horarios, jornadas y días laborales del personal según su puesto y modalidad.
+      </p>
+    </div>
   </div>
 
 
-  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-  <div>
 
+  <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
     <div id="fondoOscuro" onclick="cerrarPanelHorario()"></div>
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-      <button class="btn btn-agregar" onclick="abrirPanelHorario()">
-        <i class="fa-solid fa-square-plus me-1"></i>
+      <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="abrirPanelHorario()">
+        <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
         <span>Asignar Horario</span>
       </button>
 
-      <div class="d-flex gap-2 flex-wrap responsive-buttons">
-        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-          <i class="fa-solid fa-filter me-1"></i>
-          <span>Filtros</span>
+      <div class="d-flex gap-2 flex-wrap responsive-button">
+        <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+          onclick="toggleFiltros()">
+          <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+          <span class="texto-btn">Filtros</span>
         </button>
 
-        <button id="btnMostrarGenerar" class="btn btn-informe" onclick="GenerarInformePdfHorarios()">
-          <i class="fa-solid fa-file-lines me-1"></i>
-          <span>Generar Informe</span>
+        <button class="btn rounded btn-informe py-1 px-2 border bg-white" onclick="GenerarInformePdfHorarios()">
+          <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
+          <span>Exportar</span>
         </button>
       </div>
     </div>
-
 
 
     <!-- ================================ Contenedor Filtros ===================================== -->
@@ -98,129 +98,49 @@
 
 
     <!-- ================================ Contenedor de tarjetas de resumen de horarios ===================================== -->
-    <div>
-      <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
+    <div class="d-flex flex-wrap justify-content-between mb-3" style="gap: 1rem;">
 
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-primary bg-opacity-10 p-3 me-3">
-              <i class="fas fa-clock text-primary fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Total horarios asignados</p>
-              <h5 class="mb-0 fw-bold" id="totalHorariosAsignados">0</h5>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-info bg-opacity-10 p-3 me-3">
-              <i class="fas fa-hourglass-half text-info fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Total horas semanales</p>
-              <h5 class="mb-0 fw-bold" id="totalHorasSemanales">0</h5>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
-          <div class="d-flex align-items-center">
-            <div class="bg-warning bg-opacity-10 p-3 me-3">
-              <i class="fas fa-calendar-week text-warning fs-4"></i>
-            </div>
-            <div>
-              <p class="mb-0 text-muted small">Trabajan fines de semana</p>
-              <h5 class="mb-0 fw-bold" id="empleadosFindes">0</h5>
-            </div>
-          </div>
-        </div>
-
+  <div class="card p-2 border-0 shadow-sm" 
+    style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0d6efd !important; background-color: #ffffff;">
+    <div class="d-flex align-items-center">
+      <div class="p-2 me-3 rounded" style="background-color: #e7f1ff;">
+        <i class="fas fa-clock text-primary fs-5"></i>
+      </div>
+      <div>
+        <p class="mb-0 text-muted small fw-bold">Horarios Asignados</p>
+        <h5 class="mb-0 fw-bold" id="totalHorariosAsignados">0</h5>
       </div>
     </div>
+  </div>
 
-
-    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
-      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
-        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
-          Información de Ayuda
-        </h5>
-        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-          <i class="bi bi-eye me-1"></i> Mostrar
-        </button>
+  <div class="card p-2 border-0 shadow-sm" 
+    style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0dcaf0 !important; background-color: #ffffff;">
+    <div class="d-flex align-items-center">
+      <div class="p-2 me-3 rounded" style="background-color: #e1faff;">
+        <i class="fas fa-hourglass-half text-info fs-5"></i>
       </div>
-
-      <div id="contenido-ayuda" class="row g-3 d-none">
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-clock-history me-3" style="color:#1a4a8a; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#1a4a8a;">Continuo</p>
-              <p class="mb-0 small text-muted">
-                El empleado trabaja en un solo bloque horario. Se muestra con el estilo
-                <span class="bg-continuo">CONTINUO</span>.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-arrow-repeat me-3" style="color:#a33a44; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#a33a44;">Alterno</p>
-              <p class="mb-0 small text-muted">
-                El empleado tiene dos bloques separados. Se muestra con el estilo
-                <span class="bg-alterno">ALTERNO</span>.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-info-circle me-3" style="font-size:1.2rem; color:#ffc107;"></i>
-            <div>
-              <p class="fw-bold mb-1">Ver Más</p>
-              <p class="mb-0 small text-muted">Muestra el detalle completo de los días y horarios asignados.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
-            <div>
-              <p class="fw-bold mb-1">Editar</p>
-              <p class="mb-0 small text-muted">Permite modificar los datos del horario asignado al empleado.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-trash me-3" style="font-size:1.2rem; color:#fd0d1d;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#fd0d1d;">Eliminar</p>
-              <p class="mb-0 small text-muted">Permite borrar el horario asignado al empleado de forma permanente.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-chevron-down me-3" style="font-size:1.2rem; color:#6c757d;"></i>
-            <div>
-              <p class="fw-bold mb-1">Detalle</p>
-              <p class="mb-0 small text-muted">Despliega la tabla con los días activos y los bloques horarios asignados.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div>
+        <p class="mb-0 text-muted small fw-bold">Horas Semanales</p>
+        <h5 class="mb-0 fw-bold" id="totalHorasSemanales">0</h5>
       </div>
     </div>
+  </div>
+
+  <div class="card p-2 border-0 shadow-sm" 
+    style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #ffc107 !important; background-color: #ffffff;">
+    <div class="d-flex align-items-center">
+      <div class="p-2 me-3 rounded" style="background-color: #fff3cd;">
+        <i class="fas fa-calendar-week text-warning fs-5"></i>
+      </div>
+      <div>
+        <p class="mb-0 text-muted small fw-bold">Trabajan Fines de Semana</p>
+        <h5 class="mb-0 fw-bold" id="empleadosFindes">0</h5>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 
     <div id="contenedorHorarios" class="row"></div>
 

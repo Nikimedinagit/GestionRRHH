@@ -510,6 +510,10 @@ namespace API_RRHH_TESIS2025.Controllers
             return Ok(empleados);
         }
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS SIN ASITENCIA DE CURSOS ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("SinAsistencia/{cursoId}")]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosSinAsistencia(int cursoId)
         {
@@ -523,6 +527,9 @@ namespace API_RRHH_TESIS2025.Controllers
         }
 
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// METODO PARA OBTENER TODOS LOS EMPLEADOS ACTIVOS SIN CERTIFICADOS EN CURSO ///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet("SinCertificado/{cursoId}")]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleadosSinCertificado(int cursoId)
         {
@@ -530,8 +537,8 @@ namespace API_RRHH_TESIS2025.Controllers
                 .Where(e => !e.Eliminado &&
                             !_context.Certificado.Any(c => c.CursoId == cursoId && c.EmpleadoId == e.Id) &&
                             _context.AsistenciaCapacitacion.Any(a => a.CursoId == cursoId &&
-                                                                     a.EmpleadoId == e.Id &&
-                                                                     a.Resultado >= 6))
+                                                                    a.EmpleadoId == e.Id &&
+                                                                    a.Resultado >= 6))
                 .OrderBy(e => e.NombreCompleto)
                 .ToListAsync();
 

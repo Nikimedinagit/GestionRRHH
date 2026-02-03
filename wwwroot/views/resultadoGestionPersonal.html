@@ -21,56 +21,62 @@
 
 
     <!-- ======================================= Título ====================================== -->
-    <div class="bg-white shadow-sm rounded p-2 mb-3">
-        <h3 class="titulo-seccion mb-1">Indicadores de Gestión de Personal</h3>
-        <p class="text-muted fs-6 mb-0">
-            Gestioná indicadores, listados jerárquicos y estadísticas del personal para el análisis y la toma de
-            decisiones. </p>
-
+    <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+        style="border-left-width: 3px !important;">
+        <div class="px-2">
+            <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Indicadores de Gestión
+                de Personal</h4>
+            <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+                Gestioná indicadores, listados jerárquicos y estadísticas del personal para el análisis y la toma de
+                decisiones.
+            </p>
+        </div>
     </div>
+
 
 
     <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
     <div>
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
-            <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
-                id="btnResultados" onclick="toggleResultados()">
-                <i class="fa-solid fa-list me-2"></i>
-                <span class="texto-btn">Más Resultados</span>
+        <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+            <button
+                class="btn rounded btn-resultados py-1 px-3 border bg-white shadow-sm  d-flex align-items-center justify-content-center responsive-button"
+                type="button" id="btnResultados" onclick="toggleResultados()">
+                <i class="fa-solid fa-list me-2" style="color: var(--c);"></i>
+                <span class="fw-bold text-muted">Más Resultados</span>
             </button>
         </div>
-        <div class="custom-collapse mt-2 mb-2 rounded-3 bg-white" id="contenedorResultados"
-            style="border-left: 4px solid #6A5ACD">
+        <div class="custom-collapse mt-3 rounded bg-white" id="contenedorResultados"
+            style="border-left: 3px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-3">
 
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
-                    <i class="fa-solid fa-layer-group me-2"></i> Listados Jerárquicos
+                    <i class="fa-solid fa-layer-group me-1"></i> Listados Jerárquicos
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoAsistenciaPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-user-check me-2"></i> Asistencias por Empleado
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoJustificacionPorSector">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold" id="resultadoJustificacionPorSector">
                         <a href="#resultadoJustificacionPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-building me-2"></i> Justificaciones por Sector
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoEmpleadosPorSector">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold" id="resultadoEmpleadosPorSector">
                         <a href="#resultadoEmpleadosPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-diagram-project me-2"></i> Empleados por Sector
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoHistorialPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-id-card me-2"></i> Historial Laboral
@@ -78,28 +84,26 @@
                     </li>
                 </ul>
 
-                <hr class="my-3">
-
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
-                    <i class="fa-solid fa-chart-column me-2"></i> Estadísticos
+                    <i class="fa-solid fa-chart-column me-1"></i> Estadísticos
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoGlobalGestionEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-chart-line me-2"></i> General (Últimos 12 Meses)
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold" id="resultadoAsistenciaPorSector">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold" id="resultadoAsistenciaPorSector">
                         <a href="#resultadoAsistenciaPorSector"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-sitemap me-2"></i> Asistencia Por Sector
                         </a>
                     </li>
 
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoJustificaciones12Meses"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-clipboard-list me-2"></i> Justificaciones (Últimos 12 Meses)
@@ -109,8 +113,6 @@
 
             </div>
         </div>
-
-
 
 
         <!-- ======================================= Contendor de Graficos ====================================== -->
@@ -127,7 +129,7 @@
                     <div id="contenedorAsistenciaMensual" class="grafico-fijo"></div>
                 </div>
 
-                <div class="col-md-12 mb-3 border rounded p-3 shadow-sm bg-white">
+                <div class="col-md-12 border rounded p-3 shadow-sm bg-white">
                     <h5>Justificaciones por Día (Últimos 7 Días)</h5>
                     <div id="contenedorJustificacionesPorDia" class="grafico-fijo"></div>
                 </div>
@@ -135,15 +137,6 @@
             </div>
 
         </div>
-
-
-
-
-
-
-
-
-
 
     </div>
 

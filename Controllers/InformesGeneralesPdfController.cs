@@ -35,9 +35,11 @@ namespace API_NET_CORE8_RRHH.Controllers
         [HttpPost("GenerarInformeEmpleados")]
         public async Task<IActionResult> FiltrarEmpleados([FromBody] FiltrarEmpleado filtro)
         {
+            filtro ??= new FiltrarEmpleado();
+
             var rolActual = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var emailActual = (await _context.Users.FindAsync(userId))?.Email.Trim().ToLower();
+            var emailActual = (await _context.Users.FindAsync(userId))?.Email?.Trim().ToLower();
 
             var obtenerEmpleados = _context.Empleado
                 .Include(e => e.Localidad)
@@ -58,11 +60,9 @@ namespace API_NET_CORE8_RRHH.Controllers
                 {
                     var sectorId = supervisor.Puesto.SectorId;
                     obtenerEmpleados = obtenerEmpleados.Where(e => e.Puesto.SectorId == sectorId);
-
                     sectorSupervisor = supervisor.Puesto.Sector?.Nombre;
                 }
             }
-
 
             if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
             {
@@ -88,21 +88,39 @@ namespace API_NET_CORE8_RRHH.Controllers
             if (filtro.PuestoId.HasValue)
                 obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
 
-            var empleados = await obtenerEmpleados.ToListAsync();
+            var listaEmpleados = await obtenerEmpleados.ToListAsync();
+
+            var empleadosFinal = listaEmpleados.Select(e => new
+            {
+                e.Id,
+                e.NombreCompleto,
+                e.DNI,
+                e.NroLegajo,
+                e.Cuil,
+                e.CantidadHijos,
+                e.Edad,
+                e.Email,
+                e.Telefono,
+                e.Direccion,
+                LocalidadNombre = e.Localidad?.Nombre ?? "N/A", 
+                PuestoNombre = e.Puesto?.Descripcion ?? "N/A",  
+                EstadoCivil = e.EstadoCiviles.ToString(),
+                Sexo = e.TipoSexo.ToString()
+            }).ToList();
 
             var resumen = new
             {
-                Total = empleados.Count,
-                Hombres = empleados.Count(e => e.TipoSexo == TipoSexo.MASCULINO),
-                Mujeres = empleados.Count(e => e.TipoSexo == TipoSexo.FEMENINO),
-                NoBinario = empleados.Count(e => e.TipoSexo == TipoSexo.NO_BINARIO),
-                Otros = empleados.Count(e => e.TipoSexo == TipoSexo.OTRO),
+                Total = listaEmpleados.Count,
+                Hombres = listaEmpleados.Count(e => e.TipoSexo == TipoSexo.MASCULINO),
+                Mujeres = listaEmpleados.Count(e => e.TipoSexo == TipoSexo.FEMENINO),
+                NoBinario = listaEmpleados.Count(e => e.TipoSexo == TipoSexo.NO_BINARIO),
+                Otros = listaEmpleados.Count(e => e.TipoSexo == TipoSexo.OTRO),
                 Filtros = filtro,
                 FechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
                 SectorSupervisor = sectorSupervisor
             };
 
-            return Ok(new { Empleados = empleados, Resumen = resumen });
+            return Ok(new { Empleados = empleadosFinal, Resumen = resumen });
         }
 
 

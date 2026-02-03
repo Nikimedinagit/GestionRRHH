@@ -360,7 +360,7 @@ function MostrarHorariosMobile(data) {
 
     contenedor.innerHTML += `
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3" id="horarioContainer">
-        <div class="card shadow-sm p-2 position-relative rounded-3 d-flex flex-column w-100" style="min-height: 180px;">
+        <div class="card shadow-sm p-2 position-relative rounded d-flex flex-column w-100" style="min-height: 180px;">
           <div class="flex-grow-1 d-flex flex-column">
 
             <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">

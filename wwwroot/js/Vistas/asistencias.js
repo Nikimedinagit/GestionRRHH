@@ -60,9 +60,11 @@ async function ObtenerAsistencias(mostrarSpinner = true) {
         const fechaCap = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
 
         $("#tituloAsistencias").html(`
-            <i class="bi bi-calendar3"></i>
-            <span class="fw-bold">Asistencias del Día:</span>
-            <small class="text-muted">"${fechaCap}"</small>
+            <div class="titulo-asistencias-content">
+                <i class="bi bi-calendar-event text-primary"></i>
+                <span>Personal del Día</span>
+                <small>${fechaCap}</small>
+            </div>
         `);
 
         MostrarAsistencias(data);
@@ -126,10 +128,10 @@ function MostrarAsistencias(data) {
 
         contenedor.append(`
             <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
-                <div class="card shadow-sm p-2 rounded-3 text-center w-100" 
-                     style="min-height: 260px; border-bottom: 4px solid ${estilo.color};">
+                <div class="card shadow-sm p-2 rounded text-center w-100" 
+                    style="min-height: 260px; border-bottom: 4px solid ${estilo.color};">
                     <img src="${foto}" alt="Foto" class="card-img-top" 
-                         style="height: 160px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                        style="height: 160px; object-fit: cover; border-radius: 12px 12px 0 0;">
                     <div class="card-body py-2 d-flex flex-column justify-content-center">
                         <h5 class="card-title mb-1" 
                             style="font-size: 1rem; font-weight:bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 

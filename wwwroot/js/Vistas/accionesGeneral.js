@@ -1,75 +1,31 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR CONTENEDOR DE  FILTROS /////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-function AbrilPanelFiltros(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
+function toggleFiltros() {
+  const btn = document.getElementById("btnMostrarFiltros");
+  const contenedor = document.getElementById("contenedorFiltros");
 
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeFiltro);
-    }, 20);
-  }
+  if (!btn || !contenedor) return;
 
+  const textoBtn = btn.querySelector(".texto-btn");
+  
+  contenedor.classList.toggle("d-none");
+  
+  const estaAbierto = !contenedor.classList.contains("d-none");
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // FUNCION SI EL CLICK FUERA DEL CONTENEDOR DEL FILTRO LO CIERRA /////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function DetectarClickFueraDeFiltro(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarFiltros"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeFiltro);
+  btn.classList.toggle("active");
+
+  if (textoBtn) {
+    textoBtn.textContent = estaAbierto ? "Ocultar Filtros" : "Filtros";
+    
+    const icono = btn.querySelector("i");
+    if (icono) {
+      icono.className = estaAbierto 
+        ? "fa-solid fa-eye-slash me-1" 
+        : "fa-solid fa-arrow-down-wide-short me-1";
     }
   }
 }
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// FUNCION PARA ABRIR CONTENEDOR DE  GENERAR /////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-function AbrilPanelGenerar(idPanel) {
-  const panel = document.getElementById(idPanel);
-  if (!panel) return;
-
-  if (panel.classList.contains("activo")) {
-    panel.classList.remove("activo");
-    setTimeout(() => panel.classList.add("d-none"), 300);
-    document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-  } else {
-    panel.classList.remove("d-none");
-    setTimeout(() => panel.classList.add("activo"), 10);
-    setTimeout(() => {
-      document.addEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }, 20);
-  }
-
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // FUNCION SI EL CLICK FUERA DEL CONTENEDOR DEL GENERAL LO CIERRA /////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function DetectarClickFueraDeGenerar(event) {
-    if (
-      !panel.contains(event.target) &&
-      event.target.id !== "btnMostrarGenerar"
-    ) {
-      panel.classList.remove("activo");
-      setTimeout(() => panel.classList.add("d-none"), 300);
-      document.removeEventListener("mousedown", DetectarClickFueraDeGenerar);
-    }
-  }
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL ERROR DE CATCH ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,29 +51,6 @@ function AbrilPanelGenerar(idPanel) {
 function MostrarErrorCatch() {
   console.error("No se pudo acceder al servidor. Por favor, inténtalo de nuevo.");
 }
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/// FUNCION PARA OCULTAR Y MOSTRAR EL CONTENEDOR DE AYUDA     ///////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-function toggleAyuda() {
-  const btnToggle = document.getElementById('toggle-ayuda');
-  const contenidoAyuda = document.getElementById('contenido-ayuda');
-  const headerAyuda = document.querySelector('.info-ayuda-header');
-
-  const oculto = contenidoAyuda.classList.toggle('d-none');
-
-  if (oculto) {
-    btnToggle.innerHTML = '<i class="bi bi-eye me-1"></i> Mostrar';
-    headerAyuda.classList.remove('mb-3');
-  } else {
-    btnToggle.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Ocultar';
-    headerAyuda.classList.add('mb-3');
-  }
-}
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR EL ERROR GENERAR INFORMES VACIOS///////////////////////////////////////////////////////////
@@ -165,10 +98,6 @@ function ocultarSpinnerDetalle(panel, claseSpinner = ".panel-detalle-spinner") {
   const spinner = panel.querySelector(claseSpinner);
   if (spinner) spinner.style.display = "none";
 }
-
-
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -233,15 +162,25 @@ function toggleResultados() {
 
   if (!btn || !contenedor) return;
 
-  const textoBtn = btn.querySelector(".texto-btn");
+  const textoBtn = btn.querySelector("span");
+  const icono = btn.querySelector("i");
   const abierto = contenedor.classList.toggle("show");
 
-  btn.classList.toggle("active");
+  if (abierto) {
+      contenedor.classList.remove('d-none');
+      contenedor.classList.add('mb-3')
+  } else {
+      contenedor.classList.add('d-none');
+  }
 
-  if (textoBtn) {
-    textoBtn.textContent = abierto
-      ? "Ocultar Resultados"
-      : "Más Resultados";
+  if (textoBtn && icono) {
+    if (abierto) {
+      textoBtn.textContent = "Ocultar Resultados";
+      icono.className = "fa-solid fa-eye-slash me-1"; 
+    } else {
+      textoBtn.textContent = "Más Resultados";
+      icono.className = "fa-solid fa-list me-1"; 
+    }
   }
 }
 

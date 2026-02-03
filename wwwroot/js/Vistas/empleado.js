@@ -198,7 +198,7 @@ function MostrarEmpleados(data) {
 
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
-        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
+        <div class="card shadow-sm p-2 rounded position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"
       }; background-color: ${activo ? "#ffffff" : "#f8d7da3b"} ;  min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
 
@@ -1489,7 +1489,6 @@ async function GenerarInformePdfEmpleado() {
   const filtrosAplicados =
     filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
 
-
   doc.setTextColor(19, 115, 204);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
@@ -1541,11 +1540,9 @@ async function GenerarInformePdfEmpleado() {
   doc.text(filtrosText, 45, y);
   y += filtrosText.length * 6 + 0;
 
-
   doc.setDrawColor(180);
   doc.line(10, y, doc.internal.pageSize.getWidth() - 10, y);
   y += 7;
-
 
   doc.setTextColor(0, 0, 0);
   const anchoPagina = doc.internal.pageSize.getWidth() - 30;
@@ -1560,15 +1557,15 @@ async function GenerarInformePdfEmpleado() {
     y += 6;
 
     const datosEmpleado = [
-      ["DNI", e.dni],
+      ["DNI", e.dni], 
       ["Legajo", e.nroLegajo],
       ["Edad", e.edad],
       ["CUIL", e.cuil],
       ["Dirección", e.direccion],
-      ["Localidad", e.localidadIdString],
-      ["Puesto", e.puestoIdString],
-      ["Estado Civil", e.estadoCivilesString],
-      ["Sexo", e.tipoSexoString],
+      ["Localidad", e.localidadNombre],
+      ["Puesto", e.puestoNombre],
+      ["Estado Civil", e.estadoCivil],
+      ["Sexo", e.sexo],
       ["Email", e.email],
       ["Teléfono", e.telefono],
       ["Hijos", e.cantidadHijos]
@@ -1609,7 +1606,6 @@ async function GenerarInformePdfEmpleado() {
 
     y += 10;
   });
-
 
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {

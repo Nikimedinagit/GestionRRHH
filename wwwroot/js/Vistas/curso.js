@@ -288,87 +288,86 @@ function MostrarCursosDesktop(data) {
       `);
 
       const certificadoDetalle = $(`
-  <div class="panelCertificados px-2 pb-2" style="display:none; background-color:#ffffff;">
+                      <div class="panelCertificados px-2 pb-2" style="display:none; background-color:#ffffff;">
 
-    <div class="panel-certificado-contenido" style="display:none;">
-      <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-        <h3 class="m-0" style="font-size:1rem; font-weight:600;">Certificados del Curso</h3>
+                        <div class="panel-certificado-contenido" style="display:none;">
+                          <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+                            <h3 class="m-0" style="font-size:1rem; font-weight:600;">Certificados del Curso</h3>
 
-        <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
-                data-curso-id="${element.id}">
-          <i class="fa-solid fa-square-plus me-1"></i>
-          Cargar Certificados
-        </button>
-      </div>
+                            <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
+                                    data-curso-id="${element.id}">
+                              <i class="fa-solid fa-square-plus me-1"></i>
+                              Cargar Certificados
+                            </button>
+                          </div>
 
-      <div class="certificados-panel">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover align-middle w-100">
-            <thead>
-              <tr>
-                <th class="text-start header-table">Empleado</th>
-                <th class="text-center header-table">Documento Descargable</th>
-                <th class="text-center header-table">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                          <div class="certificados-panel">
+                            <div class="table-responsive">
+                              <table class="table table-bordered table-hover align-middle w-100">
+                                <thead>
+                                  <tr>
+                                    <th class="text-start header-table">Empleado</th>
+                                    <th class="text-center header-table">Documento Descargable</th>
+                                    <th class="text-center header-table">Acciones</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="tabla-certificados-body" data-curso-id="${element.id}"></tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
 
-    <div class="panel-detalle-spinner" style="display:flex;">
-      <div class="card-carga-detalle">
-        <div class="spinner-border text-primary spinner-pequena"></div>
-        <p class="text-muted mt-2">Cargando certificados<span class="dots"></span></p>
-      </div>
-    </div>
+                        <div class="panel-detalle-spinner" style="display:flex;">
+                          <div class="card-carga-detalle">
+                            <div class="spinner-border text-primary spinner-pequena"></div>
+                            <p class="text-muted mt-2">Cargando certificados<span class="dots"></span></p>
+                          </div>
+                        </div>
 
-  </div>
-`);
+                      </div>
+                    `);
 
 
       const asistenciaDetalle = $(`
-  <div class="panelAsistencias px-2 pb-2" style="display:none; background-color:#ffffff;">
+                    <div class="panelAsistencias px-2 pb-2" style="display:none; background-color:#ffffff;">
 
-    <div class="panel-asistencia-contenido" style="display:none;">
-      <div class="d-flex align-items-center justify-content-between p-2 mt-1">
-        <h3 class="m-0" style="font-size:1rem; font-weight:600;">Asistencia del Curso</h3>
+                      <div class="panel-asistencia-contenido" style="display:none;">
+                        <div class="d-flex align-items-center justify-content-between p-2 mt-1">
+                          <h3 class="m-0" style="font-size:1rem; font-weight:600;">Asistencia del Curso</h3>
 
-        <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
-                data-curso-id="${element.id}">
-          <i class="fa-solid fa-square-plus me-1"></i>
-          Registrar Asistencia
-        </button>
-      </div>
+                          <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
+                                  data-curso-id="${element.id}">
+                            <i class="fa-solid fa-square-plus me-1"></i>
+                            Registrar Asistencia
+                          </button>
+                        </div>
 
-      <div class="asistencias-panel">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th class="text-center header-table">Asistió</th>
-                <th class="text-start header-table">Empleado</th>
-                <th class="text-center header-table">Resultado</th>
-                <th class="text-center header-table">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                        <div class="asistencias-panel">
+                          <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                              <thead>
+                                <tr>
+                                  <th class="text-center header-table">Asistió</th>
+                                  <th class="text-start header-table">Empleado</th>
+                                  <th class="text-center header-table">Resultado</th>
+                                  <th class="text-center header-table">Acciones</th>
+                                </tr>
+                              </thead>
+                              <tbody class="tabla-asistencias-body" data-curso-id="${element.id}"></tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
 
-    <div class="panel-detalle-spinner" style="display:flex;">
-      <div class="card-carga-detalle">
-        <div class="spinner-border text-primary spinner-pequena"></div>
-        <p class="text-muted mt-2">Cargando asistencias<span class="dots"></span></p>
-      </div>
-    </div>
+                      <div class="panel-detalle-spinner" style="display:flex;">
+                        <div class="card-carga-detalle">
+                          <div class="spinner-border text-primary spinner-pequena"></div>
+                          <p class="text-muted mt-2">Cargando asistencias<span class="dots"></span></p>
+                        </div>
+                      </div>
 
-  </div>
-`);
-
+                    </div>
+                  `);
 
       function togglePanel(item, panel, btn, tipo = "descripcion", cursoId = null) {
         btn.on("click", function (e) {
@@ -399,7 +398,6 @@ function MostrarCursosDesktop(data) {
           }
         });
       }
-
 
       togglePanel(
         item,
@@ -1184,25 +1182,34 @@ async function EditarCurso(id) {
 //////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION APRA OBTENER  LOS DATOS DE LA API //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerAsistencia(cursoId, panelDetalle) {
-  const contenido = panelDetalle.querySelector(".panel-asistencia-contenido");
+async function ObtenerAsistencia(cursoId, panelDetalle = null) {
+  const contenido = panelDetalle ? panelDetalle.querySelector(".panel-asistencia-contenido") : null;
 
-  mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
-  if (contenido) contenido.style.display = "none";
+  if (panelDetalle) {
+    mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+    if (contenido) contenido.style.display = "none";
+  }
 
   try {
     const response = await authFetch(`AsistenciasCapacitacion/PorCurso/${cursoId}`);
     const data = await response.json();
 
+
+    const delay = panelDetalle ? 500 : 0;
+
     setTimeout(() => {
+      if (panelDetalle) {
+        ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+        if (contenido) contenido.style.display = "block";
+      }
+      MostrarAsistencias(cursoId, data);
+    }, delay);
+
+  } catch (error) {
+    if (panelDetalle) {
       ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
       if (contenido) contenido.style.display = "block";
-
-      MostrarAsistencias(cursoId, data);
-    }, 500);
-  } catch (error) {
-    ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
-    if (contenido) contenido.style.display = "block";
+    }
     MostrarErrorCatch();
   }
 }
@@ -1493,17 +1500,16 @@ async function CrearAsistencia() {
     });
     const data = await response.json();
 
-    // Si hay error de validación, mostrar y NO cerrar modal
     if (data.mensaje) {
       ValidarAsistenciaExistente(data.mensaje);
       ocultarOverlayGuardandoAsistencia();
       return;
     }
 
-    // Si es exitoso, refrescar datos y mostrar mensaje
     setTimeout(() => {
       ocultarOverlayGuardandoAsistencia();
-      ObtenerAsistencia(cursoIdSeleccionado, false);
+      ObtenerAsistencia(cursoIdSeleccionado);
+      ObtenerTotalCursos();
       cerrarPanelAsistencias();
 
       Swal.fire({
@@ -1530,8 +1536,6 @@ async function CrearAsistencia() {
     ocultarOverlayGuardandoAsistencia();
   }
 }
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1654,7 +1658,9 @@ async function MarcarAsistencia(id, nuevoEstado) {
   })
     .then(() => {
       if (nuevoEstado) {
-        ObtenerAsistencia(cursoIdSeleccionado, false);
+        ObtenerAsistencia(cursoIdSeleccionado);
+        ObtenerTotalCursos();
+
         Swal.fire({
           title: "¡Asistio Empleado!",
           toast: true,
@@ -1705,29 +1711,37 @@ async function MarcarAsistencia(id, nuevoEstado) {
 //////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA OBTENER LOS CERTIFICADOS ///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerCertificados(cursoId, panelDetalle) {
-  const contenido = panelDetalle.querySelector(".panel-certificado-contenido");
+async function ObtenerCertificados(cursoId, panelDetalle = null) {
+  const contenido = panelDetalle ? panelDetalle.querySelector(".panel-certificado-contenido") : null;
 
-  mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
-  if (contenido) contenido.style.display = "none";
+  if (panelDetalle) {
+    mostrarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+    if (contenido) contenido.style.display = "none";
+  }
 
   try {
     const response = await authFetch(`Certificados/PorCurso/${cursoId}`);
     const data = await response.json();
 
+    const delay = panelDetalle ? 500 : 0;
+
     setTimeout(() => {
-      ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
-      if (contenido) contenido.style.display = "block";
+      if (panelDetalle) {
+        ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+        if (contenido) contenido.style.display = "block";
+      }
 
       MostrarCertificados(cursoId, data);
-    }, 500);
+    }, delay);
+
   } catch (error) {
-    ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
-    if (contenido) contenido.style.display = "block";
+    if (panelDetalle) {
+      ocultarSpinnerDetalle(panelDetalle, ".panel-detalle-spinner");
+      if (contenido) contenido.style.display = "block";
+    }
     MostrarErrorCatch();
   }
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -2025,7 +2039,8 @@ async function CrearCertificado() {
 
     setTimeout(() => {
       ocultarOverlayGuardandoCertificado();
-      ObtenerCertificados(cursoIdSeleccionado, false);
+      ObtenerCertificados(cursoIdSeleccionado);
+      ObtenerTotalCursos();
       cerrarPanelCertificados();
 
       Swal.fire({

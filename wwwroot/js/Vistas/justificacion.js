@@ -301,7 +301,7 @@ function MostrarJustificacionesMobile(data) {
     const card = document.createElement("div");
     card.className = "col-12 col-md-6 col-lg-4 col-xl-3 mb-3";
     card.innerHTML = `
-          <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 140px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
+          <div class="card shadow-sm p-2 rounded d-flex flex-column w-100" style="min-height: 140px; border-left: 3px solid ${element.claseBorde === 'green' ? '#198754' : element.claseBorde === 'yellow' ? '#ffc107' : '#dee2e6'}">
             <div class="flex-grow-1 d-flex flex-column">
               <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">${element.empleadoString || "Sin nombre"}</h5>
               <small class="text-muted mb-1" style="font-size: 0.9rem;"><i class="bx bx-calendar me-1"></i>Día del incidente: ${fecha}</small>
