@@ -218,7 +218,7 @@ async function GenerarInformePdfListadoJustificaciones() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Estadístico_De_Justificaciones.pdf");
         return;
     }
 

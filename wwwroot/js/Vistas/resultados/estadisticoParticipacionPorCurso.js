@@ -313,7 +313,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
   const esMobile = window.innerWidth < 768;
 
   if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
+    doc.save("Informe_Participación_Asistencia_Por_Curso.pdf");
     return;
   }
 

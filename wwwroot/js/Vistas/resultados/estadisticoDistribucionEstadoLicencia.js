@@ -213,7 +213,7 @@ async function GenerarInformePdfDistribucionEstados() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Distribución_De_Estado_De_Licencia.pdf");
         return;
     }
 

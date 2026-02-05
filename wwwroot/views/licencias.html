@@ -19,13 +19,17 @@
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="bg-white shadow-sm rounded p-2 mb-3">
-        <h3 class="titulo-seccion mb-1">Gestor de Licencias</h3>
-        <p class="text-muted fs-6 mb-0" id="tituloLicencia">
-            Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma
-            rápida y sencilla.
-        </p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+        style="border-left-width: 3px !important;">
+        <div class="px-2">
+            <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Gestor de Licencias
+            </h4>
+            <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;" id="tituloLicencia">
+                Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma
+                rápida y sencilla. </p>
+        </div>
     </div>
+
 
 
     <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
@@ -34,21 +38,22 @@
         <div id="fondoOscuro" onclick="CerrarPanelLicencia()"></div>
 
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <button class="btn btn-agregar" onclick="AbrirPanelLicencia()">
-                <i class="fa-solid fa-square-plus me-1"></i>
+            <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelLicencia()">
+                <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
                 <span>Solicitar Licencias</span>
             </button>
 
-            <div class="d-flex gap-2 flex-wrap responsive-buttons d-none" id="contenedorFiltrosLicencias">
-                <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-                    <i class="fa-solid fa-filter me-1"></i>
-                    <span>Filtros</span>
+            <div class="d-flex gap-2 flex-wrap responsive-button d-none" id="contenedorFiltrosLicencias">
+                <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+                    onclick="toggleFiltros()">
+                    <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+                    <span class="texto-btn">Filtros</span>
                 </button>
 
-                <button id="btnMostrarGenerar" class="btn btn-informe responsive-buttons d-none"
+                <button class="btn rounded btn-informe py-1 px-2 border bg-white"
                     onclick="GenerarInformePdfLicencias()">
-                    <i class="fa-solid fa-file-lines me-1"></i>
-                    <span>Generar Informe</span>
+                    <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
+                    <span>Exportar</span>
                 </button>
             </div>
         </div>
@@ -104,69 +109,69 @@
 
 
         <!-- ======================================= Card Estadisticas Licencias ====================================== -->
-        <div class="d-none" id="cardEstadisticasLicencias">
+        <div class="d-none my-3" id="cardEstadisticasLicencias">
             <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-                <div class="card p-2 border-0"
-                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                <div class="card p-2 border-0 shadow-sm card-resumen"
+                    style="background-color: #ffffff; min-width: 180px; flex: 1 1 calc(20% - 1rem); border-left: 3px solid #6c757d !important;">
                     <div class="d-flex align-items-center">
-                        <div class="bg-secondary bg-opacity-10 p-3  me-3">
-                            <i class="fas fa-layer-group text-secondary fs-4"></i>
+                        <div class="p-2 me-3 rounded" style="background-color: #f8f9fa;">
+                            <i class="fas fa-layer-group text-secondary fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 text-muted small">Total licencias</p>
+                            <p class="mb-0 text-muted small fw-bold">Total</p>
                             <h5 class="mb-0 fw-bold" id="totalLicencias">0</h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-2 border-0"
-                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                <div class="card p-2 border-0 shadow-sm card-resumen"
+                    style="background-color: #ffffff; min-width: 180px; flex: 1 1 calc(20% - 1rem); border-left: 3px solid #198754 !important;">
                     <div class="d-flex align-items-center">
-                        <div class="bg-success bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-check text-success fs-4"></i>
+                        <div class="p-2 me-3 rounded" style="background-color: #e2f4ea;">
+                            <i class="fas fa-check text-success fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 text-muted small">Aprobadas</p>
+                            <p class="mb-0 text-muted small fw-bold">Aprobadas</p>
                             <h5 class="mb-0 fw-bold" id="aprobadasLicencias">0</h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-2 border-0"
-                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                <div class="card p-2 border-0 shadow-sm card-resumen"
+                    style="background-color: #ffffff; min-width: 180px; flex: 1 1 calc(20% - 1rem); border-left: 3px solid #ffc107 !important;">
                     <div class="d-flex align-items-center">
-                        <div class="bg-warning bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-clock text-warning fs-4"></i>
+                        <div class="p-2 me-3 rounded" style="background-color: #fff3cd;">
+                            <i class="fas fa-clock text-warning fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 text-muted small">Pendientes</p>
+                            <p class="mb-0 text-muted small fw-bold">Pendientes</p>
                             <h5 class="mb-0 fw-bold" id="pendientesLicencias">0</h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-2 border-0"
-                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                <div class="card p-2 border-0 shadow-sm card-resumen"
+                    style="background-color: #ffffff; min-width: 180px; flex: 1 1 calc(20% - 1rem); border-left: 3px solid #dc3545 !important;">
                     <div class="d-flex align-items-center">
-                        <div class="bg-danger bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-times text-danger fs-4"></i>
+                        <div class="p-2 me-3 rounded" style="background-color: #f8d7da;">
+                            <i class="fas fa-times text-danger fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 text-muted small">Rechazadas</p>
+                            <p class="mb-0 text-muted small fw-bold">Rechazadas</p>
                             <h5 class="mb-0 fw-bold" id="rechazadasLicencias">0</h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-2 border-0"
-                    style="background-color: #f3f4f6; min-width: 180px; flex: 1 1 calc(20% - 1rem);">
+                <div class="card p-2 border-0 shadow-sm card-resumen"
+                    style="background-color: #ffffff; min-width: 180px; flex: 1 1 calc(20% - 1rem); border-left: 3px solid #212529 !important;">
                     <div class="d-flex align-items-center">
-                        <div class="bg-dark bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-exclamation-circle text-dark fs-4"></i>
+                        <div class="p-2 me-3 rounded" style="background-color: #e9ecef;">
+                            <i class="fas fa-exclamation-circle text-dark fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 text-muted small">Expiradas</p>
+                            <p class="mb-0 text-muted small fw-bold">Expiradas</p>
                             <h5 class="mb-0 fw-bold" id="expiradasLicencias">0</h5>
                         </div>
                     </div>
@@ -174,126 +179,6 @@
 
             </div>
         </div>
-
-
-        <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-        <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
-            <div class="d-flex justify-content-between align-items-center info-ayuda-header">
-                <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">Información de Ayuda</h5>
-                <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-                    <i class="bi bi-eye me-1"></i> Mostrar
-                </button>
-            </div>
-
-            <div id="contenido-ayuda" class="row g-3 d-none">
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-                        <i class="bi bi-hourglass-split me-3" style="color:#856404; font-size:1.2rem;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#856404;">Pendiente</p>
-                            <p class="mb-0 small text-muted">
-                                La licencia está en espera de revisión. Se muestra con fondo amarillo pastel y borde
-                                inferior <strong>amarillo</strong>.
-                                <span class="badge fw-bold ms-1"
-                                    style="background-color:#fff3cd; color:#856404;">PENDIENTE</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-                        <i class="bi bi-check-circle-fill me-3" style="color:#2e7d32; font-size:1.2rem;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#2e7d32;">Aprobada</p>
-                            <p class="mb-0 small text-muted">
-                                La licencia fue aceptada. Se muestra con fondo verde pastel y borde inferior
-                                <strong>verde</strong>.
-                                <span class="badge fw-bold ms-1"
-                                    style="background-color:#d4f4dd; color:#2e7d32;">APROBADA</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-                        <i class="bi bi-x-circle-fill me-3" style="color:#c62828; font-size:1.2rem;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#c62828;">Rechazada</p>
-                            <p class="mb-0 small text-muted">
-                                La licencia fue denegada. Se muestra con fondo rojo pastel y borde inferior
-                                <strong>rojo</strong>.
-                                <span class="badge fw-bold ms-1"
-                                    style="background-color:#f8d7da; color:#c62828;">RECHAZADA</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-                        <i class="bi bi-calendar-x me-3" style="color:#495057; font-size:1.2rem;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#495057;">Expirada</p>
-                            <p class="mb-0 small text-muted">
-                                La licencia ya finalizó. Se muestra con fondo gris pastel y borde inferior
-                                <strong>gris</strong>.
-                                <span class="badge fw-bold ms-1"
-                                    style="background-color:#e2e3e5; color:#495057;">EXPIRADA</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-                        <i class="bi bi-file-earmark-text me-3" style="font-size:1.2rem; color:#6c757d;"></i>
-                        <div>
-                            <p class="fw-bold mb-1">Documento Adjunto</p>
-                            <p class="mb-0 small text-muted">Permite descargar el archivo adjunto que respalda la
-                                solicitud de licencia.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-                        <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
-                        <div>
-                            <p class="fw-bold mb-1">Editar</p>
-                            <p class="mb-0 small text-muted">Permite modificar la licencia si está en estado pendiente.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-                        <i class="bi bi-trash3 me-3" style="font-size:1.2rem; color:#dc3545;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#dc3545;">Eliminar</p>
-                            <p class="mb-0 small text-muted">Permite borrar la solicitud de licencia si aún está
-                                pendiente.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4 d-flex" id="LicenciaAcciones">
-                    <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-                        <i class="bi bi-sliders me-3" style="font-size:1.2rem; color:#6f42c1;"></i>
-                        <div>
-                            <p class="fw-bold mb-1" style="color:#6f42c1;">Aprobar / Rechazar</p>
-                            <p class="mb-0 small text-muted">Permite aprobar o rechazar la licencia desde el panel de
-                                revisión.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
 
         <!-- ======================================= Tarjetas de licencias ====================================== -->
         <div id="licenciasContainer" class="row g-3"></div>
@@ -313,15 +198,15 @@
 
                 <!-- ======================================= Spinner Formualrio ====================================== -->
                 <div id="overlayGuardando" class="overlay-guardando d-none">
-          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
-            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
-            <div class="spinner-border text-primary spinner-grande my-1" role="status">
-            </div>
-            <p class="text-muted mensaje-carga">
-              Estamos procesando la información <br> <span class="dots"></span>
-            </p>
-          </div>
-        </div>
+                    <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+                        <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+                        <div class="spinner-border text-primary spinner-grande my-1" role="status">
+                        </div>
+                        <p class="text-muted mensaje-carga">
+                            Estamos procesando la información <br> <span class="dots"></span>
+                        </p>
+                    </div>
+                </div>
 
                 <input type="hidden" id="IdLicencia" />
 

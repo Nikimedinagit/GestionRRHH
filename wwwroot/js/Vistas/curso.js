@@ -568,7 +568,7 @@ function MostrarCursosMobile(data) {
       card.className =
         "col-12 col-md-6 col-lg-4 col-xl-3 d-flex flex-column mb-3";
       card.innerHTML = `
-            <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100">
+            <div class="card shadow-sm p-2 rounded d-flex flex-column w-100">
 
               <div>
                 <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;">
@@ -684,7 +684,7 @@ function MostrarCursosMobile(data) {
 
       const card = $(` 
         <div class="col-12 col-md-6 mb-3">
-          <div class="card shadow-sm rounded-3 p-3 h-100" style="${borderColor}">
+          <div class="card shadow-sm rounded p-3 h-100" style="${borderColor}">
             <h5 class="fw-bold mb-2" title="${element.nombre || "Sin nombre"
         }">${element.nombre || "Sin nombre"}</h5>
             <p class="text-muted mb-2" style="font-size: 0.9rem;">${descripcionCorta}</p>
@@ -1246,7 +1246,7 @@ function MostrarAsistencias(cursoId, data) {
 
       const card = $(`
         <div class="col-12 mb-2">
-          <div class="card shadow-sm rounded-3 p-3 d-flex align-items-center justify-content-between flex-row">
+          <div class="card shadow-sm rounded p-3 d-flex align-items-center justify-content-between flex-row">
             
             <div class="d-flex align-items-center flex-grow-1 me-2">
               <input class="form-check-input checkbox-asistio-card me-2" 
@@ -1632,7 +1632,7 @@ async function EliminarSiAsistencia(id) {
         `,
         confirmButtonText: "Entendido",
         customClass: {
-          popup: "shadow rounded-3 p-3",
+          popup: "shadow rounded p-3",
           confirmButton: "btn btn-danger",
           title: "fs-5 text-dark mb-2",
           htmlContainer: "text-muted fs-6",
@@ -1781,7 +1781,7 @@ function MostrarCertificados(cursoId, data) {
 
       const card = $(`
           <div class="col-12 mb-2">
-            <div class="card shadow-sm rounded-3 p-2">
+            <div class="card shadow-sm rounded p-2">
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <div>${documentoHtml}</div>
@@ -2452,7 +2452,7 @@ async function GenerarInformePdfCursos() {
   const esMobile = window.innerWidth < 768;
 
   if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
+    doc.save("Informe_Cursos.pdf");
     return;
   }
 

@@ -271,7 +271,7 @@ async function GenerarInformePdfListadoAsistenciaPorEmpleado() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Asistencia_Por_Empelado.pdf");
         return;
     }
 

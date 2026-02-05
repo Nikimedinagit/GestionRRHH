@@ -20,11 +20,15 @@
 
 
   <!--==================================== Título ===================================== -->
-  <div class="bg-white shadow-sm rounded p-2 mb-3">
-    <h3 class="titulo-seccion mb-1">Seguimiento de Evaluaciones</h3>
-    <p class="text-muted mb-0" id="tituloEvaluaciones">
-      Gestioná el seguimiento integral de las evaluaciones del personal, incluyendo estados, resultados y criterios.
-    </p>
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Seguimiento de Evaluaciones
+      </h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;" id="tituloEvaluaciones">
+        Gestioná el seguimiento integral de las evaluaciones del personal, incluyendo estados, resultados y criterios.
+      </p>
+    </div>
   </div>
 
 
@@ -35,21 +39,23 @@
     <div id="fondoOscuro" onclick="cerrarPanelEvaluaciones()"></div>
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-      <button class="btn btn-agregar d-none" onclick="abrirPanelEvaluaciones()" id="btnNuevaEvaluacion">
-        <i class="fa-solid fa-square-plus me-1"></i>
+      <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="abrirPanelEvaluaciones()"
+        id="btnNuevaEvaluacion">
+        <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
         <span>Nueva Evaluación</span>
       </button>
 
-      <div class="d-flex gap-2 flex-wrap responsive-buttons">
-        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-          <i class="fa-solid fa-filter me-1"></i>
-          <span>Filtros</span>
+      <div class="d-flex gap-2 flex-wrap responsive-button">
+
+        <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+          onclick="toggleFiltros()">
+          <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+          <span class="texto-btn">Filtros</span>
         </button>
 
-        <button id="btnMostrarGenerar" class="btn btn-informe responsive-buttons d-none"
-          onclick="GenerarInformePdfEvaluacion()">
-          <i class="fa-solid fa-file-lines me-1"></i> Generar Informe
+        <button class="btn rounded btn-informe py-1 px-2 border bg-white" onclick="GenerarInformePdfEvaluacion()">
+          <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
+          <span>Exportar</span>
         </button>
       </div>
     </div>
@@ -87,40 +93,43 @@
 
 
     <!-- ================================ Contenedor de tarjetas de resumen de evaluaciones ===================================== -->
-    <div class="d-none" id="cardEstadisticasEvaluaciones">
+    <div class="d-none my-3" id="cardEstadisticasEvaluaciones">
       <div class="d-flex flex-wrap justify-content-between" style="gap: 1rem;">
 
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0 shadow-sm"
+          style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0d6efd !important; background-color: #ffffff;">
           <div class="d-flex align-items-center">
-            <div class="bg-primary bg-opacity-10 p-3 me-3">
-              <i class="fas fa-tasks text-primary fs-4"></i>
+            <div class="p-2 me-3 rounded" style="background-color: #e7f1ff;">
+              <i class="fas fa-tasks text-primary fs-5"></i>
             </div>
             <div>
-              <p class="mb-0 text-muted small">Total evaluaciones</p>
+              <p class="mb-0 text-muted small fw-bold">Total</p>
               <h5 class="mb-0 fw-bold" id="totalEvaluaciones">0</h5>
             </div>
           </div>
         </div>
 
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0 shadow-sm"
+          style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0dcaf0 !important; background-color: #ffffff;">
           <div class="d-flex align-items-center">
-            <div class="bg-info bg-opacity-10 p-3 me-3">
-              <i class="fas fa-chart-line text-info fs-4"></i>
+            <div class="p-2 me-3 rounded" style="background-color: #e1faff;">
+              <i class="fas fa-chart-line text-info fs-5"></i>
             </div>
             <div>
-              <p class="mb-0 text-muted small">Promedio general</p>
+              <p class="mb-0 text-muted small fw-bold">Promedio General</p>
               <h5 class="mb-0 fw-bold" id="promedioEvaluaciones">0.00</h5>
             </div>
           </div>
         </div>
 
-        <div class="card p-2 border-0" style="background-color: #f3f4f6; min-width: 200px; flex: 1 1 calc(33% - 1rem);">
+        <div class="card p-2 border-0 shadow-sm"
+          style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #198754 !important; background-color: #ffffff;">
           <div class="d-flex align-items-center">
-            <div class="bg-success bg-opacity-10 p-3 me-3">
-              <i class="fas fa-users text-success fs-4"></i>
+            <div class="p-2 me-3 rounded" style="background-color: #e2f4ea;">
+              <i class="fas fa-users text-success fs-5"></i>
             </div>
             <div>
-              <p class="mb-0 text-muted small">Empleados evaluados</p>
+              <p class="mb-0 text-muted small fw-bold">Empleados Evaluados</p>
               <h5 class="mb-0 fw-bold" id="totalEmpleadosEvaluados">0</h5>
             </div>
           </div>
@@ -128,132 +137,6 @@
 
       </div>
     </div>
-
-
-    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
-      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
-        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
-          Información de Ayuda
-        </h5>
-        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-          <i class="bi bi-eye me-1"></i> Mostrar
-        </button>
-      </div>
-
-      <div id="contenido-ayuda" class="row g-3 d-none">
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-star-fill me-3" style="color:#198754; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#198754;">Excelente</p>
-              <p class="mb-0 small text-muted">Nota 9 o más. Se muestra con <span
-                  class="badge-pill badge-excelente">EXCELENTE</span>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-star-half me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#0d6efd;">Muy Buena</p>
-              <p class="mb-0 small text-muted">Nota entre 7 y 8. Se muestra con <span
-                  class="badge-pill badge-muybuena">MUY BUENA</span>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-hand-thumbs-up me-3" style="color:#ffc107; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#ffc107;">Buena</p>
-              <p class="mb-0 small text-muted">Nota entre 5 y 6. Se muestra con <span
-                  class="badge-pill badge-buena">BUENA</span>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-hand-thumbs-down me-3" style="color:#6c757d; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#6c757d;">Regular</p>
-              <p class="mb-0 small text-muted">Nota menor a 5. Se muestra con <span
-                  class="badge-pill badge-regular">REGULAR</span>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionCreadoPorUsuario">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-            <i class="bi bi-person-check-fill me-3" style="color:#198754; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#198754;">Creada por el Usuario</p>
-              <p class="mb-0 small text-muted">Evaluación que el usuario realizó a otro. Puede editarse. Indicada con
-                borde izquierdo <strong>verde</strong>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionCreadoSuperior">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-            <i class="bi bi-person-fill-lock me-3" style="color:#ffc107; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#ffc107;">Creada por un Superior</p>
-              <p class="mb-0 small text-muted">Evaluación registrada por un superior para un tercero. Solo se visualiza.
-                Indicada con borde <strong>amarillo</strong>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex" id="EvaluacionRecibida">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100 border-start">
-            <i class="bi bi-person-fill me-3" style="color:#0d6efd; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#0d6efd;">Recibida por el Usuario</p>
-              <p class="mb-0 small text-muted">Evaluación que el usuario recibió de un superior. Solo se visualiza.
-                Indicada con borde <strong>azul</strong>.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-chevron-down me-3" style="font-size:1.2rem; color:#6c757d;"></i>
-            <div>
-              <p class="fw-bold mb-1">Detalle</p>
-              <p class="mb-0 small text-muted">Despliega los criterios de evaluación y sus descripciones.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex" id="JustificacionCriterioEliminar">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100"> <i class="bi bi-trash me-3"
-              style="font-size:1.2rem; color:#fd0d1d;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#fd0d1d;">Eliminar</p>
-              <p class="mb-0 small text-muted"> Permite borrar el criterio de evaluación asignado en el detalle de forma
-                permanente.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
-            <div>
-              <p class="fw-bold mb-1">Editar</p>
-              <p class="mb-0 small text-muted">Permite modificar la evaluación si fue creada por el mismo usuario.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
 
 
     <!-- ================================ Contenedor de las evaluaciones ===================================== -->

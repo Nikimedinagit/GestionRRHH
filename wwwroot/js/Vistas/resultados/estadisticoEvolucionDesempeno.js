@@ -280,7 +280,7 @@ async function GenerarInformePdfEvolucionDesempeno() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Evolución_Del_Desempeño_Por_Año_Trimestre.pdf");
         return;
     }
 

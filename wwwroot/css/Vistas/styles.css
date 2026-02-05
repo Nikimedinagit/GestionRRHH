@@ -1519,7 +1519,6 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 @media (max-width: 580px) {
   .d-flex.justify-content-between>.btn-agregar {
     flex: 1 1 100%;
-    margin-bottom: 8px;
   }
 
   .responsive-button {

@@ -106,8 +106,8 @@ function MostrarAsistenciaPorSector(data) {
     const badge = (valor, estilo) =>
         `<span style="${badgeBase} background:${estilo.bg}; color:${estilo.color};">${valor}</span>`;
 
-    const isMobile = mqMobile.matches;          
-    const isTabletMobile = mqTabletMobile.matches; 
+    const isMobile = mqMobile.matches;
+    const isTabletMobile = mqTabletMobile.matches;
 
     data.forEach((sector, idxSector) => {
 
@@ -166,7 +166,7 @@ function MostrarAsistenciaPorSector(data) {
                         </td>
                     </tr>
                 `);
-                return; 
+                return;
             }
 
             tabla.append(`
@@ -198,7 +198,7 @@ function Capitalizar(texto) {
 // ========================== Generar Informe en PDF  ===============
 async function GenerarInformePdfListadoAsistenciaEmpeladoSector() {
 
-    const sectores = await  ObtenerAsistenciaPorSector();
+    const sectores = await ObtenerAsistenciaPorSector();
 
     if (!sectores || !Array.isArray(sectores) || sectores.length === 0) {
         ErrorGeneralInformePdf();
@@ -273,7 +273,7 @@ async function GenerarInformePdfListadoAsistenciaEmpeladoSector() {
 
         sector.empeladoAsistencia.forEach(emp => {
             body.push([
-                 `${emp.nombre} (Nro Legajo: ${emp.nroLegajo})`,
+                `${emp.nombre} (Nro Legajo: ${emp.nroLegajo})`,
                 emp.presente,
                 emp.ausentes,
                 emp.incompletas,
@@ -314,10 +314,10 @@ async function GenerarInformePdfListadoAsistenciaEmpeladoSector() {
 
     const esMobile = window.innerWidth < 768;
 
-  if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
-    return;
-  }
+    if (esMobile) {
+        doc.save("Informe_Estadistico_De_Asistenica_Por_Sector.pdf");
+        return;
+    }
 
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);

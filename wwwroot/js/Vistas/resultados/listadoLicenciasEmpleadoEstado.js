@@ -269,7 +269,7 @@ async function GenerarInformePdfListadoLicenciasPorEmpleadoEstado() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Licencias_Por_Empleado_Estado.pdf");
         return;
     }
 

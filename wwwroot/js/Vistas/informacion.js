@@ -75,7 +75,7 @@ function MostrarMiInformacion(empleado) {
 
   const card = `
     <div class="col-12 d-flex">
-      <div class="shadow-sm rounded w-100 h-100 bg-white" style="border-left: 4px solid ${bordeColor};">
+      <div class="shadow-sm rounded w-100 h-100 bg-white" style="border-left: 3px solid ${bordeColor};">
 
         <div class="border-bottom p-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
 

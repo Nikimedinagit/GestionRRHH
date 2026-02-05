@@ -256,7 +256,7 @@ async function GenerarInformePdfCantidadLicenciasPorTipo() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Cantidad_De_Licencia_Por_Tipo.pdf");
         return;
     }
     

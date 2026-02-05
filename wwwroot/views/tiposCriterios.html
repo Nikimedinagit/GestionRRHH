@@ -19,13 +19,15 @@
   </div>
 
   <!--==================================== Título =====================================-->
-  <div class="bg-white shadow-sm rounded p-2 mb-3">
-    <h3 class="titulo-seccion mb-1">Tipos de Criterios</h3>
-    <p class="text-muted fs-6 mb-0">
-      Gestioná los tipos de criterios que se utilizan como base en las evaluaciones del personal.
-    </p>
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Tipos de Criterios</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Gestioná los tipos de criterios que se utilizan como base en las evaluaciones del personal.
+      </p>
+    </div>
   </div>
-
 
 
 
@@ -37,16 +39,18 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
-      <button class="btn btn-agregar" onclick="AbrirPanelTipoDeCriterio()">
-        <i class="fa-solid fa-square-plus me-1"></i>
+      <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelTipoDeCriterio()">
+        <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
         <span>Agregar Criterio</span>
       </button>
 
       <div class="d-flex gap-2 flex-wrap responsive-button">
-        <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-          <i class="fa-solid fa-filter me-1"></i>
-          <span>Filtros</span>
+        <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+          onclick="toggleFiltros()">
+          <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+          <span class="texto-btn">Filtros</span>
         </button>
+
       </div>
     </div>
 
@@ -71,74 +75,6 @@
         </div>
       </div>
     </div>
-
-
-    <!--================================ Contenedor De Informacion de Ayuda ===================================== -->
-    <div class="info-ayuda mt-3 mb-3 p-2 rounded-3 shadow-sm">
-      <div class="d-flex justify-content-between align-items-center info-ayuda-header">
-        <h5 class="fw-bold mb-0" style="font-size: 1rem; color:#1d3557;">
-          Información de Ayuda
-        </h5>
-        <button id="toggle-ayuda" onclick="toggleAyuda()" class="btn-ayuda-toggle">
-          <i class="bi bi-eye me-1"></i> Mostrar
-        </button>
-      </div>
-
-      <div id="contenido-ayuda" class="row g-3 d-none">
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-toggle-on me-3" style="color:#198754; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#198754;">Criterio Activo</p>
-              <p class="mb-0 small text-muted">El criterio está disponible para ser asignado en evaluaciones. Se muestra
-                con ícono verde y opciones visibles.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-toggle-off me-3" style="color:#dc3545; font-size:1.2rem;"></i>
-            <div>
-              <p class="fw-bold mb-1" style="color:#dc3545;">Criterio Desactivado</p>
-              <p class="mb-0 small text-muted">El criterio está inactivo y no puede ser asignado. Se muestra con ícono
-                rojo y opciones ocultas.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <i class="bi bi-pencil-square me-3" style="font-size:1.2rem; color:#0d6efd;"></i>
-            <div>
-              <p class="fw-bold mb-1">Editar</p>
-              <p class="mb-0 small text-muted">Permite modificar el nombre del tipo de criterio seleccionado.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="info-box d-flex align-items-start p-3 rounded-3 w-100">
-            <div class="d-flex flex-column align-items-center me-3" style="font-size:1.2rem;">
-              <i class="bi bi-toggle-on mb-1" style="color:#198754;"></i>
-              <i class="bi bi-toggle-off" style="color:#dc3545;"></i>
-            </div>
-            <div>
-              <p class="fw-bold mb-1">Activar / Desactivar</p>
-              <p class="mb-0 small text-muted">
-                Permite habilitar (<i class="bi bi-toggle-on" style="color:#198754;"></i>) o deshabilitar (<i
-                  class="bi bi-toggle-off" style="color:#dc3545;"></i>) el criterio para su uso en evaluaciones.
-              </p>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
-
 
     <!-- ==================================== Tabla de Datos ===================================== -->
     <div class="table-responsive">

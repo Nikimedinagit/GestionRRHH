@@ -4,19 +4,21 @@
 
   <div class="col-span-12 md:col-span-7">
     <div
-      class="bg-white rounded shadow-sm p-3 flex items-center justify-center md:items-start h-auto md:min-h-[130px]">
+      class="bg-white rounded shadow-sm p-3 flex items-center justify-center md:items-start h-auto md:min-h-[130px] border-l-[3px] border-blue-600">
       <div class="flex flex-col items-center md:flex-row md:items-start gap-3 w-full">
-        <div class="bg-blue-100 p-3 rounded-full flex-shrink-0 mx-auto md:mx-0">
+
+        <div class="bg-blue-50 p-3 rounded-full flex-shrink-0 mx-auto md:mx-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
+
         <div class="flex flex-col flex-1 text-center md:text-left md:mt-0 items-center md:items-start">
           <h2 class="text-2xl font-semibold text-gray-900 mb-2 inline-block">
             ¡Bienvenido/a <span class="block md:inline text-blue-600" id="userName"></span>
-            <span class="hidden md:block h-1 w-16 bg-blue-600 mt-1 rounded"></span>
+            <span class="hidden md:block h-1 w-16 bg-blue-100 mt-1 rounded"></span>
           </h2>
           <p class="mt-1 text-gray-600">
             Esta tarjeta te muestra información esencial para que estés siempre al tanto.
@@ -27,13 +29,11 @@
   </div>
 
 
-
   <div class="col-span-12 md:col-span-5">
-    <div
-      class="bg-white rounded shadow-sm p-3 flex flex-col justify-between h-[130px]">
+    <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between h-[130px] border-l-[3px] border-red-600">
 
       <div class="flex items-center mb-2">
-        <div class="bg-red-100 p-1.5 rounded-full mr-2">
+        <div class="bg-red-50 p-1.5 rounded-full mr-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 2v2M18 2v2M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -42,20 +42,16 @@
         <h2 class="text-lg font-semibold text-gray-900 leading-tight">Próximo Festivo</h2>
       </div>
 
-      <div class="text-center py-1 border border-gray-200 rounded-lg bg-red-50">
+      <div class="text-center py-1 border border-red-100 rounded-lg bg-red-50/50">
         <div class="flex flex-wrap items-center justify-center gap-2 leading-none">
-
           <span id="fecha-festivo" class="text-lg font-bold text-red-700 whitespace-nowrap"></span>
-
           <span class="text-base font-semibold text-red-600 break-words text-center">
             "<span id="feriado-nombre" title="Nombre del feriado"></span>"
           </span>
-
         </div>
       </div>
 
-
-      <div id="feriado-tipo" class="mt-1 text-center text-sm font-medium  uppercase tracking-wide">
+      <div id="feriado-tipo" class="mt-1 text-center text-sm font-medium uppercase tracking-wide text-red-500/80">
       </div>
     </div>
   </div>
@@ -63,9 +59,10 @@
 
 
   <div class="col-span-12 d-none" id="CardResumenGeneral">
-    <div class="bg-white rounded shadow-sm p-3 flex flex-col hover:shadow-lg transition-shadow duration-300">
+    <div class="bg-white rounded shadow-sm p-4 flex flex-col border-l-[3px] border-blue-600">
+
       <div class="flex items-center pb-2 mb-2">
-        <div class="bg-blue-100 p-2 rounded-full mr-2">
+        <div class="bg-blue-50 p-2 rounded-full mr-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,51 +74,56 @@
 
       <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-center">
 
-        <div class="bg-blue-50 p-3 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <div class="text-blue-600 text-2xl mb-1">
+        <div
+          class="bg-white p-3 rounded shadow-sm border-l-[3px] border-blue-500 flex flex-col items-center justify-center">
+          <div class="text-blue-500 text-xl mb-1">
             <i class="fas fa-user-check"></i>
           </div>
-          <h3 class="text-3xl font-bold text-blue-700" id="empleadosActivos">0</h3>
-          <p class="text-base text-gray-600 font-medium mb-0">Empleados Activos</p>
+          <h3 class="text-3xl font-bold text-gray-800" id="empleadosActivos">0</h3>
+          <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Activos</p>
         </div>
 
-        <div class="bg-green-50 p-3 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <div class="text-green-600 text-2xl mb-1">
+        <div
+          class="bg-white p-3 rounded shadow-sm border-l-[3px] border-green-500 flex flex-col items-center justify-center">
+          <div class="text-green-500 text-xl mb-1">
             <i class="fas fa-file-medical"></i>
           </div>
-          <h3 class="text-3xl font-bold text-green-700" id="empleadosConLicencia">0</h3>
-          <p class="text-sm text-gray-600 font-medium mb-0">En Licencia (Aprobadas)</p>
+          <h3 class="text-3xl font-bold text-gray-800" id="empleadosConLicencia">0</h3>
+          <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">En Licencia</p>
         </div>
 
-        <div class="bg-red-50 p-3 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <div class="text-red-600 text-2xl mb-1">
+        <div
+          class="bg-white p-3 rounded shadow-sm border-l-[3px] border-red-500 flex flex-col items-center justify-center">
+          <div class="text-red-500 text-xl mb-1">
             <i class="fas fa-user-times"></i>
           </div>
-          <h3 class="text-3xl font-bold text-red-700" id="ausenciasHoy">0</h3>
-          <p class="text-base text-gray-600 font-medium mb-0">Ausencias Hoy</p>
+          <h3 class="text-3xl font-bold text-gray-800" id="ausenciasHoy">0</h3>
+          <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Ausencias</p>
         </div>
 
-        <div class="bg-yellow-50 p-3 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <div class="text-yellow-600 text-2xl mb-1">
+        <div
+          class="bg-white p-3 rounded shadow-sm border-l-[3px] border-yellow-500 flex flex-col items-center justify-center">
+          <div class="text-yellow-500 text-xl mb-1">
             <i class="fas fa-clipboard-check"></i>
           </div>
-          <h3 class="text-3xl font-bold text-yellow-700" id="evaluacionesRecientes">0</h3>
-          <p class="text-base text-gray-600 font-medium mb-0">Evaluaciones Recientes (30 días)</p>
+          <h3 class="text-3xl font-bold text-gray-800" id="evaluacionesRecientes">0</h3>
+          <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Evaluaciones</p>
         </div>
 
-        <div class="bg-purple-50 p-3 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <div class="text-purple-600 text-2xl mb-1">
+        <div
+          class="bg-white p-3 rounded shadow-sm border-l-[3px] border-purple-500 flex flex-col items-center justify-center">
+          <div class="text-purple-500 text-xl mb-1">
             <i class="fas fa-chalkboard-teacher"></i>
           </div>
-          <h3 class="text-3xl font-bold text-purple-700" id="cursosActivos">0</h3>
-          <p class="text-base text-gray-600 font-medium mb-0">Cursos Activos</p>
+          <h3 class="text-3xl font-bold text-gray-800" id="cursosActivos">0</h3>
+          <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Cursos</p>
         </div>
       </div>
 
-      <div class="mt-3">
-        <h3 class="text-base font-semibold text-gray-800 mb-2">Últimos Movimientos Laborales</h3>
-        <ul id="movimientosList" class="space-y-2 text-sm">
-          <li class="bg-gray-50 p-2 rounded text-gray-700 text-left">Cargando...</li>
+      <div class="mt-4">
+        <h3 class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Últimos Movimientos</h3>
+        <ul id="movimientosList" class="space-y-1">
+          <li class="bg-gray-50 p-2 rounded border-l-2 border-gray-300 text-gray-600 text-sm">Cargando...</li>
         </ul>
       </div>
     </div>
@@ -131,9 +133,9 @@
   <div class="col-span-12 d-none" id="CardAsitencia">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
 
-      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between">
+      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between border-l-[3px] border-green-500">
         <div class="flex items-center mb-2">
-          <div class="bg-green-100 p-2 rounded-full mr-2">
+          <div class="bg-green-50 p-2 rounded-full mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -145,39 +147,39 @@
 
         <div class="grid grid-cols-2 gap-3 text-center text-base items-center">
           <div>
-            <div class="text-gray-500">1° Entrada</div>
+            <div class="text-xs uppercase text-gray-400 font-medium">1° Entrada</div>
             <div class="text-lg font-bold text-gray-800" id="entrada1">--:--</div>
           </div>
           <div>
-            <div class="text-gray-500">1° Salida</div>
+            <div class="text-xs uppercase text-gray-400 font-medium">1° Salida</div>
             <div class="text-lg font-bold text-gray-800" id="salida1">--:--</div>
           </div>
           <div id="row-entrada2">
-            <div class="text-gray-500">2° Entrada</div>
+            <div class="text-xs uppercase text-gray-400 font-medium">2° Entrada</div>
             <div class="text-lg font-bold text-gray-800" id="entrada2">--:--</div>
           </div>
           <div id="row-salida2">
-            <div class="text-gray-500">2° Salida</div>
+            <div class="text-xs uppercase text-gray-400 font-medium">2° Salida</div>
             <div class="text-lg font-bold text-gray-800" id="salida2">--:--</div>
           </div>
         </div>
 
-        <div class="mt-3 text-base">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-gray-600">Total trabajado:</span>
-            <span class="font-semibold" id="horas">0.00</span>
+        <div class="mt-3">
+          <div class="flex justify-between items-center mb-1 text-sm">
+            <span class="text-gray-500 font-medium">Total trabajado:</span>
+            <span class="font-bold text-green-600" id="horas">0.00</span>
           </div>
-          <div class="w-full h-2 bg-gray-200 rounded">
-            <div class="h-2 bg-green-400 rounded w-0" id="progreso"></div>
+          <div class="w-full h-1.5 bg-gray-100 rounded-full">
+            <div class="h-1.5 bg-green-500 rounded-full w-0 transition-all duration-500" id="progreso"></div>
           </div>
         </div>
       </div>
 
-
-      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between d-none" id="CardTiempo">
+      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between d-none border-l-[3px] border-yellow-500"
+        id="CardTiempo">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center">
-            <div class="bg-yellow-100 p-2 rounded-full mr-2">
+            <div class="bg-yellow-50 p-2 rounded-full mr-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -186,50 +188,39 @@
             </div>
             <h2 class="text-lg font-semibold text-gray-800">Tiempo</h2>
           </div>
-          <div class="text-base font-bold text-gray-700" id="currentTime">--:--</div>
+          <div class="text-sm font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600" id="currentTime">--:--</div>
         </div>
 
-        <div class="space-y-2 text-base mb-3">
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-gray-600">Hoy:</span>
-              <span class="font-semibold" id="horasHoy">0 hs</span>
-            </div>
-            <div class="w-full h-2 bg-gray-200 rounded">
-              <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoHoy"></div>
-            </div>
+        <div class="mb-3">
+          <div class="flex justify-between mb-1 text-sm">
+            <span class="text-gray-500 font-medium">Hoy:</span>
+            <span class="font-bold text-yellow-600" id="horasHoy">0 hs</span>
+          </div>
+          <div class="w-full h-1.5 bg-gray-100 rounded-full">
+            <div class="h-1.5 bg-yellow-500 rounded-full w-7/12" id="progresoHoy"></div>
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
-          <div class="bg-gray-50 p-2 rounded text-center">
-            <div class="text-gray-500 text-sm">Semana</div>
-            <div class="text-lg font-bold text-gray-800" id="horasSemana">0 hs</div>
-            <div class="w-full h-2 bg-gray-200 rounded mt-1">
-              <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoSemana"></div>
-            </div>
+          <div class="text-center">
+            <div class="text-[10px] uppercase text-gray-400 font-bold">Semana</div>
+            <div class="text-sm font-bold text-gray-700" id="horasSemana">0h</div>
           </div>
-          <div class="bg-gray-50 p-2 rounded text-center">
-            <div class="text-gray-500 text-sm">Mes</div>
-            <div class="text-lg font-bold text-gray-800" id="horasMes">0 hs</div>
-            <div class="w-full h-2 bg-gray-200 rounded mt-1">
-              <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoMes"></div>
-            </div>
+          <div class="text-center border-x border-gray-100">
+            <div class="text-[10px] uppercase text-gray-400 font-bold">Mes</div>
+            <div class="text-sm font-bold text-gray-700" id="horasMes">0h</div>
           </div>
-          <div class="bg-gray-50 p-2 rounded text-center">
-            <div class="text-gray-500 text-sm">Año</div>
-            <div class="text-lg font-bold text-gray-800" id="horasAnio">0 hs</div>
-            <div class="w-full h-2 bg-gray-200 rounded mt-1">
-              <div class="h-2 bg-yellow-400 rounded w-7/12" id="progresoAnio"></div>
-            </div>
+          <div class="text-center">
+            <div class="text-[10px] uppercase text-gray-400 font-bold">Año</div>
+            <div class="text-sm font-bold text-gray-700" id="horasAnio">0h</div>
           </div>
         </div>
       </div>
 
-
-      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between d-none" id="CardVacaciones">
+      <div class="bg-white rounded shadow-sm p-3 flex flex-col justify-between d-none border-l-[3px] border-purple-500"
+        id="CardVacaciones">
         <div class="flex items-center mb-3">
-          <div class="bg-purple-100 p-2 rounded-full mr-2">
+          <div class="bg-purple-50 p-2 rounded-full mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -238,22 +229,24 @@
           </div>
           <h2 class="text-lg font-semibold text-gray-800">Vacaciones</h2>
         </div>
-        <div class="grid grid-cols-2 gap-2 mb-3 text-base">
-          <div class="bg-blue-50 p-2 rounded text-center">
-            <div class="text-blue-500 text-sm">Restantes</div>
-            <div class="text-xl font-bold text-blue-800" id="vacacionesRestantes">0</div>
+
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="bg-blue-50/50 p-2 rounded-lg text-center border border-blue-100">
+            <div class="text-[10px] uppercase text-blue-500 font-bold">Restantes</div>
+            <div class="text-xl font-black text-blue-700" id="vacacionesRestantes">0</div>
           </div>
-          <div class="bg-orange-50 p-2 rounded text-center">
-            <div class="text-orange-500 text-sm">Tomados</div>
-            <div class="text-xl font-bold text-orange-800" id="vacacionesTomadas">0</div>
+          <div class="bg-orange-50/50 p-2 rounded-lg text-center border border-orange-100">
+            <div class="text-[10px] uppercase text-orange-500 font-bold">Tomados</div>
+            <div class="text-xl font-black text-orange-700" id="vacacionesTomadas">0</div>
           </div>
         </div>
-        <div class="text-sm mt-auto">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Historial:</span>
-            <span class="text-gray-600" id="vacacionesAnio">2025</span>
+
+        <div class="text-sm border-t border-gray-200 pt-2 mt-auto">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 font-medium">Historial:</span>
+            <span id="vacacionesAnio" class="text-gray-600 font-bold">2025</span>
           </div>
-          <div id="vacacionesHistorial" class="border-t border-gray-200 pt-1 space-y-1 mt-1">
+          <div id="vacacionesHistorial" class="pt-1 space-y-1 mt-1">
           </div>
         </div>
       </div>
@@ -263,9 +256,9 @@
 
 
   <div class="col-span-12 md:col-span-8 flex d-none" id="CardMiEquipo">
-    <div class="bg-white rounded shadow-sm p-3 flex flex-col flex-1">
+    <div class="bg-white rounded shadow-sm p-3 flex flex-col flex-1 border-l-[3px] border-blue-600">
       <div class="flex items-center border-b border-gray-200 pb-2 mb-2">
-        <div class="bg-blue-100 p-2 rounded-full mr-2">
+        <div class="bg-blue-50 p-2 rounded-full mr-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="8" r="2" />
@@ -283,9 +276,9 @@
 
 
   <div class="col-span-12 md:col-span-4 flex d-none" id="CardEstadoOficina">
-    <div class="bg-white rounded shadow-sm p-3 flex flex-col flex-1">
+    <div class="bg-white rounded shadow-sm p-3 flex flex-col flex-1 border-l-[3px] border-slate-500">
       <div class="flex items-center border-b border-gray-200 pb-2 mb-2">
-        <div class="bg-gray-200 p-2 rounded-full mr-2">
+        <div class="bg-gray-50 p-2 rounded-full mr-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18" />

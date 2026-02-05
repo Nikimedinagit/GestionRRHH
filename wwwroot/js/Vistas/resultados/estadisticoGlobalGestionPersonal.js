@@ -243,7 +243,7 @@ async function GenerarInformePdfEstadisticoGlobal() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Estadístico_Global.pdf");
         return;
     }
 

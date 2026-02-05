@@ -323,7 +323,7 @@ async function GenerarInformePdfPromedioPorPuesto() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Promedio_De_Calificaciones_Por_Puesto.pdf");
         return;
     }
 

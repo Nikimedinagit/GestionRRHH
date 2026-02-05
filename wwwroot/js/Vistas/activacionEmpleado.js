@@ -519,6 +519,13 @@ async function GenerarInformePdfActivaciones() {
     );
   }
 
+  const esMobile = window.innerWidth < 768;
+
+    if (esMobile) {
+        doc.save("Informe_Activación.pdf");
+        return;
+    }
+
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
 

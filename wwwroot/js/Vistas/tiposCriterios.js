@@ -54,7 +54,7 @@ async function ObtenerTiposDeCriterios(mostrarSpinner = true) {
       method: "POST",
       body: JSON.stringify(filtro),
     });
-    
+
     const data = await res.json();
     MostrarTiposDeCriterios(data);
     LimpiarModalTipoDeCriterio();
@@ -76,7 +76,7 @@ async function ObtenerTiposDeCriterios(mostrarSpinner = true) {
 // MOSTRAR LOS DATOS DE LA API DE TIPOS DE CRITERIOS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarTiposDeCriterios(data) {
-    window.listaTiposDeCriterios= data;
+  window.listaTiposDeCriterios = data;
 
   $("#tablaTiposCriterioBody").empty();
 
@@ -94,37 +94,37 @@ function MostrarTiposDeCriterios(data) {
 
     $("#tablaTiposCriterioBody").append(
       "<tr>" +
-        "<td class='text-center align-middle'>" +
-        "<button class='btn-editar' type='button' class='btn btn-sm " +
-        (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
-        "' data-tippy-content='" +
-        (item.eliminado ? "Activar" : "Desactivar") +
-        "' onclick='EliminarTipoDeCriterioId(" +
-        item.id +
-        ", " +
-        item.eliminado +
-        ")' style='background: none; border: none;'>" +
-        "<i class='icon-desactivar bi " +
-        (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
-        " " +
-        iconColor +
-        "'></i>" +
-        "</button>" +
-        "</td>" +
-        "<td class='align-middle " +
-        filaClass +
-        " tipo-de-criterio-truncado'>" +
-        item.nombre +
-        "</td>" +
-        "<td class='d-flex justify-content-center align-items-center'>" +
-        "<button class='btn-editar' data-action='edit' style='" +
-        visibleBotones +
-        " background: none; border: none;' onclick='MostrarModalEditar(" +
-        item.id +  ")' data-tippy-content='Editar'>" +
-        "<i class='bi bi-pencil-square icono-editar'></i>" +
-        "</button>" +
-        "</td>" +
-        "</tr>"
+      "<td class='text-center align-middle'>" +
+      "<button class='btn-editar' type='button' class='btn btn-sm " +
+      (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
+      "' data-tippy-content='" +
+      (item.eliminado ? "Activar" : "Desactivar") +
+      "' onclick='EliminarTipoDeCriterioId(" +
+      item.id +
+      ", " +
+      item.eliminado +
+      ")' style='background: none; border: none;'>" +
+      "<i class='icon-desactivar bi " +
+      (item.eliminado ? "bi-toggle-off" : "bi-toggle-on") +
+      " " +
+      iconColor +
+      "'></i>" +
+      "</button>" +
+      "</td>" +
+      "<td class='align-middle " +
+      filaClass +
+      " tipo-de-criterio-truncado'>" +
+      item.nombre +
+      "</td>" +
+      "<td class='d-flex justify-content-center align-items-center'>" +
+      "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditar(" +
+      item.id + ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>" +
+      "</td>" +
+      "</tr>"
     );
   });
 
@@ -224,7 +224,7 @@ async function CrearTipoDeCriterio() {
     ocultarOverlayGuardando();
   }
 }
-  
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ async function EditarTipoDeCriterio(id) {
     ocultarOverlayGuardando();
   }
 }
-  
+
 
 
 
@@ -337,7 +337,7 @@ function ValidarFormularioTipoDeCriterio() {
     return false;
   }
 
-  inputNombre.classList.add("is-valid"); 
+  inputNombre.classList.add("is-valid");
   inputErrorNombre.style.display = "none";
   return true;
 }
@@ -406,30 +406,30 @@ function EliminarTipoDeCriterioId(id, eliminado) {
     background: "#ffffff",
     color: "#1a1a1a",
   })
-  .then((result) => {
-    if (result.isConfirmed) {
-      EliminarSiTipoDeCriterio(id);
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire({
-        title: "Acción Cancelada",
-        text: eliminado ? "Continuará desactivado." : "Continuará activado.",
-        toast: true,
-        position: "bottom-end",
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true,
-        background: "#fef8f4",
-        color: "#5f4339",
-        icon: "info",
-        iconColor: "#ff914d",
-        customClass: {
-          popup: "swal2-toast-status",
-          title: "swal2-toast-title",
-          content: "swal2-toast-content",
-        },
-      });
-    }
-  });
+    .then((result) => {
+      if (result.isConfirmed) {
+        EliminarSiTipoDeCriterio(id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: "Acción Cancelada",
+          text: eliminado ? "Continuará desactivado." : "Continuará activado.",
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 2200,
+          timerProgressBar: true,
+          background: "#fef8f4",
+          color: "#5f4339",
+          icon: "info",
+          iconColor: "#ff914d",
+          customClass: {
+            popup: "swal2-toast-status",
+            title: "swal2-toast-title",
+            content: "swal2-toast-content",
+          },
+        });
+      }
+    });
 }
 
 
@@ -437,7 +437,7 @@ function EliminarTipoDeCriterioId(id, eliminado) {
 // FUNCIÓN PARA ELIMINAR UN TIPO DE CRITERIO //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiTipoDeCriterio(id) {
- try {
+  try {
     const response = await authFetch(`TiposDeCriterios/${id}`, {
       method: "DELETE",
     });
@@ -475,7 +475,7 @@ async function EliminarSiTipoDeCriterio(id) {
         `,
         confirmButtonText: "Entendido",
         customClass: {
-          popup: "shadow rounded-3 p-3",
+          popup: "shadow rounded p-3",
           confirmButton: "btn btn-danger",
           title: "fs-5 text-dark mb-2",
           htmlContainer: "text-muted fs-6",

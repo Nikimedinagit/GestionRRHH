@@ -268,7 +268,7 @@ async function GenerarInformePdfListadoEvaluacionEmpleadoCriterio() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Evaluaciones_Con_Criterios.pdf");
         return;
     }
 

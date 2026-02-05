@@ -311,7 +311,7 @@ async function GenerarInformePdfListadoJustificacionPorSector() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Justificaciones_Por_Sector.pdf");
         return;
     }
 

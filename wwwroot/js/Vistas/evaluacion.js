@@ -401,7 +401,7 @@ function MostrarEvaluacionesMobile(data) {
 
     contenedor.innerHTML += `
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3">
-        <div class="card shadow-sm p-2 rounded-3 d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
+        <div class="card shadow-sm p-2 rounded d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
           <div class="flex-grow-1 d-flex flex-column">
             <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;" title="${nombreMostrar}">
               ${nombreMostrar || "Sin nombre"}
@@ -872,7 +872,7 @@ async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
 
         const card = `
           <div class="col-12 mb-2">
-            <div class="card shadow-sm rounded-3 p-2">
+            <div class="card shadow-sm rounded p-2">
               <h6 class="fw-bold mb-0">${item.tipoDeCriterio.nombre}</h6>
               <div class="d-flex justify-content-between align-items-center">
                 <span>${item.descripcion || "Sin descripción"}</span>
@@ -1420,7 +1420,7 @@ async function GenerarInformePdfEvaluacion() {
   const esMobile = window.innerWidth < 768;
 
   if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
+    doc.save("Informe_Evaluaciones.pdf");
     return;
   }
 

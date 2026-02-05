@@ -1,47 +1,52 @@
 <div class="px-3 py-3">
 
-   <!-- ======================================= Spinner General ====================================== -->
-   <div id="pantallaCargaGeneral" class="pantalla-carga">
-        <div class="contenido-carga card-carga">
-            <div class="icono-carga mb-3">
-                <i class="fa-solid fa-file-circle-check  fa-sm"></i>
-            </div>
+  <!-- ======================================= Spinner General ====================================== -->
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3">
+        <i class="fa-solid fa-file-circle-check  fa-sm"></i>
+      </div>
 
-            <h5 class="fw-bold mb-2">Cargando licencias aprobadas</h5>
+      <h5 class="fw-bold mb-2">Cargando licencias aprobadas</h5>
 
-            <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
 
-            <p class="text-muted mensaje-carga">
-                Estamos preparando la información de los licencias aprobadas
-                <span class="dots"></span>
-            </p>
-        </div>
+      <p class="text-muted mensaje-carga">
+        Estamos preparando la información de los licencias aprobadas
+        <span class="dots"></span>
+      </p>
     </div>
-
-
-  <!-- ======================================= Título ====================================== -->
-  <div class="bg-white shadow-sm rounded p-2 mb-3">
-    <h3 class="titulo-seccion mb-1">Licencias Aprobadas</h3>
-    <p class="text-muted fs-6 mb-0">Panel para administrar y consultar licencias aprobadas por empleado.</p>
   </div>
 
 
+  <!-- ======================================= Título ====================================== -->
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Licencias Aprobadas</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Panel para administrar y consultar licencias aprobadas por empleado. </p>
+    </div>
+  </div>
+
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
   <div>
-  
+
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-  
+
       <div class="d-flex gap-2 flex-wrap responsive-button">
-      <button id="btnMostrarFiltros" class="btn btn-filtro" onclick="AbrilPanelFiltros('contenedorFiltros')">
-        <i class="fa-solid fa-filter me-1"></i>
-        <span>Filtros</span>
-      </button>
+        <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+          onclick="toggleFiltros()">
+          <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+          <span class="texto-btn">Filtros</span>
+        </button>
       </div>
 
-        <button class="btn btn-generar-pdf responsive-buttons" onclick="GenerarInformePdfLicenciasAprobadas()">
-          <i class="fa-solid fa-file-lines me-1"></i>
-          <span>Generar Informe</span>
-        </button>
+      <button class="btn rounded btn-informe py-1 px-2 border bg-white responsive-button"
+        onclick="GenerarInformePdfLicenciasAprobadas()">
+        <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
+        <span>Exportar</span>
+      </button>
 
     </div>
 
@@ -147,4 +152,4 @@
 
 </div>
 
-  <script src="../js/Vistas/lienciasAprobadas.js"></script>
+<script src="../js/Vistas/lienciasAprobadas.js"></script>

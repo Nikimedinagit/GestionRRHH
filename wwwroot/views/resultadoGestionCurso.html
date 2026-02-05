@@ -1,7 +1,7 @@
 <div class="px-3 py-3">
 
     <!-- ======================================= Spinner General ====================================== -->
-      <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div id="pantallaCargaGeneral" class="pantalla-carga">
         <div class="contenido-carga card-carga">
             <div class="icono-carga mb-3">
                 <i class="fa-solid fa-chart-column fa-sm"></i>
@@ -19,27 +19,31 @@
     </div>
 
     <!-- ======================================= Título ====================================== -->
-    <div class="bg-white shadow-sm rounded p-2 mb-3">
-        <h3 class="titulo-seccion mb-1">Indicadores de Gestión de Cursos</h3>
-        <p class="text-muted fs-6 mb-0">Gestioná indicadores, listados jerárquicos y estadísticas de desempeño para el
-            análisis y la toma de decisiones.</p>
+    <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+        style="border-left-width: 3px !important;">
+        <div class="px-2">
+            <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Indicadores de Gestión
+                de Cursos</h4>
+            <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+                Gestioná indicadores, listados jerárquicos y estadísticas de desempeño para el
+                análisis y la toma de decisiones.
+            </p>
+        </div>
     </div>
 
-
-    <!-- ======================================= Contenedor de Botones y Graficos ====================================== -->
     <div>
-
         <!-- ======================================= Opciones De Otros Resultaos ======================================= -->
-        <div class="d-flex justify-content-start align-items-center mb-2 flex-wrap gap-2">
-            <button class="btn btn-resultados d-flex align-items-center justify-content-center" type="button"
-                id="btnResultados" onclick="toggleResultados()">
-                <i class="fa-solid fa-list me-2"></i>
-                <span class="texto-btn">Más Resultados</span>
+        <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+            <button
+                class="btn rounded btn-resultados py-1 px-3 border bg-white shadow-sm  d-flex align-items-center justify-content-center responsive-button"
+                type="button" id="btnResultados" onclick="toggleResultados()">
+                <i class="fa-solid fa-list me-2" style="color: var(--c);"></i>
+                <span class="fw-bold text-muted">Más Resultados</span>
             </button>
         </div>
 
-        <div class="custom-collapse mt-2 mb-2 rounded-3 bg-white" id="contenedorResultados"
-            style="border-left: 4px solid #6A5ACD">
+        <div class="custom-collapse mt-3 rounded bg-white" id="contenedorResultados"
+            style="border-left: 3px solid #6A5ACD">
             <div class="sidebar-resultados shadow-sm p-2">
 
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
@@ -47,19 +51,19 @@
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-3">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoCursosPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-chalkboard-user me-2"></i> Cursos por Empleado
                         </a>
                     </li>
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoCursoPorModalidad"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-chalkboard me-2"></i> Cursos por Modalidad
                         </a>
                     </li>
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoCursosPorEstado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-user-graduate me-2"></i> Cursos por Empleado y Estado
@@ -67,27 +71,25 @@
                     </li>
                 </ul>
 
-                <hr class="my-3">
-
                 <!-- ===================== ESTADÍSTICOS ===================== -->
                 <h6 class="text-muted text-uppercase fw-bold small mb-2">
                     <i class="fa-solid fa-chart-column me-2"></i> Estadísticos
                 </h6>
 
                 <ul class="list-unstyled d-flex flex-wrap justify-content-center align-items-center text-center mb-0">
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoCursoPorEmpleadosResultado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-graduation-cap me-2"></i> Resultados de Cursos por Empleado
                         </a>
                     </li>
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoParticipacionPorCurso"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-users me-2"></i> Participación por Curso
                         </a>
                     </li>
-                    <li class="py-2 px-3 flex-fill flex-sm-auto hover-bold">
+                    <li class="py-1 px-2 flex-fill flex-sm-auto hover-bold">
                         <a href="#resultadoPromedioCalificacionPorEmpleado"
                             class="d-flex align-items-center justify-content-center text-black text-decoration-none">
                             <i class="fa-solid fa-chart-bar me-2"></i> Promedio de Calificación por Empleado

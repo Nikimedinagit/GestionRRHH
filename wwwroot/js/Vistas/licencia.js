@@ -246,7 +246,7 @@ function MostrarLicencias(data) {
 
     const cardHtml = `
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex" id="licencia-${item.id}">
-        <div class="card shadow-sm p-2 rounded-3 position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${estilo.borde}; min-height: 260px;">
+        <div class="card shadow-sm p-2 rounded position-relative d-flex flex-column w-100" style="border-bottom: 4px solid ${estilo.borde}; min-height: 260px;">
           <div class="flex-grow-1 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <h5 class="fw-bold mb-0" style="font-size: 1rem;">${item.tipoDeLicenciaString || "-"}</h5>
@@ -1224,7 +1224,7 @@ async function GenerarInformePdfLicencias() {
   const esMobile = window.innerWidth < 768;
 
   if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
+    doc.save("Informe_Licencias.pdf");
     return;
   }
   

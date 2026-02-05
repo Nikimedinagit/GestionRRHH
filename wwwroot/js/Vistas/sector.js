@@ -474,7 +474,7 @@ async function EditarSector(id) {
         `,
           confirmButtonText: "Entendido",
           customClass: {
-            popup: "shadow rounded-3 p-3",
+            popup: "shadow rounded p-3",
             confirmButton: "btn btn-danger",
             title: "fs-5 text-dark mb-2",
             htmlContainer: "text-muted fs-6",

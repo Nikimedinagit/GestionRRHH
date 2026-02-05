@@ -350,7 +350,7 @@ async function GenerarInformePdfPromedioDiasLicencia() {
     const esMobile = window.innerWidth < 768;
 
     if (esMobile) {
-        doc.save("Informe_Empleados.pdf");
+        doc.save("Informe_Promedio_De_Días_De_Licencia.pdf");
         return;
     }
 

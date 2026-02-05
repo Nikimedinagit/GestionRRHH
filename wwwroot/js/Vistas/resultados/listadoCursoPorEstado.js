@@ -388,7 +388,7 @@ async function GenerarInformePdfCursosPorEstado() {
   const esMobile = window.innerWidth < 768;
 
   if (esMobile) {
-    doc.save("Informe_Empleados.pdf");
+    doc.save("Informe_Cursos_Por_Estado_Empleados.pdf");
     return;
   }
 
