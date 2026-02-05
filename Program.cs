@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using API_RRHH_TESIS2025.Services;
+using API_RRHH_TESIS2025.Services.Hosted;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // Inyección del servicio de asistencia
 builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
 builder.Services.AddHostedService<RegistrarAusentesBackgroundService>();
+builder.Services.AddHostedService<LimpiezaFotosService>();
 
 
 // Configuración del formato de respuesta JSON

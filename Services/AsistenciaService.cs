@@ -252,29 +252,7 @@ namespace API_RRHH_TESIS2025.Services
             _ => false
         };
 
-        private string CalcularEstadoSemana(List<Asistencia> registrosSemana)
-        {
-            string estadoGeneral = "COMPLETA";
 
-            foreach (var r in registrosSemana)
-            {
-                string estadoDia = r.Estado.ToString().ToUpper();
-
-                if (estadoDia == "AUSENTE")
-                    return "AUSENTE";
-
-                if (estadoDia == "FUERADEHORARIO" && estadoGeneral != "AUSENTE")
-                    estadoGeneral = "FUERA DE HORARIO";
-
-                if (estadoDia == "TARDE" && estadoGeneral != "AUSENTE" && estadoGeneral != "FUERA DE HORARIO")
-                    estadoGeneral = "TARDE";
-
-                if (estadoDia == "INCOMPLETA" && !new[] { "AUSENTE", "FUERA DE HORARIO", "TARDE" }.Contains(estadoGeneral))
-                    estadoGeneral = "INCOMPLETA";
-            }
-
-            return estadoGeneral;
-        }
 
         private async Task<string> GuardarFotoAsync(byte[] fotoBytes, int empleadoId)
         {
