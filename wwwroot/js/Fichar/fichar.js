@@ -4,6 +4,8 @@ const dniInput = document.getElementById('dniInput');
 const video = document.getElementById('video');
 const mensajeCamara = document.getElementById('mensajeCamara');
 const mensajeBackend = document.getElementById('mensajeBackend');
+const overlayText = document.querySelector('.overlay-text');
+const btnReintentar = document.getElementById('btnReintentar');
 
 let faceDescriptor, canvas, stream;
 
@@ -40,6 +42,9 @@ async function startVideo() {
     stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
     video.style.display = 'block';
+
+    if (overlayText) overlayText.style.display = 'none';
+
   } catch (e) {
     showMensajeBackend({ mensaje: e.message }, 'error');
   }
@@ -49,6 +54,9 @@ async function startVideo() {
 async function stopVideo() {
   if (stream) stream.getTracks().forEach(track => track.stop());
   video.style.display = 'none';
+
+  if (overlayText) overlayText.style.display = 'block';
+
   if (canvas) { canvas.remove(); canvas = null; }
 }
 
@@ -149,6 +157,17 @@ async function handleFaceAction(endpoint) {
     }
   }, 1500);
 }
+
+
+btnReintentar.addEventListener('click', async () => {
+  mensajeBackend.style.display = 'none';
+
+  if (canvas) {
+    canvas.remove();
+    canvas = null;
+  }
+  await handleFaceAction('Fichar');
+});
 
 btnFichar.addEventListener('click', () => handleFaceAction('Fichar'));
 btnRegistrar.addEventListener('click', () => handleFaceAction('RegistrarRostro'));

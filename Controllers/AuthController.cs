@@ -46,8 +46,8 @@ public class AuthController : ControllerBase
         var user = new ApplicationUser
         {
             UserName = model.Email,
-            Email = model.Email,
-            NombreCompleto = model.NombreCompleto
+            Email = model.Email?.ToLower().Trim(),
+            NombreCompleto = model.NombreCompleto?.ToUpper().Trim()
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);

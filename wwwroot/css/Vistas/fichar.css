@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.auth-wrapper {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.image-section {
+  width: 70%;
+  position: relative;
+  background: #e9efff url('../../img/asistencia.jpg') center/cover no-repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-section video,
+.image-section canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mensaje-camara {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  padding: 15px 25px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 0.375rem;
+  display: none;
+  z-index: 50;
+}
+
+.form-section {
+  width: 30%;
+  background: #fff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.logo-img {
+  width: 290px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.form-control {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  width: 100%;
+}
+
+.form-control:focus {
+  border-color: #4e73df;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.btn {
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-weight: 500;
+}
+
+.btn-fichar {
+  font-size: 1rem;
+  background: #002D5B;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.btn-fichar:hover {
+  background: #003366;
+  color: #ffffff;
+}
+
+.btn-registrar {
+  font-size: 1rem;
+  background: #2D2D2D;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.btn-registrar:hover {
+  background: #5a6268;
+  color: #ffffff;
+}
+
+.btn-reintentar{
+  font-size: 1rem;
+  background: #F39C12;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.btn-reintentar:hover{
+  background: #E67E22;
+  color: #ffffff;
+}
+
+.text-primary {
+  color: #002D5B !important;
+}
+
+.asistencia-subtitle {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+}
+
+.mensaje-backend-card {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 6px;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.075);
+  background: #ffffff;
+  text-align: center;
+  font-weight: 600;
+}
+
+.mensaje-backend-card.success {
+  border-left: 3px solid #28a745;
+}
+
+.mensaje-backend-card.error {
+  border-left: 3px solid #dc3545;
+}
+
+.image-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.overlay-text {
+  position: absolute;
+  top: 50%;
+  /* right: 0%; */
+  transform: translate(0%, -50%);
+  color: #fff;
+  text-align: center;
+  z-index: 2;
+  padding: 2rem 4rem;
+}
+
+.overlay-text h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.overlay-text p {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9) !important;
+}
+
+
+
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .auth-wrapper {
+    flex-direction: row;
+  }
+
+  .form-section {
+    width: 45%;
+  }
+
+  .image-section {
+    width: 55%;
+  }
+}
+
+@media (min-width: 992px) {
+  .auth-wrapper {
+    flex-direction: row;
+  }
+
+  .form-section {
+    width: 30%;
+  }
+
+  .image-section {
+    width: 70%;
+  }
+}
+
