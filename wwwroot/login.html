@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Iniciar Sesión | WorkSync</title>
-  <link rel="shortcut icon" href="img/logo.png" />
+  <title>WorkSync | Iniciar Sesión</title>
+  <link rel="shortcut icon" href="img/icono-logo.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" />
 
@@ -13,80 +13,106 @@
 </head>
 
 <body>
-  <div class="auth-wrapper" style="position: relative;">
-    <!-- Contenedor del mensaje deslizable -->
-    <div id="mensajeDeslizable" style="
-      position: absolute;
-      top: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4e73df;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      font-weight: 600;
-      font-size: 1rem;
-      z-index: 9999;
-      transition: top 0.4s ease, opacity 0.4s ease;
-      opacity: 0;
-      pointer-events: none;
-    "></div>
-
+  <div class="auth-wrapper">
     <div class="form-section">
-      <!-- Formulario de Inicio de Sesión -->
       <form id="formLogin" novalidate>
-        <div class="logo-container">
-          <img src="./img/logogris.png" alt="Logo WorkSync" class="logo-img" />
-          <h2 class="bienvenido-title">¡Bienvenido!</h2>
+        <div class="logo-container text-center">
+          <img src="./img/logo-completo.png" alt="Logo WorkSync" class="logo-img" />
+          <p class="login-subtitle">Ingresá con tus credenciales para continuar.</p>
         </div>
-        <div class="form-group">
-          <label for="emailLogin" class="text-primary font-weight-bold small">Correo Electrónico</label>
-          <input type="email" id="emailLogin" class="form-control" placeholder="correo@ejemplo.com" required />
+
+        <div class="form-group mb-4">
+          <label class="text-primary font-weight-bold small">Correo Electrónico</label>
+          <input type="email" id="emailLogin" class="form-control" placeholder="correo@ejemplo.com">
+          <div class="invalid-feedback" id="errorEmailLogin"></div>
         </div>
-        <div class="form-group">
-          <label for="claveLogin" class="text-primary font-weight-bold small">Contraseña</label>
-          <input type="password" id="claveLogin" class="form-control" placeholder="******" required />
+
+        <div class="form-group mb-4">
+          <label class="text-primary font-weight-bold small">Contraseña</label>
+          <input type="password" id="claveLogin" class="form-control" placeholder="******">
+          <div class="invalid-feedback" id="errorClaveLogin"></div>
         </div>
-        <button type="submit" id="btnIniciarSesion" class="btn btn-primary btn-block mt-3">Iniciar sesión</button>
-        <p class="text-center mt-2 small">¿No tenés cuenta? <a href="#" onclick="mostrarRegistro()" class="font-weight-bold text-primary">Registrate</a></p>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="recordarme">
+            <label class="custom-control-label small text-secondary" for="recordarme">Recordarme</label>
+          </div>
+          <a href="#" class="small text-primary font-weight-bold">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <div id="errorLoginGeneral" class="text-danger small text-center mb-4 d-none"></div>
+
+
+        <button type="submit" id="btnIniciarSesion" class="btn btn-primary btn-block btn-main font-weight-bold">
+          <span id="spinnerLogin" class="spinner-border spinner-border-sm ml-2 d-none" role="status"></span>
+          <span id="textoBtnLogin">Iniciar Sesión</span>
+        </button>
+
+
+        <p class="text-center mt-4 small">
+          ¿No tenés cuenta?
+          <a href="#" onclick="mostrarRegistro()" class="font-weight-bold text-primary">Crear Cuenta</a>
+        </p>
       </form>
 
-      <!-- Formulario de Registro -->
       <form id="formRegistro" class="d-none" novalidate>
-        <h6 class="text-center font-weight-bold text-primary">Crear cuenta</h6>
-        <div class="form-group">
-          <label for="nombreRegistro" class="text-primary font-weight-bold small">Nombre Completo</label>
-          <input type="text" id="nombreRegistro" class="form-control" placeholder="Juan Pérez" required />
+        <div class="logo-container text-center">
+          <img src="./img/logo-completo.png" alt="Logo WorkSync" class="logo-img" />
+          <p class="login-subtitle">Creá tu cuenta para empezar</p>
         </div>
-        <div class="form-group">
-          <label for="emailRegistro" class="text-primary font-weight-bold small">Correo Electrónico</label>
-          <input type="email" id="emailRegistro" class="form-control" placeholder="correo@ejemplo.com" required />
-        </div>
-        <div class="form-group">
-          <label for="claveRegistro" class="text-primary font-weight-bold small">Contraseña</label>
-          <input type="password" id="claveRegistro" class="form-control" placeholder="******" required />
-        </div>
-        <button id="btnRegistrar" type="submit" class="btn btn-primary btn-block mt-3">Registrarme</button>
 
-        <p class="text-center mt-2 small">¿Ya tenés cuenta? <a href="#" onclick="mostrarLogin()" class="font-weight-bold text-primary">Iniciar sesión</a></p>
+        <div class="form-group mb-4">
+          <label class="text-primary font-weight-bold small">Nombre Completo</label>
+          <input type="text" id="nombreRegistro" class="form-control" placeholder="Juan Pérez">
+          <div class="invalid-feedback" id="errorNombreRegistro"></div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="text-primary font-weight-bold small">Correo Electrónico</label>
+          <input type="email" id="emailRegistro" class="form-control" placeholder="correo@ejemplo.com">
+          <div class="invalid-feedback" id="errorEmailRegistro"></div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="text-primary font-weight-bold small">Contraseña</label>
+          <input type="password" id="claveRegistro" class="form-control" placeholder="******">
+          <div class="invalid-feedback" id="errorClaveRegistro"></div>
+        </div>
+        <div id="registroExito" class="text-success small text-center mb-4 d-none"></div>
+
+        <button id="btnRegistrar" type="submit" class="btn btn-primary btn-block btn-main font-weight-bold">
+          <span id="spinnerRegistro" class="spinner-border spinner-border-sm ml-2 d-none" role="status"></span>
+          <span id="textoBtnRegistro">Registrarse</span>
+        </button>
+
+
+        <p class="text-center mt-4 small">
+          ¿Ya tenés cuenta?
+          <a href="#" onclick="mostrarLogin()" class="font-weight-bold text-primary">Iniciar sesión</a>
+        </p>
       </form>
+
     </div>
 
-    <!-- Imagen decorativa -->
     <div class="image-section">
-      <img src="./img/login.svg" alt="Ilustración" />
+      <img src="./img/auth.jpg" alt="Ilustración" />
+      <div class="overlay-text">
+        <h1>Gestioná tu equipo con WorkSync</h1>
+        <p>Dejá atrás planillas y procesos manuales. WorkSync digitaliza y organiza la gestión de tu personal para que
+          tu empresa crezca de forma ordenada y eficiente.</p>
+      </div>
     </div>
+
   </div>
 
 
-  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="./js/authentication/authHandlers.js"></script>
   <script src="./js/authentication/auth.js"></script>
 
- 
+
 </body>
 
 </html>

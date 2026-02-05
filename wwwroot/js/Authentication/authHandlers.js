@@ -1,143 +1,252 @@
 document.addEventListener("DOMContentLoaded", () => {
   const formLogin = document.getElementById("formLogin");
   const formRegistro = document.getElementById("formRegistro");
-  const mensaje = document.getElementById("mensajeDeslizable");
 
+  const emailLogin = document.getElementById("emailLogin");
+  const claveLogin = document.getElementById("claveLogin");
+  const errorEmailLogin = document.getElementById("errorEmailLogin");
+  const errorClaveLogin = document.getElementById("errorClaveLogin");
+  const errorGeneral = document.getElementById("errorLoginGeneral");
+
+  const nombreRegistro = document.getElementById("nombreRegistro");
+  const emailRegistro = document.getElementById("emailRegistro");
+  const claveRegistro = document.getElementById("claveRegistro");
+  const errorNombreRegistro = document.getElementById("errorNombreRegistro");
+  const errorEmailRegistro = document.getElementById("errorEmailRegistro");
+  const errorClaveRegistro = document.getElementById("errorClaveRegistro");
+  const registroExito = document.getElementById("registroExito");
+
+  const recordarCheck = document.getElementById("recordarme");
+
+  const btnLogin = document.getElementById("btnIniciarSesion");
+  const textoBtnLogin = document.getElementById("textoBtnLogin");
+  const spinnerLogin = document.getElementById("spinnerLogin");
+
+  const btnRegistro = document.getElementById("btnRegistrar");
+  const textoBtnRegistro = document.getElementById("textoBtnRegistro");
+  const spinnerRegistro = document.getElementById("spinnerRegistro");
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  function activarSpinnerLogin() {
+    spinnerLogin.classList.remove("d-none");
+    textoBtnLogin.textContent = "Ingresando...";
+    btnLogin.disabled = true;
+  }
+
+  function desactivarSpinnerLogin() {
+    spinnerLogin.classList.add("d-none");
+    textoBtnLogin.textContent = "Iniciar Sesión";
+    btnLogin.disabled = false;
+  }
+
+  function activarSpinnerRegistro() {
+    spinnerRegistro.classList.remove("d-none");
+    textoBtnRegistro.textContent = "Creando Cuenta...";
+    btnRegistro.disabled = true;
+  }
+
+  function desactivarSpinnerRegistro() {
+    spinnerRegistro.classList.add("d-none");
+    textoBtnRegistro.textContent = "Registrarse";
+    btnRegistro.disabled = false;
+  }
+
+  // ================= RECORDAR EMAIL =================
+  const emailGuardado = localStorage.getItem("emailRecordado");
+  if (emailGuardado) {
+    emailLogin.value = emailGuardado;
+    recordarCheck.checked = true;
+  }
+
+  emailLogin.addEventListener("input", () => {
+    if (emailLogin.value.trim() === "") {
+      recordarCheck.checked = false;
+      localStorage.removeItem("emailRecordado");
+    }
+  });
+
+  // ================= CAMBIO ENTRE FORMULARIOS =================
   window.mostrarRegistro = () => {
     formLogin.classList.add("d-none");
     formRegistro.classList.remove("d-none");
+    limpiarErrores();
+    limpiarMensajesGenerales();
   };
 
   window.mostrarLogin = () => {
     formRegistro.classList.add("d-none");
     formLogin.classList.remove("d-none");
+    limpiarErrores();
+    limpiarMensajesGenerales();
   };
 
-  function mostrarMensaje(texto, tipo = "success") {
-    mensaje.textContent = texto;
-    mensaje.style.backgroundColor = tipo === "success" ? "#28a745" : "#dc3545";
-    mensaje.style.top = "10px";
-    mensaje.style.opacity = "1";
-    setTimeout(() => {
-      mensaje.style.top = "-50px";
-      mensaje.style.opacity = "0";
-    }, 3500);
+  function setError(input, errorDiv, mensaje) {
+    input.classList.add("is-invalid");
+    errorDiv.textContent = mensaje;
+  }
+
+  function limpiarErrores() {
+    document.querySelectorAll(".form-control").forEach(i => i.classList.remove("is-invalid"));
+    document.querySelectorAll(".invalid-feedback").forEach(e => e.textContent = "");
+  }
+
+  function limpiarMensajesGenerales() {
+    errorGeneral.classList.add("d-none");
+    errorGeneral.textContent = "";
+    registroExito.classList.add("d-none");
+    registroExito.textContent = "";
   }
 
   function validarContrasenia(password) {
-    const tieneMayuscula = /[A-Z]/.test(password);
-    const tieneNumero = /[0-9]/.test(password);
-    return password.length >= 8 && tieneMayuscula && tieneNumero;
+    return password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password);
   }
 
+  // ================= LOGIN =================
   formLogin.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("emailLogin").value.trim();
-    const password = document.getElementById("claveLogin").value.trim();
-    const loginBtn = document.getElementById("btnIniciarSesion");
- 
-    if (!email || !password) {
-      mostrarMensaje("Por favor completá todos los campos.", "error");
-      return;
-    }
+    limpiarErrores();
+    limpiarMensajesGenerales();
 
-    if (!email.includes("@")) {
-      mostrarMensaje("El correo debe contener '@'", "error");
-      return;
-    }
-
+    let valido = true;
+    const emailValor = emailLogin.value.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      mostrarMensaje(
-        "Correo inválido. Usá un formato como usuario@gmail.com",
-        "error"
-      );
-      return;
+
+    if (!emailValor) {
+      setError(emailLogin, errorEmailLogin, "Ingresá tu correo.");
+      valido = false;
+    } else if (!emailRegex.test(emailValor)) {
+      setError(emailLogin, errorEmailLogin, "Ingresá un correo válido.");
+      valido = false;
+    }
+
+    if (!claveLogin.value.trim()) {
+      setError(claveLogin, errorClaveLogin, "Ingresá tu contraseña.");
+      valido = false;
+    }
+
+    if (!valido) return;
+
+    activarSpinnerLogin();
+
+    if (recordarCheck.checked) {
+      localStorage.setItem("emailRecordado", emailValor);
+    } else {
+      localStorage.removeItem("emailRecordado");
+    }
+
+    activarSpinnerLogin();
+    const inicio = Date.now();
+
+    if (recordarCheck.checked) {
+      localStorage.setItem("emailRecordado", emailValor);
+    } else {
+      localStorage.removeItem("emailRecordado");
     }
 
     try {
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = `<span class="spinner-border spinner-border-sm mr-2"></span> Iniciando...`;
-
       const res = await fetch("http://localhost:5106/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: emailValor, password: claveLogin.value }),
       });
+
+      const tiempoRestante = 2000 - (Date.now() - inicio);
+      if (tiempoRestante > 0) await delay(tiempoRestante);
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem("usuarioNombre", data.nombreCompleto);
-        localStorage.setItem("usuarioGmail", data.email);
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("usuarioNombre", data.nombreCompleto);
+        localStorage.setItem("usuarioGmail", data.email);
         localStorage.setItem("rol", data.rol);
 
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 2000);
+        window.location.href = "index.html";
       } else {
-        mostrarMensaje("Correo o contraseña incorrectos.", "error");
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = "Iniciar Sesión";
+        desactivarSpinnerLogin();
+        errorGeneral.textContent = "Correo o contraseña incorrectos.";
+        errorGeneral.classList.remove("d-none");
       }
     } catch {
-      mostrarMensaje("Error al conectar con el servidor.", "error");
-      loginBtn.disabled = false;
-      loginBtn.innerHTML = "Iniciar Sesión";
+      await delay(2000);
+      desactivarSpinnerLogin();
+      errorGeneral.textContent = "No se pudo conectar con el servidor.";
+      errorGeneral.classList.remove("d-none");
     }
+
   });
 
+  // ================= REGISTRO =================
   formRegistro.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = document.getElementById("nombreRegistro").value.trim();
-    const email = document.getElementById("emailRegistro").value.trim();
-    const password = document.getElementById("claveRegistro").value.trim();
-    const registroBtn = document.getElementById("btnRegistrar");
+    limpiarErrores();
+    limpiarMensajesGenerales();
 
-    if (!nombre || !email || !password) {
-      mostrarMensaje("Todos los campos son obligatorios.", "error");
-      return;
+    let valido = true;
+    const emailValor = emailRegistro.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!nombreRegistro.value.trim()) {
+      setError(nombreRegistro, errorNombreRegistro, "Ingresá tu nombre.");
+      valido = false;
     }
 
-    if (!email.endsWith("@gmail.com")) {
-      mostrarMensaje("El correo debe terminar en @gmail.com", "error");
-      return;
+    if (!emailValor) {
+      setError(emailRegistro, errorEmailRegistro, "Ingresá tu correo.");
+      valido = false;
+    } else if (!emailRegex.test(emailValor)) {
+      setError(emailRegistro, errorEmailRegistro, "Ingresá un correo válido.");
+      valido = false;
     }
 
-    if (!validarContrasenia(password)) {
-      mostrarMensaje(
-        "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
-        "error"
-      );
-      return;
+    if (!validarContrasenia(claveRegistro.value)) {
+      setError(claveRegistro, errorClaveRegistro, "Mínimo 8 caracteres, una mayúscula y un número.");
+      valido = false;
     }
+
+    if (!valido) return;
+
+    activarSpinnerRegistro();
+
+    activarSpinnerRegistro();
+    const inicio = Date.now();
 
     try {
-      registroBtn.disabled = true;
-      registroBtn.innerHTML = `<span class="spinner-border spinner-border-sm mr-2"></span> Registrando...`;
-
       const res = await fetch("http://localhost:5106/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombreCompleto: nombre, email, password }),
+        body: JSON.stringify({
+          nombreCompleto: nombreRegistro.value.toUpperCase(),
+          email: emailValor,
+          password: claveRegistro.value
+        }),
       });
 
+      const tiempoRestante = 2000 - (Date.now() - inicio);
+      if (tiempoRestante > 0) await delay(tiempoRestante);
+
       if (res.ok) {
-        mostrarMensaje("Registro exitoso. ¡Bienvenido!", "success");
+        registroExito.textContent = "Cuenta creada correctamente. Ahora podés iniciar sesión.";
+        registroExito.classList.remove("d-none");
         formRegistro.reset();
-        setTimeout(() => mostrarLogin(), 3500);
-      } else if (res.status === 409) {
-        mostrarMensaje("El correo ya está registrado.", "error");
+
+        setTimeout(() => {
+          desactivarSpinnerRegistro();
+          mostrarLogin();
+        }, 2000);
+
       } else {
-        mostrarMensaje("No se pudo registrar. Intentalo más tarde.", "error");
+        desactivarSpinnerRegistro();
+        setError(emailRegistro, errorEmailRegistro, "El correo ya está registrado.");
       }
     } catch {
-      mostrarMensaje("Error al conectar con el servidor.", "error");
-    } finally {
-      registroBtn.disabled = false;
-      registroBtn.innerHTML = "Registrarme";
+      await delay(2000);
+      desactivarSpinnerRegistro();
+      setError(emailRegistro, errorEmailRegistro, "Error de conexión.");
     }
   });
 });
-
