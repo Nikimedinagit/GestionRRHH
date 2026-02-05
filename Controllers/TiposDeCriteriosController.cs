@@ -208,8 +208,6 @@ namespace API_NET_CORE8_RRHH.Controllers
         }
 
 
-
-
         private bool TipoDeCriterioExists(int id)
         {
             return _context.TipoDeCriterio.Any(e => e.Id == id);

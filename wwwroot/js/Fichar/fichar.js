@@ -18,6 +18,7 @@ function showMensajeCamara(msg, tiempo = 3000) {
 
 // Mostrar mensaje del backend
 function showMensajeBackend(data, tipo = 'success', tiempo = 5000) {
+  const formSection = document.querySelector('.form-section'); // Seleccionamos el contenedor
   const nombre = data.nombre || data.NombreCompleto || data.Empleado?.NombreCompleto || '';
   const dni = data.dni || data.Dni || data.Empleado?.DNI || '';
 
@@ -25,15 +26,21 @@ function showMensajeBackend(data, tipo = 'success', tiempo = 5000) {
     mensajeBackend.innerHTML = `<span>${data.mensaje}</span>`;
   } else {
     mensajeBackend.innerHTML = `
-      ${nombre ? `<span>${nombre}</span>` : ''}
+      ${nombre ? `<span style="font-size: 1.4rem; display: block;">${nombre}</span>` : ''}
       ${dni ? `<span>DNI: ${dni}</span>` : ''}
-      <span>${data.mensaje || data.Mensaje || ''}</span>
+      <span style="margin-top: 10px;">${data.mensaje || data.Mensaje || ''}</span>
     `;
   }
 
   mensajeBackend.className = `mensaje-backend-card ${tipo}`;
   mensajeBackend.style.display = 'flex';
-  setTimeout(() => { mensajeBackend.style.display = 'none'; }, tiempo);
+  
+  formSection.classList.add('mostrando-mensaje');
+
+  setTimeout(() => {
+    mensajeBackend.style.display = 'none';
+    formSection.classList.remove('mostrando-mensaje');
+  }, tiempo);
 }
 
 // Iniciar cámara
@@ -168,6 +175,7 @@ btnReintentar.addEventListener('click', async () => {
   }
   await handleFaceAction('Fichar');
 });
+
 
 btnFichar.addEventListener('click', () => handleFaceAction('Fichar'));
 btnRegistrar.addEventListener('click', () => handleFaceAction('RegistrarRostro'));

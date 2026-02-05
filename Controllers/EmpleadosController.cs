@@ -478,13 +478,13 @@ namespace API_RRHH_TESIS2025.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var empleadosSinHorarios = _context.Empleado
-                .Where(e => !e.Eliminado &&
-                    (
-                        e.Horario.Any()
-                        || e.Id == empleadoIdActual
-                    ))
-                .Include(e => e.Puesto)
-                .AsQueryable();
+        .Where(e => !e.Eliminado &&
+            (
+                !e.Horario.Any()
+                || e.Id == empleadoIdActual
+            ))
+        .Include(e => e.Puesto)
+        .AsQueryable();
 
             if (rolActual == "SUPERVISOR")
             {
