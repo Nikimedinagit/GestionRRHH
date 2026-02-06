@@ -2,14 +2,21 @@
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
-  font-weight: 500;
-  padding: .45rem 1rem;
-  border: 1px solid transparent;
-  border-radius: .5rem;
-  background: #fff;
-  color: #000;
-  transition: all .25s ease;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 8px 16px;
+  border-radius: 8px; 
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #e0e0e0; 
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.1);
+  transition: all 0.3s ease;
+  min-width: 90px;
 }
 
 .btn:hover {
@@ -71,7 +78,6 @@
 .btn-resultados:hover span,
 .btn-resultados:hover i {
   color: #ffffff !important;
-  transition: 0.3s;
 }
 
 /* Opcional: para que la transición sea suave en todos */
@@ -352,19 +358,6 @@ table tbody tr {
   gap: 12px;
 }
 
-.btn {
-  all: unset;
-  padding: 8px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
-  text-align: center;
-  box-shadow: 0 2px 3px rgb(0 0 0 / 0.12);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  font-size: 0.875rem;
-  min-width: 90px;
-}
 
 .btn-cancelar {
   background-color: #9ca3af;
@@ -1829,13 +1822,16 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 /* INICIO ESTILO NOTIFICAICONES */
 .btn-marcarNoti {
-  --c: #64748B;
+  --c: #6f42c1;
 }
 
 .btn-marcarNoti:hover {
-  background: var(--c);
-  border-color: var(--c);
-  color: #fff;
+  background: var(--c) !important;
+}
+
+.btn-marcarNoti:hover span,
+.btn-marcarNoti:hover i {
+  color: #ffffff !important;
 }
 
 /* FIN ESTILO NOTIFICAICONES */
@@ -1873,6 +1869,13 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 /* FIN ESTILO BOTON SCROOL */
+
+
+
+
+
+
+
 
 .text-truncate-1 {
   white-space: nowrap;
