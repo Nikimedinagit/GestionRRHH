@@ -134,8 +134,8 @@ function MostrarPuestos(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle " + filaClass + " puesto-truncado'>" + item.descripcion + "</td>" +
-      "<td class='text-start align-middle d-none d-md-table-cell " + filaClass + "'>" +
+      "<td class='align-middle flex-text puesto-truncado " + filaClass + "'>" + item.descripcion + "</td>" +
+      "<td class='text-start align-middle flex-text d-none d-md-table-cell " + filaClass + "'>" +
       (item.sectorString || "Sin sector") +
       "</td>" +
       "<td class='text-center align-middle'>" +

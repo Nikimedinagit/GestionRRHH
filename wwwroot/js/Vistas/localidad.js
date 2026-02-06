@@ -132,12 +132,10 @@ function MostrarLocalidades(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle " +
-      filaClass +
-      " localidad-truncada'>" +
+      "<td class='align-middle flex-text localidad-truncada " + filaClass + "'>" +
       item.nombre +
       "</td>" +
-      "<td class='align-middle d-none d-md-table-cell " +
+      "<td class='align-middle d-none d-md-table-cell flex-text " +
       filaClass +
       "'>" +
       (item.provinciaString || "Sin provincia") +

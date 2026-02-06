@@ -294,11 +294,12 @@ function MostrarCursosDesktop(data) {
                           <div class="d-flex align-items-center justify-content-between p-2 mt-1">
                             <h3 class="m-0" style="font-size:1rem; font-weight:600;">Certificados del Curso</h3>
 
-                            <button class="btn btn-agregar-asistencia crearCertificado d-flex align-items-center justify-content-center"
+                            <button class="rounded btn btn-agregar-asistencia crearCertificado py-1 px-2 border bg-white d-flex align-items-center justify-content-center"
                                     data-curso-id="${element.id}">
-                              <i class="fa-solid fa-square-plus me-1"></i>
+                              <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
                               Cargar Certificados
                             </button>
+
                           </div>
 
                           <div class="certificados-panel">
@@ -335,10 +336,10 @@ function MostrarCursosDesktop(data) {
                         <div class="d-flex align-items-center justify-content-between p-2 mt-1">
                           <h3 class="m-0" style="font-size:1rem; font-weight:600;">Asistencia del Curso</h3>
 
-                          <button class="btn btn-agregar-asistencia crearAsistencias d-flex align-items-center justify-content-center"
+                          <button class="rounded btn btn-agregar-asistencia crearAsistencias py-1 px-2 border bg-white d-flex align-items-center justify-content-center"
                                   data-curso-id="${element.id}">
-                            <i class="fa-solid fa-square-plus me-1"></i>
-                            Registrar Asistencia
+                              <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+                            Registrar Asistencias
                           </button>
                         </div>
 
@@ -619,6 +620,9 @@ function MostrarCursosMobile(data) {
         .find(".btn-ver-certificados")
         .on("click", function () {
           cursoIdSeleccionado = element.id;
+
+
+          ObtenerEmpleadosSinCertificado();
           ObtenerCertificados(element.id, false);
 
           const offcanvasAsist = bootstrap.Offcanvas.getInstance(
@@ -636,6 +640,7 @@ function MostrarCursosMobile(data) {
         .find(".btn-ver-asistencias")
         .on("click", function () {
           cursoIdSeleccionado = element.id;
+          ObtenerEmpleadosSinAsistencia();
           ObtenerAsistencia(element.id, false);
 
           const offcanvasCert = bootstrap.Offcanvas.getInstance(
@@ -1231,7 +1236,7 @@ function MostrarAsistencias(cursoId, data) {
 
     if (!data || data.length === 0) {
       cardsContenedor.append(`
-        <div class="col-12 text-center text-muted py-3">
+        <div class="col-12 text-center text-muted py-3 px-2">
           No hay asistencias para mostrar.
         </div>
       `);
@@ -1245,7 +1250,7 @@ function MostrarAsistencias(cursoId, data) {
       const badgeClass = aprobado ? "badge-aprobado" : "badge-desaprobado";
 
       const card = $(`
-        <div class="col-12 mb-2">
+        <div class="col-12 mb-3">
           <div class="card shadow-sm rounded p-3 d-flex align-items-center justify-content-between flex-row">
             
             <div class="d-flex align-items-center flex-grow-1 me-2">
@@ -1760,7 +1765,7 @@ function MostrarCertificados(cursoId, data) {
 
     if (!data || data.length === 0) {
       cardsContenedor.append(`
-        <div class="col-12 text-center text-muted py-3">
+        <div class="col-12 text-center text-muted py-3 px-2">
           No hay certificados para mostrar.
         </div>
       `);
@@ -1780,7 +1785,7 @@ function MostrarCertificados(cursoId, data) {
         : "";
 
       const card = $(`
-          <div class="col-12 mb-2">
+          <div class="col-12 mb-3">
             <div class="card shadow-sm rounded p-2">
               <h6 class="fw-bold mb-1">${item.empleado.nombreCompleto}</h6>
               <div class="d-flex justify-content-between align-items-center mt-2">

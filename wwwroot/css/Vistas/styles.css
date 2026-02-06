@@ -61,7 +61,7 @@
 }
 
 .btn-resultados {
-  --c: #6A5ACD; 
+  --c: #6A5ACD;
 }
 
 .btn-resultados:hover {
@@ -80,7 +80,7 @@
 
 
 .btn-volver {
-  --c: #28a745; 
+  --c: #28a745;
 }
 
 .btn-volver:hover {
@@ -230,7 +230,7 @@ table tbody tr {
 }
 
 .table-responsive {
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
@@ -452,7 +452,7 @@ textarea.form-control:not(:placeholder-shown)+label {
   font-weight: 700;
   color: #2563eb;
   border-radius: 6px;
-  
+
 }
 
 @media (max-width: 1024px) {
@@ -501,7 +501,7 @@ textarea.form-control:not(:placeholder-shown)+label {
     max-height: 70vh;
     padding: 12px 12px;
   }
-  
+
 }
 
 @media (max-width: 480px) {
@@ -527,7 +527,7 @@ textarea.form-control:not(:placeholder-shown)+label {
     padding: 10px 10px;
     border-radius: 6px 0 0 6px;
   }
-  
+
 }
 
 /* FIN PANEL DESLIZANTE BASE */
@@ -801,14 +801,17 @@ td.td-empleado {
 }
 
 .btn-agregar-criterio {
-  font-size: 0.7rem !important;
-  padding: 0.25rem 0.5rem !important;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+  font-size: 0.75rem !important;
 }
 
 .btn-agregar-criterio:hover {
-  background-color: #7b59b3 !important;
-  color: #fff !important;
+  background-color: #3697E1 !important;
+  color: #ffffff !important;
+}
+
+.btn-agregar-criterio:hover span,
+.btn-agregar-criterio:hover i {
+  color: #ffffff !important;
 }
 
 /* FIN ESTILO EVALUACIONES */
@@ -1043,14 +1046,18 @@ td.td-empleado {
 }
 
 .btn-agregar-asistencia {
-  font-size: 0.7rem !important;
-  padding: 0.25rem 0.5rem !important;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+  font-size: 0.75rem !important;
+  
 }
 
 .btn-agregar-asistencia:hover {
-  background-color: #7b59b3 !important;
-  color: #fff !important;
+  background-color: #3697E1 !important;
+  color: #ffffff !important;
+}
+
+.btn-agregar-asistencia:hover span,
+.btn-agregar-asistencia:hover i {
+  color: #ffffff !important;
 }
 
 .panelCertificados.mostrar {
@@ -1059,15 +1066,17 @@ td.td-empleado {
 }
 
 .btn-agregar-certificado {
-  font-size: 0.7rem !important;
-  padding: 0.25rem 0.5rem !important;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+  font-size: 0.75rem !important;
+  
+}
+.btn-agregar-certificado:hover {
+  background-color: #3697E1 !important;
+  color: #ffffff !important;
 }
 
-
-.btn-agregar-certificado:hover {
-  background-color: #7b59b3 !important;
-  color: #fff !important;
+.btn-agregar-certificado:hover span,
+.btn-agregar-certificado:hover i {
+  color: #ffffff !important;
 }
 
 .icono-asistencia {
@@ -1125,12 +1134,6 @@ td.td-empleado {
   --c: #7b59b3;
 }
 
-.btn-agregar-canvas:hover {
-  background: var(--c);
-  border-color: var(--c);
-  color: #fff;
-}
-
 .btn-canvas {
   display: inline-flex;
   align-items: center;
@@ -1141,13 +1144,8 @@ td.td-empleado {
   border-radius: .5rem;
   background: #fff;
   color: #000;
-  transition: all .25s ease;
 }
 
-.btn-canvas:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
-}
 
 .btn-canvas {
   all: unset;
@@ -1158,7 +1156,6 @@ td.td-empleado {
   user-select: none;
   text-align: center;
   box-shadow: 0 2px 4px rgb(0 0 0 / 0.12);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   font-size: 0.875rem;
   min-width: 90px;
 }
@@ -1262,8 +1259,8 @@ DETALLE ASISTENCIA DIAS/SEMANAL */
 .detalle-justificacion-tarjeta,
 .detalle-criterio-tarjeta {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.295);
+  border-radius: 6px;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
   margin-bottom: 1rem;
   overflow: hidden;
   font-size: 0.85rem;
@@ -1750,7 +1747,7 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 }
 
 .card-carga-formulario {
-  background: white; 
+  background: white;
   border-radius: 0.375rem;
   text-align: center;
   max-width: 280px;
@@ -1882,32 +1879,17 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
 
 /* FIN ESTILO BOTON SCROOL */
 
-
-
-
-
-
+/*  INICIO ESTILO APRA SALTOD DE LINEA EN ESPACIOS REDUCIDOS */
+.flex-text {
+  min-width: 0 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+/*  FIN ESTILO APRA SALTOD DE LINEA EN ESPACIOS REDUCIDOS */
 
 
 .text-truncate-1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-
-.flex-text {
-  min-width: 0;
-  word-break: break-word;
-}
-
-
-#panelCriterios {
-    z-index: 2000 !important; /* Mucho más alto que el offcanvas */
-}
-
-/* Y esto es vital: si el Offcanvas tiene un fondo oscuro, 
-   tu panel debe estar por encima de TODO */
-.offcanvas-backdrop {
-    z-index: 1040 !important;
 }

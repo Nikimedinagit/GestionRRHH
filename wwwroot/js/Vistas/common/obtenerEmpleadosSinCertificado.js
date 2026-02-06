@@ -1,13 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OBTENER LOS DATOS DE LA API DE EMPLEADOS ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function ObtenerEmpleadosSinCertificado(cursoId) {
-    if (!cursoId) {
-        console.error("Error: cursoId es undefined");
-        return;
-    }
+async function ObtenerEmpleadosSinCertificado() {
 
-    const $dropdown = $('#EmpleadoIdCertificado'); 
+    const cursoId = cursoIdSeleccionado;
+
+    const $dropdown = $('#EmpleadoIdCertificado');
     $dropdown.prop("disabled", true).empty();
 
     try {

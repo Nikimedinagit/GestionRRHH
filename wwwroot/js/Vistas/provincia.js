@@ -109,9 +109,7 @@ function MostrarProvincias(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle " +
-      filaClass +
-      " provincia-truncada'>" +
+      "<td class='align-middle flex-text provincia-truncada " + filaClass + "'>" +
       item.nombre +
       "</td>" +
       "<td class='d-flex justify-content-center align-items-center'>" +
