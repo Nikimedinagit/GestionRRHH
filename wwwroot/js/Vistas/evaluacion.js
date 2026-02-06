@@ -68,7 +68,7 @@ function cerrarPanelCriterios() {
   panel.classList.remove("abierto");
   fondo.classList.remove("visible");
 
-  LimpiarModalCriterio();
+        LimpiarModalCriterio();
 
   fondo.removeEventListener("click", cerrarPanelCriterios);
 }
@@ -482,36 +482,23 @@ function BuscarEvaluacionId() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function LimpiarModalEvaluacion() {
   document.getElementById("IdEvaluacion").value = "";
+
   const inputCalificacion = document.getElementById("CalificacionEvaluacion");
   inputCalificacion.value = 0;
+
   const inputEmpleado = document.getElementById("EmpleadoId");
   inputEmpleado.value = "";
-  const selectTipoCriterio = document.getElementById("IdTipoCriterio");
-  selectTipoCriterio.value = "";
-  const inputDescripcion = document.getElementById("Descripcion");
-  inputDescripcion.value = "";
 
   inputCalificacion.classList.remove("is-invalid", "is-valid");
   inputEmpleado.classList.remove("is-invalid", "is-valid");
-  selectTipoCriterio.classList.remove("is-invalid", "is-valid");
-  inputDescripcion.classList.remove("is-invalid", "is-valid");
 
-  const inputErrorCalificacion = document.getElementById("errorCalificacionEvaluacion");
-  inputErrorCalificacion.textContent = "";
-  inputErrorCalificacion.style.display = "none";
-  const inputErrorEmpleado = document.getElementById("errorEmpleadoId");
-  inputErrorEmpleado.textContent = "";
-  inputErrorEmpleado.style.display = "none";
-  const selectErrorIdTipoCriterio = document.getElementById("errorIdTipoCriterio");
-  selectErrorIdTipoCriterio.textContent = "";
-  selectErrorIdTipoCriterio.style.display = "none";
-  const inputErrorDescripcion = document.getElementById("errorDescripcion");
-  inputErrorDescripcion.textContent = "";
-  inputErrorDescripcion.style.display = "none";
+  document.getElementById("errorCalificacionEvaluacion").textContent = "";
+  document.getElementById("errorCalificacionEvaluacion").style.display = "none";
 
-  ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
-
+  document.getElementById("errorEmpleadoId").textContent = "";
+  document.getElementById("errorEmpleadoId").style.display = "none";
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -704,6 +691,7 @@ async function EditarEvaluacion(id) {
     }
 
     setTimeout(() => {
+      LimpiarModalCriterio();
       ocultarOverlayGuardando();
       ObtenerEvaluaciones(false);
       cerrarPanelEvaluaciones();
@@ -906,6 +894,26 @@ async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
     console.error("Error al obtener criterios:", error);
     if (typeof MostrarErrorCatch === "function") MostrarErrorCatch();
   }
+}
+
+
+function LimpiarModalCriterio() {
+  document.getElementById("IdCriterio").value = "";
+
+  const selectTipoCriterio = document.getElementById("IdTipoCriterio");
+  const inputDescripcion = document.getElementById("Descripcion");
+
+  selectTipoCriterio.value = "";
+  inputDescripcion.value = "";
+
+  selectTipoCriterio.classList.remove("is-invalid", "is-valid");
+  inputDescripcion.classList.remove("is-invalid", "is-valid");
+
+  document.getElementById("errorIdTipoCriterio").textContent = "";
+  document.getElementById("errorIdTipoCriterio").style.display = "none";
+
+  document.getElementById("errorDescripcion").textContent = "";
+  document.getElementById("errorDescripcion").style.display = "none";
 }
 
 
