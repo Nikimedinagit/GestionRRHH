@@ -2177,6 +2177,9 @@ function MostrarOpcionesCursosPorRol() {
       "Visualizá los cursos en los que participaste y descargá los certificados disponibles."
     );
     $(
+      "#cardEstadisticasCursos, #btnMostrarFiltros, #btnNuevoCurso, #btnInformes"
+    ).addClass("d-none");
+    $(
       "#AprobadoES, #DesaprobdoES, #PresencialES, #VirtualES, #MixtoES, #CertificadoES, #FechaES"
     ).removeClass("d-none");
   }

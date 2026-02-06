@@ -95,7 +95,7 @@ async function CargarNotificaciones(mostrarSpinner = true) {
     });
 
     document.getElementById("badgeNotificaciones").textContent =
-      notificaciones.filter((n) => !n.leida).length;
+      notisMostrar.filter((n) => !n.leida).length;
   } catch (error) {
     MostrarErrorCatch(error);
   }
