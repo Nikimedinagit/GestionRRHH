@@ -157,12 +157,13 @@ function MostrarEmpleadosSupervisor(data) {
     const activo = item.eliminado == false;
     const textoEstado = activo ? "A" : "D";
     const tooltipEstadoBadge = activo ? "Activo" : "Desactivado";
-    const claseEstado = activo ? "bg-success text-white" : "bg-danger text-white";
-
+    const claseEstado = activo
+      ? "badge-empleado-activo"
+      : "badge-empleado-desactivado";
     contenedor.append(`
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
         <div class="card shadow-sm p-2 rounded position-relative d-flex flex-column w-100"
-             style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"}; min-height: 260px;">
+            style="border-bottom: 4px solid ${activo ? "#198754" : "#DC3545"}; min-height: 260px;">
 
           <div class="flex-grow-1 d-flex flex-column">
 
@@ -515,10 +516,10 @@ async function GenerarInformeEmpleadoPorSector() {
 
   const esMobile = window.innerWidth < 768;
 
-    if (esMobile) {
-        doc.save("Informe_Empleados_Sector.pdf");
-        return;
-    }
+  if (esMobile) {
+    doc.save("Informe_Empleados_Sector.pdf");
+    return;
+  }
 
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);

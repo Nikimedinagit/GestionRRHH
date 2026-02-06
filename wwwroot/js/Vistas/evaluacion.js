@@ -1,3 +1,8 @@
+document.addEventListener('focusin', function (e) {
+    if (e.target.closest('#panelCriterios') || e.target.closest('#panelEvaluaciones')) {
+        e.stopImmediatePropagation();
+    }
+}, true);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR EL PANEL DE EVALUACIONES //////////////////////////////////////////////////////// 
