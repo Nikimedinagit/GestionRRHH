@@ -1202,10 +1202,11 @@ function MostrarOpcionesEvaluacionesPorRol() {
   } else if (rol === "EMPLEADO") {
     $("#tituloEvaluaciones").text("Visualizá tu progreso, resultados y estado de las evaluaciones realizadas.");
     $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida, #JustificacionCriterioEliminar").addClass("d-none");
+    $("#btnNuevaEvaluacion, #btnMostrarGenerar, #cardEstadisticasEvaluaciones, #btnMostrarFiltros")
+      .addClass("d-none");
 
   }
 }
-
 
 
 
