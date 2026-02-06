@@ -1,6 +1,6 @@
 using System;
 
-namespace API_RRHH_TESIS2025.Helpers
+namespace GestionRRHH.Helpers
 {
     public static class EmbeddingHelper
     {

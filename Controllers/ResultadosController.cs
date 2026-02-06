@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using API_RRHH_TESIS2025.Models.Graficos;
+using GestionRRHH.Models.Graficos;
 using System.Globalization;
 using NuGet.Versioning;
 using System.Security.Claims;

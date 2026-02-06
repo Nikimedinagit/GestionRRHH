@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using API_RRHH_TESIS2025.Services;
-using API_RRHH_TESIS2025.Services.Hosted;
+using GestionRRHH.Services;
+using GestionRRHH.Services.Hosted;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de EF Core con SQL Server
 builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("API-NET-CORE8-RRHH")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("GestionRRHH")));
 
 // Configuración de Identity para usuarios y roles
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

@@ -1,9 +1,9 @@
-using API_RRHH_TESIS2025.Models.Dto;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.Dto;
+using GestionRRHH.Models.General;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace API_RRHH_TESIS2025.Services
+namespace GestionRRHH.Services
 {
     public interface IAsistenciaService
     {

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System.Globalization;
 using System.Security.Claims;
 
-namespace API_RRHH_TESIS2025.Controllers
+namespace GestionRRHH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

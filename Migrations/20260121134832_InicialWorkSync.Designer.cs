@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace API_NET_CORE8_RRHH.Migrations
+namespace GestionRRHH.Migrations
 {
     [DbContext(typeof(Context))]
     [Migration("20260121134832_InicialWorkSync")]

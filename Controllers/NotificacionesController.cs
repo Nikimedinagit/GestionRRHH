@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 using System.Security.Claims;
 
-namespace API_RRHH_TESIS2025.Controllers
+namespace GestionRRHH.Controllers
 {
     [Authorize(Roles = "ADMINISTRADOR,RRHH,SUPERVISOR,EMPLEADO")]
     [Route("api/[controller]")]

@@ -1,4 +1,4 @@
-using API_RRHH_TESIS2025.Services;
+using GestionRRHH.Services;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;

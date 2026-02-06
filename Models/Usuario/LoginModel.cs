@@ -1,4 +1,4 @@
-namespace API_RRHH_TESIS2025.Models.Usuario
+namespace GestionRRHH.Models.Usuario
 {
     // Creamos una clase para el login
     public class LoginModel

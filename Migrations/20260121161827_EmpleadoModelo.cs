@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace API_NET_CORE8_RRHH.Migrations
+namespace GestionRRHH.Migrations
 {
     /// <inheritdoc />
     public partial class EmpleadoModelo : Migration

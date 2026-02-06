@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace API_RRHH_TESIS2025.Models.General
+namespace GestionRRHH.Models.General
 {
     public class Feriado
     {

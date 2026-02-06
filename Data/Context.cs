@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 using WorkSync.Models.General;
 public class Context : IdentityDbContext<ApplicationUser>
 {

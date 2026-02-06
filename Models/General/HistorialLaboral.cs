@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 
 namespace WorkSync.Models.General
 {   

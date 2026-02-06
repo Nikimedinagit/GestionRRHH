@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace API_RRHH_TESIS2025.Services.Hosted
+namespace GestionRRHH.Services.Hosted
 {
     public class LimpiezaFotosService : BackgroundService
     {

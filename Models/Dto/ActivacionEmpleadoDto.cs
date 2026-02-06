@@ -1,4 +1,4 @@
-namespace API_NET_CORE8_RRHH.Models.Dto
+namespace GestionRRHH.Models.Dto
 {
     public class ActivacionEmpleadoDto
     {

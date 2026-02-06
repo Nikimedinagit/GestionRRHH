@@ -1,4 +1,4 @@
-namespace API_RRHH_TESIS2025.Models.Dto
+namespace GestionRRHH.Models.Dto
 {
     public class FicharDto
     {

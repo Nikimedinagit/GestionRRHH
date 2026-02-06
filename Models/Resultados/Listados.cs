@@ -1,4 +1,4 @@
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.General;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /// INICIO DE CLASES APRA EL LISTADO DE ASISTENCIA POR EMPLEADO - NIVEL 2

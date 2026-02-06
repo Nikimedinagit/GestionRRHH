@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using API_RRHH_TESIS2025.Models.Dto;
-using API_RRHH_TESIS2025.Services;
-using API_RRHH_TESIS2025.Models.General;
+using GestionRRHH.Models.Dto;
+using GestionRRHH.Services;
+using GestionRRHH.Models.General;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_NET_CORE8_RRHH.Controllers
+namespace GestionRRHH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

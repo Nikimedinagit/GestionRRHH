@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API_RRHH_TESIS2025.Models.General
+namespace GestionRRHH.Models.General
 {
     public class Puesto
     {

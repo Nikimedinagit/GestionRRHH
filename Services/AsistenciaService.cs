@@ -1,6 +1,6 @@
-using API_RRHH_TESIS2025.Models.Dto;
-using API_RRHH_TESIS2025.Models.General;
-using API_RRHH_TESIS2025.Helpers;
+using GestionRRHH.Models.Dto;
+using GestionRRHH.Models.General;
+using GestionRRHH.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API_RRHH_TESIS2025.Services
+namespace GestionRRHH.Services
 {
     public class AsistenciaService : IAsistenciaService
     {

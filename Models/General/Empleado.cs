@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 using WorkSync.Models.General;
 
-namespace API_RRHH_TESIS2025.Models.General
+namespace GestionRRHH.Models.General
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// TABLA PARA EMPLEADOS ////////////////////////////////////////////////////////////////////////////

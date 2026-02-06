@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>API_NET_CORE8_RRHH</RootNamespace>
+    <RootNamespace>GestionRRHH</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

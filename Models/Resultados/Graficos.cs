@@ -1,7 +1,7 @@
 using Humanizer;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 
-namespace API_RRHH_TESIS2025.Models.Graficos;
+namespace GestionRRHH.Models.Graficos;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

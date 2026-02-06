@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace API_NET_CORE8_RRHH.Migrations
+namespace GestionRRHH.Migrations
 {
     [DbContext(typeof(Context))]
     partial class ContextModelSnapshot : ModelSnapshot

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkSync.Models.General;
 
-namespace API_NET_CORE8_RRHH.Controllers
+namespace GestionRRHH.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
