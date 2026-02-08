@@ -266,6 +266,7 @@ function MostrarEvaluacionesDesktop(data) {
             <div class="panelCriterios px-2 pb-2 mb-2" style="display: none; background-color: #ffffff;">
 
               <div class="panel-detalle-contenido" style="display: none;">
+
                 <div class="d-flex align-items-center justify-content-between p-2 mt-1">
                   <h3 style="font-size: 1rem; font-weight: 600;">
                     Criterios de Evaluación
@@ -274,43 +275,43 @@ function MostrarEvaluacionesDesktop(data) {
                   ${element.esEditable ? `
                   <button class="rounded btn btn-agregar-criterio crearCriterio py-1 px-2 border bg-white d-flex align-items-center justify-content-center"
                           data-evaluacion-id="${element.id}">
-            <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+                       <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
                     Agregar Criterios
                   </button>` : ""}
-                </div >
+                </div>
 
+            <div class="criterios-panel">
 
-    <div class="criterios-panel">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle w-100">
-          <colgroup>
-            <col style="width: 25%" />
-            <col style="width: 65%" />
-            ${element.esEditable ? `<col style="width: 10%" />` : ""}
-          </colgroup>
-          <thead>
-            <tr>
-              <th class="text-start header-table">Criterio</th>
-              <th class="text-start header-table">Descripción</th>
-              ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
-            </tr>
-          </thead>
-          <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
-          </tbody>
-        </table>
-      </div>
-    </div>
-              </div >
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle w-100">
+                  <colgroup>
+                    <col style="width: 25%" />
+                    <col style="width: 65%" />
+                    ${element.esEditable ? `<col style="width: 10%" />` : ""}
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th class="text-start header-table">Criterio</th>
+                      <th class="text-start header-table">Descripción</th>
+                      ${element.esEditable ? `<th class="text-center header-table">Acciones</th>` : ""}
+                    </tr>
+                  </thead>
+                  <tbody class="tabla-criterios-body" data-evaluacion-id="${element.id}">
+                  </tbody>
+                </table>
+              </div>
+            </div>  
+            </div>
 
-    <div class="panel-detalle-spinner" style="display: flex;">
-      <div class="card-carga-detalle">
-        <div class="spinner-border text-primary spinner-pequena" role="status"></div>
-        <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
-      </div>
-    </div>
-
-            </div >
-    `);
+            <div class="panel-detalle-spinner" style="display: flex;">
+              <div class="card-carga-detalle">
+                <div class="spinner-border text-primary spinner-pequena" role="status"></div>
+                <p class="text-muted mt-2">Cargando criterios<span class="dots"></span></p>
+              </div>
+            </div>
+            
+          </div>
+        `);
 
 
 
@@ -389,13 +390,24 @@ function MostrarEvaluacionesMobile(data) {
     const esEditable = element.esEditable === true || element.esEditable === "true";
 
 
-    const nombreMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoNombre
-      : element.usuarioNombreEvaluador;
+    let nombreMostrar = "";
+    let rolMostrar = "";
 
-    const rolMostrar = (element.claseBorde === "green" || element.claseBorde === "yellow")
-      ? element.empleadoPuesto
-      : element.usuarioRolEvaluador;
+    if (rol === "ADMINISTRADOR") {
+      nombreMostrar = element.empleadoNombre;
+      rolMostrar = element.empleadoPuesto;
+    }
+    else {
+      if (element.claseBorde === "green" || element.claseBorde === "yellow") {
+        nombreMostrar = element.empleadoNombre;
+        rolMostrar = element.empleadoPuesto;
+      } else {
+        nombreMostrar = element.usuarioNombreEvaluador;
+        rolMostrar = element.usuarioRolEvaluador;
+      }
+    }
+
+
 
 
     const botonEditarHTML = esEditable
@@ -406,14 +418,15 @@ function MostrarEvaluacionesMobile(data) {
 
 
     contenedor.innerHTML += `
-    <div div class= "col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3" >
+    <div div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex mb-3">
+
     <div class="card shadow-sm p-2 rounded d-flex flex-column w-100" style="min-height: 180px; border-left: 3px solid ${bordeColor};">
+
       <div class="flex-grow-1 d-flex flex-column">
         <h5 class="text-start fw-bold mb-2" style="font-size: 1.2rem;" title="${nombreMostrar}">
           ${nombreMostrar || "Sin nombre"}
         </h5>
-        <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;" title="${rolMostrar}">
-          <i class="bi bi-briefcase me-2"></i>
+        <p class="mb-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;" title="${rolMostrar}">
           ${rolMostrar || "Sin puesto"}
         </p>
         <small class="text-muted mb-2" style="font-size: 0.75rem;">
@@ -432,11 +445,10 @@ function MostrarEvaluacionesMobile(data) {
           <button class="btn-ver" onclick="MostrarDetalleCriterios(${element.id}, ${esEditable})" data-tippy-content="Detalle" style="background: none; border: none; margin-right:5px">
             <i class="bi bi-info-circle icono-ver btn-sm"></i>
           </button>
-
         </div>
       </div>
     </div>
-      </div >
+      </div>
     `;
   });
 
@@ -454,7 +466,7 @@ function MostrarEvaluacionesMobile(data) {
 // FUNCION PARA MOSTRAR EL MODAL DE EDICION DE LA EVALUACION ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarModalEditar(id) {
-  const res = await authFetch(`Evaluaciones / ${ id }`,
+  const res = await authFetch(`Evaluaciones/${id}`,
     {
       method: "GET"
     })
@@ -681,7 +693,7 @@ async function EditarEvaluacion(id) {
       empleadoId: document.getElementById("EmpleadoId").value,
     };
 
-    const response = await authFetch(`Evaluaciones / ${ id }`, {
+    const response = await authFetch(`Evaluaciones/${id}`, {
       method: "PUT",
       body: JSON.stringify(evaluacion),
     });
@@ -738,14 +750,14 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetall
 
   let tablaBody = panelDetalle?.querySelector?.(".tabla-criterios-body");
   if (!tablaBody) {
-    tablaBody = document.querySelector(`.tabla - criterios - body[data - evaluacion - id="${evaluacionId}"]`);
+    tablaBody = document.querySelector(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
   }
 
   if (spinner) spinner.style.display = "flex";
   if (contenido) contenido.style.display = "none";
 
   try {
-    const res = await authFetch(`CriteriosDeEvaluacion / PorEvaluacion / ${ evaluacionId }`, { method: "GET" });
+    const res = await authFetch(`CriteriosDeEvaluacion/PorEvaluacion/${evaluacionId}`, { method: "GET" });
     const criterios = await res.json();
 
     setTimeout(() => {
@@ -772,7 +784,7 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetall
 // FUNCION PARA MOSTRAR LOS CRITERIOS DE EVALUACION ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
-  const tablaBody = $(`.tabla - criterios - body[data - evaluacion - id="${evaluacionId}"]`);
+  const tablaBody = $(`.tabla-criterios-body[data-evaluacion-id="${evaluacionId}"]`);
 
   if (!tablaBody.length) return;
 
@@ -780,9 +792,12 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
 
   if (data.length === 0) {
     tablaBody.append(
-      `<tr tr > <td colspan='${esEditable ? 3 : 2}' class='text-center text-muted'>
-    No hay criterios de evaluación para mostrar.
-  </td></tr > `
+      `<tr>
+          <td colspan='${esEditable ? 3 : 2}' class='text-center text-muted'>
+            No hay criterios de evaluación para mostrar.
+          </td>
+      </tr>`
+
     );
     return;
   }
@@ -792,11 +807,10 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
   $.each(data, function (index, item) {
     if (enMovil) {
       tablaBody.append(`
-  <tr tr >
+  <tr>
   <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
-          ${
-    esEditable
-    ? `<td class='align-middle text-center'>
+          ${esEditable
+          ? `<td class='align-middle text-center'>
                 <button class='btn-borrar' style='background: none; border: none;' 
                   onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content='Eliminar'>
                   <i class='bi bi-trash3 icono-borrar'></i>
@@ -804,25 +818,24 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
               </td>`
           : ""
         }
-        </tr >
+        </tr>
   `);
     }
     else {
       tablaBody.append(`
-  < tr >
+  <tr>
     <td class='align-middle text-wrap'>${item.tipoDeCriterio.nombre}</td>
     <td class='align-middle text-wrap'>${item.descripcion || "Sin descripción"}</td>
-    ${
-  esEditable
-    ? `<td class='d-flex justify-content-center align-items-center'>
+    ${esEditable
+          ? `<td class='d-flex justify-content-center align-items-center'>
             <button class='btn-borrar' style='background: none; border: none;' 
               onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})' data-tippy-content="Eliminar">
               <i class='bi bi-trash3 icono-borrar'></i>
             </button>
           </td>`
-    : ""
-}
-  </tr >
+          : ""
+        }
+  </tr>
   `);
 
     }
@@ -857,7 +870,7 @@ async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
     } else {
       criteriosFiltrados.forEach(item => {
         const botonEliminar = esEditable
-          ? `< div class="text-end mt-3" >
+          ? `<div class="text-end mt-3">
   <button class='btn-borrar' style='background: none; border: none;'
     onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})'
     data-tippy-content="Eliminar">
@@ -867,7 +880,7 @@ async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
           : "";
 
         const card = `
-  < div class="col-12 mb-3" >
+  <div class="col-12 mb-3">
     <div class="card shadow-sm rounded p-2">
       <h6 class="fw-bold mb-0">${item.tipoDeCriterio.nombre}</h6>
       <div class="d-flex justify-content-between align-items-center">
@@ -1172,7 +1185,7 @@ function EliminarCriterioDeEvaluacion(id, evaluacionId, esEditable) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiCriterio(id, evaluacionId, esEditable) {
   try {
-    const res = await authFetch(`CriteriosDeEvaluacion / ${ id } `, {
+    const res = await authFetch(`CriteriosDeEvaluacion/${id} `, {
       method: "DELETE",
     });
 
@@ -1277,37 +1290,37 @@ async function GenerarInformePdfEvaluacion() {
   doc.setFont("helvetica", "normal");
   doc.text("Total Evaluaciones:", 14, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${ resumen.total } `, 49, y);
+  doc.text(`${resumen.total} `, 49, y);
 
   doc.setFont("helvetica", "normal");
   doc.text("| Excelente:", 55, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${ resumen.evaluacionCalificacion["Excelente"] } `, 76, y);
+  doc.text(`${resumen.evaluacionCalificacion["Excelente"]} `, 76, y);
 
   doc.setFont("helvetica", "normal");
   doc.text("| Buena:", 81, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${ resumen.evaluacionCalificacion["Buena"] } `, 96, y);
+  doc.text(`${resumen.evaluacionCalificacion["Buena"]} `, 96, y);
 
   doc.setFont("helvetica", "normal");
   doc.text("| Muy Buena:", 101, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${ resumen.evaluacionCalificacion["Muy Buena"] } `, 125, y);
+  doc.text(`${resumen.evaluacionCalificacion["Muy Buena"]} `, 125, y);
 
   doc.setFont("helvetica", "normal");
   doc.text("| Mala:", 130, y);
   doc.setFont("helvetica", "bold");
-  doc.text(`${ resumen.evaluacionCalificacion["Mala"] } `, 142, y);
+  doc.text(`${resumen.evaluacionCalificacion["Mala"]} `, 142, y);
 
   y += 6;
 
   const filtrosAplicadosArray = [];
-  if (filtro.nombreEmpleado) filtrosAplicadosArray.push(`[Empleado: ${ filtro.nombreEmpleado }]`);
+  if (filtro.nombreEmpleado) filtrosAplicadosArray.push(`[Empleado: ${filtro.nombreEmpleado}]`);
   if (filtro.calificacion) {
     let calificacionNombre = document.getElementById("CalificacionBuscar").selectedOptions[0]?.text || calificacion;
-    filtrosAplicadosArray.push(`[Calificación: ${ calificacionNombre }]`);
+    filtrosAplicadosArray.push(`[Calificación: ${calificacionNombre}]`);
   }
-  if (filtro.fecha) filtrosAplicadosArray.push(`[Fecha: ${ filtro.fecha }]`);
+  if (filtro.fecha) filtrosAplicadosArray.push(`[Fecha: ${filtro.fecha}]`);
 
   const filtrosAplicados = filtrosAplicadosArray.length > 0 ? filtrosAplicadosArray.join("  |  ") : "No se aplicaron";
 
@@ -1333,7 +1346,7 @@ async function GenerarInformePdfEvaluacion() {
       doc.setPage(i);
       doc.setFontSize(9);
       doc.setTextColor(100);
-      doc.text(`Página ${ i } de ${ pages } `, margen, doc.internal.pageSize.getHeight() - 10);
+      doc.text(`Página ${i} de ${pages} `, margen, doc.internal.pageSize.getHeight() - 10);
     }
 
     const blob = doc.output("blob");
@@ -1430,7 +1443,7 @@ async function GenerarInformePdfEvaluacion() {
     doc.setPage(i);
     doc.setFontSize(9);
     doc.setTextColor(100);
-    doc.text(`Página ${ i } de ${ pageCount } `, 14, doc.internal.pageSize.getHeight() - 10);
+    doc.text(`Página ${i} de ${pageCount} `, 14, doc.internal.pageSize.getHeight() - 10);
     doc.text("www.WorkSync.com", pageWidth - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
   }
 
