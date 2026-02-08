@@ -87,8 +87,12 @@ function MostrarJustificaciones(data) {
 }
 
 window.addEventListener("resize", function () {
-  ObtenerJustificaciones(false);
+  const panelAbierto = document.getElementById("panelCursos").classList.contains("abierto");
+  if (!panelAbierto) {
+    ObtenerCursos(false);
+  }
 });
+
 
 
 //////////////////////////////////////////////////////////////////////////////

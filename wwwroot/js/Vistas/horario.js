@@ -367,8 +367,7 @@ function MostrarHorariosMobile(data) {
               ${empleadoString || "Sin nombre"}
             </h5>
 
-            <p class="mb-2 my-2 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
-              <i class="bi bi-briefcase me-2"></i>
+            <p class="mb-2 my-1 text-muted d-flex align-items-center" style="font-size: 0.9rem;">
               ${puestoEmpleado || "Sin puesto"}
             </p>
 

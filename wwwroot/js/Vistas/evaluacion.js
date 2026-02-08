@@ -1,8 +1,13 @@
+
+window.evaluacionIdSeleccionada = null;
+
+
 document.addEventListener('focusin', function (e) {
   if (e.target.closest('#panelCriterios') || e.target.closest('#panelEvaluaciones')) {
     e.stopImmediatePropagation();
   }
 }, true);
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA ABRIR EL PANEL DE EVALUACIONES //////////////////////////////////////////////////////// 
@@ -35,6 +40,8 @@ function cerrarPanelEvaluaciones() {
 // FUNCION PARA ABRIR EL PANEL DE CRITERIOS //////////////////////////////////////////////////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function abrirPanelCriterios() {
+
+
   const panel = document.getElementById("panelCriterios");
   const fondo = document.getElementById("fondoOscuro");
 
@@ -44,6 +51,7 @@ function abrirPanelCriterios() {
   fondo.addEventListener("click", cerrarPanelCriterios);
 
   setTimeout(() => {
+    ObtenerTiposCriterioDisponibles(window.evaluacionIdSeleccionada);
     const inputTipoCriterio = document.getElementById("IdTipoCriterio");
     if (inputTipoCriterio) inputTipoCriterio.focus();
   }, 400);
@@ -55,7 +63,8 @@ function abrirPanelCriterios() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).on("click", ".crearCriterio", function () {
   const idEvaluacion = $(this).data("evaluacion-id");
-  evaluacionIdSeleccionada = idEvaluacion;
+
+  window.evaluacionIdSeleccionada = idEvaluacion;
 
   ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
 
@@ -413,7 +422,7 @@ function MostrarEvaluacionesMobile(data) {
     const botonEditarHTML = esEditable
       ? `<button button class= "btn-ver" style = "background: none; border: none; cursor: pointer;" onclick = "MostrarModalEditar(${element.id})" data - tippy - content="Editar" >
   <i class="bi bi-pencil-square icono-editar btn-sm"></i>
-        </button > `
+        </button> `
       : "";
 
 
@@ -767,7 +776,7 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetall
       if (window.innerWidth > 764) {
         MostrarCriterioDeEvaluacion(evaluacionId, criterios, esEditable);
       } else {
-        MostrarDetalleCriterios(evaluacionId, esEditable);
+        MostrarDetalleCriterios(window.evaluacionIdSeleccionada, true);
       }
     }, 500);
 
@@ -777,7 +786,6 @@ async function ObtenerCriterioDeEvaluacion(evaluacionId, esEditable, panelDetall
     MostrarErrorCatch();
   }
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -853,42 +861,45 @@ function MostrarCriterioDeEvaluacion(evaluacionId, data, esEditable) {
 // FUNCION PARA MOSTRAR EL DETALLE DE CRITERIOS DE EVALUACION ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
+
+  window.evaluacionIdSeleccionada = evaluacionId;
+
   const contenedor = document.getElementById("contenedorCriteriosOffcanvas");
 
   try {
-    const response = await authFetch("CriteriosDeEvaluacion", {
+    const response = await authFetch(`CriteriosDeEvaluacion/PorEvaluacion/${evaluacionId}`, {
       method: "GET",
     });
 
-    const data = await response.json();
-    const criteriosFiltrados = data.filter(c => c.evaluacionId === evaluacionId);
+    const criteriosFiltrados = await response.json();
 
     contenedor.innerHTML = "";
 
-    if (criteriosFiltrados.length === 0) {
+    if (!criteriosFiltrados || criteriosFiltrados.length === 0) {
       contenedor.innerHTML = "<div class='text-center text-muted py-3 px-3'>No hay criterios para mostrar.</div>";
     } else {
       criteriosFiltrados.forEach(item => {
         const botonEliminar = esEditable
           ? `<div class="text-end mt-3">
-  <button class='btn-borrar' style='background: none; border: none;'
-    onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})'
-    data-tippy-content="Eliminar">
-    <i class='bi bi-trash3 icono-borrar'></i>
-  </button>
-              </div > `
+              <button class='btn-borrar' style='background: none; border: none;'
+                onclick='EliminarCriterioDeEvaluacion(${item.id}, ${evaluacionId}, ${esEditable})'
+                data-tippy-content="Eliminar">
+                <i class='bi bi-trash3 icono-borrar'></i>
+              </button>
+            </div>`
           : "";
 
         const card = `
-  <div class="col-12 mb-3">
-    <div class="card shadow-sm rounded p-2">
-      <h6 class="fw-bold mb-0">${item.tipoDeCriterio.nombre}</h6>
-      <div class="d-flex justify-content-between align-items-center">
-        <span>${item.descripcion || "Sin descripción"}</span>
-        ${botonEliminar}
-      </div>
-    </div>
-          </div > `;
+          <div class="col-12 mb-3">
+            <div class="card shadow-sm rounded p-2">
+              <h6 class="fw-bold mb-0">${item.tipoDeCriterio.nombre}</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${item.descripcion || "Sin descripción"}</span>
+                ${botonEliminar}
+              </div>
+            </div>
+          </div>`;
+
         contenedor.innerHTML += card;
       });
 
@@ -916,6 +927,7 @@ async function MostrarDetalleCriterios(evaluacionId, esEditable = false) {
     if (typeof MostrarErrorCatch === "function") MostrarErrorCatch();
   }
 }
+
 
 
 function LimpiarModalCriterio() {
@@ -1076,7 +1088,7 @@ async function CrearCriterioDeEvaluacion() {
     const criterioEvaluacion = {
       tipoDeCriterioId: document.getElementById("IdTipoCriterio").value,
       descripcion: document.getElementById("Descripcion").value.trim(),
-      evaluacionId: evaluacionIdSeleccionada,
+      evaluacionId: window.evaluacionIdSeleccionada
     };
 
     const response = await authFetch("CriteriosDeEvaluacion", {
@@ -1096,7 +1108,7 @@ async function CrearCriterioDeEvaluacion() {
 
     setTimeout(() => {
       ocultarOverlayGuardandoCriterios();
-      ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, false);
+      ObtenerCriterioDeEvaluacion(evaluacionIdSeleccionada, true, null);
       cerrarPanelCriterios();
       ObtenerTiposCriterioDisponibles(evaluacionIdSeleccionada);
 
@@ -1134,10 +1146,10 @@ function EliminarCriterioDeEvaluacion(id, evaluacionId, esEditable) {
   Swal.fire({
     title: "¿Desea eliminar este criterio?",
     html: `
-  < div class="text-center" >
+  <div class="text-center">
         <p>Este criterio será eliminado de forma definitiva. ¿Desea continuar?</p>
         <p>Esta acción no se puede deshacer.</p>
-      </div >
+      </div>
   `,
     showCancelButton: true,
     confirmButtonText: "Sí, eliminar",
@@ -1185,7 +1197,7 @@ function EliminarCriterioDeEvaluacion(id, evaluacionId, esEditable) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 async function EliminarSiCriterio(id, evaluacionId, esEditable) {
   try {
-    const res = await authFetch(`CriteriosDeEvaluacion/${id} `, {
+    const res = await authFetch(`CriteriosDeEvaluacion/${id}`, {
       method: "DELETE",
     });
 
