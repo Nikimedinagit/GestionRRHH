@@ -1,2 +1,19 @@
-/bin
-/obj
+# Visual Studio
+.vs/
+
+# Compilación .NET
+bin/
+obj/
+
+# Archivos de usuario
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Temporales
+*.tmp
+*.temp
