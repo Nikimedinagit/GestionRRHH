@@ -1235,14 +1235,14 @@ function MostrarOpcionesEvaluacionesPorRol() {
   if (!rol) return;
 
   if (rol === "ADMINISTRADOR") {
-    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
+    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado, #btnAgregarCriterioOffcanvas").removeClass("d-none");
     $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida").addClass("d-none");
   }
   else if (rol === "RRHH" || rol === "SUPERVISOR") {
-    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado").removeClass("d-none");
+    $("#cardEstadisticasEvaluaciones, #btnMostrarGenerar, #btnNuevaEvaluacion, #filtroEmpleado,#btnAgregarCriterioOffcanvas").removeClass("d-none");
   } else if (rol === "EMPLEADO") {
     $("#tituloEvaluaciones").text("Visualizá tu progreso, resultados y estado de las evaluaciones realizadas.");
-    $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida, #JustificacionCriterioEliminar").addClass("d-none");
+    $("#EvaluacionCreadoPorUsuario, #EvaluacionCreadoSuperior, #EvaluacionRecibida, #JustificacionCriterioEliminar, #btnAgregarCriterioOffcanvas").addClass("d-none");
     $("#btnNuevaEvaluacion, #btnMostrarGenerar, #cardEstadisticasEvaluaciones, #btnMostrarFiltros")
       .addClass("d-none");
 
