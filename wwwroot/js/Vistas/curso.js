@@ -172,8 +172,12 @@ function MostrarCursos(data) {
 }
 
 
+
 window.addEventListener("resize", function () {
-  ObtenerCursos(false);
+  const panelAbierto = document.getElementById("panelJustificacion").classList.contains("abierto");
+  if (!panelAbierto) {
+    ObtenerCursos(false);
+  }
 });
 
 

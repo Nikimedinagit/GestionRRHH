@@ -73,7 +73,6 @@
   color: #ffffff !important;
 }
 
-/* Opcional: para que la transición sea suave en todos */
 .btn {
   transition: all 0.3s ease;
 }
@@ -308,7 +307,6 @@ table tbody tr {
   transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
   overflow-y: auto;
   overflow-x: hidden;
-
 }
 
 /* #panelEvaluaciones {

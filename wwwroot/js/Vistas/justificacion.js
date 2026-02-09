@@ -86,14 +86,21 @@ function MostrarJustificaciones(data) {
   }
 }
 
+
 window.addEventListener("resize", function () {
-  const panelAbierto = document.getElementById("panelCursos").classList.contains("abierto");
-  if (!panelAbierto) {
-    ObtenerCursos(false);
-  }
+
+    const estaEscribiendo = document.activeElement.tagName === 'INPUT' || 
+                            document.activeElement.tagName === 'TEXTAREA';
+
+    const panel = document.getElementById("panelJustificacion");
+    const panelAbierto = panel && panel.classList.contains("abierto");
+
+    if (estaEscribiendo || panelAbierto) {
+        return; 
+    }
+  
+    ObtenerJustificaciones(false);
 });
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 // MOSTRAR LAS JUSTIFICACIONES DESKTOP ///////////////////////////////////////////
