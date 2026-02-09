@@ -105,9 +105,9 @@ function MostrarSectores(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle flex-text sector-truncado " +
+      "<td class='align-middle flex-text " +
       filaClass +
-      "'>" +
+      " sector-truncado'>" +
       item.nombre +
       "</td>" +
       "<td class='text-center align-middle'>" +

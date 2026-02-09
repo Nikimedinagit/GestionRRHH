@@ -105,9 +105,9 @@ function MostrarTiposDeLicencias(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle flex-text  tipo-de-licencia-truncado " +
+      "<td class='align-middle flex-text " +
       filaClass +
-      "'>" +
+      " tipo-de-licencia-truncado'>" +
       item.nombre +
       "</td>" +
       "<td class='d-flex justify-content-center align-items-center'>" +

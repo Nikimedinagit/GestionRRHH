@@ -111,7 +111,7 @@ function MostrarTiposDeCriterios(data) {
       "'></i>" +
       "</button>" +
       "</td>" +
-      "<td class='align-middle flex-text" +
+      "<td class='align-middle flex-text " +
       filaClass +
       " tipo-de-criterio-truncado'>" +
       item.nombre +
@@ -134,6 +134,7 @@ function MostrarTiposDeCriterios(data) {
     delay: [100, 0],
   });
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
