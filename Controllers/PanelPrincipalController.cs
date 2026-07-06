@@ -196,6 +196,11 @@ public class PanelPrincipalController : ControllerBase
         return culture.Calendar.GetWeekOfYear(fecha, System.Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday);
     }
 
+    private static int ContarDiasLicencia(Licencia licencia)
+    {
+        return Math.Max(0, (licencia.FechaFin.Date - licencia.FechaInicio.Date).Days + 1);
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,20 +223,31 @@ public class PanelPrincipalController : ControllerBase
 
         if (empleado == null) return NotFound("Empleado no encontrado");
 
-        int diasTotales = 30;
-
         int anioActual = DateTime.Now.Year;
+
+        var fechaActivacion = await _context.ActivacionEmpleado
+            .Where(a => a.EmpleadoId == empleado.Id && a.FechaActivacion.HasValue)
+            .OrderBy(a => a.FechaActivacion)
+            .Select(a => a.FechaActivacion)
+            .FirstOrDefaultAsync();
+
+        var anioInicio = fechaActivacion?.Year ?? anioActual;
+        var aniosComputables = Math.Max(1, anioActual - anioInicio + 1);
+        var diasTotales = Math.Max(0, empleado.DiasVacacionesAnuales) * aniosComputables;
 
         var vacaciones = empleado.Licencia
             .Where(l => l.TipoDeLicencia.Nombre.ToLower() == "vacaciones" &&
-                        l.Estado == EstadoLicencia.APROBADA &&
-                        l.FechaInicio.Year == anioActual)
+                        (l.Estado == EstadoLicencia.APROBADA || l.Estado == EstadoLicencia.EXPIRADA))
             .ToList();
 
-        int diasTomados = vacaciones.Sum(v => (v.FechaFin - v.FechaInicio).Days + 1);
-        int diasRestantes = Math.Max(diasTotales - diasTomados, 0);
+        int diasTomadosTotales = vacaciones.Sum(ContarDiasLicencia);
+        int diasTomadosAnio = vacaciones
+            .Where(v => v.FechaInicio.Year == anioActual)
+            .Sum(ContarDiasLicencia);
+        int diasRestantes = Math.Max(diasTotales - diasTomadosTotales, 0);
 
         var historial = vacaciones
+            .Where(v => v.FechaInicio.Year == anioActual)
             .GroupBy(v => v.FechaInicio.Month)
             .Select(g => new
             {
@@ -239,7 +255,7 @@ public class PanelPrincipalController : ControllerBase
                           new DateTime(anioActual, g.Key, 1)
                               .ToString("MMMM", new CultureInfo("es-ES"))
                       ),
-                Dias = g.Sum(v => (v.FechaFin - v.FechaInicio).Days + 1)
+                Dias = g.Sum(ContarDiasLicencia)
             })
             .OrderBy(h => DateTime.ParseExact(h.Mes, "MMMM", new CultureInfo("es-ES")).Month)
             .ToList();
@@ -247,8 +263,11 @@ public class PanelPrincipalController : ControllerBase
         return Ok(new
         {
             Anio = anioActual,
+            Total = diasTotales,
+            Anuales = empleado.DiasVacacionesAnuales,
             Restantes = diasRestantes,
-            Tomados = diasTomados,
+            Tomados = diasTomadosAnio,
+            TomadosTotales = diasTomadosTotales,
             Historial = historial
         });
     }

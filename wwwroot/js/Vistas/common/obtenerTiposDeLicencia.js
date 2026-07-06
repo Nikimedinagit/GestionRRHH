@@ -26,8 +26,12 @@ function MostrarTiposDeLicenciasDropDown(data) {
     $dropdown.append(`<option value="" selected disabled hidden>Seleccione</option>`);
 
     $.each(data, function (index, item) {
-        $dropdown.append(`<option value="${item.id}">${item.nombre}</option>`);
+        $dropdown.append(`<option value="${item.id}" data-nombre="${item.nombre}">${item.nombre}</option>`);
     });
+
+    if (typeof window.AplicarEstadoTipoVacaciones === "function") {
+        window.AplicarEstadoTipoVacaciones();
+    }
 }
 
 

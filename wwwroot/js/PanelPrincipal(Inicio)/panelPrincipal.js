@@ -131,6 +131,7 @@ async function mostrarVacacionesUsuario() {
 
         document.getElementById('vacacionesAnio').textContent = data.anio;
 
+        document.getElementById('vacacionesTotal').textContent = data.total;
         document.getElementById('vacacionesRestantes').textContent = data.restantes;
         document.getElementById('vacacionesTomadas').textContent = data.tomados;
 
@@ -306,4 +307,3 @@ function cargarLasFuncionesInicio() {
 // INICIALIZAMOS LAS FUNCIONES /////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 cargarLasFuncionesInicio();
-

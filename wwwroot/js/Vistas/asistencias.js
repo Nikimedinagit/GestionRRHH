@@ -14,6 +14,177 @@ $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #Fe
         ObtenerTotalAsitenciasHoy();
     });
 
+$("#EmpleadoIdAsistenciaManual, #TipoMarcacionManual, #HoraMarcacionManual")
+    .on("input change", function () {
+        this.classList.remove("is-invalid", "is-valid");
+        const error = document.getElementById(`error${this.id}`);
+        if (error) error.textContent = "";
+    });
+
+
+/////////////////////////////////////////////////////////////
+// PANEL REGISTRO MANUAL ////////////////////////////////////
+/////////////////////////////////////////////////////////////
+async function AbrirPanelAsistenciaManual() {
+    LimpiarFormularioAsistenciaManual();
+    await CargarEmpleadosAsistenciaManual();
+
+    const fechaFiltro = document.getElementById("FechaBuscar").value;
+    document.getElementById("FechaAsistenciaManual").value = fechaFiltro || new Date().toISOString().slice(0, 10);
+
+    document.getElementById("panelAsistencias").classList.add("abierto");
+    document.getElementById("fondoOscuro").classList.add("visible");
+}
+
+function CerrarPanelAsistenciaManual() {
+    document.getElementById("panelAsistencias").classList.remove("abierto");
+    document.getElementById("fondoOscuro").classList.remove("visible");
+    LimpiarFormularioAsistenciaManual();
+}
+
+function LimpiarFormularioAsistenciaManual() {
+    const form = document.getElementById("formAsistenciaManual");
+    if (form) form.reset();
+
+    [
+        "EmpleadoIdAsistenciaManual",
+        "FechaAsistenciaManual",
+        "TipoMarcacionManual",
+        "HoraMarcacionManual"
+    ].forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.classList.remove("is-invalid", "is-valid");
+    });
+
+    [
+        "errorEmpleadoIdAsistenciaManual",
+        "errorTipoMarcacionManual",
+        "errorHoraMarcacionManual"
+    ].forEach(id => {
+        const error = document.getElementById(id);
+        if (error) error.textContent = "";
+    });
+}
+
+async function CargarEmpleadosAsistenciaManual() {
+    const select = document.getElementById("EmpleadoIdAsistenciaManual");
+    select.innerHTML = `<option value="" disabled selected>Seleccione</option>`;
+
+    try {
+        const response = await authFetch("Empleados/Activos", { method: "GET" });
+        if (!response.ok) throw new Error("No se pudieron obtener empleados.");
+
+        const empleados = await response.json();
+        empleados.forEach(empleado => {
+            const option = document.createElement("option");
+            option.value = empleado.id;
+            option.textContent = empleado.nombreCompleto;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        MostrarErrorCatch();
+    }
+}
+
+function ValidarAsistenciaManual() {
+    let valido = true;
+    const campos = [
+        {
+            id: "EmpleadoIdAsistenciaManual",
+            errorId: "errorEmpleadoIdAsistenciaManual",
+            mensaje: "Seleccione un empleado."
+        },
+        {
+            id: "TipoMarcacionManual",
+            errorId: "errorTipoMarcacionManual",
+            mensaje: "Seleccione la marcación."
+        },
+        {
+            id: "HoraMarcacionManual",
+            errorId: "errorHoraMarcacionManual",
+            mensaje: "Ingrese la hora."
+        }
+    ];
+
+    campos.forEach(campo => {
+        const input = document.getElementById(campo.id);
+        const error = document.getElementById(campo.errorId);
+
+        if (!input.value) {
+            input.classList.add("is-invalid");
+            input.classList.remove("is-valid");
+            error.textContent = campo.mensaje;
+            valido = false;
+        } else {
+            input.classList.remove("is-invalid");
+            input.classList.add("is-valid");
+            error.textContent = "";
+        }
+    });
+
+    return valido;
+}
+
+function FormatearHoraAsistenciaManual(valor) {
+    return valor ? `${valor}:00` : null;
+}
+
+async function CrearAsistenciaManual() {
+    if (!ValidarAsistenciaManual()) return;
+
+    mostrarOverlayGuardandoAsistencia();
+
+    const asistencia = {
+        empleadoId: Number(document.getElementById("EmpleadoIdAsistenciaManual").value),
+        fecha: document.getElementById("FechaAsistenciaManual").value,
+        tipoMarcacion: document.getElementById("TipoMarcacionManual").value,
+        hora: FormatearHoraAsistenciaManual(document.getElementById("HoraMarcacionManual").value)
+    };
+
+    try {
+        const response = await authFetch("Asistencias/Manual", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(asistencia)
+        });
+
+        if (!response.ok) {
+            MostrarErrorCatch();
+            ocultarOverlayGuardandoAsistencia();
+            return;
+        }
+
+        setTimeout(() => {
+            ocultarOverlayGuardandoAsistencia();
+            CerrarPanelAsistenciaManual();
+            ObtenerAsistencias(false);
+            ObtenerTotalAsitenciasHoy();
+
+            Swal.fire({
+                title: "¡Asistencia Registrada!",
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2200,
+                timerProgressBar: true,
+                background: "#f4fff7",
+                color: "#1c3d26",
+                icon: "success",
+                iconColor: "#28a746d8",
+                customClass: {
+                    popup: "swal2-toast-success",
+                    title: "swal2-toast-success-title",
+                    icon: "swal2-toast-success-icon",
+                },
+            });
+        }, 700);
+    } catch (error) {
+        MostrarErrorCatch();
+        ocultarOverlayGuardandoAsistencia();
+    }
+}
+
 
 /////////////////////////////////////////////////////////////
 // OBTENER DATOS DE LA API /////////////////////////////////////
@@ -169,7 +340,8 @@ function MostrarDetalleAsistencia(id) {
     $("#detallePrimerSalidaAsistencia").text(asistencia.primerSalidaString || "-");
 
     const isAlterno = (asistencia.tipoHorario || "").toUpperCase() === "ALTERNO";
-    if (isAlterno) {
+    const tieneSegundoTramo = !!asistencia.segundaEntradaString || !!asistencia.segundaSalidaString;
+    if (isAlterno || tieneSegundoTramo) {
         $("#detalleSegundaEntradaAsistencia").text(asistencia.segundaEntradaString || "-");
         $("#detalleSegundaSalidaAsistencia").text(asistencia.segundaSalidaString || "-");
         $("#filaSegundaEntrada, #filaSegundaSalida").show();
@@ -177,7 +349,7 @@ function MostrarDetalleAsistencia(id) {
         $("#filaSegundaEntrada, #filaSegundaSalida").hide();
     }
 
-    const tipoColor = { CONTINUO: "bg-continuo", ALTERNO: "bg-alterno" };
+    const tipoColor = { CONTINUO: "bg-continuo", ALTERNO: "bg-alterno", ROTATIVO: "bg-rotativo" };
     const tipoHorario = (asistencia.tipoHorario || "CONTINUO").toUpperCase();
     const badgeTipoHorario = `
         <div class="text-center mt-1 mb-1">

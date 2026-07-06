@@ -185,6 +185,7 @@ function MostrarEmpleados(data) {
     const email = item.email || "-";
     const telefono = item.telefono || "-";
     const dni = item.dni || "-";
+    const vacacionesDisponibles = item.vacacionesDisponibles ?? 0;
 
     let estadoCivil = obtenerEstadoCivilTexto(item.estadoCivilesString || "-", item.tipoSexo);
 
@@ -227,6 +228,7 @@ function MostrarEmpleados(data) {
             <div class="d-flex gap-2 flex-wrap">
               <span class="badge text-dark" style="background-color: #d0e7ff; font-size: 0.75rem;">DNI: ${dni}</span>
               <span class="badge text-dark" style="background-color: #d4edda; font-size: 0.75rem;">${estadoCivil}</span>
+              <span class="badge text-dark" style="background-color: #efe3ff; font-size: 0.75rem;">VACACIONES: ${vacacionesDisponibles}</span>
             </div>
           </div>
 
@@ -306,6 +308,14 @@ function MostrarDetalleEmpleado(id) {
     empleado.usuarioNombreCreador || "";
   document.getElementById("detalleEmailCreador").textContent =
     empleado.usuarioEmailCreador || "";
+  document.getElementById("detalleVacacionesAnuales").textContent =
+    `${empleado.diasVacacionesAnuales ?? 0} días`;
+  document.getElementById("detalleVacacionesAcumuladas").textContent =
+    `${empleado.vacacionesAcumuladas ?? 0} días`;
+  document.getElementById("detalleVacacionesTomadas").textContent =
+    `${empleado.vacacionesTomadas ?? 0} días`;
+  document.getElementById("detalleVacacionesDisponibles").textContent =
+    `${empleado.vacacionesDisponibles ?? 0} días`;
 
   const offcanvas = new bootstrap.Offcanvas("#offcanvasDetalleEmpleado");
   offcanvas.show();
@@ -335,6 +345,7 @@ async function MostrarModalEditarEmpleado(id) {
   document.getElementById("TipoSexoEmpleado").value = empleado.tipoSexo;
   document.getElementById("IdLocalidad").value = empleado.localidadId;
   document.getElementById("IdPuesto").value = empleado.puestoId;
+  document.getElementById("DiasVacacionesAnuales").value = empleado.diasVacacionesAnuales ?? 0;
 
   document.getElementById("DniEmpleado").disabled = true;
   document.getElementById("EmailEmpleado").disabled = true;
@@ -407,6 +418,9 @@ function ValidarFormularioEmpleado() {
     "errorEstadoCivilEmpleado"
   );
 
+  const inputDiasVacaciones = document.getElementById("DiasVacacionesAnuales");
+  const inputErrorDiasVacaciones = document.getElementById("errorDiasVacacionesAnuales");
+
   const nombre = inputNombre.value.trim();
   const dni = inputDni.value.trim();
   const telefono = inputTelefono.value.trim();
@@ -420,6 +434,7 @@ function ValidarFormularioEmpleado() {
   const cantidadHijos = inputCantidadHijos.value.trim();
   const cuil = inputCuil.value.trim();
   const estadoCivil = inputEstadoCivil.value.trim();
+  const diasVacaciones = inputDiasVacaciones.value.trim();
 
   const inputs = [
     inputNombre,
@@ -434,6 +449,7 @@ function ValidarFormularioEmpleado() {
     inputCantidadHijos,
     inputCuil,
     inputEstadoCivil,
+    inputDiasVacaciones,
   ];
   const errores = [
     inputErrorNombre,
@@ -448,6 +464,7 @@ function ValidarFormularioEmpleado() {
     inputErrorCantidadHijos,
     inputErrorCuil,
     inputErrorEstadoCivil,
+    inputErrorDiasVacaciones,
   ];
   inputs.forEach((input) => input.classList.remove("is-invalid", "is-valid"));
   errores.forEach((error) => (error.style.display = "none"));
@@ -626,6 +643,21 @@ function ValidarFormularioEmpleado() {
   } else {
     inputEstadoCivil.classList.remove("is-invalid", "is-valid");
     inputErrorEstadoCivil.style.display = "none";
+  }
+
+  if (diasVacaciones.length === 0) {
+    inputDiasVacaciones.classList.add("is-invalid");
+    inputErrorDiasVacaciones.textContent = "Campo obligatorio.";
+    inputErrorDiasVacaciones.style.display = "block";
+    esValido = false;
+  } else if (!/^\d+$/.test(diasVacaciones)) {
+    inputDiasVacaciones.classList.add("is-invalid");
+    inputErrorDiasVacaciones.textContent = "Debe ser un número entero.";
+    inputErrorDiasVacaciones.style.display = "block";
+    esValido = false;
+  } else {
+    inputDiasVacaciones.classList.add("is-valid");
+    inputErrorDiasVacaciones.style.display = "none";
   }
 
   return esValido;
@@ -923,6 +955,27 @@ document.getElementById("EmailEmpleado").addEventListener("input", () => {
   }
 });
 
+document.getElementById("DiasVacacionesAnuales").addEventListener("input", () => {
+  const input = document.getElementById("DiasVacacionesAnuales");
+  const error = document.getElementById("errorDiasVacacionesAnuales");
+  const valor = input.value.trim();
+
+  input.classList.remove("is-invalid", "is-valid");
+  error.style.display = "none";
+
+  if (valor.length === 0) {
+    input.classList.add("is-invalid");
+    error.textContent = "Campo obligatorio.";
+    error.style.display = "block";
+  } else if (!/^\d+$/.test(valor)) {
+    input.classList.add("is-invalid");
+    error.textContent = "Debe ser un número entero.";
+    error.style.display = "block";
+  } else {
+    input.classList.add("is-valid");
+  }
+});
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // LIMPIAR EL FORMULARIO  ///////////////////////////////////////////////////////
@@ -968,6 +1021,9 @@ function LimpiarFormularioEmpleado() {
   const inputIdPuesto = document.getElementById("IdPuesto");
   inputIdPuesto.value = "";
 
+  const inputDiasVacaciones = document.getElementById("DiasVacacionesAnuales");
+  inputDiasVacaciones.value = "";
+
   const inputGmail = document.getElementById("EmailEmpleado");
   inputGmail.value = "";
 
@@ -1007,6 +1063,9 @@ function LimpiarFormularioEmpleado() {
   inputCantidadHijos.classList.remove("is-invalid");
   inputCantidadHijos.classList.remove("is-valid");
 
+  inputDiasVacaciones.classList.remove("is-invalid");
+  inputDiasVacaciones.classList.remove("is-valid");
+
   const inputErrorNombre = document.getElementById("errorNombreEmpleado");
   inputErrorNombre.textContent = "";
   inputErrorNombre.style.display = "none";
@@ -1040,6 +1099,10 @@ function LimpiarFormularioEmpleado() {
   const inputErrorIdPuesto = document.getElementById("errorIdPuesto");
   inputErrorIdPuesto.textContent = "";
   inputErrorIdPuesto.style.display = "none";
+
+  const inputErrorDiasVacaciones = document.getElementById("errorDiasVacacionesAnuales");
+  inputErrorDiasVacaciones.textContent = "";
+  inputErrorDiasVacaciones.style.display = "none";
 
   const inputErrorGmail = document.getElementById("errorEmailEmpleado");
   inputErrorGmail.textContent = "";
@@ -1159,6 +1222,7 @@ async function CrearEmpleado() {
       tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
       localidadId: Number(document.getElementById("IdLocalidad").value),
       puestoId: Number(document.getElementById("IdPuesto").value),
+      diasVacacionesAnuales: Number(document.getElementById("DiasVacacionesAnuales").value.trim()),
     };
 
     const response = await authFetch("Empleados", {
@@ -1237,6 +1301,7 @@ async function EditarEmpleado(id) {
       tipoSexo: Number(document.getElementById("TipoSexoEmpleado").value),
       localidadId: Number(document.getElementById("IdLocalidad").value),
       puestoId: Number(document.getElementById("IdPuesto").value),
+      diasVacacionesAnuales: Number(document.getElementById("DiasVacacionesAnuales").value.trim()),
     };
 
     const response = await authFetch(`Empleados/${id}`, {

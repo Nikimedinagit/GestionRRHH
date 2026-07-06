@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using GestionRRHH.Services;
 using GestionRRHH.Services.Hosted;
+using GestionRRHH.Models.General;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -82,6 +83,30 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<Context>();
+    var vacaciones = context.TipoDeLicencia
+        .AsEnumerable()
+        .FirstOrDefault(t => string.Equals(t.Nombre?.Trim(), "VACACIONES", StringComparison.OrdinalIgnoreCase));
+
+    if (vacaciones == null)
+    {
+        context.TipoDeLicencia.Add(new TipoDeLicencia
+        {
+            Nombre = "VACACIONES",
+            Eliminado = false
+        });
+        context.SaveChanges();
+    }
+    else if (vacaciones.Eliminado || vacaciones.Nombre != "VACACIONES")
+    {
+        vacaciones.Nombre = "VACACIONES";
+        vacaciones.Eliminado = false;
+        context.SaveChanges();
+    }
+}
 
 // Swagger
 app.UseSwagger();

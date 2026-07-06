@@ -30,6 +30,7 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<Asistencia> Asistencia { get; set; }
     public DbSet<Feriado> Feriados { get; set; }
     public DbSet<Notificaciones> Notificaciones { get; set; }
+    public DbSet<PeriodoSolicitudVacaciones> PeriodoSolicitudVacaciones { get; set; }
 
 
 

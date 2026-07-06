@@ -48,6 +48,28 @@ namespace GestionRRHH.Controllers
             return texto;
         }
 
+        private static int ContarDiasLicencia(Licencia licencia)
+        {
+            return Math.Max(0, (licencia.FechaFin.Date - licencia.FechaInicio.Date).Days + 1);
+        }
+
+        private (int acumuladas, int tomadas, int disponibles) CalcularVacacionesEmpleado(Empleado empleado, DateTime? fechaActivacion)
+        {
+            var anioActual = DateTime.Today.Year;
+            var anioInicio = fechaActivacion?.Year ?? anioActual;
+            var aniosComputables = Math.Max(1, anioActual - anioInicio + 1);
+            var acumuladas = Math.Max(0, empleado.DiasVacacionesAnuales) * aniosComputables;
+
+            var tomadas = empleado.Licencia?
+                .Where(l =>
+                    l.TipoDeLicencia != null &&
+                    NormalizarTexto(l.TipoDeLicencia.Nombre) == "VACACIONES" &&
+                    (l.Estado == EstadoLicencia.APROBADA || l.Estado == EstadoLicencia.EXPIRADA))
+                .Sum(ContarDiasLicencia) ?? 0;
+
+            return (acumuladas, tomadas, Math.Max(acumuladas - tomadas, 0));
+        }
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,28 +86,42 @@ namespace GestionRRHH.Controllers
             var empleado = await _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
+                .Include(e => e.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
                 .Where(e => e.Email.Trim().ToLower() == emailUsuario)
-                .Select(e => new VistaEmpleado
-                {
-                    Id = e.Id,
-                    NombreCompleto = e.NombreCompleto,
-                    DNI = e.DNI,
-                    Direccion = e.Direccion,
-                    FechaNacimientoString = e.FechaNacimiento.ToString("dd/MM/yyyy"),
-                    EstadoCivilesString = e.EstadoCiviles.ToString(),
-                    Email = e.Email,
-                    Telefono = e.Telefono,
-                    Cuil = e.Cuil,
-                    CantidadHijos = e.CantidadHijos ?? 0,
-                    TipoSexoString = e.TipoSexo.ToString(),
-                    Edad = DateTime.Now.Year - e.FechaNacimiento.Year,
-                    LocalidadIdString = e.Localidad.Nombre,
-                    PuestoIdString = e.Puesto.Descripcion,
-                    NroLegajo = e.NroLegajo
-                }).FirstOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (empleado == null) return NotFound();
-            return empleado;
+
+            var activacion = await _context.ActivacionEmpleado
+                .Where(a => a.EmpleadoId == empleado.Id && a.FechaActivacion.HasValue)
+                .OrderBy(a => a.FechaActivacion)
+                .FirstOrDefaultAsync();
+
+            var vacaciones = CalcularVacacionesEmpleado(empleado, activacion?.FechaActivacion);
+
+            return new VistaEmpleado
+            {
+                Id = empleado.Id,
+                NombreCompleto = empleado.NombreCompleto,
+                DNI = empleado.DNI,
+                Direccion = empleado.Direccion,
+                FechaNacimientoString = empleado.FechaNacimiento.ToString("dd/MM/yyyy"),
+                EstadoCivilesString = empleado.EstadoCiviles.ToString(),
+                Email = empleado.Email,
+                Telefono = empleado.Telefono,
+                Cuil = empleado.Cuil,
+                CantidadHijos = empleado.CantidadHijos ?? 0,
+                TipoSexoString = empleado.TipoSexo.ToString(),
+                Edad = DateTime.Now.Year - empleado.FechaNacimiento.Year,
+                LocalidadIdString = empleado.Localidad.Nombre,
+                PuestoIdString = empleado.Puesto.Descripcion,
+                NroLegajo = empleado.NroLegajo,
+                DiasVacacionesAnuales = empleado.DiasVacacionesAnuales,
+                VacacionesAcumuladas = vacaciones.acumuladas,
+                VacacionesTomadas = vacaciones.tomadas,
+                VacacionesDisponibles = vacaciones.disponibles
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,6 +232,9 @@ namespace GestionRRHH.Controllers
             var obtenerEmpleados = _context.Empleado
                 .Include(e => e.Localidad)
                 .Include(e => e.Puesto)
+                .Include(e => e.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
+                .Include(e => e.HistorialLaboral)
                 .AsQueryable();
 
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
@@ -229,10 +268,39 @@ namespace GestionRRHH.Controllers
             if (filtro.PuestoId.HasValue)
                 obtenerEmpleados = obtenerEmpleados.Where(e => e.PuestoId == filtro.PuestoId.Value);
 
-            var empleados = await obtenerEmpleados
+            var empleadosBase = await obtenerEmpleados
                 .OrderBy(e => e.Eliminado)
                 .ThenBy(e => e.NombreCompleto)
-                .Select(e => new VistaEmpleado
+                .ToListAsync();
+
+            var empleadoIds = empleadosBase.Select(e => e.Id).ToList();
+            var activaciones = await _context.ActivacionEmpleado
+                .Where(a => empleadoIds.Contains(a.EmpleadoId) && a.FechaActivacion.HasValue)
+                .GroupBy(a => a.EmpleadoId)
+                .Select(g => new
+                {
+                    EmpleadoId = g.Key,
+                    FechaActivacion = g.Min(a => a.FechaActivacion)
+                })
+                .ToDictionaryAsync(a => a.EmpleadoId, a => a.FechaActivacion);
+
+            var usuarioIds = empleadosBase
+                .Where(e => !string.IsNullOrWhiteSpace(e.UsuarioId))
+                .Select(e => e.UsuarioId)
+                .Distinct()
+                .ToList();
+
+            var usuarios = await _context.Users
+                .Where(u => usuarioIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u);
+
+            var empleados = empleadosBase.Select(e =>
+            {
+                activaciones.TryGetValue(e.Id, out var fechaActivacion);
+                usuarios.TryGetValue(e.UsuarioId ?? "", out var usuario);
+                var vacaciones = CalcularVacacionesEmpleado(e, fechaActivacion);
+
+                return new VistaEmpleado
                 {
                     Id = e.Id,
                     NombreCompleto = e.NombreCompleto,
@@ -253,12 +321,16 @@ namespace GestionRRHH.Controllers
                     LocalidadId = e.LocalidadId,
                     PuestoIdString = e.Puesto.Descripcion,
                     PuestoId = e.PuestoId,
-                    UsuarioNombreCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).NombreCompleto,
-                    UsuarioEmailCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).Email,
+                    UsuarioNombreCreador = usuario?.NombreCompleto,
+                    UsuarioEmailCreador = usuario?.Email,
                     Eliminado = e.Eliminado,
-                    TieneHistorial = e.HistorialLaboral.Any()
-                })
-                .ToListAsync();
+                    TieneHistorial = e.HistorialLaboral.Any(),
+                    DiasVacacionesAnuales = e.DiasVacacionesAnuales,
+                    VacacionesAcumuladas = vacaciones.acumuladas,
+                    VacacionesTomadas = vacaciones.tomadas,
+                    VacacionesDisponibles = vacaciones.disponibles
+                };
+            }).ToList();
 
             return empleados;
         }
@@ -298,6 +370,7 @@ namespace GestionRRHH.Controllers
             empleado.Edad = DateTime.Now.Year - empleado.FechaNacimiento.Year - (DateTime.Now.DayOfYear < empleado.FechaNacimiento.DayOfYear ? 1 : 0);
             empleado.UsuarioId = userId;
             empleado.Eliminado = true;
+            empleado.DiasVacacionesAnuales = Math.Max(0, empleado.DiasVacacionesAnuales);
 
             var duplicado = await _context.Empleado.FirstOrDefaultAsync(e =>
                 e.Id != empleado.Id &&
@@ -361,6 +434,7 @@ namespace GestionRRHH.Controllers
             empleado.Direccion = empleado.Direccion?.ToUpper();
             empleado.Email = empleado.Email?.ToLower();
             empleado.Telefono = empleado.Telefono?.ToLower();
+            empleado.DiasVacacionesAnuales = Math.Max(0, empleado.DiasVacacionesAnuales);
 
             var errores = new List<string>();
 
@@ -397,6 +471,7 @@ namespace GestionRRHH.Controllers
             empelados.TipoSexo = empleado.TipoSexo;
             empelados.LocalidadId = empleado.LocalidadId;
             empelados.PuestoId = empleado.PuestoId;
+            empelados.DiasVacacionesAnuales = empleado.DiasVacacionesAnuales;
 
             await _context.SaveChangesAsync();
 
@@ -576,7 +651,8 @@ namespace GestionRRHH.Controllers
                 PuestoIdString = empleado.PuestoIdString,
                 Edad = empleado.Edad,
                 UsuarioId = empleado.UsuarioId,
-                Eliminado = empleado.Eliminado
+                Eliminado = empleado.Eliminado,
+                DiasVacacionesAnuales = empleado.DiasVacacionesAnuales
             };
 
             return Ok(vista);

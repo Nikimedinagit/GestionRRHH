@@ -49,7 +49,10 @@ namespace GestionRRHH.Controllers
 
                 if (rol == "EMPLEADO")
                 {
-                    ObtenerNotificaciones = ObtenerNotificaciones.Where(n => n.UsuarioId == empleadoIdStr);
+                    ObtenerNotificaciones = ObtenerNotificaciones.Where(n =>
+                        n.UsuarioId == empleadoIdStr ||
+                        (string.IsNullOrEmpty(n.UsuarioId) &&
+                         (n.DestinatarioRol ?? "").ToUpper().Contains("EMPLEADO")));
                 }
                 else if (rol == "SUPERVISOR")
                 {
@@ -60,7 +63,10 @@ namespace GestionRRHH.Controllers
                         .ToListAsync();
 
                     ObtenerNotificaciones = ObtenerNotificaciones.Where(n =>
-                        empleadosSector.Contains(n.UsuarioId) || n.UsuarioId == empleadoIdStr);
+                        empleadosSector.Contains(n.UsuarioId) ||
+                        n.UsuarioId == empleadoIdStr ||
+                        (string.IsNullOrEmpty(n.UsuarioId) &&
+                         (n.DestinatarioRol ?? "").ToUpper().Contains("SUPERVISOR")));
                 }
                 else if (rol == "RRHH")
                 {
@@ -137,7 +143,10 @@ namespace GestionRRHH.Controllers
             if (rol == "EMPLEADO")
             {
                 var empleadoIdStr = empleadoActual.Id.ToString();
-                query = query.Where(n => n.UsuarioId == empleadoIdStr);
+                query = query.Where(n =>
+                    n.UsuarioId == empleadoIdStr ||
+                    (string.IsNullOrEmpty(n.UsuarioId) &&
+                     (n.DestinatarioRol ?? "").ToUpper().Contains("EMPLEADO")));
             }
             else if (rol == "SUPERVISOR")
             {
@@ -150,7 +159,10 @@ namespace GestionRRHH.Controllers
                 var empleadoIdStr = empleadoActual.Id.ToString();
 
                 query = query.Where(n =>
-                    empleadosSector.Contains(n.UsuarioId) || n.UsuarioId == empleadoIdStr);
+                    empleadosSector.Contains(n.UsuarioId) ||
+                    n.UsuarioId == empleadoIdStr ||
+                    (string.IsNullOrEmpty(n.UsuarioId) &&
+                     (n.DestinatarioRol ?? "").ToUpper().Contains("SUPERVISOR")));
             }
             else if (rol == "RRHH")
             {

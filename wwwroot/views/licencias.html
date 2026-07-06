@@ -35,13 +35,21 @@
     <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
     <div>
 
-        <div id="fondoOscuro" onclick="CerrarPanelLicencia()"></div>
+        <div id="fondoOscuro" onclick="CerrarPanelLicenciasActivo()"></div>
 
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-            <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelLicencia()">
-                <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
-                <span>Solicitar Licencias</span>
-            </button>
+            <div class="d-flex gap-2 flex-wrap responsive-button">
+                <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelLicencia()">
+                    <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+                    <span>Solicitar Licencias</span>
+                </button>
+
+                <button id="btnPeriodoVacaciones" class="btn rounded py-1 px-2 bg-white btn-periodo-vacaciones d-none"
+                    onclick="AbrirPanelPeriodoVacaciones()">
+                    <i class="fa-solid fa-calendar-days me-1"></i>
+                    <span>Fechas Vacaciones</span>
+                </button>
+            </div>
 
             <div class="d-flex gap-3 flex-wrap responsive-button d-none" id="contenedorFiltrosLicencias">
                 <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
@@ -56,6 +64,11 @@
                     <span>Exportar</span>
                 </button>
             </div>
+        </div>
+
+        <div id="advertenciaPeriodoVacaciones" class="alerta-periodo-vacaciones d-none mb-3">
+            <i class="fa-solid fa-circle-info"></i>
+            <span id="textoAdvertenciaPeriodoVacaciones"></span>
         </div>
 
 
@@ -180,6 +193,27 @@
             </div>
         </div>
 
+        <div id="resumenPeriodoVacacionesAdmin" class="resumen-periodo-vacaciones-admin d-none mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-calendar-days"></i>
+                <div>
+                    <p class="mb-0 fw-bold">Fechas Vacaciones</p>
+                    <span id="textoResumenPeriodoVacacionesAdmin"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn-editar btn-editar-periodo-vacaciones" style="background: none; border: none;"
+                    onclick="AbrirPanelPeriodoVacaciones()" data-tippy-content="Editar">
+                    <i class="bi bi-pencil-square icono-editar btn-sm"></i>
+                </button>
+                <button class="btn-eliminar btn-cancelar-periodo-vacaciones" style="background: none; border: none;"
+                    onclick="ConfirmarCancelarPeriodoVacaciones()" data-tippy-content="Cancelar">
+                    <i class="bi bi-trash3 icono-borrar btn-sm"></i>
+                </button>
+            </div>
+        </div>
+
         <!-- ======================================= Tarjetas de licencias ====================================== -->
         <div id="licenciasContainer" class="row g-3"></div>
 
@@ -257,6 +291,37 @@
         <div class="panel-footer">
             <button class="btn btn-cancelar" onclick="CerrarPanelLicencia()">Cancelar</button>
             <button type="submit" class="btn btn-guardar" onclick="BuscarLicenciaId()">Guardar</button>
+        </div>
+    </div>
+
+    <!-- ======================================= Panel Deslizante Fechas de Vacaciones ====================================== -->
+    <div id="panelPeriodoVacaciones" aria-modal="true" role="dialog"
+        aria-labelledby="panelTituloPeriodoVacaciones" tabindex="-1" class="w-30">
+        <div class="panel-header">
+            <h2 id="panelTituloPeriodoVacaciones" class="panel-title">Fechas de Vacaciones</h2>
+        </div>
+
+        <div class="panel-body">
+            <form id="formPeriodoVacaciones">
+                <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <div class="form-group position-relative mb-3">
+                        <input type="date" id="FechaInicioPeriodoVacaciones" class="form-control" />
+                        <label for="FechaInicioPeriodoVacaciones">Desde</label>
+                        <div class="invalid-feedback" id="errorFechaInicioPeriodoVacaciones"></div>
+                    </div>
+
+                    <div class="form-group position-relative mb-3">
+                        <input type="date" id="FechaFinPeriodoVacaciones" class="form-control" />
+                        <label for="FechaFinPeriodoVacaciones">Hasta</label>
+                        <div class="invalid-feedback" id="errorFechaFinPeriodoVacaciones"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel-footer">
+            <button class="btn btn-cancelar" onclick="CerrarPanelPeriodoVacaciones()">Cancelar</button>
+            <button type="submit" class="btn btn-guardar" onclick="GuardarPeriodoVacaciones()">Guardar</button>
         </div>
     </div>
 

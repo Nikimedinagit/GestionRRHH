@@ -2,6 +2,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ABRIR PANEL DE LICENCIA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+let periodoVacacionesSolicitud = null;
+
 function AbrirPanelLicencia() {
   document.getElementById("panelLicencia").classList.add("abierto");
   const fondo = document.getElementById("fondoOscuro");
@@ -24,6 +26,357 @@ function CerrarPanelLicencia() {
 
   LimpiarModalLicencia();
 }
+
+function CerrarPanelLicenciasActivo() {
+  CerrarPanelLicencia();
+  CerrarPanelPeriodoVacaciones();
+}
+
+function AbrirPanelPeriodoVacaciones() {
+  document.getElementById("panelPeriodoVacaciones").classList.add("abierto");
+  const fondo = document.getElementById("fondoOscuro");
+  fondo.classList.add("visible");
+
+  const fechaInicio = document.getElementById("FechaInicioPeriodoVacaciones");
+  const fechaFin = document.getElementById("FechaFinPeriodoVacaciones");
+
+  fechaInicio.value = "";
+  fechaFin.value = "";
+
+  if (periodoVacacionesSolicitud?.fechaInicio) {
+    fechaInicio.value = periodoVacacionesSolicitud.fechaInicio.split("T")[0];
+  }
+
+  if (periodoVacacionesSolicitud?.fechaFin) {
+    fechaFin.value = periodoVacacionesSolicitud.fechaFin.split("T")[0];
+  }
+
+  LimpiarErroresPeriodoVacaciones();
+
+  setTimeout(() => fechaInicio.focus(), 400);
+}
+
+function CerrarPanelPeriodoVacaciones() {
+  const panel = document.getElementById("panelPeriodoVacaciones");
+  if (panel) panel.classList.remove("abierto");
+
+  const panelLicenciaAbierto = document.getElementById("panelLicencia")?.classList.contains("abierto");
+  if (!panelLicenciaAbierto) {
+    const fondo = document.getElementById("fondoOscuro");
+    fondo.classList.remove("visible");
+  }
+
+  LimpiarFormularioPeriodoVacaciones();
+}
+
+function LimpiarErroresPeriodoVacaciones() {
+  [
+    ["FechaInicioPeriodoVacaciones", "errorFechaInicioPeriodoVacaciones"],
+    ["FechaFinPeriodoVacaciones", "errorFechaFinPeriodoVacaciones"]
+  ].forEach(([inputId, errorId]) => {
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
+    if (!input || !error) return;
+
+    input.classList.remove("is-invalid", "is-valid");
+    error.textContent = "";
+    error.style.display = "none";
+  });
+}
+
+function LimpiarFormularioPeriodoVacaciones() {
+  const fechaInicio = document.getElementById("FechaInicioPeriodoVacaciones");
+  const fechaFin = document.getElementById("FechaFinPeriodoVacaciones");
+
+  if (fechaInicio) fechaInicio.value = "";
+  if (fechaFin) fechaFin.value = "";
+
+  LimpiarErroresPeriodoVacaciones();
+}
+
+function ValidarPeriodoVacaciones() {
+  LimpiarErroresPeriodoVacaciones();
+
+  const fechaInicio = document.getElementById("FechaInicioPeriodoVacaciones");
+  const fechaFin = document.getElementById("FechaFinPeriodoVacaciones");
+  const errorInicio = document.getElementById("errorFechaInicioPeriodoVacaciones");
+  const errorFin = document.getElementById("errorFechaFinPeriodoVacaciones");
+  let valido = true;
+
+  if (!fechaInicio.value) {
+    fechaInicio.classList.add("is-invalid");
+    errorInicio.textContent = "Campo obligatorio.";
+    errorInicio.style.display = "block";
+    valido = false;
+  } else {
+    fechaInicio.classList.add("is-valid");
+  }
+
+  if (!fechaFin.value) {
+    fechaFin.classList.add("is-invalid");
+    errorFin.textContent = "Campo obligatorio.";
+    errorFin.style.display = "block";
+    valido = false;
+  } else if (fechaInicio.value && fechaFin.value < fechaInicio.value) {
+    fechaFin.classList.add("is-invalid");
+    errorFin.textContent = "Debe ser superior o igual a la fecha desde.";
+    errorFin.style.display = "block";
+    valido = false;
+  } else {
+    fechaFin.classList.add("is-valid");
+  }
+
+  return valido;
+}
+
+async function ObtenerPeriodoVacaciones() {
+  try {
+    const response = await authFetch("PeriodosVacaciones/Activo");
+    periodoVacacionesSolicitud = await response.json();
+    AplicarEstadoTipoVacaciones();
+    ActualizarAdvertenciaPeriodoVacaciones();
+    ActualizarResumenPeriodoVacacionesAdmin();
+  } catch (error) {
+    periodoVacacionesSolicitud = { habilitado: false };
+    AplicarEstadoTipoVacaciones();
+    ActualizarAdvertenciaPeriodoVacaciones();
+    ActualizarResumenPeriodoVacacionesAdmin();
+  }
+}
+
+async function GuardarPeriodoVacaciones() {
+  if (!ValidarPeriodoVacaciones()) return;
+
+  try {
+    const periodo = {
+      fechaInicio: document.getElementById("FechaInicioPeriodoVacaciones").value,
+      fechaFin: document.getElementById("FechaFinPeriodoVacaciones").value
+    };
+
+    const response = await authFetch("PeriodosVacaciones", {
+      method: "POST",
+      body: JSON.stringify(periodo)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      Swal.fire({
+        title: data.mensaje || "No se pudo guardar el periodo.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2600,
+        timerProgressBar: true,
+        background: "#fff5f5",
+        color: "#5f2120",
+        icon: "error",
+        iconColor: "#dc3545",
+      });
+      return;
+    }
+
+    periodoVacacionesSolicitud = data;
+    AplicarEstadoTipoVacaciones();
+    ActualizarAdvertenciaPeriodoVacaciones();
+    ActualizarResumenPeriodoVacacionesAdmin();
+    LimpiarFormularioPeriodoVacaciones();
+    CerrarPanelPeriodoVacaciones();
+
+    Swal.fire({
+      title: "¡Fechas Guardadas!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
+
+function ConfirmarCancelarPeriodoVacaciones() {
+  const desde = periodoVacacionesSolicitud?.fechaInicioString || "";
+  const hasta = periodoVacacionesSolicitud?.fechaFinString || "";
+
+  Swal.fire({
+    title: "¿Cancelar Fechas Vacaciones?",
+    html: `
+      <div class="text-center">
+        <p>Se cancelará la ventana para solicitar VACACIONES.</p>
+        ${desde && hasta ? `<p><strong>${desde} - ${hasta}</strong></p>` : ""}
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Sí, cancelar",
+    cancelButtonText: "Volver",
+    focusCancel: true,
+    customClass: {
+      popup: "swal2-border-radius",
+      confirmButton: "swal2-btn-eliminar",
+      cancelButton: "swal2-btn-cancelar",
+      title: "swal2-title-custom",
+      content: "swal2-content-custom",
+    },
+    background: "#fff",
+    color: "#22223b",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      CancelarPeriodoVacaciones();
+    }
+  });
+}
+
+async function CancelarPeriodoVacaciones() {
+  try {
+    const response = await authFetch("PeriodosVacaciones/Cancelar", {
+      method: "POST"
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (error) {
+      data = {};
+    }
+
+    if (!response.ok) {
+      Swal.fire({
+        title: data.mensaje || "No se pudieron cancelar las fechas.",
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 2600,
+        timerProgressBar: true,
+        background: "#fff5f5",
+        color: "#5f2120",
+        icon: "error",
+        iconColor: "#dc3545",
+      });
+      return;
+    }
+
+    periodoVacacionesSolicitud = { habilitado: false };
+    AplicarEstadoTipoVacaciones();
+    ActualizarAdvertenciaPeriodoVacaciones();
+    ActualizarResumenPeriodoVacacionesAdmin();
+    LimpiarFormularioPeriodoVacaciones();
+
+    Swal.fire({
+      title: "¡Fechas Canceladas!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 2200,
+      timerProgressBar: true,
+      background: "#f4fff7",
+      color: "#1c3d26",
+      icon: "success",
+      iconColor: "#28a746d8",
+      customClass: {
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+    });
+  } catch (error) {
+    MostrarErrorCatch();
+  }
+}
+
+function AplicarEstadoTipoVacaciones() {
+  const select = document.getElementById("IdTipoLicencia");
+  if (!select) return;
+
+  const habilitado = periodoVacacionesSolicitud?.habilitado === true;
+  const opciones = Array.from(select.options);
+
+  opciones.forEach((option) => {
+    const nombre = (option.dataset.nombre || option.textContent || "").trim().toUpperCase();
+    const esVacaciones = nombre === "VACACIONES" || nombre.startsWith("VACACIONES ");
+
+    if (!esVacaciones) return;
+
+    option.disabled = !habilitado;
+    option.textContent = habilitado ? "VACACIONES" : "VACACIONES (FUERA DE FECHA)";
+
+    if (!habilitado && select.value === option.value) {
+      select.value = "";
+    }
+  });
+}
+
+function ActualizarAdvertenciaPeriodoVacaciones() {
+  const rol = getRol()?.toUpperCase();
+  const alerta = document.getElementById("advertenciaPeriodoVacaciones");
+  const texto = document.getElementById("textoAdvertenciaPeriodoVacaciones");
+
+  if (!alerta || !texto) return;
+
+  if (rol !== "EMPLEADO" && rol !== "SUPERVISOR") {
+    alerta.classList.add("d-none");
+    return;
+  }
+
+  const desde = periodoVacacionesSolicitud?.fechaInicioString;
+  const hasta = periodoVacacionesSolicitud?.fechaFinString;
+
+  alerta.classList.remove("d-none", "activa");
+
+  if (periodoVacacionesSolicitud?.habilitado && desde && hasta) {
+    alerta.classList.add("activa");
+    texto.textContent = `Podés solicitar VACACIONES desde ${desde} hasta ${hasta}.`;
+  } else if (desde && hasta) {
+    texto.textContent = `VACACIONES no está habilitada para solicitar. Se podrá pedir desde ${desde} hasta ${hasta}.`;
+  } else {
+    texto.textContent = "VACACIONES no está habilitada para solicitar en este momento.";
+  }
+}
+
+function ActualizarResumenPeriodoVacacionesAdmin() {
+  const rol = getRol()?.toUpperCase();
+  const resumen = document.getElementById("resumenPeriodoVacacionesAdmin");
+  const texto = document.getElementById("textoResumenPeriodoVacacionesAdmin");
+  const botonPeriodo = document.getElementById("btnPeriodoVacaciones");
+
+  if (!resumen || !texto) return;
+
+  if (rol !== "ADMINISTRADOR" && rol !== "RRHH") {
+    resumen.classList.add("d-none");
+    if (botonPeriodo) botonPeriodo.disabled = false;
+    return;
+  }
+
+  const desde = periodoVacacionesSolicitud?.fechaInicioString;
+  const hasta = periodoVacacionesSolicitud?.fechaFinString;
+
+  if (!desde || !hasta) {
+    resumen.classList.add("d-none");
+    if (botonPeriodo) botonPeriodo.disabled = false;
+    return;
+  }
+
+  resumen.classList.remove("d-none");
+  if (botonPeriodo) botonPeriodo.disabled = true;
+
+  if (periodoVacacionesSolicitud?.habilitado) {
+    texto.textContent = `La ventana para solicitar VACACIONES está activa desde ${desde} hasta ${hasta}.`;
+  } else {
+    texto.textContent = `La ventana para solicitar VACACIONES quedó configurada desde ${desde} hasta ${hasta}.`;
+  }
+}
+
+window.AplicarEstadoTipoVacaciones = AplicarEstadoTipoVacaciones;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -480,6 +833,11 @@ function ValidarFormularioLicencia() {
   if (!inputTipoLicencia.value) {
     inputErrorTipoLicencia.style.display = "block";
     inputErrorTipoLicencia.textContent = "Campo obligatorio.";
+    inputTipoLicencia.classList.add("is-invalid");
+    valido = false;
+  } else if (inputTipoLicencia.selectedOptions[0]?.disabled) {
+    inputErrorTipoLicencia.style.display = "block";
+    inputErrorTipoLicencia.textContent = "VACACIONES no esta habilitada en este periodo.";
     inputTipoLicencia.classList.add("is-invalid");
     valido = false;
   } else {
@@ -1058,6 +1416,7 @@ function MostrarOpcionesLicenciasPorRol() {
     estadisticasYFiltros.removeClass("d-none");
     seleccionEmpleado.removeClass("d-none");
     btnGenerarInforme.removeClass("d-none");
+    $("#btnPeriodoVacaciones").removeClass("d-none");
     titulo.text("Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma rápida y sencilla.");
     tipoLicenciaGroup.css("grid-column", "span 1");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
@@ -1066,7 +1425,11 @@ function MostrarOpcionesLicenciasPorRol() {
     titulo.text("Solicitá tu licencia o consultá el estado de tus solicitudes.");
     tipoLicenciaGroup.css("grid-column", "span 2");
     contenedorAyuda.addClass("d-none")
+    $("#btnPeriodoVacaciones").addClass("d-none");
   }
+
+  ActualizarAdvertenciaPeriodoVacaciones();
+  ActualizarResumenPeriodoVacacionesAdmin();
 }
 
 
@@ -1252,4 +1615,5 @@ async function GenerarInformePdfLicencias() {
 // INICIALIZAR AL CARGAR LA VISTA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 MostrarOpcionesLicenciasPorRol();
+ObtenerPeriodoVacaciones();
 ComboParaFiltrarTiposDeLicencia();

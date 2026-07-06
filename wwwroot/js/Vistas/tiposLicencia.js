@@ -66,6 +66,11 @@ async function ObtenerTiposDeLicencias(mostrarSpinner = true) {
 }
 
 
+function EsTipoVacacionesSistema(nombre) {
+  return (nombre || "").trim().toUpperCase() === "VACACIONES";
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCION PARA MOSTRAR LOS TIPOS DE LICENCIAS ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +81,7 @@ function MostrarTiposDeLicencias(data) {
 
   if (data.length === 0) {
     $("#tablaTiposLicenciaBody").append(
-      "<tr><td colspan='2' class='text-center text-muted'>No hay tipos de licencias para mostrar.</td></tr>"
+      "<tr><td colspan='3' class='text-center text-muted'>No hay tipos de licencias para mostrar.</td></tr>"
     );
     return;
   }
@@ -85,11 +90,10 @@ function MostrarTiposDeLicencias(data) {
     let filaClass = item.eliminado ? "fila-desactivada" : "";
     let visibleBotones = item.eliminado ? "display: none;" : "";
     let iconColor = item.eliminado ? "text-danger" : "text-success";
-
-    $("#tablaTiposLicenciaBody").append(
-      "<tr>" +
-      "<td class='text-center align-middle'>" +
-      "<button class='btn-editar' type='button' class='btn btn-sm " +
+    let esVacacionesSistema = EsTipoVacacionesSistema(item.nombre);
+    let botonEstado = esVacacionesSistema
+      ? "<span class='badge bg-continuo' data-tippy-content='Tipo fijo del sistema'>Fijo</span>"
+      : "<button class='btn-editar' type='button' class='btn btn-sm " +
       (item.eliminado ? "btn-outline-success" : "btn-outline-danger") +
       "' data-tippy-content='" +
       (item.eliminado ? "Activar" : "Desactivar") +
@@ -103,7 +107,20 @@ function MostrarTiposDeLicencias(data) {
       " " +
       iconColor +
       "'></i>" +
-      "</button>" +
+      "</button>";
+    let botonEditar = esVacacionesSistema
+      ? "<span class='text-muted small'>Sistema</span>"
+      : "<button class='btn-editar' data-action='edit' style='" +
+      visibleBotones +
+      " background: none; border: none;' onclick='MostrarModalEditar(" +
+      item.id + ")' data-tippy-content='Editar'>" +
+      "<i class='bi bi-pencil-square icono-editar'></i>" +
+      "</button>";
+
+    $("#tablaTiposLicenciaBody").append(
+      "<tr>" +
+      "<td class='text-center align-middle'>" +
+      botonEstado +
       "</td>" +
       "<td class='align-middle flex-text " +
       filaClass +
@@ -111,12 +128,7 @@ function MostrarTiposDeLicencias(data) {
       item.nombre +
       "</td>" +
       "<td class='d-flex justify-content-center align-items-center'>" +
-      "<button class='btn-editar' data-action='edit' style='" +
-      visibleBotones +
-      " background: none; border: none;' onclick='MostrarModalEditar(" +
-      item.id + ")' data-tippy-content='Editar'>" +
-      "<i class='bi bi-pencil-square icono-editar'></i>" +
-      "</button>" +
+      botonEditar +
       "</td>" +
       "</tr>"
     );

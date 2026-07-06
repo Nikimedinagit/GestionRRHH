@@ -31,13 +31,18 @@
   </div>
 
   <!-- ======================================= Contenedor de Botones y Tabla ====================================== -->
-  <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-3">
-    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white responsive-button" onclick="toggleFiltros()">
-      <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
-      <span class="texto-btn">Filtros</span>
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+    <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelAsistenciaManual()">
+      <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+      <span>Registrar Asistencia</span>
     </button>
 
     <div class="d-flex gap-3 flex-wrap responsive-button">
+      <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white" onclick="toggleFiltros()">
+        <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+        <span class="texto-btn">Filtros</span>
+      </button>
+
       <button id="btnMostrarGenerar" class="btn rounded btn-informe py-1 px-2 border bg-white"
         onclick="GenerarInformePdfAsistencias()">
         <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
@@ -150,6 +155,65 @@
   </h3>
 
   <div id="asistenciasContainer" class="row g-3"></div>
+</div>
+
+<div id="fondoOscuro" onclick="CerrarPanelAsistenciaManual()"></div>
+
+<!-- ================================ Panel Registro Manual ===================================== -->
+<div id="panelAsistencias" aria-modal="true" role="dialog" aria-labelledby="panelTituloAsistenciaManual" tabindex="-1"
+  class="w-30">
+  <div class="panel-header">
+    <h2 id="panelTituloAsistenciaManual" class="panel-title">Formulario De Asistencia</h2>
+  </div>
+  <div class="panel-body">
+    <form id="formAsistenciaManual">
+
+      <!-- ======================================= Spinner Formualrio ====================================== -->
+      <div id="overlayGuardandoAsistencia" class="overlay-guardando d-none">
+        <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+          <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+          <div class="spinner-border text-primary spinner-grande my-1" role="status"></div>
+          <p class="text-muted mensaje-carga">
+            Estamos procesando la información <br> <span class="dots"></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <input type="hidden" id="FechaAsistenciaManual" />
+
+        <div class="form-group position-relative mb-3">
+          <select name="EmpleadoIdAsistenciaManual" id="EmpleadoIdAsistenciaManual" class="form-control" required>
+            <option value="" disabled selected>Seleccione</option>
+          </select>
+          <label for="EmpleadoIdAsistenciaManual">Empleado</label>
+          <div class="invalid-feedback" id="errorEmpleadoIdAsistenciaManual"></div>
+        </div>
+
+        <div class="form-group position-relative mb-3">
+          <select name="TipoMarcacionManual" id="TipoMarcacionManual" class="form-control" required>
+            <option value="" disabled selected>Seleccione</option>
+            <option value="PrimerEntrada">INICIO</option>
+            <option value="PrimerSalida">FIN</option>
+            <option value="SegundaEntrada">INICIO 2</option>
+            <option value="SegundaSalida">FIN 2</option>
+          </select>
+          <label for="TipoMarcacionManual">Marcación</label>
+          <div class="invalid-feedback" id="errorTipoMarcacionManual"></div>
+        </div>
+
+        <div class="form-group position-relative mb-3">
+          <input type="time" id="HoraMarcacionManual" class="form-control" placeholder=" " required />
+          <label for="HoraMarcacionManual">Hora</label>
+          <div class="invalid-feedback" id="errorHoraMarcacionManual"></div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-cancelar" onclick="CerrarPanelAsistenciaManual()">Cancelar</button>
+    <button type="submit" class="btn btn-guardar" onclick="CrearAsistenciaManual()">Guardar</button>
+  </div>
 </div>
 
 

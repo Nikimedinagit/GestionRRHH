@@ -25,6 +25,60 @@ namespace GestionRRHH.Controllers
             _userManager = userManager;
         }
 
+        private static int ContarDiasLicencia(Licencia licencia)
+        {
+            return Math.Max(0, (licencia.FechaFin.Date - licencia.FechaInicio.Date).Days + 1);
+        }
+
+        private async Task<bool> EsLicenciaVacacionesAsync(int tipoDeLicenciaId)
+        {
+            var tipo = await _context.TipoDeLicencia.FindAsync(tipoDeLicenciaId);
+            return tipo != null && tipo.Nombre.Trim().Equals("VACACIONES", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task<int> ObtenerVacacionesDisponiblesAsync(int empleadoId, int? licenciaExcluirId = null, bool incluirPendientes = false)
+        {
+            var empleado = await _context.Empleado
+                .Include(e => e.Licencia)
+                .ThenInclude(l => l.TipoDeLicencia)
+                .FirstOrDefaultAsync(e => e.Id == empleadoId);
+
+            if (empleado == null) return 0;
+
+            var fechaActivacion = await _context.ActivacionEmpleado
+                .Where(a => a.EmpleadoId == empleadoId && a.FechaActivacion.HasValue)
+                .OrderBy(a => a.FechaActivacion)
+                .Select(a => a.FechaActivacion)
+                .FirstOrDefaultAsync();
+
+            var anioActual = DateTime.Today.Year;
+            var anioInicio = fechaActivacion?.Year ?? anioActual;
+            var aniosComputables = Math.Max(1, anioActual - anioInicio + 1);
+            var acumuladas = Math.Max(0, empleado.DiasVacacionesAnuales) * aniosComputables;
+
+            var estadosADescontar = incluirPendientes
+                ? new[] { EstadoLicencia.PENDIENTE, EstadoLicencia.APROBADA, EstadoLicencia.EXPIRADA }
+                : new[] { EstadoLicencia.APROBADA, EstadoLicencia.EXPIRADA };
+
+            var usadas = empleado.Licencia
+                .Where(l =>
+                    (!licenciaExcluirId.HasValue || l.Id != licenciaExcluirId.Value) &&
+                    l.TipoDeLicencia != null &&
+                    l.TipoDeLicencia.Nombre.Trim().Equals("VACACIONES", StringComparison.OrdinalIgnoreCase) &&
+                    estadosADescontar.Contains(l.Estado))
+                .Sum(ContarDiasLicencia);
+
+            return Math.Max(acumuladas - usadas, 0);
+        }
+
+        private async Task<bool> PeriodoVacacionesHabilitadoAsync()
+        {
+            var hoy = DateTime.Today;
+
+            return await _context.PeriodoSolicitudVacaciones
+                .AnyAsync(p => p.Activo && p.FechaInicio.Date <= hoy && p.FechaFin.Date >= hoy);
+        }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE LICENCIAS ///////////////////////////////////////////////
@@ -153,6 +207,18 @@ namespace GestionRRHH.Controllers
 
             if (existeLicencia)
                 return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada." });
+
+            if (await EsLicenciaVacacionesAsync(licencia.TipoDeLicenciaId))
+            {
+                if (!await PeriodoVacacionesHabilitadoAsync())
+                    return BadRequest(new { codigo = 0, mensaje = "Las solicitudes de VACACIONES no estan habilitadas en este momento." });
+
+                var diasSolicitados = ContarDiasLicencia(licencia);
+                var diasDisponibles = await ObtenerVacacionesDisponiblesAsync(licencia.EmpleadoId, incluirPendientes: true);
+
+                if (diasSolicitados > diasDisponibles)
+                    return BadRequest(new { codigo = 0, mensaje = $"No tiene días de vacaciones suficientes. Disponibles: {diasDisponibles}." });
+            }
 
             licencia.Estado = EstadoLicencia.PENDIENTE;
 
@@ -302,6 +368,15 @@ namespace GestionRRHH.Controllers
 
             if (tieneSolapamiento)
                 return BadRequest(new { codigo = 0, mensaje = "Ya tiene licencia aplicada que solapa fechas." });
+
+            if (await EsLicenciaVacacionesAsync(licencia.TipoDeLicenciaId))
+            {
+                var diasSolicitados = ContarDiasLicencia(licencia);
+                var diasDisponibles = await ObtenerVacacionesDisponiblesAsync(licencia.EmpleadoId, licencia.Id);
+
+                if (diasSolicitados > diasDisponibles)
+                    return BadRequest(new { codigo = 0, mensaje = $"No tiene días de vacaciones suficientes. Disponibles: {diasDisponibles}." });
+            }
 
             licencia.Estado = EstadoLicencia.APROBADA;
 

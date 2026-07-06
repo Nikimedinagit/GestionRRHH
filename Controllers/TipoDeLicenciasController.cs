@@ -17,6 +17,7 @@ namespace GestionRRHH.Controllers
     public class TipoDeLicenciasController : ControllerBase
     {
         private readonly Context _context;
+        private const string TipoSistemaVacaciones = "VACACIONES";
 
         public TipoDeLicenciasController(Context context)
         {
@@ -44,6 +45,36 @@ namespace GestionRRHH.Controllers
             return texto;
         }
 
+        private bool EsTipoVacacionesSistema(TipoDeLicencia tipoDeLicencia)
+        {
+            return tipoDeLicencia != null &&
+                NormalizarTexto(tipoDeLicencia.Nombre) == TipoSistemaVacaciones;
+        }
+
+        private async Task AsegurarTipoVacacionesAsync()
+        {
+            var tipos = await _context.TipoDeLicencia.ToListAsync();
+            var vacaciones = tipos.FirstOrDefault(t => NormalizarTexto(t.Nombre) == TipoSistemaVacaciones);
+
+            if (vacaciones == null)
+            {
+                _context.TipoDeLicencia.Add(new TipoDeLicencia
+                {
+                    Nombre = TipoSistemaVacaciones,
+                    Eliminado = false
+                });
+                await _context.SaveChangesAsync();
+                return;
+            }
+
+            if (vacaciones.Eliminado || vacaciones.Nombre != TipoSistemaVacaciones)
+            {
+                vacaciones.Nombre = TipoSistemaVacaciones;
+                vacaciones.Eliminado = false;
+                await _context.SaveChangesAsync();
+            }
+        }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA OBTENER LOS DATOS DE LA API DE TIPOS DE LICENCIAS ///////////////////////////////////////////////
@@ -52,6 +83,8 @@ namespace GestionRRHH.Controllers
         [HttpPost("Filtrar")]
         public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> FiltrarTipoDeLicencia(TipoDeLicenciaFiltrar filtro)
         {
+            await AsegurarTipoVacacionesAsync();
+
             var tipoDeLicenciasFiltro = _context.TipoDeLicencia.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filtro.Nombre))
@@ -80,6 +113,8 @@ namespace GestionRRHH.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoDeLicencia>> PostTipoDeLicencia(TipoDeLicencia tipoDeLicencia)
         {
+            await AsegurarTipoVacacionesAsync();
+
             string nombreNormalizado = NormalizarTexto(tipoDeLicencia.Nombre);
 
             var tipos = await _context.TipoDeLicencia
@@ -108,9 +143,17 @@ namespace GestionRRHH.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTipoDeLicencia(int id, TipoDeLicencia tipoDeLicencia)
         {
+            await AsegurarTipoVacacionesAsync();
+
             string nombreNormalizado = NormalizarTexto(tipoDeLicencia.Nombre);
 
             var tipoDeLicencias = await _context.TipoDeLicencia.FindAsync(id);
+
+            if (tipoDeLicencias == null)
+                return NotFound();
+
+            if (EsTipoVacacionesSistema(tipoDeLicencias))
+                return BadRequest(new { mensaje = "El tipo de licencia VACACIONES es del sistema y no se puede editar." });
            
             var tipos = await _context.TipoDeLicencia
                 .AsNoTracking()
@@ -138,7 +181,15 @@ namespace GestionRRHH.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoDeLicencia(int id)
         {
+            await AsegurarTipoVacacionesAsync();
+
             var tipoDeLicencia = await _context.TipoDeLicencia.FindAsync(id);
+
+            if (tipoDeLicencia == null)
+                return NotFound();
+
+            if (EsTipoVacacionesSistema(tipoDeLicencia))
+                return BadRequest(new { mensaje = "El tipo de licencia VACACIONES es del sistema y no se puede desactivar." });
 
             if (!tipoDeLicencia.Eliminado)
             {
@@ -165,6 +216,8 @@ namespace GestionRRHH.Controllers
         [HttpGet("Activos")]
         public async Task<ActionResult<IEnumerable<TipoDeLicencia>>> GetTipoDeLicenciasActivos()
         {
+            await AsegurarTipoVacacionesAsync();
+
             var tipoDeLicenciasActivos = await _context.TipoDeLicencia
                 .Where(t => !t.Eliminado)
                 .OrderBy(t => t.Nombre)
@@ -180,6 +233,8 @@ namespace GestionRRHH.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TipoDeLicencia>> GetTipoDeLicencia(int id)
         {
+            await AsegurarTipoVacacionesAsync();
+
             var tipoDeLicencia = await _context.TipoDeLicencia.FindAsync(id);
 
             if (tipoDeLicencia == null)

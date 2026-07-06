@@ -39,6 +39,8 @@ namespace GestionRRHH.Models.General
 
         public int? CantidadHijos { get; set; }
 
+        public int DiasVacacionesAnuales { get; set; }
+
         public byte[] FaceDescriptor { get; set; }
 
         [NotMapped]
@@ -115,6 +117,10 @@ namespace GestionRRHH.Models.General
         public string NroLegajo { get; set; }
         public bool Eliminado { get; set; }
         public bool TieneHistorial { get; set; }
+        public int DiasVacacionesAnuales { get; set; }
+        public int VacacionesAcumuladas { get; set; }
+        public int VacacionesTomadas { get; set; }
+        public int VacacionesDisponibles { get; set; }
     }
 
 

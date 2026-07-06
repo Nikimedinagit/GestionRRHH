@@ -319,6 +319,12 @@
             <label for="IdPuesto">Puesto</label>
             <div class="invalid-feedback" id="errorIdPuesto"></div>
           </div>
+
+          <div class="form-group position-relative mb-3">
+            <input type="number" id="DiasVacacionesAnuales" class="form-control" placeholder=" " min="0" />
+            <label for="DiasVacacionesAnuales">Días Vacaciones</label>
+            <div class="invalid-feedback" id="errorDiasVacacionesAnuales"></div>
+          </div>
         </div>
       </form>
     </div>
@@ -432,6 +438,29 @@
               <div class="detalle-empleado-fila">
                 <span class="detalle-empleado-etiqueta">Dirección:</span>
                 <span class="detalle-empleado-valor" id="detalleDireccion"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">Vacaciones</p>
+
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Días anuales:</span>
+                <span class="detalle-empleado-valor" id="detalleVacacionesAnuales"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Acumuladas:</span>
+                <span class="detalle-empleado-valor" id="detalleVacacionesAcumuladas"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Tomadas:</span>
+                <span class="detalle-empleado-valor" id="detalleVacacionesTomadas"></span>
+              </div>
+              <div class="detalle-empleado-fila">
+                <span class="detalle-empleado-etiqueta">Disponibles:</span>
+                <span class="detalle-empleado-valor" id="detalleVacacionesDisponibles"></span>
               </div>
             </div>
           </div>
