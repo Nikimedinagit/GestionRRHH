@@ -58,6 +58,12 @@
                     <span class="texto-btn">Filtros</span>
                 </button>
 
+                <button id="btnVistaCalendarioLicencias" class="btn rounded btn-calendario-licencias py-1 px-2 border bg-white d-none"
+                    onclick="AlternarVistaCalendarioLicencias()">
+                    <i class="fa-solid fa-calendar-week me-1"></i>
+                    <span>Calendario</span>
+                </button>
+
                 <button class="btn rounded btn-informe py-1 px-2 border bg-white"
                     onclick="GenerarInformePdfLicencias()">
                     <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
@@ -216,6 +222,30 @@
 
         <!-- ======================================= Tarjetas de licencias ====================================== -->
         <div id="licenciasContainer" class="row g-3"></div>
+
+        <div id="calendarioLicenciasContainer" class="calendario-licencias d-none">
+            <div class="calendario-licencias-header">
+                <button class="btn-calendario-nav" onclick="CambiarMesCalendarioLicencias(-1)" data-tippy-content="Mes anterior">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <h5 id="tituloCalendarioLicencias" class="mb-0"></h5>
+                <button class="btn-calendario-nav" onclick="CambiarMesCalendarioLicencias(1)" data-tippy-content="Mes siguiente">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="calendario-licencias-grid calendario-licencias-dias">
+                <div>Lun</div>
+                <div>Mar</div>
+                <div>Mié</div>
+                <div>Jue</div>
+                <div>Vie</div>
+                <div>Sáb</div>
+                <div>Dom</div>
+            </div>
+
+            <div id="calendarioLicenciasBody" class="calendario-licencias-grid"></div>
+        </div>
 
     </div>
 

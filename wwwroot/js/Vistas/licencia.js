@@ -3,6 +3,9 @@
 // ABRIR PANEL DE LICENCIA ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 let periodoVacacionesSolicitud = null;
+let licenciasCalendario = [];
+let fechaCalendarioLicencias = new Date();
+let vistaCalendarioLicenciasActiva = false;
 
 function AbrirPanelLicencia() {
   document.getElementById("panelLicencia").classList.add("abierto");
@@ -517,6 +520,9 @@ async function ObtenerLicencias(mostrarSpinner = true) {
 // FUNCION PARA MOSTRAR LOS DATOS DE LA API DE LICENCIAS ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarLicencias(data) {
+  licenciasCalendario = Array.isArray(data) ? data : [];
+  RenderizarCalendarioLicencias();
+
   const contenedor = $("#licenciasContainer");
   contenedor.empty();
 
@@ -524,6 +530,7 @@ function MostrarLicencias(data) {
     contenedor.append(`
       <div class="col-12 text-center text-muted">No hay licencias para mostrar.</div>
     `);
+    ActualizarVistaLicencias();
     return;
   }
 
@@ -628,6 +635,8 @@ function MostrarLicencias(data) {
     theme: "mi-tema",
     delay: [100, 0],
   });
+
+  ActualizarVistaLicencias();
 }
 
 
@@ -674,6 +683,142 @@ function formatearFecha(fechaStr) {
     month: "short",
     year: "numeric",
   });
+}
+
+function parsearFechaLicencia(fechaStr) {
+  if (!fechaStr) return null;
+
+  const [dia, mes, anio] = fechaStr.split("/").map(Number);
+  if (!dia || !mes || !anio) return null;
+
+  const fecha = new Date(anio, mes - 1, dia);
+  fecha.setHours(0, 0, 0, 0);
+  return fecha;
+}
+
+function claveFechaLicencia(fecha) {
+  return [
+    fecha.getFullYear(),
+    String(fecha.getMonth() + 1).padStart(2, "0"),
+    String(fecha.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function AlternarVistaCalendarioLicencias() {
+  vistaCalendarioLicenciasActiva = !vistaCalendarioLicenciasActiva;
+  ActualizarVistaLicencias();
+}
+
+function ActualizarVistaLicencias() {
+  const calendario = document.getElementById("calendarioLicenciasContainer");
+  const cards = document.getElementById("licenciasContainer");
+  const boton = document.getElementById("btnVistaCalendarioLicencias");
+
+  if (!calendario || !cards || !boton) return;
+
+  calendario.classList.toggle("d-none", !vistaCalendarioLicenciasActiva);
+  cards.classList.toggle("d-none", vistaCalendarioLicenciasActiva);
+  boton.classList.toggle("activo", vistaCalendarioLicenciasActiva);
+  boton.querySelector("span").textContent = vistaCalendarioLicenciasActiva ? "Cards" : "Calendario";
+
+  if (vistaCalendarioLicenciasActiva) {
+    RenderizarCalendarioLicencias();
+  }
+}
+
+function CambiarMesCalendarioLicencias(direccion) {
+  fechaCalendarioLicencias = new Date(
+    fechaCalendarioLicencias.getFullYear(),
+    fechaCalendarioLicencias.getMonth() + direccion,
+    1
+  );
+  RenderizarCalendarioLicencias();
+}
+
+function RenderizarCalendarioLicencias() {
+  const body = document.getElementById("calendarioLicenciasBody");
+  const titulo = document.getElementById("tituloCalendarioLicencias");
+
+  if (!body || !titulo) return;
+
+  const anio = fechaCalendarioLicencias.getFullYear();
+  const mes = fechaCalendarioLicencias.getMonth();
+  const primerDiaMes = new Date(anio, mes, 1);
+  const ultimoDiaMes = new Date(anio, mes + 1, 0);
+  const offsetLunes = (primerDiaMes.getDay() + 6) % 7;
+  const inicioCalendario = new Date(anio, mes, 1 - offsetLunes);
+
+  titulo.textContent = primerDiaMes.toLocaleDateString("es-AR", {
+    month: "long",
+    year: "numeric"
+  });
+
+  const licenciasPorDia = AgruparLicenciasPorDia();
+  body.innerHTML = "";
+
+  const totalCeldas = Math.ceil((offsetLunes + ultimoDiaMes.getDate()) / 7) * 7;
+
+  for (let i = 0; i < totalCeldas; i++) {
+    const fecha = new Date(inicioCalendario);
+    fecha.setDate(inicioCalendario.getDate() + i);
+
+    const clave = claveFechaLicencia(fecha);
+    const licenciasDia = licenciasPorDia[clave] || [];
+    const fueraMes = fecha.getMonth() !== mes;
+
+    const eventosHtml = licenciasDia.slice(0, 3).map(ArmarEventoCalendarioLicencia).join("");
+    const restantes = licenciasDia.length - 3;
+
+    body.insertAdjacentHTML("beforeend", `
+      <div class="calendario-licencias-dia ${fueraMes ? "fuera-mes" : ""}">
+        <span class="calendario-licencias-dia-numero">${fecha.getDate()}</span>
+        ${eventosHtml}
+        ${restantes > 0 ? `<span class="calendario-licencias-mas">+${restantes} más</span>` : ""}
+      </div>
+    `);
+  }
+
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+function AgruparLicenciasPorDia() {
+  const agrupadas = {};
+
+  licenciasCalendario.forEach((licencia) => {
+    const inicio = parsearFechaLicencia(licencia.fechaInicioString);
+    const fin = parsearFechaLicencia(licencia.fechaFinString);
+
+    if (!inicio || !fin) return;
+
+    const cursor = new Date(inicio);
+
+    while (cursor <= fin) {
+      const clave = claveFechaLicencia(cursor);
+      if (!agrupadas[clave]) agrupadas[clave] = [];
+      agrupadas[clave].push(licencia);
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  });
+
+  return agrupadas;
+}
+
+function ArmarEventoCalendarioLicencia(licencia) {
+  const estado = (licencia.estadoString || "PENDIENTE").toLowerCase();
+  const tipo = (licencia.tipoDeLicenciaString || "-").toUpperCase();
+  const esVacaciones = tipo === "VACACIONES";
+  const empleado = licencia.empleadoString || "-";
+  const tooltip = `${empleado} | ${tipo} | ${(licencia.estadoString || "").toUpperCase()} | ${licencia.fechaInicioString} - ${licencia.fechaFinString}`;
+
+  return `
+    <span class="calendario-licencias-evento ${estado} ${esVacaciones ? "vacaciones" : ""}" data-tippy-content="${tooltip}">
+      ${empleado}
+    </span>
+  `;
 }
 
 
@@ -1411,12 +1556,14 @@ function MostrarOpcionesLicenciasPorRol() {
   const tipoLicenciaGroup = $("#IdTipoLicencia").closest(".form-group");
   const contenedorAyuda = $("#LicenciaAcciones");
   const btnGenerarInforme = $("#btnMostrarGenerar");
+  const btnVistaCalendario = $("#btnVistaCalendarioLicencias");
 
   if (rol === "ADMINISTRADOR" || rol === "RRHH") {
     estadisticasYFiltros.removeClass("d-none");
     seleccionEmpleado.removeClass("d-none");
     btnGenerarInforme.removeClass("d-none");
     $("#btnPeriodoVacaciones").removeClass("d-none");
+    btnVistaCalendario.removeClass("d-none");
     titulo.text("Gestiona licencias de los empleados, revisa solicitudes pendientes y acepta o rechaza cada una de forma rápida y sencilla.");
     tipoLicenciaGroup.css("grid-column", "span 1");
   } else if (rol === "SUPERVISOR" || rol === "EMPLEADO") {
@@ -1426,6 +1573,9 @@ function MostrarOpcionesLicenciasPorRol() {
     tipoLicenciaGroup.css("grid-column", "span 2");
     contenedorAyuda.addClass("d-none")
     $("#btnPeriodoVacaciones").addClass("d-none");
+    btnVistaCalendario.addClass("d-none");
+    vistaCalendarioLicenciasActiva = false;
+    ActualizarVistaLicencias();
   }
 
   ActualizarAdvertenciaPeriodoVacaciones();
