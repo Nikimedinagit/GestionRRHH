@@ -255,7 +255,8 @@ namespace GestionRRHH.Controllers
                     PuestoId = e.PuestoId,
                     UsuarioNombreCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).NombreCompleto,
                     UsuarioEmailCreador = _context.Users.FirstOrDefault(u => u.Id == e.UsuarioId).Email,
-                    Eliminado = e.Eliminado
+                    Eliminado = e.Eliminado,
+                    TieneHistorial = e.HistorialLaboral.Any()
                 })
                 .ToListAsync();
 

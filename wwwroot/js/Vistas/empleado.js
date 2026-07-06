@@ -232,10 +232,11 @@ function MostrarEmpleados(data) {
 
         <div class="d-flex justify-content-between mt-2 align-items-center">
           <div>
-            <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id
-      })" data-tippy-content="Historial">
-              <i class="bi bi-card-text btn-sm icono-historial"></i>
-            </button>
+            ${item.tieneHistorial ? `
+              <button class="btn-historial" style="background: none; border: none; cursor: pointer;" onclick="VerHistorialEmpleado(${item.id})" data-tippy-content="Historial">
+                <i class="bi bi-card-text btn-sm icono-historial"></i>
+              </button>
+            ` : ""}
           </div>
           <div>
             <button class="btn-ver" style="background: none; border: none; cursor: pointer;" onclick="MostrarDetalleEmpleado(${item.id

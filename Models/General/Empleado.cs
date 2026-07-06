@@ -114,6 +114,7 @@ namespace GestionRRHH.Models.General
         public string UsuarioEmailCreador { get; set; }
         public string NroLegajo { get; set; }
         public bool Eliminado { get; set; }
+        public bool TieneHistorial { get; set; }
     }
 
 
