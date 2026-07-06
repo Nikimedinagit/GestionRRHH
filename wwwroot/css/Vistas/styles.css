@@ -662,14 +662,14 @@ textarea.form-control:not(:placeholder-shown)+label {
 }
 
 .btn-calendario-licencias i {
-  color: #6f42c1 !important;
+  color: #6D4C41 !important;
 }
 
 .btn-calendario-licencias.activo,
 .btn-calendario-licencias:hover,
 .btn-calendario-licencias:focus {
-  background-color: #6f42c1 !important;
-  border-color: #6f42c1 !important;
+  background-color: #6D4C41 !important;
+  border-color: #6D4C41 !important;
   color: #ffffff !important;
   box-shadow: none !important;
 }
@@ -809,6 +809,163 @@ textarea.form-control:not(:placeholder-shown)+label {
 
 .calendario-licencias-evento.vacaciones {
   border-left-color: #0dcaf0;
+}
+
+.btn-calendario-asistencias {
+  color: #212529 !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-calendario-asistencias i {
+  color: #6D4C41 !important;
+}
+
+.btn-calendario-asistencias.activo,
+.btn-calendario-asistencias:hover,
+.btn-calendario-asistencias:focus {
+  background-color: #6D4C41 !important;
+  border-color: #6D4C41 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.btn-calendario-asistencias.activo i,
+.btn-calendario-asistencias.activo span,
+.btn-calendario-asistencias:hover i,
+.btn-calendario-asistencias:hover span,
+.btn-calendario-asistencias:focus i,
+.btn-calendario-asistencias:focus span {
+  color: #ffffff !important;
+}
+
+.calendario-asistencias {
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.09);
+  overflow: hidden;
+}
+
+.calendario-asistencias-header {
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.calendario-asistencias-header h5 {
+  color: #212529;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.calendario-asistencias-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendario-asistencias-dias {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.calendario-asistencias-dias div {
+  color: #6c757d;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.calendario-asistencias-dia {
+  border-bottom: 1px solid #edf0f2;
+  border-right: 1px solid #edf0f2;
+  min-height: 118px;
+  padding: 7px;
+}
+
+.calendario-asistencias-dia:nth-child(7n) {
+  border-right: none;
+}
+
+.calendario-asistencias-dia.fuera-mes {
+  background-color: #fafafa;
+}
+
+.calendario-asistencias-dia-numero {
+  color: #212529;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.fuera-mes .calendario-asistencias-dia-numero {
+  color: #adb5bd;
+}
+
+.calendario-asistencias-evento {
+  border-left: 3px solid #6c757d;
+  border-radius: 4px;
+  color: #212529;
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  overflow: hidden;
+  padding: 4px 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendario-asistencias-evento.completa {
+  background-color: #d4f4dd;
+  border-left-color: #198754;
+  color: #145c37;
+}
+
+.calendario-asistencias-evento.incompleta {
+  background-color: #fff3cd;
+  border-left-color: #ffc107;
+  color: #856404;
+}
+
+.calendario-asistencias-evento.ausente {
+  background-color: #f8d7da;
+  border-left-color: #dc3545;
+  color: #842029;
+}
+
+.calendario-asistencias-evento.tarde {
+  background-color: #ffe5d0;
+  border-left-color: #d35400;
+  color: #9a3d00;
+}
+
+.calendario-asistencias-evento.fuera-de-horario {
+  background-color: #e9ecef;
+  border-left-color: #6c757d;
+  color: #495057;
+}
+
+.calendario-asistencias-mas {
+  color: #6c757d;
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+  .calendario-asistencias {
+    overflow-x: auto;
+  }
+
+  .calendario-asistencias-grid {
+    min-width: 720px;
+  }
 }
 
 .calendario-licencias-mas {

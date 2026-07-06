@@ -80,6 +80,16 @@ namespace GestionRRHH.Models.General
         public int? EstadoAsistencia { get; set; }
     }
 
+    public class FiltrarAsistenciaCalendario
+    {
+        public string NombreCompleto { get; set; }
+        public long? DNI { get; set; }
+        public string NroLegajo { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaFin { get; set; }
+        public int? EstadoAsistencia { get; set; }
+    }
+
 
 
 

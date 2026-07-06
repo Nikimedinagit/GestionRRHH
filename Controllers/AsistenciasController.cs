@@ -107,6 +107,69 @@ namespace GestionRRHH.Controllers
             return Ok(vista);
         }
 
+        [HttpPost("FiltrarCalendario")]
+        public async Task<ActionResult<IEnumerable<VistaAsistencia>>> FiltrarAsistenciaCalendario([FromBody] FiltrarAsistenciaCalendario filtro)
+        {
+            var fechaInicio = filtro.FechaInicio.Date;
+            var fechaFin = filtro.FechaFin.Date.AddDays(1);
+
+            var obtenerAsistencias = _context.Asistencia
+                .Include(a => a.Empleado)
+                .Include(a => a.Horario)
+                .Where(a =>
+                    a.Fecha >= fechaInicio &&
+                    a.Fecha < fechaFin &&
+                    a.Empleado != null &&
+                    !a.Empleado.Eliminado
+                )
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filtro.NombreCompleto))
+            {
+                var nombreFiltro = filtro.NombreCompleto.ToLower();
+                obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.NombreCompleto.ToLower().Contains(nombreFiltro));
+            }
+
+            if (filtro.DNI.HasValue)
+            {
+                var dniFiltro = filtro.DNI.Value.ToString();
+                obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.DNI.ToString().StartsWith(dniFiltro));
+            }
+
+            if (!string.IsNullOrEmpty(filtro.NroLegajo))
+            {
+                var legajoFiltro = filtro.NroLegajo.ToString();
+                obtenerAsistencias = obtenerAsistencias.Where(a => a.Empleado.NroLegajo.ToString().StartsWith(legajoFiltro));
+            }
+
+            if (filtro.EstadoAsistencia.HasValue)
+            {
+                obtenerAsistencias = obtenerAsistencias
+                    .Where(a => (int)a.Estado == filtro.EstadoAsistencia.Value);
+            }
+
+            var vista = await obtenerAsistencias
+                .OrderBy(a => a.Fecha)
+                .ThenBy(a => a.Empleado.NombreCompleto)
+                .Select(a => new VistaAsistencia
+                {
+                    Id = a.Id,
+                    EmpleadoString = a.Empleado != null ? a.Empleado.NombreCompleto : "Sin empleado",
+                    NroLegajo = a.Empleado != null ? a.Empleado.NroLegajo.ToString() : "-",
+                    TipoHorario = a.Horario != null ? a.Horario.TipoHorarioString : "CONTINUO",
+                    FechaString = a.Fecha.ToString("dd/MM/yyyy"),
+                    EstadoString = a.Estado.ToString(),
+                    PrimerEntradaString = a.PrimerEntrada.HasValue ? a.PrimerEntrada.Value.ToString(@"hh\:mm") : null,
+                    PrimerSalidaString = a.PrimerSalida.HasValue ? a.PrimerSalida.Value.ToString(@"hh\:mm") : null,
+                    SegundaEntradaString = a.SegundaEntrada.HasValue ? a.SegundaEntrada.Value.ToString(@"hh\:mm") : null,
+                    SegundaSalidaString = a.SegundaSalida.HasValue ? a.SegundaSalida.Value.ToString(@"hh\:mm") : null,
+                    FotoUrl = a.FotoRuta != null ? $"http://localhost:5106/{a.FotoRuta}" : null
+                })
+                .ToListAsync();
+
+            return Ok(vista);
+        }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// METODO PARA REGISTRAR MANUALMENTE UNA ASISTENCIA /////////////////////////////////////////////////

@@ -3,6 +3,9 @@
 // INICIO DE VARIABLES PARA LOS DATOS DE LA API /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 var asistenciasData = [];
+var asistenciasCalendarioData = [];
+var fechaCalendarioAsistencias = new Date();
+var vistaCalendarioAsistenciasActiva = false;
 
 
 /////////////////////////////////////////////////////////////
@@ -10,7 +13,13 @@ var asistenciasData = [];
 /////////////////////////////////////////////////////////////
 $("#EmpleadoIdBuscar, #DniBuscar, #NroLegajoBuscar, #EstadoAsistenciaBuscar, #FechaBuscar")
     .on("input change", () => {
+        const fechaFiltro = document.getElementById("FechaBuscar").value;
+        if (fechaFiltro) {
+            const partes = fechaFiltro.split("-");
+            fechaCalendarioAsistencias = new Date(partes[0], partes[1] - 1, 1);
+        }
         ObtenerAsistencias(false);
+        if (vistaCalendarioAsistenciasActiva) ObtenerAsistenciasCalendario(false);
         ObtenerTotalAsitenciasHoy();
     });
 
@@ -185,6 +194,203 @@ async function CrearAsistenciaManual() {
     }
 }
 
+/////////////////////////////////////////////////////////////
+// CALENDARIO DE ASISTENCIAS ////////////////////////////////
+/////////////////////////////////////////////////////////////
+function AlternarVistaCalendarioAsistencias() {
+    vistaCalendarioAsistenciasActiva = !vistaCalendarioAsistenciasActiva;
+
+    if (vistaCalendarioAsistenciasActiva) {
+        const fechaFiltro = document.getElementById("FechaBuscar").value;
+        if (fechaFiltro) {
+            const partes = fechaFiltro.split("-");
+            fechaCalendarioAsistencias = new Date(partes[0], partes[1] - 1, 1);
+        }
+        ObtenerAsistenciasCalendario(false);
+    }
+
+    ActualizarVistaAsistencias();
+}
+
+function ActualizarVistaAsistencias() {
+    const calendario = document.getElementById("calendarioAsistenciasContainer");
+    const cards = document.getElementById("asistenciasContainer");
+    const titulo = document.getElementById("tituloAsistencias");
+    const boton = document.getElementById("btnVistaCalendarioAsistencias");
+
+    if (!calendario || !cards || !boton) return;
+
+    calendario.classList.toggle("d-none", !vistaCalendarioAsistenciasActiva);
+    cards.classList.toggle("d-none", vistaCalendarioAsistenciasActiva);
+    if (titulo) titulo.classList.toggle("d-none", vistaCalendarioAsistenciasActiva);
+
+    boton.classList.toggle("activo", vistaCalendarioAsistenciasActiva);
+    boton.querySelector("span").textContent = vistaCalendarioAsistenciasActiva ? "Cards" : "Calendario";
+
+    if (vistaCalendarioAsistenciasActiva) RenderizarCalendarioAsistencias();
+}
+
+function CambiarMesCalendarioAsistencias(direccion) {
+    fechaCalendarioAsistencias = new Date(
+        fechaCalendarioAsistencias.getFullYear(),
+        fechaCalendarioAsistencias.getMonth() + direccion,
+        1
+    );
+    ObtenerAsistenciasCalendario(false);
+}
+
+async function ObtenerAsistenciasCalendario(mostrarSpinner = false) {
+    if (mostrarSpinner) mostrarPantallaCarga();
+
+    try {
+        let estadoAsistencia = document.getElementById("EstadoAsistenciaBuscar").value;
+        if (estadoAsistencia === "0") estadoAsistencia = null;
+        else estadoAsistencia = Number(estadoAsistencia);
+
+        const anio = fechaCalendarioAsistencias.getFullYear();
+        const mes = fechaCalendarioAsistencias.getMonth();
+        const fechaInicio = new Date(anio, mes, 1);
+        const fechaFin = new Date(anio, mes + 1, 0);
+
+        const filtro = {
+            nombreCompleto: document.getElementById("EmpleadoIdBuscar").value,
+            DNI: document.getElementById("DniBuscar").value ? Number(document.getElementById("DniBuscar").value) : null,
+            nroLegajo: document.getElementById("NroLegajoBuscar").value,
+            fechaInicio: FormatearFechaApiAsistencia(fechaInicio),
+            fechaFin: FormatearFechaApiAsistencia(fechaFin),
+            estadoAsistencia: estadoAsistencia
+        };
+
+        const response = await authFetch("Asistencias/FiltrarCalendario", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(filtro)
+        });
+
+        asistenciasCalendarioData = await response.json();
+        RenderizarCalendarioAsistencias();
+    } catch (error) {
+        MostrarErrorCatch();
+    } finally {
+        if (mostrarSpinner) setTimeout(() => ocultarPantallaCarga(), 1200);
+    }
+}
+
+function FormatearFechaApiAsistencia(fecha) {
+    return [
+        fecha.getFullYear(),
+        String(fecha.getMonth() + 1).padStart(2, "0"),
+        String(fecha.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
+function ParsearFechaAsistencia(fechaStr) {
+    if (!fechaStr) return null;
+
+    const [dia, mes, anio] = fechaStr.split("/").map(Number);
+    if (!dia || !mes || !anio) return null;
+
+    const fecha = new Date(anio, mes - 1, dia);
+    fecha.setHours(0, 0, 0, 0);
+    return fecha;
+}
+
+function ClaveFechaAsistencia(fecha) {
+    return FormatearFechaApiAsistencia(fecha);
+}
+
+function RenderizarCalendarioAsistencias() {
+    const body = document.getElementById("calendarioAsistenciasBody");
+    const titulo = document.getElementById("tituloCalendarioAsistencias");
+
+    if (!body || !titulo) return;
+
+    const anio = fechaCalendarioAsistencias.getFullYear();
+    const mes = fechaCalendarioAsistencias.getMonth();
+    const primerDiaMes = new Date(anio, mes, 1);
+    const ultimoDiaMes = new Date(anio, mes + 1, 0);
+    const offsetLunes = (primerDiaMes.getDay() + 6) % 7;
+    const inicioCalendario = new Date(anio, mes, 1 - offsetLunes);
+    const asistenciasPorDia = AgruparAsistenciasPorDia();
+    const totalCeldas = Math.ceil((offsetLunes + ultimoDiaMes.getDate()) / 7) * 7;
+
+    titulo.textContent = primerDiaMes.toLocaleDateString("es-AR", {
+        month: "long",
+        year: "numeric"
+    });
+
+    body.innerHTML = "";
+
+    for (let i = 0; i < totalCeldas; i++) {
+        const fecha = new Date(inicioCalendario);
+        fecha.setDate(inicioCalendario.getDate() + i);
+
+        const clave = ClaveFechaAsistencia(fecha);
+        const asistenciasDia = asistenciasPorDia[clave] || [];
+        const fueraMes = fecha.getMonth() !== mes;
+        const eventosHtml = asistenciasDia.slice(0, 4).map(ArmarEventoCalendarioAsistencia).join("");
+        const restantes = asistenciasDia.length - 4;
+
+        body.insertAdjacentHTML("beforeend", `
+            <div class="calendario-asistencias-dia ${fueraMes ? "fuera-mes" : ""}">
+                <span class="calendario-asistencias-dia-numero">${fecha.getDate()}</span>
+                ${eventosHtml}
+                ${restantes > 0 ? `<span class="calendario-asistencias-mas">+${restantes} más</span>` : ""}
+            </div>
+        `);
+    }
+
+    tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
+}
+
+function AgruparAsistenciasPorDia() {
+    const agrupadas = {};
+
+    asistenciasCalendarioData.forEach((asistencia) => {
+        const fecha = ParsearFechaAsistencia(asistencia.fechaString);
+        if (!fecha) return;
+
+        const clave = ClaveFechaAsistencia(fecha);
+        if (!agrupadas[clave]) agrupadas[clave] = [];
+        agrupadas[clave].push(asistencia);
+    });
+
+    return agrupadas;
+}
+
+function NormalizarEstadoAsistencia(estadoRaw) {
+    let estado = (estadoRaw || "").trim().toUpperCase();
+    if (estado.replace(/\s+/g, "") === "FUERADEHORARIO") estado = "FUERA DE HORARIO";
+    return estado;
+}
+
+function ClaseEstadoCalendarioAsistencia(estado) {
+    return estado
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "-");
+}
+
+function ArmarEventoCalendarioAsistencia(asistencia) {
+    const estado = NormalizarEstadoAsistencia(asistencia.estadoString);
+    const claseEstado = ClaseEstadoCalendarioAsistencia(estado);
+    const empleado = asistencia.empleadoString || "-";
+    const horario = [
+        asistencia.primerEntradaString || "-",
+        asistencia.primerSalidaString || "-",
+        asistencia.segundaEntradaString || "-",
+        asistencia.segundaSalidaString || "-"
+    ].join(" | ");
+    const tooltip = `${empleado} | ${estado} | ${horario}`;
+
+    return `
+        <span class="calendario-asistencias-evento ${claseEstado}" data-tippy-content="${tooltip}">
+            ${empleado}
+        </span>
+    `;
+}
+
 
 /////////////////////////////////////////////////////////////
 // OBTENER DATOS DE LA API /////////////////////////////////////
@@ -260,6 +466,7 @@ function MostrarAsistencias(data) {
 
     if (!data || data.length === 0) {
         contenedor.append(`<div class="col-12 text-center text-muted">No hay asistencias para mostrar.</div>`);
+        ActualizarVistaAsistencias();
         return;
     }
 
@@ -321,6 +528,7 @@ function MostrarAsistencias(data) {
     });
 
     tippy("[data-tippy-content]", { animation: "scale", theme: "mi-tema", delay: [100, 0] });
+    ActualizarVistaAsistencias();
 }
 
 

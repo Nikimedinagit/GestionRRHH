@@ -43,6 +43,12 @@
         <span class="texto-btn">Filtros</span>
       </button>
 
+      <button id="btnVistaCalendarioAsistencias" class="btn rounded btn-calendario-asistencias py-1 px-2 border bg-white"
+        onclick="AlternarVistaCalendarioAsistencias()">
+        <i class="fa-solid fa-calendar-week me-1"></i>
+        <span>Calendario</span>
+      </button>
+
       <button id="btnMostrarGenerar" class="btn rounded btn-informe py-1 px-2 border bg-white"
         onclick="GenerarInformePdfAsistencias()">
         <i class="fa-solid fa-file-export me-1" style="color: #dc3545;"></i>
@@ -155,6 +161,30 @@
   </h3>
 
   <div id="asistenciasContainer" class="row g-3"></div>
+
+  <div id="calendarioAsistenciasContainer" class="calendario-asistencias d-none">
+    <div class="calendario-asistencias-header">
+      <button class="btn-calendario-nav" onclick="CambiarMesCalendarioAsistencias(-1)" data-tippy-content="Mes anterior">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <h5 id="tituloCalendarioAsistencias" class="mb-0"></h5>
+      <button class="btn-calendario-nav" onclick="CambiarMesCalendarioAsistencias(1)" data-tippy-content="Mes siguiente">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="calendario-asistencias-grid calendario-asistencias-dias">
+      <div>Lun</div>
+      <div>Mar</div>
+      <div>Mié</div>
+      <div>Jue</div>
+      <div>Vie</div>
+      <div>Sáb</div>
+      <div>Dom</div>
+    </div>
+
+    <div id="calendarioAsistenciasBody" class="calendario-asistencias-grid"></div>
+  </div>
 </div>
 
 <div id="fondoOscuro" onclick="CerrarPanelAsistenciaManual()"></div>
