@@ -33,6 +33,7 @@ function toggleHorarioInputs() {
   const tipo = document.getElementById("TipoHorario").value;
   const continuoDiv = document.getElementById("horarioContinuo");
   const alternoDiv = document.getElementById("horarioAlterno");
+  const rotativoDiv = document.getElementById("horarioRotativo");
 
   if (tipo === "1") {
     continuoDiv.classList.remove("d-none");
@@ -40,18 +41,28 @@ function toggleHorarioInputs() {
 
     alternoDiv.classList.add("d-none");
     alternoDiv.classList.remove("d-block");
+    rotativoDiv.classList.add("d-none");
   } else if (tipo === "2") {
     alternoDiv.classList.remove("d-none");
     alternoDiv.classList.add("d-block");
 
     continuoDiv.classList.add("d-none");
     continuoDiv.classList.remove("d-flex");
+    rotativoDiv.classList.add("d-none");
+  } else if (tipo === "3") {
+    continuoDiv.classList.add("d-none");
+    continuoDiv.classList.remove("d-flex");
+
+    alternoDiv.classList.add("d-none");
+    alternoDiv.classList.remove("d-block");
+    toggleRotativoInputs();
   } else {
     continuoDiv.classList.add("d-none");
     continuoDiv.classList.remove("d-flex");
 
     alternoDiv.classList.add("d-none");
     alternoDiv.classList.remove("d-block");
+    rotativoDiv.classList.add("d-none");
   }
 }
 
@@ -179,6 +190,82 @@ window.addEventListener("resize", function () {
   ObtenerHorarios(false);
 });
 
+function normalizarTurnoRotativo(turno) {
+  return (turno || "").trim().toUpperCase();
+}
+
+function obtenerRotacionDesdeJson(rotacionSemanasJson) {
+  if (!rotacionSemanasJson) return [];
+
+  try {
+    const semanas = JSON.parse(rotacionSemanasJson);
+    if (!Array.isArray(semanas)) return [];
+
+    return semanas.map((semana, index) => ({
+      semana: semana.semana ?? semana.Semana ?? index + 1,
+      turno: normalizarTurnoRotativo(semana.turno ?? semana.Turno ?? ""),
+      tipoHorario: Number(semana.tipoHorario ?? semana.TipoHorario ?? 1),
+      horarioInicio: semana.horarioInicio ?? semana.HorarioInicio ?? "",
+      horarioFin: semana.horarioFin ?? semana.HorarioFin ?? "",
+      segundoHorarioInicio: semana.segundoHorarioInicio ?? semana.SegundoHorarioInicio ?? "",
+      segundoHorarioFin: semana.segundoHorarioFin ?? semana.SegundoHorarioFin ?? "",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function generarDetalleRotacionHTML(rotacionSemanasJson) {
+  const semanas = obtenerRotacionDesdeJson(rotacionSemanasJson);
+
+  if (!semanas.length) {
+    return `
+      <div class="pb-2 text-muted text-center" style="font-size: 0.85rem;">
+        Sin semanas rotativas configuradas.
+      </div>
+    `;
+  }
+
+  const mostrarSegundoTramo = semanas.some((semana) => Number(semana.tipoHorario) === 2);
+
+  const filas = semanas.map((semana) => {
+    const tipo = Number(semana.tipoHorario) === 2 ? "ALTERNO" : "CONTINUO";
+    const esAlterno = Number(semana.tipoHorario) === 2;
+
+    return `
+      <tr>
+        <td>${semana.semana}</td>
+        <td>${normalizarTurnoRotativo(semana.turno) || "-"}</td>
+        <td>${tipo}</td>
+        <td>${semana.horarioInicio || "-"}</td>
+        <td>${semana.horarioFin || "-"}</td>
+        ${mostrarSegundoTramo ? `<td>${esAlterno ? (semana.segundoHorarioInicio || "-") : "-"}</td>` : ""}
+        ${mostrarSegundoTramo ? `<td>${esAlterno ? (semana.segundoHorarioFin || "-") : "-"}</td>` : ""}
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <h3 class="p-2 mt-1" style="font-size: 1rem; font-weight: 600;">Rotación Semanal</h3>
+    <div class="table-responsive pb-2">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="text-center header-table">Semana</th>
+            <th class="text-center header-table">Turno</th>
+            <th class="text-center header-table">Tipo</th>
+            <th class="text-center header-table">Inicio</th>
+            <th class="text-center header-table">Fin</th>
+            ${mostrarSegundoTramo ? `<th class="text-center header-table">Inicio 2</th>` : ""}
+            ${mostrarSegundoTramo ? `<th class="text-center header-table">Fin 2</th>` : ""}
+          </tr>
+        </thead>
+        <tbody>${filas}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +285,7 @@ function MostrarHorariosDesktop(data) {
   const tipoColor = {
     ALTERNO: "bg-alterno",
     CONTINUO: "bg-continuo",
+    ROTATIVO: "bg-rotativo",
   };
 
   data.forEach((horario) => {
@@ -276,6 +364,9 @@ function MostrarHorariosDesktop(data) {
       }
     });
 
+    const esRotativo = tipoStr === "ROTATIVO" || horario.esRotativo;
+    const rotacionHTML = esRotativo ? generarDetalleRotacionHTML(horario.rotacionSemanasJson) : "";
+
     const detalleHTML = $(`
       <div class="panelHorarios px-2 mb-2 container" style="display: none; background-color: #ffffff;">
         <h3 class="p-2 mt-1" style="font-size: 1rem; font-weight: 600;">Detalle de los Horarios y Días</h3>
@@ -300,6 +391,7 @@ function MostrarHorariosDesktop(data) {
             </tbody>
           </table>
         </div>
+        ${rotacionHTML}
       </div>
     `);
 
@@ -349,6 +441,7 @@ function MostrarHorariosMobile(data) {
   const tipoColor = {
     ALTERNO: "bg-alterno",
     CONTINUO: "bg-continuo",
+    ROTATIVO: "bg-rotativo",
   };
   window.horariosData = data;
 
@@ -454,6 +547,118 @@ function MostrarDetalleHorario(id) {
   offcanvas.show();
 }
 
+function crearSemanaRotativaHTML(semana = {}) {
+  const numeroSemana = semana.semana || document.querySelectorAll(".semana-rotativa").length + 1;
+  const turno = normalizarTurnoRotativo(semana.turno);
+  const tipoHorario = semana.tipoHorario || 1;
+  const horarioInicio = semana.horarioInicio || "";
+  const horarioFin = semana.horarioFin || "";
+  const segundoHorarioInicio = semana.segundoHorarioInicio || "";
+  const segundoHorarioFin = semana.segundoHorarioFin || "";
+
+  return `
+    <div class="border rounded p-2 bg-white semana-rotativa" data-semana="${numeroSemana}">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-bold text-muted" style="font-size: 0.85rem;">Semana ${numeroSemana}</span>
+        <button type="button" class="btn-borrar" style="background: none; border: none;" onclick="EliminarSemanaRotativa(this)" data-tippy-content="Eliminar semana">
+          <i class="bi bi-trash3 icono-borrar"></i>
+        </button>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-12 col-lg-3">
+          <select class="form-control turno-rotativo">
+            <option value="" ${turno === "" ? "selected" : ""}>Turno</option>
+            <option value="MAÑANA" ${turno === "MAÑANA" ? "selected" : ""}>MAÑANA</option>
+            <option value="TARDE" ${turno === "TARDE" ? "selected" : ""}>TARDE</option>
+            <option value="NOCHE" ${turno === "NOCHE" ? "selected" : ""}>NOCHE</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-3">
+          <select class="form-control tipo-rotativo" onchange="toggleSemanaRotativaTramo(this)">
+            <option value="1" ${Number(tipoHorario) === 1 ? "selected" : ""}>CONTINUO</option>
+            <option value="2" ${Number(tipoHorario) === 2 ? "selected" : ""}>ALTERNO</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-3">
+          <input type="time" class="form-control inicio-rotativo" value="${horarioInicio}">
+        </div>
+        <div class="col-6 col-lg-3">
+          <input type="time" class="form-control fin-rotativo" value="${horarioFin}">
+        </div>
+        <div class="col-6 col-lg-3 segundo-tramo-rotativo ${Number(tipoHorario) === 2 ? "" : "d-none"}">
+          <input type="time" class="form-control segundo-inicio-rotativo" value="${segundoHorarioInicio}">
+        </div>
+        <div class="col-6 col-lg-3 segundo-tramo-rotativo ${Number(tipoHorario) === 2 ? "" : "d-none"}">
+          <input type="time" class="form-control segundo-fin-rotativo" value="${segundoHorarioFin}">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function EsHorarioRotativoSeleccionado() {
+  return document.getElementById("TipoHorario").value === "3";
+}
+
+function toggleRotativoInputs() {
+  const esRotativo = EsHorarioRotativoSeleccionado();
+  const contenedor = document.getElementById("horarioRotativo");
+  contenedor.classList.toggle("d-none", !esRotativo);
+
+  if (esRotativo && !document.querySelectorAll(".semana-rotativa").length) {
+    CargarRotacionSemanas([
+      { semana: 1, turno: "MAÑANA", tipoHorario: 1, horarioInicio: "06:00", horarioFin: "14:00" },
+      { semana: 2, turno: "TARDE", tipoHorario: 1, horarioInicio: "14:00", horarioFin: "22:00" },
+      { semana: 3, turno: "NOCHE", tipoHorario: 1, horarioInicio: "22:00", horarioFin: "06:00" },
+    ]);
+  }
+}
+
+function toggleSemanaRotativaTramo(select) {
+  const card = select.closest(".semana-rotativa");
+  const mostrar = select.value === "2";
+  card.querySelectorAll(".segundo-tramo-rotativo").forEach((item) => item.classList.toggle("d-none", !mostrar));
+}
+
+function AgregarSemanaRotativa() {
+  const container = document.getElementById("rotacionSemanasContainer");
+  container.insertAdjacentHTML("beforeend", crearSemanaRotativaHTML());
+  tippy("[data-tippy-content]", {
+    animation: "scale",
+    theme: "mi-tema",
+    delay: [100, 0],
+  });
+}
+
+function EliminarSemanaRotativa(boton) {
+  boton.closest(".semana-rotativa").remove();
+  document.querySelectorAll(".semana-rotativa").forEach((card, index) => {
+    card.dataset.semana = index + 1;
+    card.querySelector(".fw-bold").textContent = `Semana ${index + 1}`;
+  });
+}
+
+function CargarRotacionSemanas(semanas) {
+  const container = document.getElementById("rotacionSemanasContainer");
+  container.innerHTML = "";
+  semanas.forEach((semana, index) => {
+    container.insertAdjacentHTML("beforeend", crearSemanaRotativaHTML({ ...semana, semana: index + 1 }));
+  });
+}
+
+function ObtenerRotacionSemanasFormulario() {
+  return Array.from(document.querySelectorAll(".semana-rotativa")).map((card, index) => ({
+    semana: index + 1,
+    turno: normalizarTurnoRotativo(card.querySelector(".turno-rotativo").value),
+    tipoHorario: Number(card.querySelector(".tipo-rotativo").value),
+    horarioInicio: card.querySelector(".inicio-rotativo").value,
+    horarioFin: card.querySelector(".fin-rotativo").value,
+    segundoHorarioInicio: card.querySelector(".segundo-inicio-rotativo")?.value || "",
+    segundoHorarioFin: card.querySelector(".segundo-fin-rotativo")?.value || "",
+  }));
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// LIMPIAR FORMULARIO DE HORARIO ////////////////////////////////////// //////////////////////////////
@@ -479,6 +684,8 @@ function LimpiarModalHorario() {
   inputSegundoHorarioInicio.value = "";
   const inputSegundoHorarioFin = document.getElementById("SegundoHorarioFin");
   inputSegundoHorarioFin.value = "";
+  document.getElementById("FechaInicioRotacion").value = "";
+  document.getElementById("rotacionSemanasContainer").innerHTML = "";
   const checkDiasSemana = document.getElementById("diasSemana");
   checkDiasSemana.querySelectorAll("input[type=checkbox]").forEach((checkbox) => {
     checkbox.checked = false;
@@ -520,9 +727,16 @@ function LimpiarModalHorario() {
   const errorDiasSemana = document.getElementById("errorDiasSemana");
   errorDiasSemana.textContent = "";
   errorDiasSemana.style.display = "none";
+  const errorFechaInicioRotacion = document.getElementById("errorFechaInicioRotacion");
+  errorFechaInicioRotacion.textContent = "";
+  errorFechaInicioRotacion.style.display = "none";
+  const errorRotacionSemanas = document.getElementById("errorRotacionSemanas");
+  errorRotacionSemanas.textContent = "";
+  errorRotacionSemanas.style.display = "none";
 
   document.getElementById("horarioContinuo").classList.add("d-none");
   document.getElementById("horarioAlterno").classList.add("d-none");
+  document.getElementById("horarioRotativo").classList.add("d-none");
 
   document.getElementById("EmpleadoId").disabled = false;
   document.getElementById("TipoHorario").disabled = false;
@@ -556,7 +770,10 @@ async function MostrarModalEditar(id) {
 
     document.getElementById("EmpleadoId").value = data.empleadoId;
 
-    document.getElementById("TipoHorario").value = data.tipoHorario;
+    document.getElementById("TipoHorario").value = data.esRotativo && data.tipoHorario !== 3 ? 3 : data.tipoHorario;
+    document.getElementById("FechaInicioRotacion").value = data.fechaInicioRotacion || "";
+    CargarRotacionSemanas(obtenerRotacionDesdeJson(data.rotacionSemanasJson));
+    toggleHorarioInputs();
 
     document.getElementById("lunes").checked = data.lunes;
     document.getElementById("martes").checked = data.martes;
@@ -566,17 +783,14 @@ async function MostrarModalEditar(id) {
     document.getElementById("sabado").checked = data.sabado;
     document.getElementById("domingo").checked = data.domingo;
 
-    document.getElementById("EmpleadoId").disabled = true;
-    document.getElementById("TipoHorario").disabled = true;
-
-    if (data.tipoHorario === 1) {
+    if (data.tipoHorario === 1 && !data.esRotativo) {
       document.getElementById("horarioContinuo").classList.remove("d-none");
       document.getElementById("horarioAlterno").classList.add("d-none");
 
       document.getElementById("HorarioInicio").value = data.horarioInicio;
       document.getElementById("HorarioFin").value = data.horarioFin;
 
-    } else if (data.tipoHorario === 2) {
+    } else if (data.tipoHorario === 2 && !data.esRotativo) {
       document.getElementById("horarioContinuo").classList.add("d-none");
       document.getElementById("horarioAlterno").classList.remove("d-none");
 
@@ -673,6 +887,10 @@ function ValidarFormularioHorario() {
   const errorEmpleado = document.getElementById("errorEmpleadoId");
   const errorTipoHorario = document.getElementById("errorTipoHorario");
   const errorDiasSemana = document.getElementById("errorDiasSemana");
+  const esRotativo = EsHorarioRotativoSeleccionado();
+  const fechaInicioRotacion = document.getElementById("FechaInicioRotacion");
+  const errorFechaInicioRotacion = document.getElementById("errorFechaInicioRotacion");
+  const errorRotacionSemanas = document.getElementById("errorRotacionSemanas");
 
   const errorHorarioInicio = document.getElementById("errorHorarioInicio");
   const errorHorarioFin = document.getElementById("errorHorarioFin");
@@ -684,7 +902,7 @@ function ValidarFormularioHorario() {
 
   let esValido = true;
 
-  [errorEmpleado, errorTipoHorario, errorDiasSemana].forEach(e => {
+  [errorEmpleado, errorTipoHorario, errorDiasSemana, errorFechaInicioRotacion, errorRotacionSemanas].forEach(e => {
     e.textContent = "";
     e.style.display = "none";
   });
@@ -758,6 +976,41 @@ function ValidarFormularioHorario() {
     errorDiasSemana.textContent = "Seleccione al menos un día.";
     errorDiasSemana.style.display = "block";
     esValido = false;
+  }
+
+  if (esRotativo) {
+    if (!fechaInicioRotacion.value) {
+      errorFechaInicioRotacion.textContent = "Obligatorio.";
+      errorFechaInicioRotacion.style.display = "block";
+      fechaInicioRotacion.classList.add("is-invalid");
+      esValido = false;
+    } else {
+      fechaInicioRotacion.classList.remove("is-invalid");
+      fechaInicioRotacion.classList.add("is-valid");
+    }
+
+    const semanas = ObtenerRotacionSemanasFormulario();
+    if (!semanas.length) {
+      errorRotacionSemanas.textContent = "Configure al menos una semana.";
+      errorRotacionSemanas.style.display = "block";
+      esValido = false;
+    }
+
+    semanas.forEach((semana) => {
+      if (!semana.turno || !semana.horarioInicio || !semana.horarioFin) {
+        errorRotacionSemanas.textContent = "Complete turno, inicio y fin en todas las semanas.";
+        errorRotacionSemanas.style.display = "block";
+        esValido = false;
+      }
+
+      if (semana.tipoHorario === 2 && (!semana.segundoHorarioInicio || !semana.segundoHorarioFin)) {
+        errorRotacionSemanas.textContent = "Complete ambos tramos en las semanas alternas.";
+        errorRotacionSemanas.style.display = "block";
+        esValido = false;
+      }
+    });
+  } else {
+    fechaInicioRotacion.classList.remove("is-invalid", "is-valid");
   }
 
   return esValido;
@@ -940,6 +1193,32 @@ function formatearHora(hora) {
   return hora && hora !== "" ? `${hora}:00` : "00:00:00";
 }
 
+function obtenerTipoHorarioTexto(tipoHorario) {
+  const tipos = {
+    1: "Continuo",
+    2: "Alterno",
+    3: "Rotativo",
+  };
+
+  return tipos[tipoHorario] || "Sin definir";
+}
+
+function aplicarPrimeraSemanaRotativa(payload, semanasRotativas) {
+  const primeraSemana = semanasRotativas[0];
+  if (!primeraSemana) return;
+
+  payload.horarioInicio = formatearHora(primeraSemana.horarioInicio);
+  payload.horarioFin = formatearHora(primeraSemana.horarioFin);
+
+  if (primeraSemana.tipoHorario === 2) {
+    payload.segundoHorarioInicio = formatearHora(primeraSemana.segundoHorarioInicio);
+    payload.segundoHorarioFin = formatearHora(primeraSemana.segundoHorarioFin);
+  } else {
+    payload.segundoHorarioInicio = "00:00:00";
+    payload.segundoHorarioFin = "00:00:00";
+  }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCION PARA CREAR HORARIO ///////////////////////////////////////////////////////////////////////  
@@ -955,9 +1234,18 @@ async function CrearHorario() {
 
   try {
     const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
+    const esRotativo = EsHorarioRotativoSeleccionado();
+    const semanasRotativas = esRotativo ? ObtenerRotacionSemanasFormulario() : [];
 
     const horario = {
       tipoHorario: tipoHorario,
+      esRotativo: esRotativo,
+      fechaInicioRotacion: esRotativo
+        ? document.getElementById("FechaInicioRotacion").value
+        : null,
+      rotacionSemanasJson: esRotativo
+        ? JSON.stringify(semanasRotativas)
+        : "[]",
       lunes: document.getElementById("lunes").checked,
       martes: document.getElementById("martes").checked,
       miercoles: document.getElementById("miercoles").checked,
@@ -982,6 +1270,8 @@ async function CrearHorario() {
       horario.horarioFin = formatearHora(document.getElementById("PrimerHorarioFin").value);
       horario.segundoHorarioInicio = formatearHora(document.getElementById("SegundoHorarioInicio").value);
       horario.segundoHorarioFin = formatearHora(document.getElementById("SegundoHorarioFin").value);
+    } else if (tipoHorario === 3) {
+      aplicarPrimeraSemanaRotativa(horario, semanasRotativas);
     }
 
     const response = await authFetch("Horarios", {
@@ -1046,10 +1336,19 @@ async function EditarHorario(id) {
 
   const tipoHorario = parseInt(document.getElementById("TipoHorario").value);
   const horarioId = document.getElementById("IdHorario").value;
+  const esRotativo = EsHorarioRotativoSeleccionado();
+  const semanasRotativas = esRotativo ? ObtenerRotacionSemanasFormulario() : [];
 
   const horarioEditar = {
     id: horarioId,
     tipoHorario: tipoHorario,
+    esRotativo: esRotativo,
+    fechaInicioRotacion: esRotativo
+      ? document.getElementById("FechaInicioRotacion").value
+      : null,
+    rotacionSemanasJson: esRotativo
+      ? JSON.stringify(semanasRotativas)
+      : "[]",
     lunes: document.getElementById("lunes").checked,
     martes: document.getElementById("martes").checked,
     miercoles: document.getElementById("miercoles").checked,
@@ -1084,6 +1383,8 @@ async function EditarHorario(id) {
     if (primerFin) horarioEditar.horarioFin = formatearHora(primerFin);
     if (segundoInicio) horarioEditar.segundoHorarioInicio = formatearHora(segundoInicio);
     if (segundoFin) horarioEditar.segundoHorarioFin = formatearHora(segundoFin);
+  } else if (tipoHorario === 3) {
+    aplicarPrimeraSemanaRotativa(horarioEditar, semanasRotativas);
   }
   try {
     const response = await authFetch(`Horarios/${id}`, {
@@ -1293,7 +1594,7 @@ async function GenerarInformePdfHorarios() {
 
   let filtrosAplicadosArray = [];
   if (filtro.empleadoTexto) filtrosAplicadosArray.push(`[Empleado: ${filtro.empleadoTexto}]`);
-  if (filtro.tipoHorario) filtrosAplicadosArray.push(`[Tipo Horario: ${filtro.tipoHorario === 1 ? "Continuo" : "Alterno"}]`);
+  if (filtro.tipoHorario) filtrosAplicadosArray.push(`[Tipo Horario: ${obtenerTipoHorarioTexto(filtro.tipoHorario)}]`);
   if (filtro.horarioInicio) filtrosAplicadosArray.push(`[Horario Inicio: ${filtro.horarioInicio}]`);
   if (filtro.horarioFin) filtrosAplicadosArray.push(`[Horario Fin: ${filtro.horarioFin}]`);
 
@@ -1311,11 +1612,12 @@ async function GenerarInformePdfHorarios() {
 
   doc.autoTable({
     startY: y,
-    head: [["Empleado", "Puesto", "Tipo Horario", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
+    head: [["Empleado", "Puesto", "Tipo Horario", "Rotativo", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "1° Entrada", "1° Salida", "2° Entrada", "2° Salida"]],
     body: horarios.map(h => [
       h.nombreCompleto,
       h.puesto,
       h.tipoHorario,
+      h.esRotativo ? "Sí" : "No",
       h.lunes ? "X" : "",
       h.martes ? "X" : "",
       h.miercoles ? "X" : "",

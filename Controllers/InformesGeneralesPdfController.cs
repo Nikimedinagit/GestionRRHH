@@ -219,7 +219,18 @@ namespace GestionRRHH.Controllers
             }
 
             if (filtro.TipoHorario.HasValue)
-                obtenerHorarios = obtenerHorarios.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
+            {
+                if (filtro.TipoHorario.Value == (int)TipoHorario.ROTATIVO)
+                    obtenerHorarios = obtenerHorarios.Where(h => h.TipoHorario == TipoHorario.ROTATIVO || h.EsRotativo);
+                else
+                    obtenerHorarios = obtenerHorarios.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value && !h.EsRotativo);
+            }
+
+            if (filtro.EsRotativo.HasValue)
+            {
+                bool esRotativo = filtro.EsRotativo.Value == 1;
+                obtenerHorarios = obtenerHorarios.Where(h => h.EsRotativo == esRotativo);
+            }
 
             if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
                 obtenerHorarios = obtenerHorarios.Where(h => h.HorarioInicio >= horarioInicioTs);
@@ -234,7 +245,8 @@ namespace GestionRRHH.Controllers
                 {
                     NombreCompleto = h.Empleado.NombreCompleto,
                     Puesto = h.Empleado.Puesto != null ? h.Empleado.Puesto.Descripcion : "Sin puesto",
-                    TipoHorario = h.TipoHorario.ToString(),
+                    TipoHorario = h.EsRotativo ? TipoHorario.ROTATIVO.ToString() : h.TipoHorario.ToString(),
+                    EsRotativo = h.EsRotativo,
                     Lunes = h.Lunes,
                     Martes = h.Martes,
                     Miercoles = h.Miercoles,
@@ -257,6 +269,7 @@ namespace GestionRRHH.Controllers
                     NombreCompleto = h.NombreCompleto,
                     Puesto = h.Puesto,
                     TipoHorario = h.TipoHorario,
+                    EsRotativo = h.EsRotativo,
                     Lunes = h.Lunes,
                     Martes = h.Martes,
                     Miercoles = h.Miercoles,

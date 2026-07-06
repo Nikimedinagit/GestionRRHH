@@ -31,6 +31,10 @@ namespace GestionRRHH.Models.General
         public string TipoHorarioString { get { return TipoHorario.ToString(); } }
         public TipoHorario TipoHorario { get; set; }
 
+        public bool EsRotativo { get; set; }
+        public DateTime? FechaInicioRotacion { get; set; }
+        public string RotacionSemanasJson { get; set; } = "[]";
+
         public bool Lunes { get; set; }
         public bool Martes { get; set; }
         public bool Miercoles { get; set; }
@@ -50,7 +54,8 @@ namespace GestionRRHH.Models.General
     public enum TipoHorario
     {
         CONTINUO = 1,
-        ALTERNO
+        ALTERNO,
+        ROTATIVO
     }
 
 
@@ -66,6 +71,9 @@ namespace GestionRRHH.Models.General
         public string SegundoHorarioFinString { get; set; }
         public string TipoHorarioString { get; set; }
         public TipoHorario TipoHorario { get; set; }
+        public bool EsRotativo { get; set; }
+        public DateTime? FechaInicioRotacion { get; set; }
+        public string RotacionSemanasJson { get; set; }
         public bool Lunes { get; set; }
         public bool Martes { get; set; }
         public bool Miercoles { get; set; }
@@ -87,6 +95,7 @@ namespace GestionRRHH.Models.General
         public string HorarioInicio { get; set; }
         public string HorarioFin { get; set; }
         public int? TipoHorario { get; set; }
+        public int? EsRotativo { get; set; }
         public string EmpleadoTexto { get; set; }
     }
 }

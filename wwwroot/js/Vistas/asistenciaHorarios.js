@@ -37,6 +37,14 @@ function MostrarAsistenciaHorario(data) {
     const horario = data.horario || {};
     const resumenSemanal = data.resumenSemanal || [];
     const historial = data.historialReciente || [];
+    const tipoHorario = (horario.tipoHorarioString || "SIN DEFINIR").toUpperCase();
+    const tipoHorarioDia = (horario.tipoHorarioDiaString || horario.tipoHorarioString || "CONTINUO").toUpperCase();
+
+    const TipoHorarioEstilo = {
+        CONTINUO: { backgroundColor: "#d0e6ff", color: "#1a4a8a", borderColor: "#1a4a8a" },
+        ALTERNO: { backgroundColor: "#ffd6dd", color: "#a33a44", borderColor: "#a33a44" },
+        ROTATIVO: { backgroundColor: "#cfeedd", color: "#16734a", borderColor: "#16734a" }
+    };
 
     const EstadoAsistenciaEstilo = {
         COMPLETA: { backgroundColor: "#a3dc9a72", color: "#06923E" },
@@ -61,7 +69,7 @@ function MostrarAsistenciaHorario(data) {
 
     const generarTurnos = () => {
         if (!asistencia) return "-";
-        if (horario.tipoHorarioString === "ALTERNO") {
+        if (tipoHorarioDia === "ALTERNO") {
             return `
                 <div class="d-flex justify-content-between mb-1 fs-6 flex-wrap">
                     <span><strong>Primera Entrada:</strong> ${asistencia.primerEntradaString || "-"}</span>
@@ -81,6 +89,22 @@ function MostrarAsistenciaHorario(data) {
             `;
         }
     };
+
+    const estiloHorario = TipoHorarioEstilo[tipoHorario] || { backgroundColor: "#e2e3e5", color: "#495057", borderColor: "#495057" };
+    const esHorarioAlternoHoy = tipoHorarioDia === "ALTERNO";
+    const detalleRotativo = tipoHorario === "ROTATIVO"
+        ? `<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap mb-2" style="font-size:0.72rem;">
+               <span class="badge" style="${badgeBaseStyle} background-color:#eef2ff; color:#3156b3;">
+                   SEMANA ${horario.semanaRotativa || "-"}
+               </span>
+               <span class="badge" style="${badgeBaseStyle} background-color:#fff3cd; color:#8a5a00;">
+                   ${horario.turnoRotativo || "-"}
+               </span>
+               <span class="badge" style="${badgeBaseStyle} background-color:${TipoHorarioEstilo[tipoHorarioDia]?.backgroundColor || "#e2e3e5"}; color:${TipoHorarioEstilo[tipoHorarioDia]?.color || "#495057"};">
+                   ${tipoHorarioDia}
+               </span>
+           </div>`
+        : "";
 
     const cardAsistencia = `
         <div class="col-12 col-md-6 d-flex">
@@ -103,19 +127,21 @@ function MostrarAsistenciaHorario(data) {
 
     const cardHorario = `
         <div class="col-12 col-md-6 d-flex">
-            <div class="bg-white shadow-sm rounded flex-fill p-3" style="border-bottom: 3px solid ${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
+            <div class="bg-white shadow-sm rounded flex-fill p-3" style="border-bottom: 3px solid ${estiloHorario.borderColor};">
                 <h5 class="fw-bold mb-2 fs-6">Horario</h5>
                 <div class="d-flex flex-column h-100">
                     <div class="d-flex flex-column align-items-center text-center">
                         <h5 class="fw-bold mb-2 fs-6">${data.empleado || "Sin Registro"}</h5>
 
                         <span class="mb-2 badge" style="${badgeBaseStyle}
-                                      background-color:${horario.tipoHorarioString === "ALTERNO" ? "#d0e3ff" : "#d1f7d1"};
-                                      color:${horario.tipoHorarioString === "ALTERNO" ? "#1a4a8a" : "#0a8c0a"};">
-                            ${horario.tipoHorarioString || "Sin Definir"}
+                                      background-color:${estiloHorario.backgroundColor};
+                                      color:${estiloHorario.color};">
+                            ${tipoHorario}
                         </span>
 
-                        ${horario.tipoHorarioString === "ALTERNO"
+                        ${detalleRotativo}
+
+                        ${esHorarioAlternoHoy
             ? `<p class="mb-1 fs-7"><strong>Primer Turno:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>
                                <p class="mb-1 fs-7"><strong>Segundo Turno:</strong> ${horario.segundoHorarioInicioString || "-"} - ${horario.segundoHorarioFinString || "-"}</p>`
             : `<p class="mb-1 fs-7"><strong>Horario:</strong> ${horario.horarioInicioString || "-"} - ${horario.horarioFinString || "-"}</p>`
@@ -166,7 +192,7 @@ function MostrarAsistenciaHorario(data) {
                             </div>
                             <div class="flex-fill mb-1 mb-md-0"><strong>E1:</strong> ${h.primerEntradaString || "-"}</div>
                             <div class="flex-fill mb-1 mb-md-0"><strong>S1:</strong> ${h.primerSalidaString || "-"}</div>
-                            ${horario.tipoHorarioString === "ALTERNO" ? `
+                            ${tipoHorarioDia === "ALTERNO" ? `
                             <div class="flex-fill mb-1 mb-md-0"><strong>E2:</strong> ${h.segundaEntradaString || "-"}</div>
                             <div class="flex-fill mb-1 mb-md-0"><strong>S2:</strong> ${h.segundaSalidaString || "-"}</div>
                             ` : ""}

@@ -199,7 +199,18 @@ public class CardsEstadisticasController : ControllerBase
             .AsQueryable();
 
         if (filtro.TipoHorario.HasValue)
-            horariosQuery = horariosQuery.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value);
+        {
+            if (filtro.TipoHorario.Value == (int)TipoHorario.ROTATIVO)
+                horariosQuery = horariosQuery.Where(h => h.TipoHorario == TipoHorario.ROTATIVO || h.EsRotativo);
+            else
+                horariosQuery = horariosQuery.Where(h => (int)h.TipoHorario == filtro.TipoHorario.Value && !h.EsRotativo);
+        }
+
+        if (filtro.EsRotativo.HasValue)
+        {
+            bool esRotativo = filtro.EsRotativo.Value == 1;
+            horariosQuery = horariosQuery.Where(h => h.EsRotativo == esRotativo);
+        }
 
         if (!string.IsNullOrEmpty(filtro.HorarioInicio) && TimeSpan.TryParse(filtro.HorarioInicio, out var horarioInicioTs))
             horariosQuery = horariosQuery.Where(h => h.HorarioInicio >= horarioInicioTs);
@@ -222,7 +233,7 @@ public class CardsEstadisticasController : ControllerBase
             int minutosPrimerTramo = (int)(h.HorarioFin - h.HorarioInicio).TotalMinutes;
             if (minutosPrimerTramo < 0) minutosPrimerTramo += 24 * 60;
 
-            // Segundo tramo (solo si es alterno)
+            // Segundo tramo (solo si el horario trabaja con dos bloques)
             int minutosSegundoTramo = 0;
             if (h.TipoHorario == TipoHorario.ALTERNO)
             {

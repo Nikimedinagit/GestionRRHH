@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GestionRRHH.Services
@@ -15,6 +16,17 @@ namespace GestionRRHH.Services
         private readonly Context _db;
         private const double FACE_TOLERANCE = 0.60;
         private static readonly TimeSpan TOLERANCIA = TimeSpan.FromMinutes(15);
+
+        private class SemanaRotativaDto
+        {
+            public int Semana { get; set; }
+            public string Turno { get; set; }
+            public int TipoHorario { get; set; }
+            public string HorarioInicio { get; set; }
+            public string HorarioFin { get; set; }
+            public string SegundoHorarioInicio { get; set; }
+            public string SegundoHorarioFin { get; set; }
+        }
 
         public AsistenciaService(Context db) => _db = db;
 
@@ -89,7 +101,7 @@ namespace GestionRRHH.Services
             var ahoraDt = DateTime.Now;
             var hoy = ahoraDt.Date;
 
-            var horario = await ObtenerHorarioDelDiaAsync(empleado, ahoraDt.DayOfWeek);
+            var horario = await ObtenerHorarioDelDiaAsync(empleado, ahoraDt);
             if (horario == null)
                 return (false, new { Mensaje = "Hoy no tenés horario asignado." });
 
@@ -234,10 +246,67 @@ namespace GestionRRHH.Services
             _ => TimeSpan.Zero
         };
 
-        private async Task<Horario?> ObtenerHorarioDelDiaAsync(Empleado e, DayOfWeek dia)
+        private async Task<Horario?> ObtenerHorarioDelDiaAsync(Empleado e, DateTime fecha)
         {
-            var horarios = await _db.Horario.Where(h => h.EmpleadoId == e.Id).ToListAsync();
-            return horarios.FirstOrDefault(h => DiaHabilitado(h, dia));
+            var horarios = await _db.Horario
+                .AsNoTracking()
+                .Where(h => h.EmpleadoId == e.Id)
+                .ToListAsync();
+
+            var horario = horarios.FirstOrDefault(h => DiaHabilitado(h, fecha.DayOfWeek));
+            if (horario == null ||
+                (horario.TipoHorario != TipoHorario.ROTATIVO && !horario.EsRotativo) ||
+                !horario.FechaInicioRotacion.HasValue)
+                return horario;
+
+            var semanas = ObtenerSemanasRotativas(horario.RotacionSemanasJson);
+            if (!semanas.Any())
+                return horario;
+
+            var diasDesdeInicio = Math.Max(0, (fecha.Date - horario.FechaInicioRotacion.Value.Date).Days);
+            var indiceSemana = (diasDesdeInicio / 7) % semanas.Count;
+            var semanaActiva = semanas.OrderBy(s => s.Semana).ElementAt(indiceSemana);
+
+            if (!TimeSpan.TryParse(semanaActiva.HorarioInicio, out var horarioInicio) ||
+                !TimeSpan.TryParse(semanaActiva.HorarioFin, out var horarioFin))
+                return horario;
+
+            horario.TipoHorario = (TipoHorario)semanaActiva.TipoHorario;
+            horario.HorarioInicio = horarioInicio;
+            horario.HorarioFin = horarioFin;
+
+            if (horario.TipoHorario == TipoHorario.ALTERNO &&
+                TimeSpan.TryParse(semanaActiva.SegundoHorarioInicio, out var segundoInicio) &&
+                TimeSpan.TryParse(semanaActiva.SegundoHorarioFin, out var segundoFin))
+            {
+                horario.SegundoHorarioInicio = segundoInicio;
+                horario.SegundoHorarioFin = segundoFin;
+            }
+            else
+            {
+                horario.SegundoHorarioInicio = TimeSpan.Zero;
+                horario.SegundoHorarioFin = TimeSpan.Zero;
+            }
+
+            return horario;
+        }
+
+        private static List<SemanaRotativaDto> ObtenerSemanasRotativas(string rotacionSemanasJson)
+        {
+            if (string.IsNullOrWhiteSpace(rotacionSemanasJson))
+                return new List<SemanaRotativaDto>();
+
+            try
+            {
+                return JsonSerializer.Deserialize<List<SemanaRotativaDto>>(
+                    rotacionSemanasJson,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                ) ?? new List<SemanaRotativaDto>();
+            }
+            catch
+            {
+                return new List<SemanaRotativaDto>();
+            }
         }
 
         private static bool DiaHabilitado(Horario h, DayOfWeek d) => d switch

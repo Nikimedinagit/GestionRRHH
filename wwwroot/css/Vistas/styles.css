@@ -333,6 +333,25 @@ table tbody tr {
   transform: translate(0, -50%);
 }
 
+#panelHorario {
+  width: min(760px, 72vw);
+  max-width: 72vw;
+}
+
+#panelHorario .panel-body {
+  overflow-x: hidden;
+}
+
+.semana-rotativa {
+  border-color: #dbe7f3 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.semana-rotativa .form-control {
+  min-height: 38px;
+  font-size: 0.9rem;
+}
+
 .panel-header {
   margin-bottom: 15px;
 }
@@ -528,6 +547,29 @@ textarea.form-control:not(:placeholder-shown)+label {
 
 }
 
+@media (max-width: 1024px) {
+  #panelHorario {
+    width: min(720px, 82vw);
+    max-width: 82vw;
+  }
+}
+
+@media (max-width: 768px) {
+  #panelHorario {
+    width: 92vw;
+    max-width: 92vw;
+    max-height: 82vh;
+  }
+}
+
+@media (max-width: 480px) {
+  #panelHorario {
+    width: 96vw;
+    max-width: 96vw;
+    max-height: 86vh;
+  }
+}
+
 /* FIN PANEL DESLIZANTE BASE */
 
 
@@ -691,6 +733,13 @@ input[type="checkbox"].btn-check:checked+.dia-btn {
 .bg-continuo {
   background-color: #d0e6ff !important;
   color: #1a4a8a !important;
+  font-weight: 700 !important;
+  font-size: 0.70rem !important;
+}
+
+.bg-rotativo {
+  background-color: #cfeedd !important;
+  color: #16734a !important;
   font-weight: 700 !important;
   font-size: 0.70rem !important;
 }
