@@ -42,12 +42,25 @@ public class AuthController : ControllerBase
         var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
             return Conflict(new { message = "El correo ya está registrado" });
+        if (string.IsNullOrWhiteSpace(model.Empresa))
+            return BadRequest(new { message = "Debe ingresar el nombre de la empresa." });
+
+        var empresa = new GestionRRHH.Models.General.Empresa
+        {
+            Nombre = model.Empresa.Trim().ToUpperInvariant(),
+            Habilitada = false,
+            FechaRegistro = DateTime.Now
+        };
+        _context.Empresa.Add(empresa);
+        await _context.SaveChangesAsync();
 
         var user = new ApplicationUser
         {
             UserName = model.Email,
             Email = model.Email?.ToLower().Trim(),
-            NombreCompleto = model.NombreCompleto?.ToUpper().Trim()
+            NombreCompleto = model.NombreCompleto?.ToUpper().Trim(),
+            EmpresaId = empresa.Id,
+            Habilitado = false
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -55,9 +68,11 @@ public class AuthController : ControllerBase
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
-            return Ok("Usuario administrador registrado");
+            return Ok(new { message = "Cuenta creada. Debe ser habilitada por LogiSoft antes de iniciar sesión." });
         }
 
+        _context.Empresa.Remove(empresa);
+        await _context.SaveChangesAsync();
         return BadRequest(result.Errors);
     }
 
@@ -69,6 +84,18 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
+            if (!user.Habilitado)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    "La cuenta se encuentra pendiente de habilitación o fue deshabilitada. Contactá a Loguisoft.");
+
+            if (user.EmpresaId.HasValue)
+            {
+                var empresaHabilitada = await _context.Empresa.IgnoreQueryFilters()
+                    .AnyAsync(e => e.Id == user.EmpresaId.Value && e.Habilitada);
+                if (!empresaHabilitada)
+                    return StatusCode(StatusCodes.Status403Forbidden, "La empresa se encuentra deshabilitada.");
+            }
+
             var empleado = await _context.Empleado.FirstOrDefaultAsync(e => e.Email == user.Email);
 
             if (empleado != null && empleado.Eliminado)
@@ -78,22 +105,24 @@ public class AuthController : ControllerBase
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var rolesPermitidos = new[] { "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" };
+            var rolesPermitidos = new[] { "DESARROLLADOR", "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" };
 
             if (!roles.Any(r => rolesPermitidos.Contains(r)))
             {
                 return Unauthorized("Acceso restringido.");
             }
 
-            string rolNombre = roles.First(r => rolesPermitidos.Contains(r));
+            string rolNombre = rolesPermitidos.First(r => roles.Contains(r));
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, rolNombre),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+            claims.AddRange(roles.Select(rol => new Claim(ClaimTypes.Role, rol)));
+            if (user.EmpresaId.HasValue)
+                claims.Add(new Claim("EmpresaId", user.EmpresaId.Value.ToString()));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -152,13 +181,15 @@ public class AuthController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         var rolNombre = roles.FirstOrDefault() ?? "CLIENTE";
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.Role, rolNombre),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+        };
+        claims.AddRange(roles.Select(rol => new Claim(ClaimTypes.Role, rol)));
+        if (user.EmpresaId.HasValue)
+            claims.Add(new Claim("EmpresaId", user.EmpresaId.Value.ToString()));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

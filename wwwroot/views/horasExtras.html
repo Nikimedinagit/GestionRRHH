@@ -1,0 +1,74 @@
+<div class="px-3 py-3">
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3"><i class="bi bi-clock-history"></i></div>
+      <h5 class="fw-bold mb-2">Cargando horas extras</h5>
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+      <p class="text-muted mensaje-carga">Estamos preparando las horas extras <span class="dots"></span></p>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary" style="border-left-width:3px!important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing:-0.5px;font-size:1.2rem;">Gestión de Horas Extras</h4>
+      <p class="text-muted mb-0" style="font-size:0.85rem;opacity:0.8;">Registrá, calculá y aprobá las horas extras del personal.</p>
+    </div>
+  </div>
+
+  <div id="fondoOscuro" onclick="CerrarPanelHoraExtra()"></div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+    <div class="d-flex gap-3 flex-wrap">
+      <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelHoraExtra()">
+        <i class="fa-solid fa-square-plus me-1" style="color:#3697E1;"></i><span>Registrar Manual</span>
+      </button>
+      <button class="btn rounded btn-responsabilidades py-1 px-2 border bg-white" onclick="CalcularHorasExtrasAutomaticas()">
+        <i class="bi bi-magic me-1" style="color:#198754;"></i><span>Calcular Automático</span>
+      </button>
+    </div>
+    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white" onclick="toggleFiltros()">
+      <i class="fa-solid fa-arrow-down-wide-short me-1" style="color:#F0AD4E;"></i><span>Filtros</span>
+    </button>
+  </div>
+
+  <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-3"><label class="form-label-fija">Empleado</label><input id="HoraExtraEmpleadoBuscar" class="form-control filtro-select" placeholder="Buscar..." /></div>
+      <div class="col-12 col-md-2"><label class="form-label-fija">Desde</label><input id="HoraExtraDesde" type="date" class="form-control filtro-select" /></div>
+      <div class="col-12 col-md-2"><label class="form-label-fija">Hasta</label><input id="HoraExtraHasta" type="date" class="form-control filtro-select" /></div>
+      <div class="col-12 col-md-2"><label class="form-label-fija">Estado</label><select id="HoraExtraEstadoBuscar" class="form-control filtro-select"><option value="">[Todos]</option><option value="1">PENDIENTE</option><option value="2">APROBADA</option><option value="3">RECHAZADA</option><option value="4">ANULADA</option></select></div>
+      <div class="col-12 col-md-2"><label class="form-label-fija">Origen</label><select id="HoraExtraOrigenBuscar" class="form-control filtro-select"><option value="">[Todos]</option><option value="1">AUTOMÁTICO</option><option value="2">MANUAL</option></select></div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between mb-3" style="gap:1rem;">
+    <div class="card p-2 border-0 shadow-sm" style="min-width:180px;flex:1;border-left:3px solid #0d6efd!important;"><div class="d-flex align-items-center"><div class="p-2 me-3 rounded" style="background:#e7f1ff;"><i class="bi bi-clock text-primary fs-5"></i></div><div><p class="mb-0 text-muted small fw-bold">Total Horas</p><h5 id="totalHorasExtras" class="mb-0 fw-bold">0</h5></div></div></div>
+    <div class="card p-2 border-0 shadow-sm" style="min-width:180px;flex:1;border-left:3px solid #ffc107!important;"><div class="d-flex align-items-center"><div class="p-2 me-3 rounded" style="background:#fff3cd;"><i class="bi bi-hourglass text-warning fs-5"></i></div><div><p class="mb-0 text-muted small fw-bold">Pendientes</p><h5 id="totalHorasPendientes" class="mb-0 fw-bold">0</h5></div></div></div>
+    <div class="card p-2 border-0 shadow-sm" style="min-width:180px;flex:1;border-left:3px solid #198754!important;"><div class="d-flex align-items-center"><div class="p-2 me-3 rounded" style="background:#dff3e7;"><i class="bi bi-check-circle text-success fs-5"></i></div><div><p class="mb-0 text-muted small fw-bold">Aprobadas</p><h5 id="totalHorasAprobadas" class="mb-0 fw-bold">0</h5></div></div></div>
+    <div class="card p-2 border-0 shadow-sm" style="min-width:180px;flex:1;border-left:3px solid #6f42c1!important;"><div class="d-flex align-items-center"><div class="p-2 me-3 rounded" style="background:#eee8f7;"><i class="bi bi-people fs-5" style="color:#6f42c1;"></i></div><div><p class="mb-0 text-muted small fw-bold">Total Empleados</p><h5 id="totalEmpleadosHoras" class="mb-0 fw-bold">0</h5></div></div></div>
+  </div>
+
+  <div id="contenedorHorasExtras" class="row g-3"></div>
+
+  <div id="panelHoraExtra" aria-modal="true" role="dialog" aria-labelledby="panelTituloHoraExtra">
+    <div class="panel-header"><h2 id="panelTituloHoraExtra" class="panel-title">Formulario de Hora Extra</h2></div>
+    <div class="panel-body">
+      <form id="formHoraExtra">
+        <div id="overlayGuardando" class="overlay-guardando d-none"><div class="contenido-carga card-carga-formulario shadow-sm p-2"><h5 class="fw-bold text-dark mb-1">Guardando...</h5><div class="spinner-border text-primary spinner-grande my-1"></div><p class="text-muted mensaje-carga">Estamos procesando la información<br><span class="dots"></span></p></div></div>
+        <input id="IdHoraExtra" type="hidden" />
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3"><select id="EmpleadoHoraExtra" class="form-control"><option value="" disabled selected>Seleccione</option></select><label for="EmpleadoHoraExtra">Empleado</label><div id="errorEmpleadoHoraExtra" class="invalid-feedback"></div></div>
+          <div class="form-group position-relative mb-3"><input id="FechaHoraExtra" type="date" class="form-control" /><label for="FechaHoraExtra">Fecha</label><div id="errorFechaHoraExtra" class="invalid-feedback"></div></div>
+          <div class="form-grid" style="grid-template-columns:repeat(2,1fr);">
+            <div class="form-group position-relative mb-3"><input id="InicioHoraExtra" type="time" class="form-control" /><label for="InicioHoraExtra">Hora Inicio</label></div>
+            <div class="form-group position-relative mb-3"><input id="FinHoraExtra" type="time" class="form-control" /><label for="FinHoraExtra">Hora Fin</label><div id="errorHorarioHoraExtra" class="invalid-feedback"></div></div>
+          </div>
+          <div class="form-group position-relative mb-3"><textarea id="MotivoHoraExtra" class="form-control" placeholder=" " maxlength="300"></textarea><label for="MotivoHoraExtra">Motivo</label><div id="errorMotivoHoraExtra" class="invalid-feedback"></div></div>
+          <div class="form-group position-relative mb-3"><textarea id="ObservacionesHoraExtra" class="form-control" placeholder=" " maxlength="500"></textarea><label for="ObservacionesHoraExtra">Observaciones (opcional)</label></div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3"><button class="btn btn-cancelar" onclick="CerrarPanelHoraExtra()">Cancelar</button><button class="btn btn-guardar" onclick="GuardarHoraExtra()">Guardar</button></div>
+  </div>
+</div>
+<script src="../js/Vistas/horasExtras.js"></script>

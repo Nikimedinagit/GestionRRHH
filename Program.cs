@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuración de EF Core con SQL Server
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GestionRRHH")));
+builder.Services.AddHttpContextAccessor();
 
 // Configuración de Identity para usuarios y roles
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -87,6 +88,49 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<Context>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    foreach (var rol in new[] { "DESARROLLADOR", "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" })
+        if (!await roleManager.RoleExistsAsync(rol))
+            await roleManager.CreateAsync(new IdentityRole(rol));
+
+    var desarrollador = await userManager.FindByEmailAsync("loguisoft@gmail.com");
+    var cuentaAnterior = false;
+    if (desarrollador == null)
+    {
+        desarrollador = await userManager.FindByEmailAsync("logisoft@gmail.com");
+        cuentaAnterior = desarrollador != null;
+    }
+
+    if (desarrollador == null)
+    {
+        desarrollador = new ApplicationUser
+        {
+            UserName = "loguisoft@gmail.com",
+            Email = "loguisoft@gmail.com",
+            NombreCompleto = "LOGUISOFT",
+            Habilitado = true,
+            EmailConfirmed = true
+        };
+        var resultado = await userManager.CreateAsync(desarrollador, "Loguisoft123");
+        if (resultado.Succeeded)
+            await userManager.AddToRolesAsync(desarrollador,
+                new[] { "DESARROLLADOR", "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" });
+    }
+    else if (cuentaAnterior)
+    {
+        desarrollador.UserName = "loguisoft@gmail.com";
+        desarrollador.Email = "loguisoft@gmail.com";
+        desarrollador.NombreCompleto = "LOGUISOFT";
+        desarrollador.NormalizedUserName = userManager.NormalizeName(desarrollador.UserName);
+        desarrollador.NormalizedEmail = userManager.NormalizeEmail(desarrollador.Email);
+        await userManager.UpdateAsync(desarrollador);
+
+        var tokenCambio = await userManager.GeneratePasswordResetTokenAsync(desarrollador);
+        await userManager.ResetPasswordAsync(desarrollador, tokenCambio, "Loguisoft123");
+    }
+
     var vacaciones = context.TipoDeLicencia
         .AsEnumerable()
         .FirstOrDefault(t => string.Equals(t.Nombre?.Trim(), "VACACIONES", StringComparison.OrdinalIgnoreCase));

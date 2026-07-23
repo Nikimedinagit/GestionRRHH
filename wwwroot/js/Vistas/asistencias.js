@@ -335,7 +335,12 @@ function RenderizarCalendarioAsistencias() {
             <div class="calendario-asistencias-dia ${fueraMes ? "fuera-mes" : ""}">
                 <span class="calendario-asistencias-dia-numero">${fecha.getDate()}</span>
                 ${eventosHtml}
-                ${restantes > 0 ? `<span class="calendario-asistencias-mas">+${restantes} más</span>` : ""}
+                ${restantes > 0 ? `
+                    <button type="button" class="calendario-asistencias-mas"
+                        onclick="AbrirAsistenciasDelDia('${clave}')">
+                        +${restantes} más
+                    </button>
+                ` : ""}
             </div>
         `);
     }
@@ -390,6 +395,48 @@ function ArmarEventoCalendarioAsistencia(asistencia) {
         </span>
     `;
 }
+
+function AbrirAsistenciasDelDia(claveFecha) {
+    const modal = document.getElementById("modalAsistenciasDia");
+    const titulo = document.getElementById("tituloModalAsistenciasDia");
+    const total = document.getElementById("totalModalAsistenciasDia");
+    const lista = document.getElementById("listaModalAsistenciasDia");
+    if (!modal || !titulo || !total || !lista) return;
+
+    const asistenciasDia = AgruparAsistenciasPorDia()[claveFecha] || [];
+    const [anio, mes, dia] = claveFecha.split("-").map(Number);
+    const fecha = new Date(anio, mes - 1, dia);
+
+    titulo.textContent = fecha.toLocaleDateString("es-AR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+    total.textContent = `${asistenciasDia.length} ${asistenciasDia.length === 1 ? "asistencia" : "asistencias"}`;
+    lista.innerHTML = asistenciasDia.map(ArmarEventoCalendarioAsistencia).join("");
+
+    modal.classList.remove("d-none");
+    document.body.classList.add("modal-asistencias-dia-abierto");
+    modal.querySelector(".modal-asistencias-dia-cerrar")?.focus();
+    tippy("#listaModalAsistenciasDia [data-tippy-content]", {
+        animation: "scale",
+        theme: "mi-tema",
+        delay: [100, 0]
+    });
+}
+
+function CerrarAsistenciasDelDia(event) {
+    const modal = document.getElementById("modalAsistenciasDia");
+    if (!modal || (event && event.target !== modal)) return;
+
+    modal.classList.add("d-none");
+    document.body.classList.remove("modal-asistencias-dia-abierto");
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") CerrarAsistenciasDelDia();
+});
 
 
 /////////////////////////////////////////////////////////////

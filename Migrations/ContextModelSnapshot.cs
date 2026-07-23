@@ -29,6 +29,12 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Avatar")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("AvatarMimeType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -38,6 +44,12 @@ namespace GestionRRHH.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Habilitado")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -103,12 +115,19 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime?>("FechaActivacion")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("ActivacionEmpleado");
                 });
@@ -120,6 +139,11 @@ namespace GestionRRHH.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("Estado")
                         .HasColumnType("int");
@@ -135,10 +159,46 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.HasIndex("LicenciaId")
                         .IsUnique();
 
                     b.ToTable("AprobacionDeLicencia");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.AsignacionResponsabilidadTarea", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Responsabilidades")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tareas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("AsignacionResponsabilidadTarea");
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.Asistencia", b =>
@@ -152,8 +212,10 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EmpleadoId1")
-                        .HasColumnType("int");
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("Estado")
                         .HasColumnType("int");
@@ -165,9 +227,6 @@ namespace GestionRRHH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("HorarioId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("HorarioId1")
                         .HasColumnType("int");
 
                     b.Property<TimeSpan?>("PrimerEntrada")
@@ -186,11 +245,9 @@ namespace GestionRRHH.Migrations
 
                     b.HasIndex("EmpleadoId");
 
-                    b.HasIndex("EmpleadoId1");
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("HorarioId");
-
-                    b.HasIndex("HorarioId1");
 
                     b.ToTable("Asistencia");
                 });
@@ -212,6 +269,11 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("Resultado")
                         .HasColumnType("int");
 
@@ -220,6 +282,8 @@ namespace GestionRRHH.Migrations
                     b.HasIndex("CursoId");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("AsistenciaCapacitacion");
                 });
@@ -247,11 +311,18 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
 
                     b.HasIndex("CursoId");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Certificado");
                 });
@@ -267,6 +338,11 @@ namespace GestionRRHH.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("EvaluacionId")
                         .HasColumnType("int");
 
@@ -275,11 +351,67 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.HasIndex("EvaluacionId");
 
                     b.HasIndex("TipoDeCriterioId");
 
                     b.ToTable("CriterioDeEvaluacion");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Curriculum", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Documento")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DocumentoMimeType")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("DocumentoNombre")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime>("FechaRecepcion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NombreCompleto")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("Curriculum");
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.Curso", b =>
@@ -292,6 +424,11 @@ namespace GestionRRHH.Migrations
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime>("FechaFinalizacion")
                         .HasColumnType("datetime2");
@@ -309,6 +446,8 @@ namespace GestionRRHH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Curso");
                 });
@@ -345,6 +484,11 @@ namespace GestionRRHH.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("EstadoCiviles")
                         .HasColumnType("int");
 
@@ -377,11 +521,46 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.HasIndex("LocalidadId");
 
                     b.HasIndex("PuestoId");
 
                     b.ToTable("Empleado");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Habilitada")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Empresa");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaRegistro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Habilitada = true,
+                            Nombre = "EMPRESA PRINCIPAL"
+                        });
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.Evaluacion", b =>
@@ -398,6 +577,11 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -407,6 +591,8 @@ namespace GestionRRHH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Evaluacion");
                 });
@@ -422,6 +608,11 @@ namespace GestionRRHH.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -430,7 +621,69 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("Feriados");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.HoraExtraEmpleado", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AsistenciaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("HoraFin")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("HoraInicio")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Minutos")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Origen")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AsistenciaId");
+
+                    b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("HoraExtraEmpleado");
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.Horario", b =>
@@ -446,6 +699,11 @@ namespace GestionRRHH.Migrations
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<bool>("EsRotativo")
                         .HasColumnType("bit");
@@ -493,6 +751,8 @@ namespace GestionRRHH.Migrations
 
                     b.HasIndex("EmpleadoId");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("Horario");
                 });
 
@@ -516,6 +776,11 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("Estados")
                         .HasColumnType("int");
 
@@ -528,6 +793,8 @@ namespace GestionRRHH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Justificacion");
                 });
@@ -552,6 +819,11 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
@@ -567,6 +839,8 @@ namespace GestionRRHH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("TipoDeLicenciaId");
 
@@ -584,6 +858,11 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
@@ -591,6 +870,8 @@ namespace GestionRRHH.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("ProvinciaId");
 
@@ -607,6 +888,11 @@ namespace GestionRRHH.Migrations
 
                     b.Property<string>("DestinatarioRol")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -625,6 +911,8 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("Notificaciones");
                 });
 
@@ -638,6 +926,11 @@ namespace GestionRRHH.Migrations
 
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -653,6 +946,8 @@ namespace GestionRRHH.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("PeriodoSolicitudVacaciones");
                 });
 
@@ -667,10 +962,17 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Provincia");
                 });
@@ -689,14 +991,70 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("SectorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
                     b.HasIndex("SectorId");
 
                     b.ToTable("Puesto");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.ReciboSueldo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Documento")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DocumentoMimeType")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("DocumentoNombre")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime>("FechaCarga")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("Periodo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("ReciboSueldo");
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.Sector", b =>
@@ -710,10 +1068,17 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Sector");
                 });
@@ -729,10 +1094,17 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("TipoDeCriterio");
                 });
@@ -748,10 +1120,17 @@ namespace GestionRRHH.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("TipoDeLicencia");
                 });
@@ -900,6 +1279,11 @@ namespace GestionRRHH.Migrations
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
 
+                    b.Property<int>("EmpresaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("FechaModificacion")
                         .HasColumnType("datetime2");
 
@@ -916,6 +1300,8 @@ namespace GestionRRHH.Migrations
 
                     b.HasIndex("EmpleadoId");
 
+                    b.HasIndex("EmpresaId");
+
                     b.ToTable("HistorialLaboral");
                 });
 
@@ -927,11 +1313,23 @@ namespace GestionRRHH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Empleado");
                 });
 
             modelBuilder.Entity("GestionRRHH.Models.General.AprobacionDeLicencia", b =>
                 {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GestionRRHH.Models.General.Licencia", "Licencia")
                         .WithOne("Aprobacion")
                         .HasForeignKey("GestionRRHH.Models.General.AprobacionDeLicencia", "LicenciaId")
@@ -941,7 +1339,7 @@ namespace GestionRRHH.Migrations
                     b.Navigation("Licencia");
                 });
 
-            modelBuilder.Entity("GestionRRHH.Models.General.Asistencia", b =>
+            modelBuilder.Entity("GestionRRHH.Models.General.AsignacionResponsabilidadTarea", b =>
                 {
                     b.HasOne("GestionRRHH.Models.General.Empleado", "Empleado")
                         .WithMany()
@@ -949,18 +1347,33 @@ namespace GestionRRHH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GestionRRHH.Models.General.Empleado", null)
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empleado");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Asistencia", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empleado", "Empleado")
                         .WithMany("Asistencia")
-                        .HasForeignKey("EmpleadoId1");
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("GestionRRHH.Models.General.Horario", "Horario")
-                        .WithMany()
+                        .WithMany("Asistencias")
                         .HasForeignKey("HorarioId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("GestionRRHH.Models.General.Horario", null)
-                        .WithMany("Asistencias")
-                        .HasForeignKey("HorarioId1");
 
                     b.Navigation("Empleado");
 
@@ -979,6 +1392,12 @@ namespace GestionRRHH.Migrations
                         .WithMany("AsistenciaCapacitacion")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Curso");
@@ -1000,6 +1419,12 @@ namespace GestionRRHH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Curso");
 
                     b.Navigation("Empleado");
@@ -1007,6 +1432,12 @@ namespace GestionRRHH.Migrations
 
             modelBuilder.Entity("GestionRRHH.Models.General.CriterioDeEvaluacion", b =>
                 {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GestionRRHH.Models.General.Evaluacion", "Evaluacion")
                         .WithMany("CriterioDeEvaluacion")
                         .HasForeignKey("EvaluacionId")
@@ -1024,8 +1455,32 @@ namespace GestionRRHH.Migrations
                     b.Navigation("TipoDeCriterio");
                 });
 
+            modelBuilder.Entity("GestionRRHH.Models.General.Curriculum", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Curso", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("GestionRRHH.Models.General.Empleado", b =>
                 {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GestionRRHH.Models.General.Localidad", "Localidad")
                         .WithMany("Empleados")
                         .HasForeignKey("LocalidadId")
@@ -1051,6 +1506,45 @@ namespace GestionRRHH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empleado");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Feriado", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.HoraExtraEmpleado", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Asistencia", "Asistencia")
+                        .WithMany()
+                        .HasForeignKey("AsistenciaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("GestionRRHH.Models.General.Empleado", "Empleado")
+                        .WithMany()
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Asistencia");
+
                     b.Navigation("Empleado");
                 });
 
@@ -1060,6 +1554,12 @@ namespace GestionRRHH.Migrations
                         .WithMany("Horario")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Empleado");
@@ -1073,6 +1573,12 @@ namespace GestionRRHH.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Empleado");
                 });
 
@@ -1082,6 +1588,12 @@ namespace GestionRRHH.Migrations
                         .WithMany("Licencia")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("GestionRRHH.Models.General.TipoDeLicencia", "TipoDeLicencia")
@@ -1097,6 +1609,12 @@ namespace GestionRRHH.Migrations
 
             modelBuilder.Entity("GestionRRHH.Models.General.Localidad", b =>
                 {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GestionRRHH.Models.General.Provincia", "Provincia")
                         .WithMany("Localidades")
                         .HasForeignKey("ProvinciaId")
@@ -1106,8 +1624,41 @@ namespace GestionRRHH.Migrations
                     b.Navigation("Provincia");
                 });
 
+            modelBuilder.Entity("GestionRRHH.Models.General.Notificaciones", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.PeriodoSolicitudVacaciones", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Provincia", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("GestionRRHH.Models.General.Puesto", b =>
                 {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GestionRRHH.Models.General.Sector", "Sector")
                         .WithMany("Puestos")
                         .HasForeignKey("SectorId")
@@ -1115,6 +1666,50 @@ namespace GestionRRHH.Migrations
                         .IsRequired();
 
                     b.Navigation("Sector");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.ReciboSueldo", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empleado", "Empleado")
+                        .WithMany()
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empleado");
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.Sector", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.TipoDeCriterio", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestionRRHH.Models.General.TipoDeLicencia", b =>
+                {
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1174,6 +1769,12 @@ namespace GestionRRHH.Migrations
                         .WithMany("HistorialLaboral")
                         .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GestionRRHH.Models.General.Empresa", null)
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Empleado");

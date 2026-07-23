@@ -65,8 +65,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   MostrarOpcionesSidebarPorRol();
+  CargarAvatarEncabezado();
 
 });
+
+async function CargarAvatarEncabezado() {
+  try {
+    const respuesta = await authFetch("Perfil/Avatar");
+    if (!respuesta.ok) return;
+    const urlAvatar = URL.createObjectURL(await respuesta.blob());
+    document.querySelectorAll(".user-avtar").forEach((imagen) => {
+      imagen.src = urlAvatar;
+    });
+  } catch {
+    // Si no existe un avatar personalizado, se conserva la imagen predeterminada.
+  }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -76,25 +90,29 @@ function MostrarOpcionesSidebarPorRol() {
   const rol = getRol()?.toUpperCase();
   if (!rol) return;
 
+  if (rol === "DESARROLLADOR") {
+    $("#administracionCuentas, #gestionUsuarios, #gestionOrganizacional, #gestionGeografica, #gestionDesempeño").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #gestionHorasExtras, #asignacionDeHorarios, #asignacionResponsabilidadesTareas, #gestionCurriculums, #gestionRecibosSueldo, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia, #resultadoGestionCurso").removeClass("d-none");
+  }
 
-  if (rol === "ADMINISTRADOR") {
+  else if (rol === "ADMINISTRADOR") {
     $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica, #gestionDesempeño").removeClass("d-none");
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia, #resultadoGestionCurso").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #gestionHorasExtras, #asignacionDeHorarios, #asignacionResponsabilidadesTareas, #gestionCurriculums, #gestionRecibosSueldo, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia, #resultadoGestionCurso").removeClass("d-none");
   }
 
   else if (rol === "RRHH") {
     $("#gestionUsuarios, #gestionOrganizacional, #gestionGeografica, #gestionDesempeño").removeClass("d-none");
-    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #asignacionDeHorarios, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia, #resultadoGestionCurso").removeClass("d-none");
+    $("#aprobacionDeLicencias, #tiposDeLicencias, #tiposCriterios, #registroDePersonal, #controlDeAsistencia, #gestionHorasExtras, #asignacionDeHorarios, #asignacionResponsabilidadesTareas, #gestionCurriculums, #gestionRecibosSueldo, #justificacionGeneral, #resultadoGestionPersonal, #resultadoGestionLicencia, #resultadoGestionCurso").removeClass("d-none");
   }
 
   else if (rol === "SUPERVISOR") {
     $("#miPanelPersonal, #gestionDesempeño").removeClass("d-none");
-    $("#justificacionGeneral, #personalACargo, #resultadoGestionPersonal").removeClass("d-none");
+    $("#misResponsabilidadesTareas, #misRecibosSueldo, #misHorasExtras, #asignacionResponsabilidadesTareas, #justificacionGeneral, #personalACargo, #resultadoGestionPersonal").removeClass("d-none");
   }
 
   else if (rol === "EMPLEADO") {
     $("#miPanelPersonal, #gestionDesempeño").removeClass("d-none");
-    $("#justificacionGeneral").removeClass("d-none");
+    $("#misResponsabilidadesTareas, #misRecibosSueldo, #misHorasExtras, #justificacionGeneral").removeClass("d-none");
     $("#resultadoGestionDesempeño").addClass("d-none");
   }
 }

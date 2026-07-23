@@ -10,13 +10,42 @@ async function ObtenerAsistenciaHorario(mostrarSpinner = true) {
                 "Content-Type": "application/json",
             }
         });
+
+        if (!resp.ok) {
+            let error = {};
+            try {
+                error = await resp.json();
+            } catch (e) {
+                error = {};
+            }
+
+            MostrarMensajeAsistenciaHorario(error.mensaje || "No se pudo obtener la información de asistencia y horario.");
+            return;
+        }
+
         const data = await resp.json();
+        if (data.sinDatos || data.SinDatos) {
+            MostrarMensajeAsistenciaHorario(data.mensaje || data.Mensaje || "No hay información de asistencia y horario para mostrar.");
+            return;
+        }
+
         MostrarAsistenciaHorario(data);
 
     } catch (error) {
+        MostrarMensajeAsistenciaHorario("Ocurrió un error al cargar tu asistencia y horario.");
         MostrarErrorCatch();
     }
     finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
+}
+
+function MostrarMensajeAsistenciaHorario(mensaje) {
+    const contenedor = $("#contenedorAsistenciaHorario");
+    contenedor.empty();
+    contenedor.append(`
+        <div class="bg-white shadow-sm rounded p-3 text-center text-muted">
+            ${mensaje}
+        </div>
+    `);
 }
 
 
@@ -213,7 +242,7 @@ function MostrarAsistenciaHorario(data) {
         </div>
     `);
 
-    if (!resumenSemanal || resumenSemanal.length === 0) {
+    if (!resumenSemanal || resumenSemanal.length === 0 || typeof Chart === "undefined") {
         document.getElementById("chartPuntualidad").parentElement.innerHTML = `
         <p class="text-center text-muted mb-0">Sin datos.</p>
     `;

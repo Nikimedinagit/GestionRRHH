@@ -187,6 +187,23 @@
   </div>
 </div>
 
+<div id="modalAsistenciasDia" class="modal-asistencias-dia d-none" role="dialog" aria-modal="true"
+  aria-labelledby="tituloModalAsistenciasDia" onclick="CerrarAsistenciasDelDia(event)">
+  <div class="modal-asistencias-dia-contenido">
+    <div class="modal-asistencias-dia-header">
+      <div>
+        <h5 id="tituloModalAsistenciasDia"></h5>
+        <span id="totalModalAsistenciasDia"></span>
+      </div>
+      <button type="button" class="modal-asistencias-dia-cerrar" onclick="CerrarAsistenciasDelDia()"
+        aria-label="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div id="listaModalAsistenciasDia" class="modal-asistencias-dia-lista"></div>
+  </div>
+</div>
+
 <div id="fondoOscuro" onclick="CerrarPanelAsistenciaManual()"></div>
 
 <!-- ================================ Panel Registro Manual ===================================== -->

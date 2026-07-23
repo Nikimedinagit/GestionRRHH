@@ -1,0 +1,127 @@
+<div class="px-3 py-3">
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3"><i class="bi bi-receipt"></i></div>
+      <h5 class="fw-bold mb-2">Cargando recibos de sueldo</h5>
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+      <p class="text-muted mensaje-carga">Estamos preparando el historial de recibos <span class="dots"></span></p>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Recibos de Sueldo</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Registrá y consultá los recibos de sueldo del personal por período.
+      </p>
+    </div>
+  </div>
+
+  <div id="fondoOscuro" onclick="CerrarPanelReciboSueldo()"></div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+    <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelReciboSueldo()">
+      <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+      <span>Registrar Recibo</span>
+    </button>
+    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+      onclick="toggleFiltros()">
+      <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+      <span>Filtros</span>
+    </button>
+  </div>
+
+  <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-5">
+        <label for="EmpleadoReciboBuscar" class="form-label-fija">Empleado</label>
+        <input id="EmpleadoReciboBuscar" type="text" class="form-control filtro-select"
+          placeholder="Buscar empleado..." />
+      </div>
+      <div class="col-12 col-md-3">
+        <label for="PeriodoReciboBuscar" class="form-label-fija">Período</label>
+        <input id="PeriodoReciboBuscar" type="month" class="form-control filtro-select" />
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between mb-3" style="gap: 1rem;">
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #198754 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #dff3e7;">
+          <i class="bi bi-receipt text-success fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total</p><h5 id="totalRecibosSueldo" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0d6efd !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #e7f1ff;">
+          <i class="bi bi-people text-primary fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total Empleados</p><h5 id="totalEmpleadosRecibos" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #ffc107 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #fff3cd;">
+          <i class="bi bi-calendar3 text-warning fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total Períodos</p><h5 id="totalPeriodosRecibos" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="contenedorRecibosSueldo" class="row g-3"></div>
+
+  <div id="panelReciboSueldo" role="dialog" aria-modal="true"
+    aria-labelledby="tituloPanelReciboSueldo">
+    <div class="panel-header"><h2 id="tituloPanelReciboSueldo" class="panel-title">Formulario de Recibo de Sueldo</h2></div>
+    <div class="panel-body">
+      <form id="formReciboSueldo" novalidate>
+        <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status"></div>
+            <p class="text-muted mensaje-carga">Estamos procesando la información <br><span class="dots"></span></p>
+          </div>
+        </div>
+        <input id="IdReciboSueldo" type="hidden" />
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3">
+            <select id="EmpleadoReciboSueldo" class="form-control"><option value="" disabled selected>Seleccione</option></select>
+            <label for="EmpleadoReciboSueldo">Empleado</label>
+            <div id="errorEmpleadoReciboSueldo" class="invalid-feedback"></div>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="PeriodoReciboSueldo" type="month" class="form-control" />
+            <label for="PeriodoReciboSueldo">Período</label>
+            <div id="errorPeriodoReciboSueldo" class="invalid-feedback"></div>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <textarea id="ObservacionesReciboSueldo" class="form-control" placeholder=" " rows="3" maxlength="500"></textarea>
+            <label for="ObservacionesReciboSueldo">Observaciones (opcional)</label>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="ArchivoReciboSueldo" type="file" class="form-control"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+            <label for="ArchivoReciboSueldo">Archivo del recibo</label>
+            <small class="ayuda-archivo">PDF, JPG, JPEG o PNG. Máximo 10 MB.</small>
+            <div id="errorArchivoReciboSueldo" class="invalid-feedback"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3">
+      <button class="btn btn-cancelar" onclick="CerrarPanelReciboSueldo()">Cancelar</button>
+      <button class="btn btn-guardar" onclick="GuardarReciboSueldo()">Guardar</button>
+    </div>
+  </div>
+</div>
+<script src="../js/Vistas/recibosSueldo.js"></script>

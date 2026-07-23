@@ -1,0 +1,61 @@
+<div class="px-3 py-3">
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3"><i class="bi bi-receipt"></i></div>
+      <h5 class="fw-bold mb-2">Cargando mis recibos</h5>
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+      <p class="text-muted mensaje-carga">Estamos preparando tus recibos de sueldo <span class="dots"></span></p>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Mis Recibos de Sueldo</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Consultá y descargá tus recibos de sueldo por período.
+      </p>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end align-items-center mb-3">
+    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+      onclick="toggleFiltros()">
+      <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+      <span>Filtros</span>
+    </button>
+  </div>
+
+  <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-3">
+        <label for="PeriodoMiReciboBuscar" class="form-label-fija">Período</label>
+        <input id="PeriodoMiReciboBuscar" type="month" class="form-control filtro-select" />
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between mb-3" style="gap: 1rem;">
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(50% - 1rem); border-left: 3px solid #198754 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #dff3e7;">
+          <i class="bi bi-receipt text-success fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total</p><h5 id="totalMisRecibos" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(50% - 1rem); border-left: 3px solid #ffc107 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #fff3cd;">
+          <i class="bi bi-calendar3 text-warning fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total Períodos</p><h5 id="totalPeriodosMisRecibos" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="contenedorMisRecibos" class="row g-3"></div>
+</div>
+<script src="../js/Vistas/misRecibosSueldo.js"></script>

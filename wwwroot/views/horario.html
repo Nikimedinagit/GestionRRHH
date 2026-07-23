@@ -74,7 +74,7 @@
       </div>
 
       <div class="col-12 col-md-1">
-        <label class="form-label-fija">Horario</label>
+        <label for="filtrarHorarioSelect" class="form-label-fija">Horario</label>
         <select id="filtrarHorarioSelect" class="form-control filtro-select">
           <option value="no" selected>No</option>
           <option value="si">Sí</option>
@@ -146,7 +146,7 @@
 
 
   <!-- ======================================= Panel Deslizante Formulario ====================================== -->
-  <div id="panelHorario" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1">
+  <div id="panelHorario" aria-modal="true" role="dialog" aria-labelledby="panelTitulo" tabindex="-1" class="w-30">
     <div class="panel-header mb-3">
       <h2 id="panelTitulo" class="panel-title">Formulario de Horario</h2>
     </div>
@@ -168,68 +168,68 @@
 
         <input type="hidden" id="IdHorario" />
 
-        <div class="form-group position-relative mb-3">
-          <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
-            <option value="" disabled selected>Seleccione un empleado</option>
-          </select>
-          <label for="EmpleadoId">Empleado</label>
-          <div class="invalid-feedback" id="errorEmpleadoId"></div>
+        <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px;">
+          <div class="form-group position-relative mb-3">
+            <select name="EmpleadoId" id="EmpleadoId" class="form-control" required>
+              <option value="" disabled selected>Seleccione un empleado</option>
+            </select>
+            <label for="EmpleadoId">Empleado</label>
+            <div class="invalid-feedback" id="errorEmpleadoId"></div>
+          </div>
+
+          <div class="form-group position-relative mb-3">
+            <select id="TipoHorario" name="TipoHorario" class="form-control" required onchange="toggleHorarioInputs()">
+              <option value="0" disabled selected>Seleccione tipo</option>
+              <option value="1">CONTINUO</option>
+              <option value="2">ALTERNO</option>
+              <option value="3">ROTATIVO</option>
+            </select>
+            <label for="TipoHorario">Tipo de Horario</label>
+            <div class="invalid-feedback" id="errorTipoHorario"></div>
+          </div>
         </div>
 
-        <div class="form-group position-relative mb-3">
-          <select id="TipoHorario" name="TipoHorario" class="form-control" required onchange="toggleHorarioInputs()">
-            <option value="0" disabled selected>Seleccione tipo</option>
-            <option value="1">CONTINUO</option>
-            <option value="2">ALTERNO</option>
-            <option value="3">ROTATIVO</option>
-          </select>
-          <label for="TipoHorario">Tipo de Horario</label>
-          <div class="invalid-feedback" id="errorTipoHorario"></div>
-        </div>
-
-        <div id="horarioContinuo" class="form-row mb-3 d-flex justify-content-between d-none">
-          <div class="form-group position-relative" style="width: 48%;">
+        <div id="horarioContinuo" class="form-grid d-none"
+          style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <div class="form-group position-relative mb-3">
             <input type="time" id="HorarioInicio" name="HorarioInicio" class="form-control" min="00:00" max="23:59" />
             <label for="HorarioInicio">Hora Inicio</label>
             <div class="invalid-feedback" id="errorHorarioInicio"></div>
           </div>
 
-          <div class="form-group position-relative" style="width: 48%;">
+          <div class="form-group position-relative mb-3">
             <input type="time" id="HorarioFin" name="HorarioFin" class="form-control" min="00:00" max="23:59" />
             <label for="HorarioFin">Hora Fin</label>
             <div class="invalid-feedback" id="errorHorarioFin"></div>
           </div>
         </div>
 
-        <div id="horarioAlterno" class="d-none">
-          <div class="form-row mb-3 d-flex justify-content-between">
-            <div class="form-group position-relative" style="width: 48%;">
-              <input type="time" id="PrimerHorarioInicio" class="form-control" min="00:00" max="23:59" />
-              <label for="PrimerHorarioInicio">Inicio Mañana</label>
-              <div class="invalid-feedback" id="errorPrimerHorarioInicio"></div>
-            </div>
-
-            <div class="form-group position-relative" style="width: 48%;">
-              <input type="time" id="PrimerHorarioFin" class="form-control" min="00:00" max="23:59" />
-              <label for="PrimerHorarioFin">Fin Mañana</label>
-              <div class="invalid-feedback" id="errorPrimerHorarioFin"></div>
-            </div>
+        <div id="horarioAlterno" class="form-grid d-none"
+          style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <div class="form-group position-relative mb-3">
+            <input type="time" id="PrimerHorarioInicio" class="form-control" min="00:00" max="23:59" />
+            <label for="PrimerHorarioInicio">Inicio Mañana</label>
+            <div class="invalid-feedback" id="errorPrimerHorarioInicio"></div>
           </div>
 
-          <div class="form-row mb-3 d-flex justify-content-between">
-            <div class="form-group position-relative" style="width: 48%;">
-              <input type="time" id="SegundoHorarioInicio" name="SegundoHorarioInicio" class="form-control" min="00:00"
-                max="23:59" />
-              <label for="SegundoHorarioInicio">Inicio Tarde</label>
-              <div class="invalid-feedback" id="errorSegundoHorarioInicio"></div>
-            </div>
+          <div class="form-group position-relative mb-3">
+            <input type="time" id="PrimerHorarioFin" class="form-control" min="00:00" max="23:59" />
+            <label for="PrimerHorarioFin">Fin Mañana</label>
+            <div class="invalid-feedback" id="errorPrimerHorarioFin"></div>
+          </div>
 
-            <div class="form-group position-relative" style="width: 48%;">
-              <input type="time" id="SegundoHorarioFin" name="SegundoHorarioFin" class="form-control" min="00:00"
-                max="23:59" />
-              <label for="SegundoHorarioFin">Fin Tarde</label>
-              <div class="invalid-feedback" id="errorSegundoHorarioFin"></div>
-            </div>
+          <div class="form-group position-relative mb-3">
+            <input type="time" id="SegundoHorarioInicio" name="SegundoHorarioInicio" class="form-control" min="00:00"
+              max="23:59" />
+            <label for="SegundoHorarioInicio">Inicio Tarde</label>
+            <div class="invalid-feedback" id="errorSegundoHorarioInicio"></div>
+          </div>
+
+          <div class="form-group position-relative mb-3">
+            <input type="time" id="SegundoHorarioFin" name="SegundoHorarioFin" class="form-control" min="00:00"
+              max="23:59" />
+            <label for="SegundoHorarioFin">Fin Tarde</label>
+            <div class="invalid-feedback" id="errorSegundoHorarioFin"></div>
           </div>
         </div>
 
@@ -277,7 +277,7 @@
       </form>
     </div>
 
-    <div class="panel-footer">
+    <div class="panel-footer mt-3">
       <button class="btn btn-cancelar" onclick="cerrarPanelHorario()">
         Cancelar
       </button>
@@ -290,22 +290,20 @@
 
   <!--  ====================================== Offcanvas Detalle Horario ===================================== -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalleHorario" aria-labelledby="tituloDetalleHorario"
-    style="
-          width: 360px;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
-        ">
+    style="width: 360px; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+
     <div class="detalle-horario-contenedor">
+
+      <!-- Encabezado -->
       <div class="detalle-horario-encabezado row align-items-start">
         <div class="col-10">
           <h5 class="mb-0 fw-bold" style="font-size: 1rem; color: #212529;">
-            Detalle de Horarios y Días
+            Detalle de Horario
           </h5>
           <p class="mb-0 text-muted" style="font-size: 0.95rem;">
             Información detallada del horario seleccionado.
           </p>
         </div>
-
         <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
@@ -313,121 +311,107 @@
 
       <hr style="margin: 0; border-top: 1px solid #dee2e6" />
 
-      <div class="offcanvas-body" style="
-      font-size: 0.75rem;
-      line-height: 1.1;
-      max-height: calc(100vh - 70px);
-      padding: 0;
-      overflow-y: auto;
-    ">
-        <div class="detalle-horario-seccion">
+      <div class="offcanvas-body p-3"
+        style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
 
-          <div class="detalle-horario-tarjeta">
-            <div class="detalle-horario-seccion">
-              <p class="detalle-horario-titulo-seccion">
-                Información de Horarios
-              </p>
+        <div class="detalle-horario-tarjeta">
+          <div class="detalle-horario-seccion">
+            <p class="detalle-horario-titulo-seccion">Tipo de Horario</p>
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-valor" id="detalleTipoHorario"></span>
+            </div>
+          </div>
+        </div>
 
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Lunes:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioLunes"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinLunes"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoLunes2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioLunes2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinLunes2"></span>
-                </div>
+        <div class="detalle-horario-tarjeta">
+          <div class="detalle-horario-seccion">
+            <p class="detalle-horario-titulo-seccion">Horarios</p>
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Lunes:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioLunes"></span> a
+                <span class="detalle-horario-valor" id="detalleFinLunes"></span>
               </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Martes:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioMartes"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinMartes"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoMartes2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioMartes2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinMartes2"></span>
-                </div>
-              </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Miércoles:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioMiercoles"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinMiercoles"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoMiercoles2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioMiercoles2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinMiercoles2"></span>
-                </div>
-              </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Jueves:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioJueves"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinJueves"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoJueves2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioJueves2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinJueves2"></span>
-                </div>
-              </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Viernes:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioViernes"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinViernes"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoViernes2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioViernes2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinViernes2"></span>
-                </div>
-              </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Sábado:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioSabado"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinSabado"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoSabado2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioSabado2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinSabado2"></span>
-                </div>
-              </div>
-
-              <hr style="margin-bottom: 0.3rem; margin-top: 0.3rem;" />
-
-              <div class="detalle-horario-fila">
-                <span class="detalle-horario-etiqueta">Domingo:</span>
-                <div class="detalle-horario-turno">
-                  <span class="detalle-horario-valor" id="detalleInicioDomingo"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinDomingo"></span>
-                </div>
-                <div class="detalle-horario-turno" id="turnoDomingo2" style="display:none;">
-                  <span class="detalle-horario-valor" id="detalleInicioDomingo2"></span> a
-                  <span class="detalle-horario-valor" id="detalleFinDomingo2"></span>
-                </div>
+              <div class="detalle-horario-turno" id="turnoLunes2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioLunes2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinLunes2"></span>
               </div>
             </div>
 
-          </div>
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Martes:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioMartes"></span> a
+                <span class="detalle-horario-valor" id="detalleFinMartes"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoMartes2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioMartes2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinMartes2"></span>
+              </div>
+            </div>
 
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Miércoles:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioMiercoles"></span> a
+                <span class="detalle-horario-valor" id="detalleFinMiercoles"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoMiercoles2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioMiercoles2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinMiercoles2"></span>
+              </div>
+            </div>
+
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Jueves:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioJueves"></span> a
+                <span class="detalle-horario-valor" id="detalleFinJueves"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoJueves2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioJueves2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinJueves2"></span>
+              </div>
+            </div>
+
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Viernes:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioViernes"></span> a
+                <span class="detalle-horario-valor" id="detalleFinViernes"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoViernes2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioViernes2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinViernes2"></span>
+              </div>
+            </div>
+
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Sábado:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioSabado"></span> a
+                <span class="detalle-horario-valor" id="detalleFinSabado"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoSabado2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioSabado2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinSabado2"></span>
+              </div>
+            </div>
+
+            <div class="detalle-horario-fila">
+              <span class="detalle-horario-etiqueta">Domingo:</span>
+              <div class="detalle-horario-turno">
+                <span class="detalle-horario-valor" id="detalleInicioDomingo"></span> a
+                <span class="detalle-horario-valor" id="detalleFinDomingo"></span>
+              </div>
+              <div class="detalle-horario-turno" id="turnoDomingo2" style="display:none;">
+                <span class="detalle-horario-valor" id="detalleInicioDomingo2"></span> a
+                <span class="detalle-horario-valor" id="detalleFinDomingo2"></span>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </div>

@@ -72,6 +72,9 @@
           <div class="pc-caption">
             <span>Navegacion</span>
           </div>
+          <li class="pc-item d-none" id="administracionCuentas">
+            <a href="#cuentas" class="pc-link"><span class="pc-micon"><i class="ti ti-building-cog"></i></span><span class="pc-mtext">Administrar Cuentas</span></a>
+          </li>
 
           <!-- Panel Personal del Empleado -->
           <li class="pc-item pc-hasmenu d-none " id="miPanelPersonal">
@@ -84,6 +87,12 @@
               <li class="pc-item" id="miInformacion"><a class="pc-link" href="#informacion">Mi Información</a></li>
               <li class="pc-item" id="asistenciaHorarios"><a class="pc-link" href="#asistenciaHorarios">Mi Asistencia y
                   Horario</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="misResponsabilidadesTareas"
+                  href="#misResponsabilidadesTareas">Mis Tareas</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="misRecibosSueldo"
+                  href="#misRecibosSueldo">Mis Recibos</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="misHorasExtras"
+                  href="#misHorasExtras">Mis Horas Extras</a></li>
             </ul>
           </li>
 
@@ -99,12 +108,19 @@
                   Personal</a></li>
               <li class="pc-item"><a class="pc-link d-none" id="controlDeAsistencia" href="#asistencia">Control de
                   Asistencia</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="gestionHorasExtras" href="#horasExtras">Horas Extras</a></li>
               <li class="pc-item"><a class="pc-link d-none" id="asignacionDeHorarios" href="#horario">Asignación de
                   Horarios</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="asignacionResponsabilidadesTareas"
+                  href="#asignacionResponsabilidadesTareas">Responsabilidades<br>y Tareas</a></li>
               <li class="pc-item"><a class="pc-link d-none" id="justificacionGeneral" href="#justificacion">Gestor de
                   Ausencias/<br>Tardanzas</a></li>
               <li class="pc-item"><a class="pc-link d-none" id="personalACargo" href="#empleadosPorSector">Personal a
                   Cargo</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="gestionRecibosSueldo"
+                  href="#recibosSueldo">Recibos de Sueldo</a></li>
+              <li class="pc-item"><a class="pc-link d-none" id="gestionCurriculums"
+                  href="#curriculums">Historial de CV</a></li>
               <li class="pc-item"><a class="pc-link d-none" id="resultadoGestionPersonal"
                   href="#resultadoGestionPersonal">Indicadores</a></li>
             </ul>
@@ -258,14 +274,14 @@
           <li class="dropdown pc-h-item header-user-profile">
             <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#!" role="button"
               aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
-              <img src="dist/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
+              <img src="img/avatars/av-1.png" alt="user-image" class="user-avtar">
               <span id="usuarioNombre"></span>
             </a>
             <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
               <div class="dropdown-header">
                 <div class="d-flex mb-1">
                   <div class="flex-shrink-0">
-                    <img src="dist/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35">
+                    <img src="img/avatars/av-1.png" alt="user-image" class="user-avtar wid-35">
                   </div>
                   <div class="flex-grow-1 ms-3">
                     <h6 class="mb-1" id="usuarioRol"></h6>
@@ -276,6 +292,10 @@
               <div class="tab-content d-flex justify-content-center align-items-center" id="mysrpTabContent">
                 <div class="tab-pane fade show active shadow-sm " id="drp-tab-1" role="tabpanel"
                   aria-labelledby="drp-t1" tabindex="0">
+                  <a href="#perfil" class="dropdown-item">
+                    <i class="ti ti-user-circle"></i>
+                    <span>Mi Perfil</span>
+                  </a>
                   <a href="javascript:void(0);" class="dropdown-item btn-cerrarsesion" onclick="cerrarSesion()">
                     <i class="ti ti-power"></i>
                     <span>Cerrar Sesión</span>

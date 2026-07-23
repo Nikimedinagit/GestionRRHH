@@ -1,0 +1,136 @@
+<div class="px-3 py-3">
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3"><i class="bi bi-file-earmark-person"></i></div>
+      <h5 class="fw-bold mb-2">Cargando historial de CV</h5>
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+      <p class="text-muted mensaje-carga">Estamos preparando los currículums <span class="dots"></span></p>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">Historial de CV</h4>
+      <p class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Registrá y consultá los currículums recibidos de postulantes.
+      </p>
+    </div>
+  </div>
+
+  <div id="fondoOscuro" onclick="CerrarPanelCurriculum()"></div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+    <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelCurriculum()">
+      <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+      <span>Registrar CV</span>
+    </button>
+    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+      onclick="toggleFiltros()">
+      <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+      <span>Filtros</span>
+    </button>
+  </div>
+
+  <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-5">
+        <label for="CurriculumBuscar" class="form-label-fija">Nombre</label>
+        <input id="CurriculumBuscar" class="form-control filtro-select" placeholder="Buscar por nombre..." />
+      </div>
+      <div class="col-12 col-md-3">
+        <label for="CurriculumDesde" class="form-label-fija">Desde</label>
+        <input id="CurriculumDesde" type="date" class="form-control filtro-select" />
+      </div>
+      <div class="col-12 col-md-3">
+        <label for="CurriculumHasta" class="form-label-fija">Hasta</label>
+        <input id="CurriculumHasta" type="date" class="form-control filtro-select" />
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between mb-3" style="gap: 1rem;">
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #198754 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #dff3e7;">
+          <i class="bi bi-file-earmark-person text-success fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Total</p><h5 id="totalCurriculums" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #0d6efd !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #e7f1ff;">
+          <i class="bi bi-person-lines-fill text-primary fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Con Contacto</p><h5 id="totalCurriculumsContacto" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+
+    <div class="card p-2 border-0 shadow-sm"
+      style="min-width: 200px; flex: 1 1 calc(33% - 1rem); border-left: 3px solid #ffc107 !important;">
+      <div class="d-flex align-items-center">
+        <div class="p-2 me-3 rounded" style="background-color: #fff3cd;">
+          <i class="bi bi-calendar-check text-warning fs-5"></i>
+        </div>
+        <div><p class="mb-0 text-muted small fw-bold">Recibidos Este Mes</p><h5 id="totalCurriculumsMes" class="mb-0 fw-bold">0</h5></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="contenedorCurriculums" class="row g-3"></div>
+
+  <div id="panelCurriculum" role="dialog" aria-modal="true"
+    aria-labelledby="tituloPanelCurriculum">
+    <div class="panel-header"><h2 id="tituloPanelCurriculum" class="panel-title">Formulario de CV</h2></div>
+    <div class="panel-body">
+      <form id="formCurriculum" novalidate>
+        <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status"></div>
+            <p class="text-muted mensaje-carga">Estamos procesando la información <br><span class="dots"></span></p>
+          </div>
+        </div>
+        <input id="IdCurriculum" type="hidden" />
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3">
+            <input id="NombreCurriculum" class="form-control" placeholder=" " maxlength="150" />
+            <label for="NombreCurriculum">Nombre completo</label>
+            <div id="errorNombreCurriculum" class="invalid-feedback"></div>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="EmailCurriculum" type="email" class="form-control" placeholder=" " maxlength="150" />
+            <label for="EmailCurriculum">Email (opcional)</label>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="TelefonoCurriculum" class="form-control" placeholder=" " maxlength="50" />
+            <label for="TelefonoCurriculum">Teléfono (opcional)</label>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="FechaCurriculum" type="date" class="form-control" />
+            <label for="FechaCurriculum">Fecha de recepción</label>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <textarea id="ObservacionesCurriculum" class="form-control" placeholder=" " rows="3" maxlength="500"></textarea>
+            <label for="ObservacionesCurriculum">Observaciones (opcional)</label>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="ArchivoCurriculum" type="file" class="form-control" accept=".pdf,.doc,.docx,.odt" />
+            <label for="ArchivoCurriculum">Archivo del CV</label>
+            <small class="ayuda-archivo">PDF, DOC, DOCX u ODT. Máximo 10 MB.</small>
+            <div id="errorArchivoCurriculum" class="invalid-feedback"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3">
+      <button class="btn btn-cancelar" onclick="CerrarPanelCurriculum()">Cancelar</button>
+      <button class="btn btn-guardar" onclick="GuardarCurriculum()">Guardar</button>
+    </div>
+  </div>
+</div>
+<script src="../js/Vistas/curriculums.js"></script>

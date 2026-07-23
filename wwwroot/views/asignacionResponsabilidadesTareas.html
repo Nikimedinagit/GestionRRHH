@@ -1,0 +1,253 @@
+<div class="px-3 py-3">
+
+  <div id="pantallaCargaGeneral" class="pantalla-carga">
+    <div class="contenido-carga card-carga">
+      <div class="icono-carga mb-3">
+        <i class="fa-solid fa-list-check fa-sm"></i>
+      </div>
+
+      <h5 class="fw-bold mb-2">Cargando responsabilidades y tareas</h5>
+
+      <div class="spinner-border text-primary spinner-grande my-3" role="status"></div>
+
+      <p class="text-muted mensaje-carga">
+        Estamos preparando las responsabilidades y tareas
+        <span class="dots"></span>
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-sm rounded p-2 mb-3 border-start border-primary"
+    style="border-left-width: 3px !important;">
+    <div class="px-2">
+      <h4 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; font-size: 1.2rem;">
+        Asignación de Responsabilidades y Tareas
+      </h4>
+      <p id="tituloAsignaciones" class="text-muted mb-0" style="font-size: 0.85rem; opacity: 0.8;">
+        Registrá la información de responsabilidades y tareas asignadas a cada empleado.
+      </p>
+    </div>
+  </div>
+
+  <div>
+    <div id="fondoOscuro" onclick="CerrarPanelAsignacionResponsabilidadTarea()"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+      <button id="btnNuevaAsignacion" class="btn rounded btn-agregar py-1 px-2 border bg-white"
+        onclick="AbrirPanelAsignacionResponsabilidadTarea()">
+        <i class="fa-solid fa-square-plus me-1" style="color: #3697E1;"></i>
+        <span>Nueva Asignación</span>
+      </button>
+
+      <div class="d-flex gap-3 flex-wrap responsive-button">
+        <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+          onclick="toggleFiltros()">
+          <i class="fa-solid fa-arrow-down-wide-short me-1" style="color: #F0AD4E;"></i>
+          <span class="texto-btn">Filtros</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="contenedorFiltros" class="filtros-panel mb-3 d-none">
+      <div class="row g-3 align-items-end">
+
+        <div class="col-12 col-sm-6 col-lg-4">
+          <label for="TituloAsignacionBuscar" class="form-label-fija">Responsabilidad o tarea</label>
+          <input type="text" class="form-control filtro-select" id="TituloAsignacionBuscar" placeholder="Buscar..." />
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+          <label for="EmpleadoAsignacionBuscar" class="form-label-fija">Empleado</label>
+          <select id="EmpleadoAsignacionBuscar" class="form-control filtro-select">
+            <option value="">[Todos]</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+          <label for="EstadoActivoAsignacionBuscar" class="form-label-fija">Activo</label>
+          <select id="EstadoActivoAsignacionBuscar" class="form-control filtro-select">
+            <option value="">[Todos]</option>
+            <option value="0">Activas</option>
+            <option value="1">Inactivas</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="contenedorAsignaciones" class="row g-3"></div>
+  </div>
+
+  <div class="offcanvas offcanvas-end offcanvas-detalle-asignacion" tabindex="-1" id="offcanvasDetalleAsignacion"
+    aria-labelledby="tituloDetalleAsignacion">
+    <div class="detalle-empleado-contenedor">
+      <div class="detalle-empleado-encabezado row align-items-start">
+        <div class="col-10">
+          <h5 class="mb-0 fw-bold" id="tituloDetalleAsignacion" style="font-size: 1rem; color: #212529;">
+            Detalle de Responsabilidad y Tarea
+          </h5>
+          <p class="mb-0 text-muted" style="font-size: 0.95rem;">
+            Información completa de la asignación seleccionada.
+          </p>
+        </div>
+
+        <div class="col-2 text-end border-start d-flex justify-content-center align-items-center">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+      </div>
+
+      <hr style="margin:0; border-top: 1px solid #dee2e6" />
+
+      <div class="offcanvas-body p-0" style="font-size: 0.75rem; line-height: 1.1; max-height: calc(100vh - 70px); overflow-y: auto;">
+        <div class="detalle-empleado-seccion">
+          <div class="text-center mb-3">
+            <h4 id="detalleAsignacionEmpleado" style="color: #212529; font-size: 1.1rem; margin-bottom: 0.1rem">
+              Empleado
+            </h4>
+            <span id="detalleAsignacionPuesto" class="text-muted" style="font-size: 0.85rem">Puesto</span>
+          </div>
+
+          <div class="detalle-empleado-tarjeta">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">
+                <i class="bi bi-person-check me-1"></i>Responsabilidades
+              </p>
+              <p id="detalleAsignacionResponsabilidades" class="detalle-asignacion-texto"></p>
+            </div>
+          </div>
+
+          <div class="detalle-empleado-tarjeta" style="margin-bottom: 1rem">
+            <div class="detalle-empleado-seccion">
+              <p class="detalle-empleado-titulo-seccion">
+                <i class="bi bi-list-check me-1"></i>Tareas
+              </p>
+              <p id="detalleAsignacionTareas" class="detalle-asignacion-texto"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panelAsignacionResponsabilidadTarea" aria-modal="true" role="dialog" aria-labelledby="panelTitulo"
+    tabindex="-1">
+    <div class="panel-header">
+      <h2 id="panelTitulo" class="panel-title">Formulario De Responsabilidad y Tarea</h2>
+    </div>
+    <div class="panel-body">
+      <form id="formAsignacionResponsabilidadTarea">
+
+        <div id="overlayGuardando" class="overlay-guardando d-none">
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Guardando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1" role="status"></div>
+            <p class="text-muted mensaje-carga">
+              Estamos procesando la información <br> <span class="dots"></span>
+            </p>
+          </div>
+        </div>
+
+        <input type="hidden" id="IdAsignacion" />
+
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3" style="grid-column: 1 / -1;">
+            <select id="EmpleadoIdAsignacion" class="form-control" required>
+              <option value="" disabled selected hidden>Seleccione</option>
+            </select>
+            <label for="EmpleadoIdAsignacion">Empleado</label>
+            <div class="invalid-feedback" id="errorEmpleadoIdAsignacion"></div>
+          </div>
+
+          <div class="form-group position-relative mb-3 editor-asignacion-grupo" style="grid-column: 1 / -1;">
+            <label id="LabelResponsabilidadesAsignacion" class="form-label-fija mb-1"
+              for="EditorResponsabilidadesAsignacion">Responsabilidades</label>
+            <div class="editor-asignacion-toolbar">
+              <button type="button" onclick="FormatearTextoAsignacion('bold', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Negrita">
+                <i class="bi bi-type-bold"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('italic', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Cursiva">
+                <i class="bi bi-type-italic"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('underline', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Subrayado">
+                <i class="bi bi-type-underline"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('insertUnorderedList', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Lista">
+                <i class="bi bi-list-ul"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('insertOrderedList', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Lista numerada">
+                <i class="bi bi-list-ol"></i>
+              </button>
+              <span class="editor-asignacion-separador"></span>
+              <button type="button" onclick="FormatearTextoAsignacion('undo', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Deshacer">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('redo', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Rehacer">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('removeFormat', 'EditorResponsabilidadesAsignacion')" data-tippy-content="Quitar formato">
+                <i class="bi bi-eraser"></i>
+              </button>
+            </div>
+            <div id="EditorResponsabilidadesAsignacion" class="form-control editor-asignacion" contenteditable="true"
+              role="textbox" aria-multiline="true" aria-labelledby="LabelResponsabilidadesAsignacion"
+              data-placeholder="Escribí las responsabilidades..."></div>
+            <div class="editor-asignacion-ayuda">
+              <span>Podés usar Ctrl+B para negrita y Ctrl+I para cursiva.</span>
+              <span id="ContadorResponsabilidadesAsignacion">0 caracteres</span>
+            </div>
+            <textarea id="ResponsabilidadesAsignacion" class="d-none"></textarea>
+            <div class="invalid-feedback" id="errorResponsabilidadesAsignacion"></div>
+          </div>
+
+          <div class="form-group position-relative mb-3 editor-asignacion-grupo" style="grid-column: 1 / -1;">
+            <label id="LabelTareasAsignacion" class="form-label-fija mb-1"
+              for="EditorTareasAsignacion">Tareas</label>
+            <div class="editor-asignacion-toolbar">
+              <button type="button" onclick="FormatearTextoAsignacion('bold', 'EditorTareasAsignacion')" data-tippy-content="Negrita">
+                <i class="bi bi-type-bold"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('italic', 'EditorTareasAsignacion')" data-tippy-content="Cursiva">
+                <i class="bi bi-type-italic"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('underline', 'EditorTareasAsignacion')" data-tippy-content="Subrayado">
+                <i class="bi bi-type-underline"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('insertUnorderedList', 'EditorTareasAsignacion')" data-tippy-content="Lista">
+                <i class="bi bi-list-ul"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('insertOrderedList', 'EditorTareasAsignacion')" data-tippy-content="Lista numerada">
+                <i class="bi bi-list-ol"></i>
+              </button>
+              <span class="editor-asignacion-separador"></span>
+              <button type="button" onclick="FormatearTextoAsignacion('undo', 'EditorTareasAsignacion')" data-tippy-content="Deshacer">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('redo', 'EditorTareasAsignacion')" data-tippy-content="Rehacer">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button type="button" onclick="FormatearTextoAsignacion('removeFormat', 'EditorTareasAsignacion')" data-tippy-content="Quitar formato">
+                <i class="bi bi-eraser"></i>
+              </button>
+            </div>
+            <div id="EditorTareasAsignacion" class="form-control editor-asignacion" contenteditable="true"
+              role="textbox" aria-multiline="true" aria-labelledby="LabelTareasAsignacion"
+              data-placeholder="Escribí las tareas..."></div>
+            <div class="editor-asignacion-ayuda">
+              <span>Usá listas para separar cada tarea claramente.</span>
+              <span id="ContadorTareasAsignacion">0 caracteres</span>
+            </div>
+            <textarea id="TareasAsignacion" class="d-none"></textarea>
+            <div class="invalid-feedback" id="errorTareasAsignacion"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3">
+      <button class="btn btn-cancelar" onclick="CerrarPanelAsignacionResponsabilidadTarea()">Cancelar</button>
+      <button type="submit" class="btn btn-guardar" onclick="BuscarAsignacionId()">Guardar</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/Vistas/asignacionResponsabilidadesTareas.js"></script>

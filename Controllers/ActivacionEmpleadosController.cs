@@ -125,6 +125,12 @@ namespace GestionRRHH.Controllers
 
             if (usuario != null)
             {
+                if (!usuario.EmpresaId.HasValue)
+                {
+                    usuario.EmpresaId = _context.EmpresaActualId;
+                    usuario.Habilitado = true;
+                    await _userManager.UpdateAsync(usuario);
+                }
                 if (!await _userManager.IsInRoleAsync(usuario, dto.Rol))
                 {
                     var resultadoRolUsuario = await _userManager.AddToRoleAsync(usuario, dto.Rol);
@@ -138,7 +144,9 @@ namespace GestionRRHH.Controllers
                 {
                     UserName = empleado.Email,
                     Email = empleado.Email,
-                    NombreCompleto = empleado.NombreCompleto
+                    NombreCompleto = empleado.NombreCompleto,
+                    EmpresaId = _context.EmpresaActualId,
+                    Habilitado = true
                 };
 
                 var resultado = await _userManager.CreateAsync(nuevoUsuario, empleado.DNI.ToString());

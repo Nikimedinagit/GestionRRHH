@@ -9,12 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorGeneral = document.getElementById("errorLoginGeneral");
 
   const nombreRegistro = document.getElementById("nombreRegistro");
+  const empresaRegistro = document.getElementById("empresaRegistro");
   const emailRegistro = document.getElementById("emailRegistro");
   const claveRegistro = document.getElementById("claveRegistro");
   const errorNombreRegistro = document.getElementById("errorNombreRegistro");
+  const errorEmpresaRegistro = document.getElementById("errorEmpresaRegistro");
   const errorEmailRegistro = document.getElementById("errorEmailRegistro");
   const errorClaveRegistro = document.getElementById("errorClaveRegistro");
   const registroExito = document.getElementById("registroExito");
+  const contenidoFormularioRegistro = document.getElementById("contenidoFormularioRegistro");
+  const tarjetaRegistroExitoso = document.getElementById("tarjetaRegistroExitoso");
 
   const recordarCheck = document.getElementById("recordarme");
 
@@ -71,6 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.mostrarRegistro = () => {
     formLogin.classList.add("d-none");
     formRegistro.classList.remove("d-none");
+    contenidoFormularioRegistro.classList.remove("d-none");
+    tarjetaRegistroExitoso.classList.add("d-none");
     limpiarErrores();
     limpiarMensajesGenerales();
   };
@@ -129,14 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!valido) return;
 
     activarSpinnerLogin();
-
-    if (recordarCheck.checked) {
-      localStorage.setItem("emailRecordado", emailValor);
-    } else {
-      localStorage.removeItem("emailRecordado");
-    }
-
-    activarSpinnerLogin();
     const inicio = Date.now();
 
     if (recordarCheck.checked) {
@@ -168,7 +166,14 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "index.html";
       } else {
         desactivarSpinnerLogin();
-        errorGeneral.textContent = "Correo o contraseña incorrectos.";
+        let mensaje = "Correo o contraseña incorrectos.";
+        if (res.status === 403) {
+          const mensajeServidor = await res.text();
+          mensaje = mensajeServidor
+            ? mensajeServidor.replace(/^"|"$/g, "")
+            : "La cuenta todavía no se encuentra habilitada.";
+        }
+        errorGeneral.textContent = mensaje;
         errorGeneral.classList.remove("d-none");
       }
     } catch {
@@ -194,6 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
       setError(nombreRegistro, errorNombreRegistro, "Ingresá tu nombre.");
       valido = false;
     }
+    if (!empresaRegistro.value.trim()) {
+      setError(empresaRegistro, errorEmpresaRegistro, "Ingresá el nombre de la empresa.");
+      valido = false;
+    }
 
     if (!emailValor) {
       setError(emailRegistro, errorEmailRegistro, "Ingresá tu correo.");
@@ -211,8 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!valido) return;
 
     activarSpinnerRegistro();
-
-    activarSpinnerRegistro();
     const inicio = Date.now();
 
     try {
@@ -221,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombreCompleto: nombreRegistro.value.toUpperCase(),
+          empresa: empresaRegistro.value.toUpperCase(),
           email: emailValor,
           password: claveRegistro.value
         }),
@@ -230,18 +238,37 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tiempoRestante > 0) await delay(tiempoRestante);
 
       if (res.ok) {
-        registroExito.textContent = "Cuenta creada correctamente. Ahora podés iniciar sesión.";
-        registroExito.classList.remove("d-none");
+        desactivarSpinnerRegistro();
         formRegistro.reset();
-
-        setTimeout(() => {
-          desactivarSpinnerRegistro();
-          mostrarLogin();
-        }, 2000);
+        contenidoFormularioRegistro.classList.add("d-none");
+        tarjetaRegistroExitoso.classList.remove("d-none");
 
       } else {
         desactivarSpinnerRegistro();
-        setError(emailRegistro, errorEmailRegistro, "El correo ya está registrado.");
+        let datosError = null;
+        try {
+          datosError = await res.json();
+        } catch {
+          datosError = null;
+        }
+
+        let mensaje = res.status === 409
+          ? "El correo ya está registrado."
+          : "No se pudo crear la cuenta.";
+
+        if (datosError?.message) mensaje = datosError.message;
+        else if (datosError?.mensaje) mensaje = datosError.mensaje;
+        else if (Array.isArray(datosError) && datosError[0]?.description)
+          mensaje = datosError[0].description;
+
+        if (mensaje.toLowerCase().includes("empresa")) {
+          setError(empresaRegistro, errorEmpresaRegistro, mensaje);
+        } else if (mensaje.toLowerCase().includes("contraseña") ||
+                   mensaje.toLowerCase().includes("password")) {
+          setError(claveRegistro, errorClaveRegistro, mensaje);
+        } else {
+          setError(emailRegistro, errorEmailRegistro, mensaje);
+        }
       }
     } catch {
       await delay(2000);

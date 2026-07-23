@@ -93,134 +93,181 @@ namespace GestionRRHH.Controllers
         [HttpPost("AsistenciaHorario")]
         public async Task<IActionResult> ObtenerAsistenciaHorario()
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var usuario = await _context.Users
-                .AsNoTracking()
-                .Where(u => u.Id == userId)
-                .Select(u => new { u.Email })
-                .FirstOrDefaultAsync();
-
-
-            var emailUsuario = usuario.Email.Trim().ToLower();
-
-            var empleado = await _context.Empleado
-                .AsNoTracking()
-                .Where(e => e.Email.ToLower() == emailUsuario)
-                .Select(e => new { e.Id, e.NombreCompleto })
-                .FirstOrDefaultAsync();
-
-            var hoy = DateTime.Today;
-
-            var horariosEmpleado = await _context.Horario
-                .AsNoTracking()
-                .Where(h => h.EmpleadoId == empleado.Id)
-                .OrderByDescending(h => h.Id)
-                .ToListAsync();
-
-            var horarioDb = horariosEmpleado.FirstOrDefault(h => DiaHabilitado(h, hoy.DayOfWeek))
-                ?? horariosEmpleado.FirstOrDefault();
-
-            var semanaActiva = horarioDb != null ? ObtenerSemanaRotativaActiva(horarioDb, hoy) : null;
-            var esRotativo = horarioDb != null && (horarioDb.TipoHorario == TipoHorario.ROTATIVO || horarioDb.EsRotativo);
-            var tipoHorarioDia = horarioDb?.TipoHorario ?? TipoHorario.CONTINUO;
-            var horarioInicio = horarioDb?.HorarioInicio ?? TimeSpan.Zero;
-            var horarioFin = horarioDb?.HorarioFin ?? TimeSpan.Zero;
-            var segundoHorarioInicio = horarioDb?.SegundoHorarioInicio ?? TimeSpan.Zero;
-            var segundoHorarioFin = horarioDb?.SegundoHorarioFin ?? TimeSpan.Zero;
-
-            if (semanaActiva != null &&
-                TimeSpan.TryParse(semanaActiva.HorarioInicio, out var inicioRotativo) &&
-                TimeSpan.TryParse(semanaActiva.HorarioFin, out var finRotativo))
+            try
             {
-                tipoHorarioDia = (TipoHorario)semanaActiva.TipoHorario;
-                horarioInicio = inicioRotativo;
-                horarioFin = finRotativo;
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (tipoHorarioDia == TipoHorario.ALTERNO &&
-                    TimeSpan.TryParse(semanaActiva.SegundoHorarioInicio, out var segundoInicioRotativo) &&
-                    TimeSpan.TryParse(semanaActiva.SegundoHorarioFin, out var segundoFinRotativo))
+                if (string.IsNullOrWhiteSpace(userId))
+                    return Ok(RespuestaSinDatos("No se encontró el usuario de la sesión."));
+
+                var usuario = await _context.Users
+                    .AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.Email })
+                    .FirstOrDefaultAsync();
+
+                if (usuario == null || string.IsNullOrWhiteSpace(usuario.Email))
+                    return Ok(RespuestaSinDatos("No se encontró el usuario de la sesión."));
+
+                var emailUsuario = usuario.Email.Trim().ToLower();
+
+                var empleado = await _context.Empleado
+                    .AsNoTracking()
+                    .Where(e => e.UsuarioId == userId)
+                    .Select(e => new { e.Id, e.NombreCompleto, e.Email })
+                    .FirstOrDefaultAsync();
+
+                if (empleado == null)
                 {
-                    segundoHorarioInicio = segundoInicioRotativo;
-                    segundoHorarioFin = segundoFinRotativo;
+                    var empleadosConEmail = await _context.Empleado
+                        .AsNoTracking()
+                        .Where(e => e.Email != null)
+                        .Select(e => new { e.Id, e.NombreCompleto, e.Email })
+                        .ToListAsync();
+
+                    empleado = empleadosConEmail.FirstOrDefault(e =>
+                        e.Email.Trim().ToLower() == emailUsuario);
                 }
-                else
+
+                if (empleado == null)
+                    return Ok(RespuestaSinDatos("No se encontró un empleado asociado al usuario actual."));
+
+                var hoy = DateTime.Today;
+
+                var horariosEmpleado = await _context.Horario
+                    .AsNoTracking()
+                    .Where(h => h.EmpleadoId == empleado.Id)
+                    .OrderByDescending(h => h.Id)
+                    .ToListAsync();
+
+                var horarioDb = horariosEmpleado.FirstOrDefault(h => DiaHabilitado(h, hoy.DayOfWeek))
+                    ?? horariosEmpleado.FirstOrDefault();
+
+                var semanaActiva = horarioDb != null ? ObtenerSemanaRotativaActiva(horarioDb, hoy) : null;
+                var esRotativo = horarioDb != null && (horarioDb.TipoHorario == TipoHorario.ROTATIVO || horarioDb.EsRotativo);
+                var tipoHorarioDia = horarioDb?.TipoHorario ?? TipoHorario.CONTINUO;
+                var horarioInicio = horarioDb?.HorarioInicio ?? TimeSpan.Zero;
+                var horarioFin = horarioDb?.HorarioFin ?? TimeSpan.Zero;
+                var segundoHorarioInicio = horarioDb?.SegundoHorarioInicio ?? TimeSpan.Zero;
+                var segundoHorarioFin = horarioDb?.SegundoHorarioFin ?? TimeSpan.Zero;
+
+                if (semanaActiva != null &&
+                    TimeSpan.TryParse(semanaActiva.HorarioInicio, out var inicioRotativo) &&
+                    TimeSpan.TryParse(semanaActiva.HorarioFin, out var finRotativo))
                 {
-                    segundoHorarioInicio = TimeSpan.Zero;
-                    segundoHorarioFin = TimeSpan.Zero;
+                    tipoHorarioDia = (TipoHorario)semanaActiva.TipoHorario;
+                    horarioInicio = inicioRotativo;
+                    horarioFin = finRotativo;
+
+                    if (tipoHorarioDia == TipoHorario.ALTERNO &&
+                        TimeSpan.TryParse(semanaActiva.SegundoHorarioInicio, out var segundoInicioRotativo) &&
+                        TimeSpan.TryParse(semanaActiva.SegundoHorarioFin, out var segundoFinRotativo))
+                    {
+                        segundoHorarioInicio = segundoInicioRotativo;
+                        segundoHorarioFin = segundoFinRotativo;
+                    }
+                    else
+                    {
+                        segundoHorarioInicio = TimeSpan.Zero;
+                        segundoHorarioFin = TimeSpan.Zero;
+                    }
                 }
+
+                var horario = horarioDb == null ? null : new
+                {
+                    TipoHorarioString = esRotativo ? TipoHorario.ROTATIVO.ToString() : horarioDb.TipoHorario.ToString(),
+                    TipoHorarioDiaString = tipoHorarioDia.ToString(),
+                    TurnoRotativo = semanaActiva?.Turno,
+                    SemanaRotativa = semanaActiva?.Semana,
+                    HorarioInicioString = FormatearHora(horarioInicio),
+                    HorarioFinString = FormatearHora(horarioFin),
+                    SegundoHorarioInicioString = tipoHorarioDia == TipoHorario.ALTERNO ? FormatearHora(segundoHorarioInicio) : null,
+                    SegundoHorarioFinString = tipoHorarioDia == TipoHorario.ALTERNO ? FormatearHora(segundoHorarioFin) : null,
+                    horarioDb.Lunes,
+                    horarioDb.Martes,
+                    horarioDb.Miercoles,
+                    horarioDb.Jueves,
+                    horarioDb.Viernes,
+                    horarioDb.Sabado,
+                    horarioDb.Domingo
+                };
+
+                var asistenciaHoyDb = await _context.Asistencia
+                    .AsNoTracking()
+                    .Where(a => a.EmpleadoId == empleado.Id && a.Fecha >= hoy && a.Fecha < hoy.AddDays(1))
+                    .FirstOrDefaultAsync();
+
+                var asistenciaHoy = asistenciaHoyDb == null ? null : new
+                {
+                    EstadoString = asistenciaHoyDb.Estado.ToString(),
+                    PrimerEntradaString = asistenciaHoyDb.PrimerEntrada.HasValue ? asistenciaHoyDb.PrimerEntrada.Value.ToString(@"hh\:mm") : null,
+                    PrimerSalidaString = asistenciaHoyDb.PrimerSalida.HasValue ? asistenciaHoyDb.PrimerSalida.Value.ToString(@"hh\:mm") : null,
+                    SegundaEntradaString = asistenciaHoyDb.SegundaEntrada.HasValue ? asistenciaHoyDb.SegundaEntrada.Value.ToString(@"hh\:mm") : null,
+                    SegundaSalidaString = asistenciaHoyDb.SegundaSalida.HasValue ? asistenciaHoyDb.SegundaSalida.Value.ToString(@"hh\:mm") : null,
+                    asistenciaHoyDb.FotoRuta,
+                    FechaString = asistenciaHoyDb.Fecha.ToString("dd/MM/yyyy")
+                };
+
+                var inicioSemana = hoy.AddDays(-(int)(hoy.DayOfWeek == DayOfWeek.Sunday ? 6 : hoy.DayOfWeek - DayOfWeek.Monday));
+                var finSemana = inicioSemana.AddDays(7);
+
+                var asistenciasSemana = await _context.Asistencia
+                    .AsNoTracking()
+                    .Where(a => a.EmpleadoId == empleado.Id && a.Fecha >= inicioSemana && a.Fecha < finSemana)
+                    .ToListAsync();
+
+                var resumenSemanal = asistenciasSemana
+                    .GroupBy(a => a.Estado.ToString())
+                    .Select(g => new { Estado = g.Key, Cantidad = g.Count() })
+                    .ToList();
+
+                var historialRecienteDb = await _context.Asistencia
+                    .AsNoTracking()
+                    .Where(a => a.EmpleadoId == empleado.Id)
+                    .OrderByDescending(a => a.Fecha)
+                    .Take(5)
+                    .ToListAsync();
+
+                var historialReciente = historialRecienteDb
+                    .Select(a => new
+                    {
+                        a.Fecha,
+                        FechaString = a.Fecha.ToString("dd/MM/yyyy"),
+                        EstadoString = a.Estado.ToString(),
+                        PrimerEntradaString = a.PrimerEntrada.HasValue ? a.PrimerEntrada.Value.ToString(@"hh\:mm") : null,
+                        PrimerSalidaString = a.PrimerSalida.HasValue ? a.PrimerSalida.Value.ToString(@"hh\:mm") : null,
+                        SegundaEntradaString = a.SegundaEntrada.HasValue ? a.SegundaEntrada.Value.ToString(@"hh\:mm") : null,
+                        SegundaSalidaString = a.SegundaSalida.HasValue ? a.SegundaSalida.Value.ToString(@"hh\:mm") : null
+                    })
+                    .ToList();
+
+                return Ok(new
+                {
+                    Empleado = empleado.NombreCompleto,
+                    Horario = horario,
+                    AsistenciaHoy = asistenciaHoy,
+                    ResumenSemanal = resumenSemanal,
+                    HistorialReciente = historialReciente
+                });
             }
-
-            var horario = horarioDb == null ? null : new
+            catch (Exception ex)
             {
-                TipoHorarioString = esRotativo ? TipoHorario.ROTATIVO.ToString() : horarioDb.TipoHorarioString,
-                TipoHorarioDiaString = tipoHorarioDia.ToString(),
-                TurnoRotativo = semanaActiva?.Turno,
-                SemanaRotativa = semanaActiva?.Semana,
-                HorarioInicioString = FormatearHora(horarioInicio),
-                HorarioFinString = FormatearHora(horarioFin),
-                SegundoHorarioInicioString = tipoHorarioDia == TipoHorario.ALTERNO ? FormatearHora(segundoHorarioInicio) : null,
-                SegundoHorarioFinString = tipoHorarioDia == TipoHorario.ALTERNO ? FormatearHora(segundoHorarioFin) : null,
-                horarioDb.Lunes,
-                horarioDb.Martes,
-                horarioDb.Miercoles,
-                horarioDb.Jueves,
-                horarioDb.Viernes,
-                horarioDb.Sabado,
-                horarioDb.Domingo
+                return Ok(RespuestaSinDatos($"Error al obtener la asistencia y el horario del usuario: {ex.GetBaseException().Message}"));
+            }
+        }
+
+        private static object RespuestaSinDatos(string mensaje)
+        {
+            return new
+            {
+                SinDatos = true,
+                Mensaje = mensaje,
+                Empleado = "Sin Registro",
+                Horario = (object)null,
+                AsistenciaHoy = (object)null,
+                ResumenSemanal = Array.Empty<object>(),
+                HistorialReciente = Array.Empty<object>()
             };
-
-            var asistenciaHoy = await _context.Asistencia
-                .AsNoTracking()
-                .Where(a => a.EmpleadoId == empleado.Id && a.Fecha.Date == hoy)
-                .Select(a => new
-                {
-                    a.EstadoString,
-                    a.PrimerEntradaString,
-                    a.PrimerSalidaString,
-                    a.SegundaEntradaString,
-                    a.SegundaSalidaString,
-                    a.FotoRuta,
-                    FechaString = a.Fecha.ToString("dd/MM/yyyy")
-                })
-                .FirstOrDefaultAsync();
-
-            var inicioSemana = hoy.AddDays(-(int)(hoy.DayOfWeek == DayOfWeek.Sunday ? 6 : hoy.DayOfWeek - DayOfWeek.Monday));
-            var finSemana = inicioSemana.AddDays(6);
-
-            var resumenSemanal = _context.Asistencia
-                .AsNoTracking()
-                .Where(a => a.EmpleadoId == empleado.Id && a.Fecha >= inicioSemana && a.Fecha <= finSemana)
-                .AsEnumerable() 
-                .GroupBy(a => a.EstadoString ?? "SIN REGISTRO")
-                .Select(g => new { Estado = g.Key, Cantidad = g.Count() })
-                .ToList();
-
-            var historialReciente = await _context.Asistencia
-                .AsNoTracking()
-                .Where(a => a.EmpleadoId == empleado.Id)
-                .OrderByDescending(a => a.Fecha)
-                .Take(5)
-                .Select(a => new
-                {
-                    a.Fecha,
-                    FechaString = a.Fecha.ToString("dd/MM/yyyy"),
-                    a.EstadoString,
-                    a.PrimerEntradaString,
-                    a.PrimerSalidaString,
-                    a.SegundaEntradaString,
-                    a.SegundaSalidaString
-                })
-                .ToListAsync();
-
-            return Ok(new
-            {
-                Empleado = empleado.NombreCompleto,
-                Horario = horario,
-                AsistenciaHoy = asistenciaHoy,
-                ResumenSemanal = resumenSemanal,
-                HistorialReciente = historialReciente
-            });
         }
 
     }

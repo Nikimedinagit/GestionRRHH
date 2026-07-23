@@ -7,6 +7,13 @@ async function cargarProximoFeriado() {
         const response = await authFetch('PanelPrincipal/proximo-festivo');
         const feriado = await response.json();
 
+        if (!feriado) {
+            document.getElementById('fecha-festivo').textContent = "Sin feriados";
+            document.getElementById('feriado-nombre').textContent = "No hay feriados registrados";
+            document.getElementById('feriado-tipo').textContent = "";
+            return;
+        }
+
         const fecha = new Date(feriado.fecha);
 
         const dia = fecha.getDate();
@@ -270,7 +277,7 @@ function mostrarCardSegunRol() {
         $("#CardAsitencia, #CardTiempo, #CardVacaciones, #CardMiEquipo, #CardEstadoOficina").removeClass("d-none");
     }
 
-    if (rol === "ADMINISTRADOR") {
+    if (rol === "ADMINISTRADOR" || rol === "DESARROLLADOR") {
         $("#CardResumenGeneral").removeClass("d-none");
     }
 }
@@ -296,7 +303,7 @@ function cargarLasFuncionesInicio() {
         mostrarEstadoOficina();
     }
 
-    if (rol === "ADMINISTRADOR") {
+    if (rol === "ADMINISTRADOR" || rol === "DESARROLLADOR") {
         mostrarResumenAdministrador();
     }
 }
