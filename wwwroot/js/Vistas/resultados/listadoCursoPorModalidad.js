@@ -29,30 +29,30 @@ async function ObtenerCursosPorModalidad() {
 
 // =================================== Mostrar Listado de Cursos por Modalidad ===================================
 function MostrarCursosPorModalidad(data) {
-    const tbody = $("#listadoCursosPorModalidad");
-    tbody.empty();
+  const tbody = $("#listadoCursosPorModalidad");
+  tbody.empty();
 
-    if (!data || data.length === 0) {
-        tbody.append(`
+  if (!data || data.length === 0) {
+    tbody.append(`
             <tr>
                 <td class="text-start">
                     No se encontraron resultados
                 </td>
             </tr>
         `);
-        return;
-    }
-    const modalidadColor = {
-        PRESENCIAL: "badge-presencial",
-        VIRTUAL: "badge-virtual",
-        MIXTO: "badge-mixto",
-        "SIN MODALIDAD": "badge-default",
-    };
+    return;
+  }
+  const modalidadColor = {
+    PRESENCIAL: "badge-presencial",
+    VIRTUAL: "badge-virtual",
+    MIXTO: "badge-mixto",
+    "SIN MODALIDAD": "badge-default",
+  };
 
-    data.forEach((modalidad) => {
-        const modalidadTexto = (modalidad.modalidad || "SIN MODALIDAD").toUpperCase();
-        const badgeClass = modalidadColor[modalidadTexto] || "badge-default";
-        const badgeHtml = `
+  data.forEach((modalidad) => {
+    const modalidadTexto = (modalidad.modalidad || "SIN MODALIDAD").toUpperCase();
+    const badgeClass = modalidadColor[modalidadTexto] || "badge-default";
+    const badgeHtml = `
             <span class="${badgeClass} fw-bold"
                   style="
                     display:inline-block;
@@ -64,23 +64,23 @@ function MostrarCursosPorModalidad(data) {
                 ${modalidadTexto}
             </span>
         `;
-        tbody.append(`
+    tbody.append(`
             <tr style="background:#e8f0ff !important;">
                 <td class="fw-bold text-start text-wrap">
                     Modalidad: ${badgeHtml}
                 </td>
             </tr>
         `);
-        modalidad.cursos.forEach((curso) => {
-            tbody.append(`
+    modalidad.cursos.forEach((curso) => {
+      tbody.append(`
                 <tr>
                     <td class="text-start text-wrap">
                         ${curso.nombreCurso}
                     </td>
                 </tr>
             `);
-        });
     });
+  });
 }
 
 
@@ -200,7 +200,7 @@ async function GenerarInformePdfCursosPorModalidad() {
       doc.internal.pageSize.getHeight() - 10
     );
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }

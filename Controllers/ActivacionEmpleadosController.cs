@@ -9,7 +9,6 @@ using GestionRRHH.Models.General;
 using Microsoft.AspNetCore.Identity;
 using GestionRRHH.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
-using GestionRRHH.Models.Dto;
 
 namespace GestionRRHH.Controllers
 {   

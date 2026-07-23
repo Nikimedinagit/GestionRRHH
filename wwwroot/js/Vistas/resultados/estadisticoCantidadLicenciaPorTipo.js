@@ -249,7 +249,7 @@ async function GenerarInformePdfCantidadLicenciasPorTipo() {
         doc.setFontSize(9);
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
-        doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+        doc.text("www.LoguiSoft.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
     }
 
 
@@ -259,7 +259,7 @@ async function GenerarInformePdfCantidadLicenciasPorTipo() {
         doc.save("Informe_Cantidad_De_Licencia_Por_Tipo.pdf");
         return;
     }
-    
+
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);
 

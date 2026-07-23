@@ -306,6 +306,7 @@ table tbody tr {
 #panelCurriculum,
 #panelReciboSueldo,
 #panelHoraExtra,
+#panelCalculoHoraExtra,
 #panelJustificacion {
   position: fixed;
   top: 50%;
@@ -352,6 +353,7 @@ table tbody tr {
 #panelCurriculum.abierto,
 #panelReciboSueldo.abierto,
 #panelHoraExtra.abierto,
+#panelCalculoHoraExtra.abierto,
 #panelJustificacion.abierto {
   right: 0;
 }
@@ -680,6 +682,7 @@ textarea.form-control:not(:placeholder-shown)+label {
   #panelCurriculum,
   #panelReciboSueldo,
   #panelHoraExtra,
+  #panelCalculoHoraExtra,
   #panelJustificacion {
     max-width: 50vw;
     max-height: 80vh;
@@ -709,6 +712,7 @@ textarea.form-control:not(:placeholder-shown)+label {
   #panelCurriculum,
   #panelReciboSueldo,
   #panelHoraExtra,
+  #panelCalculoHoraExtra,
   #panelJustificacion {
     max-width: 70vw;
     max-height: 70vh;
@@ -739,6 +743,7 @@ textarea.form-control:not(:placeholder-shown)+label {
   #panelCurriculum,
   #panelReciboSueldo,
   #panelHoraExtra,
+  #panelCalculoHoraExtra,
   #panelJustificacion {
     max-width: 90vw;
     max-height: 60vh;
@@ -746,6 +751,15 @@ textarea.form-control:not(:placeholder-shown)+label {
     border-radius: 6px 0 0 6px;
   }
 
+}
+
+@media (max-width: 767.98px) {
+  .btn-filtro-movil-ancho {
+    display: block;
+    width: 100% !important;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -1486,14 +1500,22 @@ body.modal-asistencias-dia-abierto {
 /* INICIO GESTION DOCUMENTAL: CV Y RECIBOS */
 #panelCurriculum,
 #panelReciboSueldo,
-#panelHoraExtra {
+#panelHoraExtra,
+#panelCalculoHoraExtra {
   width: min(620px, 72vw);
 }
 
 #panelCurriculum .form-control:focus,
 #panelReciboSueldo .form-control:focus,
-#panelHoraExtra .form-control:focus {
+#panelHoraExtra .form-control:focus,
+#panelCalculoHoraExtra .form-control:focus {
   transform: none;
+}
+
+.ayuda-calculo-horas {
+  color: #5f6b76;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 #PeriodoReciboSueldo,
@@ -2880,4 +2902,37 @@ TIPO DE LICENCIA-TIPO DE LICENCIA - LOCALIDIAD */
   white-space: normal !important;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/* Panel de horarios adaptado a pantallas móviles */
+@media (max-width: 767.98px) {
+  #panelHorario {
+    width: calc(100vw - 1rem) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1rem) !important;
+    right: calc(-100vw - 1rem);
+    padding: 14px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  #panelHorario.abierto {
+    right: 0 !important;
+  }
+
+  #panelHorario .panel-body,
+  #panelHorario #formHorario,
+  #panelHorario .form-grid {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #panelHorario .panel-footer {
+    position: sticky;
+    bottom: 0;
+    padding-top: 0.75rem;
+    padding-bottom: 0.15rem;
+    background: #ffffff;
+  }
 }

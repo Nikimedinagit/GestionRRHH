@@ -205,6 +205,101 @@ body {
   color: #001F3D;
 }
 
+.social-links {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 48px;
+  margin: 0;
+  transition: width 0.2s ease;
+}
+
+.social-links:hover,
+.social-links:focus-within {
+  width: 272px;
+}
+
+.form-section .social-mascota {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  object-fit: contain;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid #e3e7eb;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 7px 16px rgba(33, 43, 54, 0.14);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.social-links:hover .social-mascota {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 9px 20px rgba(0, 45, 91, 0.28);
+}
+
+.form-section .social-link {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #e3e7eb;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 7px 16px rgba(33, 43, 54, 0.12);
+  font-size: 1.35rem;
+  text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-10px) scale(0.85);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-links:hover .social-link,
+.social-links:focus-within .social-link {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0) scale(1);
+}
+
+.form-section .social-link:hover,
+.form-section .social-link:focus-visible {
+  color: #ffffff !important;
+  text-decoration: none;
+  background-color: #002D5B;
+  border-color: #002D5B;
+  box-shadow: 0 9px 20px rgba(0, 45, 91, 0.28);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+.social-web {
+  color: #52606d !important;
+}
+
+.social-instagram {
+  color: #e1306c !important;
+}
+
+.social-facebook {
+  color: #1877f2 !important;
+}
+
+.social-youtube {
+  color: #ff0000 !important;
+}
+
 
 
 @media (max-width: 767px) {
@@ -244,6 +339,31 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  .social-links {
+    gap: 9px;
+    left: 12px;
+    bottom: 12px;
+    width: 44px;
+  }
+
+  .social-links:hover,
+  .social-links:focus-within {
+    width: 240px;
+  }
+
+  .form-section .social-link {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1.2rem;
+  }
+
+  .form-section .social-mascota {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
   }
 }
 

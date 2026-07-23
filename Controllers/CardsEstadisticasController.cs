@@ -323,7 +323,6 @@ public class CardsEstadisticasController : ControllerBase
             : 0;
 
         int totalEmpleadosEvaluados = listaEvaluaciones
-            .Where(e => e.EmpleadoId != null)
             .Select(e => e.EmpleadoId)
             .Distinct()
             .Count();

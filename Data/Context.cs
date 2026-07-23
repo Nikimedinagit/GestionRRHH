@@ -107,6 +107,8 @@ public class Context : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey("EmpresaId")
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity(entidad.ClrType)
+            .HasIndex("EmpresaId");
 
         var parametro = Expression.Parameter(entidad.ClrType, "entidad");
         var empresaPropiedad = Expression.Call(
@@ -120,6 +122,12 @@ public class Context : IdentityDbContext<ApplicationUser>
         var filtro = Expression.OrElse(esDesarrollador, Expression.Equal(empresaPropiedad, empresaActual));
         modelBuilder.Entity(entidad.ClrType).HasQueryFilter(Expression.Lambda(filtro, parametro));
     }
+
+    modelBuilder.Entity<Notificaciones>()
+        .HasIndex("EmpresaId", "FechaCreacion");
+
+    modelBuilder.Entity<Empleado>()
+        .HasIndex(e => e.Email);
 }
 
     public override int SaveChanges()
@@ -137,7 +145,9 @@ public class Context : IdentityDbContext<ApplicationUser>
     private void AsignarEmpresa()
     {
         foreach (var entrada in ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Added && e.Metadata.FindProperty("EmpresaId") != null))
+            .Where(e => e.State == EntityState.Added &&
+                e.Metadata.ClrType != typeof(ApplicationUser) &&
+                e.Metadata.FindProperty("EmpresaId") != null))
         {
             entrada.Property("EmpresaId").CurrentValue = EmpresaActualId;
         }

@@ -70,15 +70,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function CargarAvatarEncabezado() {
+  const avatarPredeterminado = "img/muñequito-azul.png";
+  const imagenesAvatar = document.querySelectorAll(".user-avtar");
+  imagenesAvatar.forEach((imagen) => {
+    imagen.onerror = () => {
+      imagen.onerror = null;
+      imagen.src = avatarPredeterminado;
+    };
+  });
+
   try {
     const respuesta = await authFetch("Perfil/Avatar");
-    if (!respuesta.ok) return;
+    if (!respuesta.ok) {
+      imagenesAvatar.forEach((imagen) => imagen.src = avatarPredeterminado);
+      return;
+    }
     const urlAvatar = URL.createObjectURL(await respuesta.blob());
-    document.querySelectorAll(".user-avtar").forEach((imagen) => {
+    imagenesAvatar.forEach((imagen) => {
       imagen.src = urlAvatar;
     });
   } catch {
-    // Si no existe un avatar personalizado, se conserva la imagen predeterminada.
+    imagenesAvatar.forEach((imagen) => imagen.src = avatarPredeterminado);
   }
 }
 

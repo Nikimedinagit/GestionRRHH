@@ -119,6 +119,43 @@ function CerrarPanelHoraExtra() {
   document.getElementById("fondoOscuro").classList.remove("visible");
 }
 
+function AbrirPanelCalculoHoraExtra() {
+  const hoy = new Date().toISOString().slice(0, 10);
+  document.getElementById("formCalculoHoraExtra").reset();
+  document.getElementById("CalculoHoraExtraDesde").value = hoy;
+  document.getElementById("CalculoHoraExtraHasta").value = hoy;
+  LimpiarErroresCalculoHoraExtra();
+  document.getElementById("panelCalculoHoraExtra").classList.add("abierto");
+  document.getElementById("fondoOscuro").classList.add("visible");
+}
+
+function CerrarPanelCalculoHoraExtra() {
+  document.getElementById("panelCalculoHoraExtra").classList.remove("abierto");
+  document.getElementById("fondoOscuro").classList.remove("visible");
+}
+
+function CerrarPanelesHoraExtra() {
+  CerrarPanelHoraExtra();
+  CerrarPanelCalculoHoraExtra();
+}
+
+function LimpiarErroresCalculoHoraExtra() {
+  document.querySelectorAll("#formCalculoHoraExtra .is-invalid")
+    .forEach((elemento) => elemento.classList.remove("is-invalid"));
+  document.querySelectorAll("#formCalculoHoraExtra .invalid-feedback")
+    .forEach((elemento) => {
+      elemento.textContent = "";
+      elemento.style.display = "none";
+    });
+}
+
+function ErrorCalculoHoraExtra(inputId, errorId, mensaje) {
+  document.getElementById(inputId).classList.add("is-invalid");
+  const error = document.getElementById(errorId);
+  error.textContent = mensaje;
+  error.style.display = "block";
+}
+
 function EditarHoraExtra(id) {
   const item = horasExtrasData.find((hora) => hora.id === id);
   if (!item) return;
@@ -171,20 +208,46 @@ async function GuardarHoraExtra() {
 }
 
 async function CalcularHorasExtrasAutomaticas() {
-  const hoy = new Date().toISOString().slice(0, 10);
-  const resultado = await Swal.fire({
-    title: "Calcular Horas Extras",
-    html: `<div class="text-start"><label class="form-label-fija">Desde</label><input id="calculoDesde" type="date" class="form-control mb-3" value="${hoy}"><label class="form-label-fija">Hasta</label><input id="calculoHasta" type="date" class="form-control" value="${hoy}"></div>`,
-    showCancelButton: true, confirmButtonText: "Calcular", cancelButtonText: "Cancelar",
-    customClass: { popup: "swal2-border-radius", confirmButton: "swal2-btn-activar", cancelButton: "swal2-btn-cancelar" },
-    preConfirm: () => ({ desde: document.getElementById("calculoDesde").value, hasta: document.getElementById("calculoHasta").value })
-  });
-  if (!resultado.isConfirmed) return;
-  const response = await authFetch("HorasExtras/CalcularAutomatico", { method: "POST", body: JSON.stringify(resultado.value) });
-  const data = await response.json();
-  if (!response.ok) return MostrarErrorCatch();
-  await ObtenerHorasExtras(false);
-  ToastHoraExtra("¡Se Generó Horas Extras!");
+  LimpiarErroresCalculoHoraExtra();
+  const dto = {
+    desde: document.getElementById("CalculoHoraExtraDesde").value,
+    hasta: document.getElementById("CalculoHoraExtraHasta").value,
+  };
+
+  if (!dto.desde) {
+    return ErrorCalculoHoraExtra("CalculoHoraExtraDesde", "errorCalculoHoraExtraDesde", "Ingrese la fecha desde.");
+  }
+  if (!dto.hasta) {
+    return ErrorCalculoHoraExtra("CalculoHoraExtraHasta", "errorCalculoHoraExtraHasta", "Ingrese la fecha hasta.");
+  }
+  if (dto.desde > dto.hasta) {
+    return ErrorCalculoHoraExtra("CalculoHoraExtraHasta", "errorCalculoHoraExtraHasta", "La fecha hasta debe ser igual o posterior a la fecha desde.");
+  }
+
+  const overlay = document.getElementById("overlayCalculandoHoraExtra");
+  const boton = document.getElementById("btnCalcularHorasExtras");
+  overlay.classList.remove("d-none");
+  boton.disabled = true;
+
+  try {
+    const response = await authFetch("HorasExtras/CalcularAutomatico", {
+      method: "POST",
+      body: JSON.stringify(dto),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.mensaje || "No se pudieron calcular las horas extras.");
+    }
+
+    CerrarPanelCalculoHoraExtra();
+    await ObtenerHorasExtras(false);
+    ToastHoraExtra(data.mensaje || "¡Horas Extras Generadas!");
+  } catch (error) {
+    MostrarErrorCatch(error.message);
+  } finally {
+    overlay.classList.add("d-none");
+    boton.disabled = false;
+  }
 }
 
 function AbrirModalAccionHoraExtra(id) {

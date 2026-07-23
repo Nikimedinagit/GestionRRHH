@@ -91,6 +91,17 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+    if (!await context.Empresa.IgnoreQueryFilters().AnyAsync())
+    {
+        context.Empresa.Add(new Empresa
+        {
+            Nombre = "EMPRESA PRINCIPAL",
+            Habilitada = true,
+            FechaRegistro = DateTime.Now
+        });
+        await context.SaveChangesAsync();
+    }
+
     foreach (var rol in new[] { "DESARROLLADOR", "ADMINISTRADOR", "RRHH", "SUPERVISOR", "EMPLEADO" })
         if (!await roleManager.RoleExistsAsync(rol))
             await roleManager.CreateAsync(new IdentityRole(rol));

@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (mensaje.toLowerCase().includes("empresa")) {
           setError(empresaRegistro, errorEmpresaRegistro, mensaje);
         } else if (mensaje.toLowerCase().includes("contraseña") ||
-                   mensaje.toLowerCase().includes("password")) {
+          mensaje.toLowerCase().includes("password")) {
           setError(claveRegistro, errorClaveRegistro, mensaje);
         } else {
           setError(emailRegistro, errorEmailRegistro, mensaje);

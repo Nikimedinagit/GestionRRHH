@@ -3,12 +3,12 @@
 // INICIALIZAR LOS ONCHANGE DE FILTROS /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
-ObtenerEmpleadosActivacion(false);
+  ObtenerEmpleadosActivacion(false);
 
-  $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", function() {
-      ObtenerEmpleadosActivacion(false)
+  $("#FiltroNombre, #FiltroEmail, #FiltroDNI").on("input", function () {
+    ObtenerEmpleadosActivacion(false)
   });
-  $("#FiltroActivo").on("change", function() {
+  $("#FiltroActivo").on("change", function () {
     ObtenerEmpleadosActivacion(false);
   });
 });
@@ -21,18 +21,18 @@ async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
-    try {
-  const nombre = document.getElementById("FiltroNombre").value || "";
-  const email = document.getElementById("FiltroEmail").value || "";
-  const dniValue = document.getElementById("FiltroDNI").value;
-  const activoValue = document.getElementById("FiltroActivo").value;
+  try {
+    const nombre = document.getElementById("FiltroNombre").value || "";
+    const email = document.getElementById("FiltroEmail").value || "";
+    const dniValue = document.getElementById("FiltroDNI").value;
+    const activoValue = document.getElementById("FiltroActivo").value;
 
-  const filtro = {
-    nombre: nombre,
-    email: email,
-    dNI: dniValue ? Number(dniValue) : null,
-    activo: activoValue !== "" ? parseInt(activoValue) : null
-  };
+    const filtro = {
+      nombre: nombre,
+      email: email,
+      dNI: dniValue ? Number(dniValue) : null,
+      activo: activoValue !== "" ? parseInt(activoValue) : null
+    };
 
 
     const res = await authFetch("ActivacionEmpleados/Filtrar", {
@@ -44,8 +44,8 @@ async function ObtenerEmpleadosActivacion(mostrarSpinner = true) {
   } catch (error) {
     MostrarErrorCatch();
   }
-  finally{
-    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } 
+  finally {
+    if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); }
   };
 }
 
@@ -60,7 +60,7 @@ var empleadosActivacionGlobal = [];
 // FUNCION PARA MOSTRAR LOS DATOS EN LA TABALA ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function MostrarEmpleadosActivacion(data) {
-  empleadosActivacionGlobal = data; 
+  empleadosActivacionGlobal = data;
   const tbody = $("#tablaActivacionEmpleadosBody");
   tbody.empty();
 
@@ -87,12 +87,12 @@ function MostrarEmpleadosActivacion(data) {
     }
     const fechaMostrar = item.fechaActivacionString
       ? (() => {
-          const partes = item.fechaActivacionString.split("T")[0].split("-");
-          return new Date(partes[0], partes[1] - 1, partes[2])
-                .toLocaleDateString("es-AR");
-        })()
+        const partes = item.fechaActivacionString.split("T")[0].split("-");
+        return new Date(partes[0], partes[1] - 1, partes[2])
+          .toLocaleDateString("es-AR");
+      })()
       : "No Activo";
-     tbody.append(`
+    tbody.append(`
       <tr>
         <td class="text-center ${filaClass} columna-fecha-activacion">
           ${fechaMostrar}
@@ -245,8 +245,8 @@ function MostrarVentanaActivarEmpleado(empleadoId, activacionId, activo) {
     cancelButtonText: "Cancelar",
     customClass: {
       popup: "swal2-custom-popup",
-      confirmButton: "swal2-btn-activar",   
-      cancelButton: "swal2-btn-cancelar",    
+      confirmButton: "swal2-btn-activar",
+      cancelButton: "swal2-btn-cancelar",
       title: "swal2-title-custom",
       htmlContainer: "swal2-content-center",
     },
@@ -309,7 +309,7 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
   try {
     const response = await authFetch('ActivacionEmpleados/Activar', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }, 
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
 
@@ -331,11 +331,11 @@ async function ActivarEmpleado(empleadoId, activacionId, rolSeleccionado) {
       icon: "success",
       iconColor: "#28a746d8",
       customClass: {
-          popup: "swal2-toast-success",
-          title: "swal2-toast-success-title",
-          icon: "swal2-toast-success-icon",
-        },
-    
+        popup: "swal2-toast-success",
+        title: "swal2-toast-success-title",
+        icon: "swal2-toast-success-icon",
+      },
+
     });
 
     ObtenerEmpleadosActivacion(false);
@@ -359,7 +359,7 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
 
   try {
     const response = await authFetch('ActivacionEmpleados/Desactivar', {
-      method: 'POST', 
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
@@ -380,11 +380,11 @@ async function DesactivarEmpleado(empleadoId, activacionId) {
       color: "#842029",
       icon: "success",
       iconColor: "#dc3545",
-       customClass: {
-          popup: "swal2-toast-rechazada",
-          title: "swal2-toast-rechazada-title",
-          icon: "swal2-toast-rechazada-icon",
-        },
+      customClass: {
+        popup: "swal2-toast-rechazada",
+        title: "swal2-toast-rechazada-title",
+        icon: "swal2-toast-rechazada-icon",
+      },
     });
 
     ObtenerEmpleadosActivacion(false);
@@ -485,9 +485,9 @@ async function GenerarInformePdfActivaciones() {
         a.empleadoNombreString,
         a.empleadoEmailString,
         a.empleadoDNIString,
-        a.rol,             
+        a.rol,
         a.fechaActivacionString,
-        a.activo ? "Activo" : "Inactivo" 
+        a.activo ? "Activo" : "Inactivo"
       ]),
       styles: { font: "helvetica", fontSize: 10 },
       headStyles: { fillColor: [19, 115, 204], textColor: 255, fontStyle: "bold" },
@@ -512,7 +512,7 @@ async function GenerarInformePdfActivaciones() {
     doc.setTextColor(100);
     doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
@@ -521,10 +521,10 @@ async function GenerarInformePdfActivaciones() {
 
   const esMobile = window.innerWidth < 768;
 
-    if (esMobile) {
-        doc.save("Informe_Activación.pdf");
-        return;
-    }
+  if (esMobile) {
+    doc.save("Informe_Activación.pdf");
+    return;
+  }
 
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);

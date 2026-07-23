@@ -92,9 +92,8 @@ function MostrarParticipacionPorCurso(data) {
   data.forEach((curso, idx) => {
     const collapseId = `collapseCurso_${idx}`;
     const modalidadTexto = (curso.modalidad || "SIN MODALIDAD").toUpperCase();
-    const badgeModalidad = `<span class="${
-      modalidadColor[modalidadTexto] || "badge-default"
-    } fw-bold" style="display:inline-block;padding:0.35em 0.65em;font-size:0.7rem;font-weight:600;border-radius:0.25rem;">${modalidadTexto}</span>`;
+    const badgeModalidad = `<span class="${modalidadColor[modalidadTexto] || "badge-default"
+      } fw-bold" style="display:inline-block;padding:0.35em 0.65em;font-size:0.7rem;font-weight:600;border-radius:0.25rem;">${modalidadTexto}</span>`;
 
 
     tabla.append(`
@@ -129,9 +128,9 @@ function MostrarParticipacionPorCurso(data) {
       const datosFila = isTablet
         ? `<td class="text-center fw-bold">${participantes}</td>
            <td class="text-center fw-bold">${badgeAsistentes}</td>
-           <td class="text-center fw-bold">${badgeAusentes}</td>` 
+           <td class="text-center fw-bold">${badgeAusentes}</td>`
         : `<td class="text-center fw-bold">${participantes}</td>
-           <td class="text-center fw-bold">${badgeAsistentes}</td>`; 
+           <td class="text-center fw-bold">${badgeAsistentes}</td>`;
 
       const detalleCols = isTablet
         ? `<div><b>Asistencia (%):</b> ${badgePorcentaje}</div>
@@ -210,10 +209,10 @@ async function GenerarInformePdfParticipacionPorCurso() {
     ? modalidadRaw == 1
       ? "Presencial"
       : modalidadRaw == 2
-      ? "Virtual"
-      : modalidadRaw == 3
-      ? "Mixta"
-      : ""
+        ? "Virtual"
+        : modalidadRaw == 3
+          ? "Mixta"
+          : ""
     : "";
 
   let filtros = [];
@@ -274,7 +273,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
     styles: {
       font: "helvetica",
       fontSize: 10,
-      cellPadding: 3, 
+      cellPadding: 3,
     },
     headStyles: {
       fillColor: [19, 115, 204],
@@ -303,7 +302,7 @@ async function GenerarInformePdfParticipacionPorCurso() {
       doc.internal.pageSize.getHeight() - 10
     );
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }

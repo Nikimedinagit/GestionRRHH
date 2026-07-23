@@ -378,7 +378,7 @@ async function GenerarInformePdfCursosPorEstado() {
       doc.internal.pageSize.getHeight() - 10
     );
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }

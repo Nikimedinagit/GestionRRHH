@@ -1,7 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 /// FUNCIONES PARA CARGAR NOTIFICACIONES /////////////////////////////////////////////
 
+const INTERVALO_NOTIFICACIONES_MS = 60000;
+let cargaNotificacionesEnCurso = false;
+let ultimaCargaNotificaciones = 0;
+let intervaloNotificacionesId = null;
+
 async function CargarNotificaciones(mostrarSpinner = true) {
+  if (cargaNotificacionesEnCurso || document.hidden) return;
+  cargaNotificacionesEnCurso = true;
 
   if (mostrarSpinner) mostrarPantallaCarga();
 
@@ -100,7 +107,11 @@ async function CargarNotificaciones(mostrarSpinner = true) {
     MostrarErrorCatch(error);
   }
 
-  finally { if (mostrarSpinner) { setTimeout(() => ocultarPantallaCarga(), 1200); } };
+  finally {
+    ultimaCargaNotificaciones = Date.now();
+    cargaNotificacionesEnCurso = false;
+    if (mostrarSpinner) setTimeout(() => ocultarPantallaCarga(), 1200);
+  }
 }
 
 async function MarcarComoLeida(id) {
@@ -131,11 +142,24 @@ async function MarcarTodasLeidas() {
   }
 }
 
+function IniciarActualizacionNotificaciones() {
+  if (intervaloNotificacionesId !== null) return;
+
   CargarNotificaciones();
+  intervaloNotificacionesId = window.setInterval(() => {
+    if (!document.hidden) CargarNotificaciones(false);
+  }, INTERVALO_NOTIFICACIONES_MS);
 
+  document.addEventListener("visibilitychange", () => {
+    const cargaVencida = Date.now() - ultimaCargaNotificaciones >= INTERVALO_NOTIFICACIONES_MS;
+    if (!document.hidden && cargaVencida) CargarNotificaciones(false);
+  });
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  setInterval(() => CargarNotificaciones(false), 2000);
-});
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", IniciarActualizacionNotificaciones, { once: true });
+} else {
+  IniciarActualizacionNotificaciones();
+}
 
 

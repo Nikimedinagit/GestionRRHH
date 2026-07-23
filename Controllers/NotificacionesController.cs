@@ -28,19 +28,26 @@ namespace GestionRRHH.Controllers
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value?.ToUpper();
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            IQueryable<Notificaciones> ObtenerNotificaciones = _context.Notificaciones;
+            var inicioMes = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var inicioMesSiguiente = inicioMes.AddMonths(1);
+            IQueryable<Notificaciones> ObtenerNotificaciones = _context.Notificaciones
+                .AsNoTracking()
+                .Where(n => n.FechaCreacion >= inicioMes && n.FechaCreacion < inicioMesSiguiente);
 
             if (rol == "EMPLEADO" || rol == "SUPERVISOR" || rol == "RRHH")
             {
-                var usuarioActual = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                var usuarioActual = await _context.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.Id == userId);
                 if (usuarioActual == null)
                     return Unauthorized("Usuario no encontrado.");
 
                 var emailActual = usuarioActual.Email.Trim().ToLower();
 
                 var empleadoActual = await _context.Empleado
+                    .AsNoTracking()
                     .Include(e => e.Puesto)
-                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+                    .FirstOrDefaultAsync(e => e.Email == emailActual);
 
                 if (empleadoActual == null)
                     return Ok(new List<Notificaciones>());
@@ -58,6 +65,7 @@ namespace GestionRRHH.Controllers
                 {
                     var sectorId = empleadoActual.Puesto?.SectorId;
                     var empleadosSector = await _context.Empleado
+                        .AsNoTracking()
                         .Where(e => e.Puesto.SectorId == sectorId)
                         .Select(e => e.Id.ToString())
                         .ToListAsync();
@@ -119,7 +127,9 @@ namespace GestionRRHH.Controllers
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value?.ToUpper();
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var usuarioActual = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var usuarioActual = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (usuarioActual == null)
                 return Unauthorized();
 
@@ -130,8 +140,9 @@ namespace GestionRRHH.Controllers
             if (rol != "ADMINISTRADOR")
             {
                 empleadoActual = await _context.Empleado
+                    .AsNoTracking()
                     .Include(e => e.Puesto)
-                    .FirstOrDefaultAsync(e => e.Email.Trim().ToLower() == emailActual);
+                    .FirstOrDefaultAsync(e => e.Email == emailActual);
 
                 if (empleadoActual == null)
                     return Ok(new { cantidad = 0 });
@@ -152,6 +163,7 @@ namespace GestionRRHH.Controllers
             {
                 var sectorId = empleadoActual.Puesto?.SectorId;
                 var empleadosSector = await _context.Empleado
+                    .AsNoTracking()
                     .Where(e => e.Puesto.SectorId == sectorId)
                     .Select(e => e.Id.ToString())
                     .ToListAsync();

@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WorkSync | Iniciar Sesión</title>
-  <link rel="shortcut icon" href="img/icono-logo.png" />
+  <title>LoguiSoft | RRHH</title>
+  <link rel="shortcut icon" href="img/muñequito-azul.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" />
 
@@ -17,7 +17,7 @@
     <div class="form-section">
       <form id="formLogin" novalidate>
         <div class="logo-container text-center">
-          <img src="./img/logo-completo.png" alt="Logo WorkSync" class="logo-img" />
+          <img src="./img/logo-rrhh.png" alt="Logo LoguiSoft" class="logo-img" />
           <p class="login-subtitle">Ingresá con tus credenciales para continuar.</p>
         </div>
 
@@ -54,50 +54,81 @@
           ¿No tenés cuenta?
           <a href="#" onclick="mostrarRegistro()" class="font-weight-bold text-primary">Crear Cuenta</a>
         </p>
+
+        <nav class="social-links" aria-label="Redes sociales de Loguisoft">
+          <img src="./img/muñequito-azul.png" class="social-mascota" alt="Mascota de Loguisoft" />
+          <a href="https://www.loguisoft.com/" target="_blank" rel="noopener noreferrer" class="social-link social-web"
+            aria-label="Sitio web de Loguisoft" title="Sitio web"><i class="mdi mdi-web"></i></a>
+          <a href="https://www.instagram.com/loguisoft" target="_blank" rel="noopener noreferrer"
+            class="social-link social-instagram" aria-label="Instagram de Loguisoft" title="Instagram"><i
+              class="mdi mdi-instagram"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61580325789127" target="_blank" rel="noopener noreferrer"
+            class="social-link social-facebook" aria-label="Facebook de Loguisoft" title="Facebook"><i
+              class="mdi mdi-facebook"></i></a>
+          <a href="https://www.youtube.com/playlist?list=PLAVyjbuYk3v909GAg4p_V6mlI8RVW3Gh7" target="_blank"
+            rel="noopener noreferrer" class="social-link social-youtube" aria-label="YouTube de Loguisoft"
+            title="YouTube"><i class="mdi mdi-youtube"></i></a>
+        </nav>
       </form>
 
       <form id="formRegistro" class="d-none" novalidate>
         <div id="contenidoFormularioRegistro">
-        <div class="logo-container text-center">
-          <img src="./img/logo-completo.png" alt="Logo WorkSync" class="logo-img" />
-          <p class="login-subtitle">Creá tu cuenta para empezar</p>
-        </div>
+          <div class="logo-container text-center">
+            <img src="./img/logo-rrhh.png" alt="Logo LoguiSoft" class="logo-img" />
+            <p class="login-subtitle">Creá tu cuenta para empezar</p>
+          </div>
 
-        <div class="form-group mb-4">
-          <label class="text-primary font-weight-bold small">Nombre Completo</label>
-          <input type="text" id="nombreRegistro" class="form-control" placeholder="Juan Pérez">
-          <div class="invalid-feedback" id="errorNombreRegistro"></div>
-        </div>
+          <div class="form-group mb-4">
+            <label class="text-primary font-weight-bold small">Nombre Completo</label>
+            <input type="text" id="nombreRegistro" class="form-control" placeholder="Juan Pérez">
+            <div class="invalid-feedback" id="errorNombreRegistro"></div>
+          </div>
 
-        <div class="form-group mb-4">
-          <label class="text-primary font-weight-bold small">Nombre de la Empresa</label>
-          <input type="text" id="empresaRegistro" class="form-control" placeholder="Mi Empresa">
-          <div class="invalid-feedback" id="errorEmpresaRegistro"></div>
-        </div>
+          <div class="form-group mb-4">
+            <label class="text-primary font-weight-bold small">Nombre de la Empresa</label>
+            <input type="text" id="empresaRegistro" class="form-control" placeholder="Mi Empresa">
+            <div class="invalid-feedback" id="errorEmpresaRegistro"></div>
+          </div>
 
-        <div class="form-group mb-4">
-          <label class="text-primary font-weight-bold small">Correo Electrónico</label>
-          <input type="email" id="emailRegistro" class="form-control" placeholder="correo@ejemplo.com">
-          <div class="invalid-feedback" id="errorEmailRegistro"></div>
-        </div>
+          <div class="form-group mb-4">
+            <label class="text-primary font-weight-bold small">Correo Electrónico</label>
+            <input type="email" id="emailRegistro" class="form-control" placeholder="correo@ejemplo.com">
+            <div class="invalid-feedback" id="errorEmailRegistro"></div>
+          </div>
 
-        <div class="form-group mb-4">
-          <label class="text-primary font-weight-bold small">Contraseña</label>
-          <input type="password" id="claveRegistro" class="form-control" placeholder="******">
-          <div class="invalid-feedback" id="errorClaveRegistro"></div>
-        </div>
-        <div id="registroExito" class="text-success small text-center mb-4 d-none"></div>
+          <div class="form-group mb-4">
+            <label class="text-primary font-weight-bold small">Contraseña</label>
+            <input type="password" id="claveRegistro" class="form-control" placeholder="******">
+            <div class="invalid-feedback" id="errorClaveRegistro"></div>
+          </div>
+          <div id="registroExito" class="text-success small text-center mb-4 d-none"></div>
 
-        <button id="btnRegistrar" type="submit" class="btn btn-primary btn-block btn-main font-weight-bold">
-          <span id="spinnerRegistro" class="spinner-border spinner-border-sm ml-2 d-none" role="status"></span>
-          <span id="textoBtnRegistro">Registrarse</span>
-        </button>
+          <button id="btnRegistrar" type="submit" class="btn btn-primary btn-block btn-main font-weight-bold">
+            <span id="spinnerRegistro" class="spinner-border spinner-border-sm ml-2 d-none" role="status"></span>
+            <span id="textoBtnRegistro">Registrarse</span>
+          </button>
 
 
-        <p class="text-center mt-4 small">
-          ¿Ya tenés cuenta?
-          <a href="#" onclick="mostrarLogin()" class="font-weight-bold text-primary">Iniciar sesión</a>
-        </p>
+          <p class="text-center mt-4 small">
+            ¿Ya tenés cuenta?
+            <a href="#" onclick="mostrarLogin()" class="font-weight-bold text-primary">Iniciar sesión</a>
+          </p>
+
+          <nav class="social-links" aria-label="Redes sociales de Loguisoft">
+            <img src="./img/muñequito-azul.png" class="social-mascota" alt="Mascota de Loguisoft" />
+            <a href="https://www.loguisoft.com/" target="_blank" rel="noopener noreferrer"
+              class="social-link social-web" aria-label="Sitio web de Loguisoft" title="Sitio web"><i
+                class="mdi mdi-web"></i></a>
+            <a href="https://www.instagram.com/loguisoft" target="_blank" rel="noopener noreferrer"
+              class="social-link social-instagram" aria-label="Instagram de Loguisoft" title="Instagram"><i
+                class="mdi mdi-instagram"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=61580325789127" target="_blank" rel="noopener noreferrer"
+              class="social-link social-facebook" aria-label="Facebook de Loguisoft" title="Facebook"><i
+                class="mdi mdi-facebook"></i></a>
+            <a href="https://www.youtube.com/playlist?list=PLAVyjbuYk3v909GAg4p_V6mlI8RVW3Gh7" target="_blank"
+              rel="noopener noreferrer" class="social-link social-youtube" aria-label="YouTube de Loguisoft"
+              title="YouTube"><i class="mdi mdi-youtube"></i></a>
+          </nav>
         </div>
 
         <div id="tarjetaRegistroExitoso" class="d-none">
@@ -112,8 +143,8 @@
             <p class="small text-muted mb-4">
               Antes de iniciar sesión, deberá ser habilitada por Loguisoft.
             </p>
-            <button type="button" class="btn btn-success btn-block font-weight-bold"
-              onclick="mostrarLogin()">Volver al Inicio de Sesión</button>
+            <button type="button" class="btn btn-success btn-block font-weight-bold" onclick="mostrarLogin()">Volver al
+              Inicio de Sesión</button>
           </div>
         </div>
       </form>
@@ -123,8 +154,8 @@
     <div class="image-section">
       <img src="./img/auth.jpg" alt="Ilustración" />
       <div class="overlay-text">
-        <h1>Gestioná tu equipo con WorkSync</h1>
-        <p>Dejá atrás planillas y procesos manuales. WorkSync digitaliza y organiza la gestión de tu personal para que
+        <h1>Gestioná tu equipo con LoguiSoft</h1>
+        <p>Dejá atrás planillas y procesos manuales. LoguiSoft digitaliza y organiza la gestión de tu personal para que
           tu empresa crezca de forma ordenada y eficiente.</p>
       </div>
     </div>

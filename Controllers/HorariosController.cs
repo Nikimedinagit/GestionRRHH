@@ -291,18 +291,11 @@ namespace GestionRRHH.Controllers
 
             if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
-                if (horario.HorarioInicio == null || horario.HorarioFin == null)
-                    return BadRequest("Debe completar el horario de inicio y fin.");
-
                 if (horario.HorarioInicio == horario.HorarioFin)
                     return BadRequest("El horario de inicio y fin no pueden ser iguales.");
             }
             else if (TieneSegundoTramo(horario.TipoHorario))
             {
-                if (horario.HorarioInicio == null || horario.HorarioFin == null ||
-                    horario.SegundoHorarioInicio == null || horario.SegundoHorarioFin == null)
-                    return BadRequest("Debe completar ambos horarios.");
-
                 if (horario.HorarioInicio == horario.HorarioFin &&
                     horario.SegundoHorarioInicio == horario.SegundoHorarioFin)
                     return BadRequest("Los horarios no pueden ser iguales.");
@@ -351,18 +344,11 @@ namespace GestionRRHH.Controllers
 
             if (horario.TipoHorario == TipoHorario.CONTINUO)
             {
-                if (horario.HorarioInicio == null || horario.HorarioFin == null)
-                    return BadRequest("Debe completar el horario de inicio y fin.");
-
                 if (horario.HorarioInicio == horario.HorarioFin)
                     return BadRequest("El horario de inicio y fin no pueden ser iguales.");
             }
             else if (TieneSegundoTramo(horario.TipoHorario))
             {
-                if (horario.HorarioInicio == null || horario.HorarioFin == null ||
-                    horario.SegundoHorarioInicio == null || horario.SegundoHorarioFin == null)
-                    return BadRequest("Debe completar ambos horarios.");
-
                 if (horario.HorarioInicio == horario.HorarioFin &&
                     horario.SegundoHorarioInicio == horario.SegundoHorarioFin)
                     return BadRequest("Los horarios no pueden ser iguales.");

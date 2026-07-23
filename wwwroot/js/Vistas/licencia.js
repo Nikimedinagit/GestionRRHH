@@ -1727,7 +1727,7 @@ async function GenerarInformePdfLicencias() {
     doc.setTextColor(100);
     doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
@@ -1740,7 +1740,7 @@ async function GenerarInformePdfLicencias() {
     doc.save("Informe_Licencias.pdf");
     return;
   }
-  
+
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
 

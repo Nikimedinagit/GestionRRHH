@@ -15,14 +15,14 @@
     </div>
   </div>
 
-  <div id="fondoOscuro" onclick="CerrarPanelHoraExtra()"></div>
+  <div id="fondoOscuro" onclick="CerrarPanelesHoraExtra()"></div>
 
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
     <div class="d-flex gap-3 flex-wrap">
       <button class="btn rounded btn-agregar py-1 px-2 border bg-white" onclick="AbrirPanelHoraExtra()">
         <i class="fa-solid fa-square-plus me-1" style="color:#3697E1;"></i><span>Registrar Manual</span>
       </button>
-      <button class="btn rounded btn-responsabilidades py-1 px-2 border bg-white" onclick="CalcularHorasExtrasAutomaticas()">
+      <button class="btn rounded btn-responsabilidades py-1 px-2 border bg-white" onclick="AbrirPanelCalculoHoraExtra()">
         <i class="bi bi-magic me-1" style="color:#198754;"></i><span>Calcular Automático</span>
       </button>
     </div>
@@ -68,7 +68,46 @@
         </div>
       </form>
     </div>
-    <div class="panel-footer mt-3"><button class="btn btn-cancelar" onclick="CerrarPanelHoraExtra()">Cancelar</button><button class="btn btn-guardar" onclick="GuardarHoraExtra()">Guardar</button></div>
+    <div class="panel-footer mt-3"><button type="button" class="btn btn-cancelar" onclick="CerrarPanelHoraExtra()">Cancelar</button><button type="button" class="btn btn-guardar" onclick="GuardarHoraExtra()">Guardar</button></div>
+  </div>
+
+  <div id="panelCalculoHoraExtra" aria-modal="true" role="dialog" aria-labelledby="panelTituloCalculoHoraExtra">
+    <div class="panel-header">
+      <h2 id="panelTituloCalculoHoraExtra" class="panel-title">Calcular Horas Extras Automáticas</h2>
+    </div>
+    <div class="panel-body">
+      <form id="formCalculoHoraExtra">
+        <div id="overlayCalculandoHoraExtra" class="overlay-guardando d-none">
+          <div class="contenido-carga card-carga-formulario shadow-sm p-2">
+            <h5 class="fw-bold text-dark mb-1">Calculando...</h5>
+            <div class="spinner-border text-primary spinner-grande my-1"></div>
+            <p class="text-muted mensaje-carga">Estamos revisando las asistencias<br><span class="dots"></span></p>
+          </div>
+        </div>
+
+        <div class="alert alert-light border d-flex gap-2 align-items-start mb-3 ayuda-calculo-horas" role="note">
+          <i class="bi bi-info-circle text-primary mt-1"></i>
+          <span>Seleccioná el período que querés procesar. El sistema calculará las horas extras desde las asistencias registradas.</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group position-relative mb-3">
+            <input id="CalculoHoraExtraDesde" type="date" class="form-control" />
+            <label for="CalculoHoraExtraDesde">Desde</label>
+            <div id="errorCalculoHoraExtraDesde" class="invalid-feedback"></div>
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input id="CalculoHoraExtraHasta" type="date" class="form-control" />
+            <label for="CalculoHoraExtraHasta">Hasta</label>
+            <div id="errorCalculoHoraExtraHasta" class="invalid-feedback"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-footer mt-3">
+      <button type="button" class="btn btn-cancelar" onclick="CerrarPanelCalculoHoraExtra()">Cancelar</button>
+      <button id="btnCalcularHorasExtras" type="button" class="btn btn-guardar" onclick="CalcularHorasExtrasAutomaticas()">Calcular</button>
+    </div>
   </div>
 </div>
 <script src="../js/Vistas/horasExtras.js"></script>

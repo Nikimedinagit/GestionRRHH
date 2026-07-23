@@ -197,10 +197,10 @@ async function GenerarInformePdfPromedioPorEmpleado() {
     ? modalidadRaw == 1
       ? "Presencial"
       : modalidadRaw == 2
-      ? "Virtual"
-      : modalidadRaw == 3
-      ? "Mixta"
-      : ""
+        ? "Virtual"
+        : modalidadRaw == 3
+          ? "Mixta"
+          : ""
     : "";
 
   let filtrosAplicadosArray = [];
@@ -278,7 +278,7 @@ async function GenerarInformePdfPromedioPorEmpleado() {
       doc.internal.pageSize.getHeight() - 10
     );
     doc.text(
-      "www.WorkSync.com",
+      "www.LoguiSoft.com",
       doc.internal.pageSize.getWidth() - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
@@ -292,7 +292,7 @@ async function GenerarInformePdfPromedioPorEmpleado() {
     doc.save("Informe_Promedio_De_Calificaciones_Por_Empleado.pdf");
     return;
   }
-  
+
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
 

@@ -7,7 +7,6 @@ function EscaparHtmlCuenta(valor) {
 function EstadoCuenta(cuenta) {
   if (EsCuentaDesarrolladora(cuenta)) return "PROTEGIDA";
   if (cuenta.habilitado && cuenta.empresaHabilitada) return "HABILITADA";
-  if (!cuenta.habilitado && !cuenta.empresaHabilitada) return "PENDIENTE";
   return "DESHABILITADA";
 }
 
@@ -33,23 +32,31 @@ async function ObtenerCuentas(mostrarSpinner = true) {
 function MostrarCuentas() {
   const texto = document.getElementById("buscarCuenta").value.trim().toLowerCase();
   const estado = document.getElementById("estadoCuentaBuscar").value;
-  const datos = cuentasData.filter((cuenta) => {
-    const coincideTexto = `${cuenta.nombreCompleto} ${cuenta.empresa} ${cuenta.email}`.toLowerCase().includes(texto);
-    const estadoActual = EstadoCuenta(cuenta);
-    return coincideTexto && (!estado || estadoActual === estado ||
-      (estado === "HABILITADA" && estadoActual === "PROTEGIDA"));
-  });
+  const ordenEstados = {
+    PROTEGIDA: 0,
+    HABILITADA: 1,
+    DESHABILITADA: 2,
+  };
+  const datos = cuentasData
+    .filter((cuenta) => {
+      const coincideTexto = `${cuenta.nombreCompleto} ${cuenta.empresa} ${cuenta.email}`.toLowerCase().includes(texto);
+      return coincideTexto && (!estado || EstadoCuenta(cuenta) === estado);
+    })
+    .sort((cuentaA, cuentaB) => {
+      const diferenciaEstado = ordenEstados[EstadoCuenta(cuentaA)] - ordenEstados[EstadoCuenta(cuentaB)];
+      if (diferenciaEstado !== 0) return diferenciaEstado;
+      return (cuentaA.empresa || "").localeCompare(cuentaB.empresa || "", "es", { sensitivity: "base" });
+    });
 
   document.getElementById("totalCuentas").textContent = cuentasData.length;
   document.getElementById("cuentasHabilitadas").textContent =
     cuentasData.filter((cuenta) => EstadoCuenta(cuenta) === "HABILITADA" || EstadoCuenta(cuenta) === "PROTEGIDA").length;
-  document.getElementById("cuentasPendientes").textContent =
-    cuentasData.filter((cuenta) => EstadoCuenta(cuenta) === "PENDIENTE").length;
+  document.getElementById("cuentasDeshabilitadas").textContent =
+    cuentasData.filter((cuenta) => EstadoCuenta(cuenta) === "DESHABILITADA").length;
 
   const estilos = {
     PROTEGIDA: ["#e7f1ff", "#256da6", "#0d6efd"],
     HABILITADA: ["#dff3e7", "#146c43", "#198754"],
-    PENDIENTE: ["#fff3cd", "#856404", "#ffc107"],
     DESHABILITADA: ["#f8d7da", "#842029", "#dc3545"]
   };
 
@@ -58,6 +65,7 @@ function MostrarCuentas() {
     const color = estilos[estadoActual];
     const protegida = EsCuentaDesarrolladora(cuenta);
     const activa = estadoActual === "HABILITADA";
+    const fondoTarjeta = estadoActual === "DESHABILITADA" ? "#f8d7da3b" : "#ffffff";
     const accion = protegida
       ? `<span class="small fw-bold" style="color:#256da6;"><i class="bi bi-lock-fill me-1"></i>CUENTA PROTEGIDA</span>`
       : `<button type="button" class="btn rounded py-1 px-2 border bg-white"
@@ -69,7 +77,7 @@ function MostrarCuentas() {
 
     return `<div class="col-12 col-md-6 col-lg-4 col-xl-3 d-flex">
       <div class="card border-0 shadow-sm rounded p-3 w-100 d-flex flex-column"
-        style="border-bottom:4px solid ${color[2]} !important;min-height:205px;">
+        style="border-bottom:4px solid ${color[2]} !important;background-color:${fondoTarjeta};min-height:205px;">
         <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
           <div class="p-2 rounded" style="background:${color[0]};color:${color[1]};">
             <i class="bi ${protegida ? "bi-shield-lock" : "bi-building"} fs-5"></i>

@@ -309,7 +309,7 @@ async function GenerarInformePdfListadoAsistenciaEmpeladoSector() {
         doc.setFontSize(9);
         doc.setTextColor(100);
         doc.text(`Página ${i} de ${pageCount}`, 14, doc.internal.pageSize.getHeight() - 10);
-        doc.text("www.WorkSync.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+        doc.text("www.LoguiSoft.com", doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: "right" });
     }
 
     const esMobile = window.innerWidth < 768;

@@ -19,7 +19,7 @@
   </div>
 
   <div class="d-flex justify-content-end align-items-center mb-3">
-    <button id="btnMostrarFiltros" class="btn rounded btn-filtro py-1 px-2 border bg-white"
+    <button id="btnMostrarFiltros" class="btn rounded btn-filtro btn-filtro-movil-ancho py-1 px-2 border bg-white"
       onclick="toggleFiltros()">
       <i class="fa-solid fa-arrow-down-wide-short me-1" style="color:#F0AD4E;"></i>
       <span>Filtros</span>
@@ -36,8 +36,8 @@
         <label for="estadoCuentaBuscar" class="form-label-fija">Estado</label>
         <select id="estadoCuentaBuscar" class="form-control filtro-select">
           <option value="">[Todos]</option>
+          <option value="PROTEGIDA">PROTEGIDA</option>
           <option value="HABILITADA">HABILITADA</option>
-          <option value="PENDIENTE">PENDIENTE</option>
           <option value="DESHABILITADA">DESHABILITADA</option>
         </select>
       </div>
@@ -60,10 +60,10 @@
       </div>
     </div>
     <div class="card p-2 border-0 shadow-sm"
-      style="min-width:200px;flex:1 1 calc(33% - 1rem);border-left:3px solid #ffc107 !important;">
+      style="min-width:200px;flex:1 1 calc(33% - 1rem);border-left:3px solid #dc3545 !important;">
       <div class="d-flex align-items-center">
-        <div class="p-2 me-3 rounded" style="background:#fff3cd;"><i class="bi bi-hourglass-split text-warning fs-5"></i></div>
-        <div><p class="mb-0 text-muted small fw-bold">Pendientes</p><h5 id="cuentasPendientes" class="mb-0 fw-bold">0</h5></div>
+        <div class="p-2 me-3 rounded" style="background:#f8d7da;"><i class="bi bi-person-x text-danger fs-5"></i></div>
+        <div><p class="mb-0 text-muted small fw-bold">Deshabilitadas</p><h5 id="cuentasDeshabilitadas" class="mb-0 fw-bold">0</h5></div>
       </div>
     </div>
   </div>
